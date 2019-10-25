@@ -1,4 +1,5 @@
 const express = require('express');
+var cors = require('cors');
 const path = require('path');
 // const bodyParser = require('body-parser')
 const knex = require('knex')
@@ -14,6 +15,7 @@ const db = knex({
 
 
 const app = express();
+app.use(cors())
 
 //Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
@@ -38,4 +40,4 @@ app.get('/api/routelist', (req, res) => {
    res.sendFile(path.join(__dirname+'/client/build/index.html'));
  });
 //app.listen(5000)
-app.listen(process.env.PORT);
+app.listen(process.env.PORT || 5000);
