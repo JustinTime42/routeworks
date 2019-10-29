@@ -22,7 +22,7 @@ function App() {
     setup();
   
     function startTimer() {
-      timeoutID = window.setTimeout(goInactive, 5000);
+      timeoutID = window.setTimeout(goInactive, 50000);
     }
   
     function resetTimer(e) {
@@ -32,11 +32,15 @@ function App() {
     
     function goInactive() {
       window.addEventListener("mousemove", goActive);
-      document.getElementById("blackOutScreen").style.height="100%"  
+      if (document.getElementById("blackOutScreen")){
+        document.getElementById("blackOutScreen").style.height="100%"
+      }        
     }
   
     function goActive() { 
-      document.getElementById("blackOutScreen").style.height="0%"   
+      if (document.getElementById("blackOutScreen")){
+        document.getElementById("blackOutScreen").style.height="0%"
+      }    
     }  
   
     return (
