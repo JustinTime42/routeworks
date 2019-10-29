@@ -5,20 +5,20 @@ import Button from "react-bootstrap/Button"
 import Can from "../components/Can"
 import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
-import { setActiveRoute, requestRoutes } from "../actions" 
+import { setActiveRoute, requestRoutes } from "../actions"
 
 const mapStateToProps = state => {
     return {
         activeRoute: state.setActiveRoute.activeRoute,
         routes: state.requestRoutes.routes,
         isPending: state.requestRoutes.isPending,
-        error: state.requestRoutes.error
+        error: state.requestRoutes.error    
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {    
-        onRouteSelect: (event) => dispatch(setActiveRoute(event.target.value)),
+        onRouteSelect: (event) => dispatch(setActiveRoute(event)),
         onRequestRoutes: () => dispatch(requestRoutes()) 
     }
 }
@@ -27,18 +27,10 @@ const editStyle = {
     float: "right"
 }
 
-//in the future this would pull from the routes tables
-const routes = [
-    "marybelle",
-    "clementine",
-    "bessy"
-]
-
-
 const renderRoute = (routeName) => {
-    
+  
     return (
-        <AuthConsumer>
+        <AuthConsumer key={routeName}>
             {({ authenticated }) =>
             authenticated ? (
                 <AuthConsumer>
@@ -69,15 +61,19 @@ class RouteSelector extends Component {
         this.props.onRequestRoutes();
     }
 
+    testRouteSelect(event) {
+        console.log(event)
+    }
+
     render() {
-        const { routes, isPending, activeRoute, error } = this.props
+        const { routes, isPending, activeRoute, error, onRouteSelect } = this.props
         return isPending ?
         <h1>Loading</h1> :
             (           
-            <DropdownButton title="Select Route" onSelect={function(evt){console.log(evt)}}>         
+            <DropdownButton title={activeRoute || "Select Route"} onSelect={onRouteSelect} >        
                 <Dropdown.Item href="#/action-1">Make New Route</Dropdown.Item>
                 {
-                    routes.map(route => renderRoute(route))
+                    routes.map(route => renderRoute(route.route_name))
                 }  
             </DropdownButton>
         )}

@@ -3,7 +3,6 @@ import { SET_ACTIVE_ROUTE,
     REQUEST_ROUTES_SUCCESS,
     REQUEST_ROUTES_FAILED 
 } from './constants.js'
-import { object } from 'prop-types'
 
 const initialStateActiveRoute = {
     activeRoute: '' 
@@ -15,15 +14,15 @@ export const setActiveRoute = (state=initialStateActiveRoute, action={}) => {
             return {...state, activeRoute: action.payload }
         default:    
             return state
-
     }
 }
 
 const initialStateRoutes = {
     isPending: false,
-    routes: [],
+    routes: [], 
     error: ''
 }
+
 export const requestRoutes = (state = initialStateRoutes, action={}) => {
     switch(action.type) {
         case REQUEST_ROUTES_PENDING: 
