@@ -1,7 +1,8 @@
 import { SET_ACTIVE_ROUTE, 
     REQUEST_ROUTES_PENDING,
     REQUEST_ROUTES_SUCCESS,
-    REQUEST_ROUTES_FAILED 
+    REQUEST_ROUTES_FAILED,
+    SET_DRIVER_NAME
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -31,6 +32,19 @@ export const requestRoutes = (state = initialStateRoutes, action={}) => {
             return {...state, routes: action.payload, isPending: false}
         case REQUEST_ROUTES_FAILED:
             return {...state, error: action.payload, isPending: false}
+        default:
+            return state
+    }
+}
+
+const initialStateDriver = {
+    driverName: ''
+}
+
+export const setDriverName = (state = initialStateDriver, action={}) => {
+    switch(action.type) {
+        case SET_DRIVER_NAME:
+            return {...state, driverName: action.payload}
         default:
             return state
     }

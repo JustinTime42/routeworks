@@ -61,10 +61,6 @@ class RouteSelector extends Component {
         this.props.onRequestRoutes();
     }
 
-    testRouteSelect(event) {
-        console.log(event)
-    }
-
     render() {
         const { routes, isPending, activeRoute, error, onRouteSelect } = this.props
         return isPending ?
