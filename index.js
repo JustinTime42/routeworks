@@ -30,6 +30,15 @@ app.get('/api/routelist', (req, res) => {
 
 });
 
+app.get('/api/properties', (req, res) => {
+
+    db.select('*').from('properties')
+    .then(data => {
+        res.json(data)
+    })  
+
+});
+
 // app.get('/', (req, res) => {
 //     res.send("hello world")
 // })
