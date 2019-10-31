@@ -3,7 +3,10 @@ import {
     REQUEST_ROUTES_PENDING,
     REQUEST_ROUTES_SUCCESS,
     REQUEST_ROUTES_FAILED, 
-    SET_DRIVER_NAME
+    SET_DRIVER_NAME,
+    REQUEST_ADDRESSES_PENDING,
+    REQUEST_ADDRESSES_SUCCESS,
+    REQUEST_ADDRESSES_FAILED
 } from './constants.js'
 
 export const setActiveRoute = (routeName) => {
@@ -26,4 +29,12 @@ export const setDriverName = (driverName) => {
         type: SET_DRIVER_NAME,
         payload: driverName
     }
+}
+
+export const requestAllAddresses = () => (dispatch) => {
+    dispatch({ type: REQUEST_ADDRESSES_PENDING })
+    fetch('https://snowline-route-manager.herokuapp.com/api/properties')
+    .then(response => response.json())
+    .then(data => dispatch({ type: REQUEST_ADDRESSES_SUCCESS, payload: data}))
+    .catch(error => dispatch({ type: REQUEST_ADDRESSES_FAILED}))
 }
