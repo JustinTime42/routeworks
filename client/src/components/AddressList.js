@@ -22,7 +22,7 @@ const mapDispatchToProps = (dispatch) => {
 const renderAddress = (address) => {
     return(
         <div>
-            <p>{address.address}</p>{address.address}
+            <p>{address.address}</p>
         </div>
     )
 }
