@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import DropdownButton from "react-bootstrap/DropdownButton"
 import Dropdown from "react-bootstrap/Dropdown"
 import Button from "react-bootstrap/Button"
+import Modal from "react-bootstrap/Modal"
 import Can from "../components/Can"
 import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
@@ -55,11 +56,25 @@ const renderRoute = (routeName) => {
         </AuthConsumer>           
     ) 
 }
+
+
 class RouteSelector extends Component {
+    constructor(){
+        super()
+        this.state = {
+            show: false,
+            routeName: ""
+        }
+    }
+
+    handleClose = () => this.setState({show: false})
+    handleShow = () => this.setState({show: true})
+    handleSave = () => this.handleClose()
+    onSetRouteName = (event) => this.setState({routeName: event.target.value})      
 
     componentDidMount() {
         this.props.onRequestRoutes();
-    }
+    }   
 
     render() {
         const { routes, isPending, activeRoute, error, onRouteSelect } = this.props
@@ -67,13 +82,28 @@ class RouteSelector extends Component {
         <h1>Loading</h1> :
             (           
             <DropdownButton title={activeRoute || "Select Route"} onSelect={onRouteSelect} >        
-                <Dropdown.Item href="#/action-1">Make New Route</Dropdown.Item>
+                <Dropdown.Item eventKey="Create New Route"><Button variant="primary" onClick={this.handleShow}>Create New Route</Button></Dropdown.Item>
                 {
                     routes.map(route => renderRoute(route.route_name))
-                }  
+                }
+                <Modal show={this.state.show} onHide={this.handleClose}>
+                    <Modal.Header>Enter New Route</Modal.Header>
+                    <Modal.Body>
+                        <form>
+                            <input onChange={this.onSetRouteName} type="text" name="routeName" placeholder="Route Name"></input>
+                        </form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.handleClose}>
+                        Close
+                        </Button>
+                        <Button variant="primary" onClick={this.handleSave}>
+                        Save Changes
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </DropdownButton>
         )}
 }
 
-    
 export default connect(mapStateToProps, mapDispatchToProps)(RouteSelector)
