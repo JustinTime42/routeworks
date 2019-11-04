@@ -31,7 +31,8 @@ app.get('/api/routelist', (req, res) => {
 });
 
 app.post('/api/addroute', (req, res) => {
-    db('routes').insert({route_name: req.body.route_name})
+    res.json(req.body.route_name)
+    //db('routes').insert({route_name: req.body.route_name})
 })
 
 app.get('/api/properties', (req, res) => {
