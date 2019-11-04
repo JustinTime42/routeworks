@@ -1,7 +1,7 @@
 const express = require('express');
 var cors = require('cors');
 const path = require('path');
-// const bodyParser = require('body-parser')
+const bodyParser = require('body-parser')
 const knex = require('knex')
 const pg = require('pg')
 
@@ -16,7 +16,8 @@ const db = knex({
 
 const app = express();
 app.use(cors())
-
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 //Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
@@ -27,8 +28,11 @@ app.get('/api/routelist', (req, res) => {
     .then(data => {
         res.json(data)
     })  
-
 });
+
+app.post('/addroute', (req, res) => {
+    db('routes').insert({route_name: req.body.route_name})
+})
 
 app.get('/api/properties', (req, res) => {
 
