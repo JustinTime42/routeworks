@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import axios from "axios"
 import DropdownButton from "react-bootstrap/DropdownButton"
 import Dropdown from "react-bootstrap/Dropdown"
 import Button from "react-bootstrap/Button"
@@ -70,15 +71,16 @@ class RouteSelector extends Component {
     onSetRouteName = (event) => this.setState({routeName: event.target.value}) 
 
     handleSave = () => {
-        fetch('https://snowline-route-manager.herokuapp.com/api/addroute', {
-            method: 'post',
-            body: {
-             "route_name": this.state.routeName
-            }
-        })        
+        axios.post(`https://snowline-route-manager.herokuapp.com/api/addroute`, { route_name: this.state.routeName })
+        .then(res => {
+          console.log(res);
+          console.log(res.data);
+        })
         this.handleClose()
         this.props.onRequestRoutes()
     }
+
+    
 
     componentDidMount() {
         this.props.onRequestRoutes();
