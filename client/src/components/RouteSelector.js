@@ -28,8 +28,7 @@ const editStyle = {
     float: "right"
 }
 
-const renderRoute = (routeName) => {
-  
+const renderRoute = (routeName) => {  
     return (
         <AuthConsumer key={routeName}>
             {({ authenticated }) =>
@@ -57,7 +56,6 @@ const renderRoute = (routeName) => {
     ) 
 }
 
-
 class RouteSelector extends Component {
     constructor(){
         super()
@@ -69,8 +67,18 @@ class RouteSelector extends Component {
 
     handleClose = () => this.setState({show: false})
     handleShow = () => this.setState({show: true})
-    handleSave = () => this.handleClose()
-    onSetRouteName = (event) => this.setState({routeName: event.target.value})      
+    onSetRouteName = (event) => this.setState({routeName: event.target.value}) 
+
+    handleSave = () => {
+        fetch('https://snowline-route-manager.herokuapp.com/api/addroute', {
+            method: 'post',
+            body: {
+             "route_name": this.state.routeName
+            }
+        })        
+        this.handleClose()
+        this.props.onRequestRoutes()
+    }
 
     componentDidMount() {
         this.props.onRequestRoutes();
