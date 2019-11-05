@@ -73,11 +73,11 @@ class RouteSelector extends Component {
     handleSave = () => {
         axios.post(`https://snowline-route-manager.herokuapp.com/api/addroute`, { route_name: this.state.routeName })
         .then(res => {
-          console.log(res);
-          console.log(res.data);
+          console.log(res)
+          this.componentDidMount()
         })
+        .catch(err => console.log(err)) //this is not updating the live list...
         this.handleClose()
-        this.props.onRequestRoutes()
     }
 
     
