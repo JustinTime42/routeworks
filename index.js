@@ -13,7 +13,6 @@ const db = knex({
     }    
 })
 
-
 const app = express();
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -36,23 +35,15 @@ app.post('/api/addroute', (req, res) => {
     .insert({route_name: req.body.route_name})
     .then(routeName => {
         res.json(routeName)
-    })
-    
-    
+    }) 
 })
 
 app.get('/api/properties', (req, res) => {
-
     db.select('*').from('properties')
     .then(data => {
         res.json(data)
-    })  
-
+    })
 });
-
-// app.get('/', (req, res) => {
-//     res.send("hello world")
-// })
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.

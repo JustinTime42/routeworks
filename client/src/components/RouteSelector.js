@@ -14,7 +14,7 @@ const mapStateToProps = state => {
         activeRoute: state.setActiveRoute.activeRoute,
         routes: state.requestRoutes.routes,
         isPending: state.requestRoutes.isPending,
-        error: state.requestRoutes.error    
+        error: state.requestRoutes.error
     }
 }
 
@@ -66,10 +66,9 @@ class RouteSelector extends Component {
         }
     }
 
+    onSetRouteName = (event) => this.setState({routeName: event.target.value}) 
     handleClose = () => this.setState({show: false})
     handleShow = () => this.setState({show: true})
-    onSetRouteName = (event) => this.setState({routeName: event.target.value}) 
-
     handleSave = () => {
         axios.post(`https://snowline-route-manager.herokuapp.com/api/addroute`, { route_name: this.state.routeName })
         .then(res => {
@@ -79,8 +78,6 @@ class RouteSelector extends Component {
         .catch(err => console.log(err)) //this is not updating the live list...
         this.handleClose()
     }
-
-    
 
     componentDidMount() {
         this.props.onRequestRoutes();

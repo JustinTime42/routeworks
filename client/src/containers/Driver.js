@@ -15,15 +15,10 @@ const Driver = () => {
             </div>
             <div className="rightSide">
                 <AddressList />
-            </div>
-
-           
+            </div>           
             {/* This is where the Driver page components will go */}
         </div>
     )
-
 }
-
-
 
 export default Driver

@@ -6,7 +6,6 @@ const mapStateToProps = state => {
     return {
         driverName: state.setDriverName.driverName
     }
-
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -14,6 +13,7 @@ const mapDispatchToProps = (dispatch) => {
         onSetDriverName: (event) => dispatch(setDriverName(event.target.value))
     }
 }
+
 class DriverName extends Component {
 
     render() {
@@ -23,13 +23,7 @@ class DriverName extends Component {
             <input onChange={onSetDriverName} type="text" name="driverName" placeholder="Driver Name"></input>
         </form>
         )
-
-        }
-
-    
-
-    
-
+    } 
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DriverName)   

@@ -5,7 +5,6 @@ import { connect } from "react-redux"
 import Card from "react-bootstrap/Card"
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-
 import { requestAllAddresses } from "../actions"
 
 const mapStateToProps = state => {
