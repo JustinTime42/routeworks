@@ -78,21 +78,21 @@ class AddressList extends Component {
         this.props.onGetAllAddresses()
     }
 
-render() {
-    const {addresses, isPending, error } = this.props
+    render() {
+        const {addresses, isPending, error } = this.props
 
-    return isPending ?
-    <h1> loading </h1> : 
-    (
-        <div>
-            {
-                addresses.map(address => renderAddress(address))
-            }
-          
-           
-        </div>
-    )
-}
+        return isPending ?
+        <h1> loading </h1> : 
+        (
+            <div>
+                {
+                    addresses.map(address => renderAddress(address))
+                }
+            
+            
+            </div>
+        )
+    }
 
 }
 

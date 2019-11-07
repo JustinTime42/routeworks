@@ -8,10 +8,10 @@ import { createStore, applyMiddleware, combineReducers } from 'redux'
 import App from './containers/App'
 import thunkMiddleWare from 'redux-thunk'
 import { createLogger } from 'redux-logger'
-import { setActiveRoute, requestRoutes, setDriverName, requestAllAddresses } from './reducers';
+import { setActiveRoute, requestRoutes, setDriverName, requestAllAddresses, getRouteProperties } from './reducers';
 
 const logger = createLogger()
-const rootReducer = combineReducers( { setActiveRoute, requestRoutes, setDriverName, requestAllAddresses })
+const rootReducer = combineReducers( { setActiveRoute, requestRoutes, setDriverName, requestAllAddresses, getRouteProperties })
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleWare, logger))
 const rootElement = document.getElementById("root");
 

@@ -7,21 +7,28 @@ import Modal from "react-bootstrap/Modal"
 import Can from "../components/Can"
 import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
-import { setActiveRoute, requestRoutes } from "../actions"
+import { setActiveRoute, requestRoutes, getRouteProperties } from "../actions"
 
 const mapStateToProps = state => {
     return {
         activeRoute: state.setActiveRoute.activeRoute,
         routes: state.requestRoutes.routes,
         isPending: state.requestRoutes.isPending,
-        error: state.requestRoutes.error
+        error: state.requestRoutes.error,
+        routeAddresses: state.getRouteProperties.addresses,
+        routeIsPending: state.getRouteProperties.isPending,
+        routeError: state.getRouteProperties.error
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {    
-        onRouteSelect: (event) => dispatch(setActiveRoute(event)),
-        onRequestRoutes: () => dispatch(requestRoutes()) 
+        onRouteSelect: (event) => {
+            dispatch(setActiveRoute(event))
+            dispatch(getRouteProperties(event))
+        },
+        onRequestRoutes: () => dispatch(requestRoutes()),
+        onGetRouteProperties: (event) => dispatch(getRouteProperties(event)),
     }
 }
 

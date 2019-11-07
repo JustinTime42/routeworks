@@ -5,7 +5,10 @@ import { SET_ACTIVE_ROUTE,
     SET_DRIVER_NAME,
     REQUEST_ADDRESSES_PENDING,
     REQUEST_ADDRESSES_SUCCESS,
-    REQUEST_ADDRESSES_FAILED
+    REQUEST_ADDRESSES_FAILED,
+    GET_ROUTE_SUCCESS,
+    GET_ROUTE_PENDING,
+    GET_ROUTE_FAILED
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -66,6 +69,24 @@ export const requestAllAddresses = (state = initialStateAllAddresses, action={})
         case REQUEST_ADDRESSES_SUCCESS:
             return {...state, addresses: action.payload, isPending: false}
         case REQUEST_ADDRESSES_FAILED:
+            return {...state, error: action.payload, isPending: false}
+        default:
+            return state
+    }
+}
+
+export const initialStateRouteProperties = {
+    addresses: [],
+    isPending: false,
+    error: ''
+}
+export const getRouteProperties = (state = initialStateRouteProperties, action={}) => {
+    switch(action.type) {
+        case GET_ROUTE_PENDING: 
+            return {...state, isPending: true}
+        case GET_ROUTE_SUCCESS:
+            return {...state, addresses: action.payload, isPending: false}
+        case GET_ROUTE_FAILED:
             return {...state, error: action.payload, isPending: false}
         default:
             return state

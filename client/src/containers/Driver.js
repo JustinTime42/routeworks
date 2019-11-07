@@ -1,7 +1,8 @@
 import React from "react"
 import RouteSelector from "../components/RouteSelector"
 import DriverName from "../components/DriverName"
-import AddressList from "../components/AddressList"
+import DisplayRoute from "../components/DisplayRoute"
+//import PropertyDragger from "../components/PropertyDragger"
 
 import '../styles/driver.css'
 
@@ -12,9 +13,10 @@ const Driver = () => {
             <div className="leftSide">
                 <RouteSelector />
                 <DriverName />
+                <DisplayRoute />
             </div>
             <div className="rightSide">
-                <AddressList />
+                {/* <PropertyDragger /> */}
             </div>           
             {/* This is where the Driver page components will go */}
         </div>
