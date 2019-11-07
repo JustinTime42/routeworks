@@ -45,6 +45,15 @@ app.get('/api/properties', (req, res) => {
     })
 });
 
+app.get('/api/getroute/:routeName', (req, res) => {
+    const { routeName } = req.params
+    db.where('route_name', routeName)
+    .from('properties')
+    .then(data => {
+        res.json(data)
+    })
+});
+
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
  app.get('*', (req, res) => {
