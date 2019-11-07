@@ -9,7 +9,8 @@ import {
     REQUEST_ADDRESSES_FAILED,
     GET_ROUTE_SUCCESS,
     GET_ROUTE_PENDING,
-    GET_ROUTE_FAILED
+    GET_ROUTE_FAILED,
+    SET_ACTIVE_PROPERTY
 } from './constants.js'
 
 export const setActiveRoute = (routeName) => {
@@ -19,6 +20,12 @@ export const setActiveRoute = (routeName) => {
     }      
 }
 
+export const setActiveProperty = (property) => {
+    return {
+        type: SET_ACTIVE_PROPERTY,
+        payload: property
+    }
+}
 export const requestRoutes = () => (dispatch) => {
     dispatch({ type: REQUEST_ROUTES_PENDING })
     fetch('https://snowline-route-manager.herokuapp.com/api/routelist')

@@ -8,7 +8,8 @@ import { SET_ACTIVE_ROUTE,
     REQUEST_ADDRESSES_FAILED,
     GET_ROUTE_SUCCESS,
     GET_ROUTE_PENDING,
-    GET_ROUTE_FAILED
+    GET_ROUTE_FAILED,
+    SET_ACTIVE_PROPERTY
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -20,6 +21,19 @@ export const setActiveRoute = (state=initialStateActiveRoute, action={}) => {
         case SET_ACTIVE_ROUTE:
             return {...state, activeRoute: action.payload }
         default:    
+            return state
+    }
+}
+
+const initialStateActiveProperty = {
+    activeProperty: {}
+}
+
+export const setActiveProperty = (state=initialStateActiveProperty, action={}) => {
+    switch(action.type) {
+        case SET_ACTIVE_PROPERTY: 
+            return{...state, activeProperty: action.payload }
+        default:
             return state
     }
 }
