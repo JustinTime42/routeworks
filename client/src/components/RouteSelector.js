@@ -49,7 +49,8 @@ const renderRoute = (routeName) => {
                         yes={() => (
                             <Dropdown.Item eventKey={routeName}>
                                 {routeName}
-                                <Button size="sm" variant="secondary" style={editStyle}>Edit</Button>
+                                <Button size="sm" variant="secondary" style={editStyle} onClick={() => console.log(`edit route ${routeName}`)}>Edit</Button>
+                                {/* onclick: display dragAndDrop with normal <DisplayRoute> on the left and AllAddresses on the right */}
                             </Dropdown.Item>
                         )}
                         no={() => <Dropdown.Item eventKey={routeName}>{routeName}</Dropdown.Item>}               

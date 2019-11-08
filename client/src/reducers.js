@@ -72,7 +72,7 @@ export const setDriverName = (state = initialStateDriver, action={}) => {
 
 const initialStateAllAddresses = {
     addresses: [],
-    isPending: false,
+    isPending: true,
     error: ''
 }
 
@@ -91,7 +91,7 @@ export const requestAllAddresses = (state = initialStateAllAddresses, action={})
 
 export const initialStateRouteProperties = {
     addresses: [],
-    isPending: false,
+    isPending: true,
     error: ''
 }
 export const getRouteProperties = (state = initialStateRouteProperties, action={}) => {

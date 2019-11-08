@@ -6,9 +6,9 @@ import { requestAllAddresses, getRouteProperties, UpdateRouteProperties } from "
 const mapStateToProps = state => {
     return {
         activeRoute: state.setActiveRoute.activeRoute,
-        addresses: state.requestAllAddresses.addresses,
-        routeProperties: state.getRouteProperties.properties,
-        isRoutePending: state.getRouteProperties.isRoutePending,
+        addresses: state.requestAllAddresses.addresses, 
+        routeProperties: state.getRouteProperties.addresses,
+        isRoutePending: state.getRouteProperties.isPending,
         isAllPending: state.requestAllAddresses.isPending,
         error: state.requestAllAddresses.error    
     }
@@ -17,7 +17,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => {
     return {    
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
-        
         //onUpdateRouteProperties: (properiesy, routeName) => dispatch(UpdateRouteProperties(properties, routeName))
     }
 }
@@ -68,17 +67,25 @@ const getListStyle = isDraggingOver => ({
     width: 250
 });
 
-class PropertyDragger extends Component {
-    state = {
-        items: onGetAllAddresses(),
-        selected: onGetRouteProperties()
-    }
-
+class RouteEditor extends Component {
+    constructor(props){
+        super(props)
+        this.state = { 
+            items: this.props.addresses,
+            selected: this.props.routeProperties
+         }
+        }
     
     componentDidMount() {
-        this.props.onGetAllAddresses()
-        
+        this.props.onGetAllAddresses() 
     }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.routeProperties !== this.props.routeProperties){
+          this.setState({selected: this.props.routeProperties })
+          this.setState({items: this.props.addresses })
+        }
+      }
     /**
      * A semi-generic way to handle multiple lists. Matches
      * the IDs of the droppable container to the names of the
@@ -131,7 +138,7 @@ class PropertyDragger extends Component {
     // Normally you would want to split things out into separate components.
     // But in this example everything is just done in one place for simplicity
     render() {
-        return isRoutePending || isAllPending ?
+        return this.props.isAllPending || this.props.isRoutePending ?
         <h1> loading </h1> :(
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <Droppable droppableId="droppable">
@@ -141,8 +148,8 @@ class PropertyDragger extends Component {
                             style={getListStyle(snapshot.isDraggingOver)}>
                             {this.state.items.map((item, index) => (
                                 <Draggable
-                                    key={item.id}
-                                    draggableId={item.id}
+                                    key={item.key}
+                                    draggableId={item.key.toString()}
                                     index={index}>
                                     {(provided, snapshot) => (
                                         <div
@@ -153,7 +160,7 @@ class PropertyDragger extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            {item.content}
+                                            {item.address}
                                         </div>
                                     )}
                                 </Draggable>
@@ -169,8 +176,8 @@ class PropertyDragger extends Component {
                             style={getListStyle(snapshot.isDraggingOver)}>
                             {this.state.selected.map((item, index) => (
                                 <Draggable
-                                    key={item.id}
-                                    draggableId={item.id}
+                                    key={item.key}
+                                    draggableId={item.key.toString()}
                                     index={index}>
                                     {(provided, snapshot) => (
                                         <div
@@ -181,7 +188,7 @@ class PropertyDragger extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            {item.content}
+                                            {item.address}
                                         </div>
                                     )}
                                 </Draggable>
@@ -195,4 +202,4 @@ class PropertyDragger extends Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PropertyDragger)
+export default connect(mapStateToProps, mapDispatchToProps)(RouteEditor)

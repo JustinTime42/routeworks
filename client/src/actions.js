@@ -10,7 +10,7 @@ import {
     GET_ROUTE_SUCCESS,
     GET_ROUTE_PENDING,
     GET_ROUTE_FAILED,
-    SET_ACTIVE_PROPERTY
+    SET_ACTIVE_PROPERTY,
 } from './constants.js'
 
 export const setActiveRoute = (routeName) => {
