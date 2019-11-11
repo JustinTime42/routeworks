@@ -55,8 +55,8 @@ app.get('/api/getroute/:routeName', (req, res) => {
 });
 
 app.post('api/saveroute', (req, res) => {
-    res.json(req.body)
-    console.log(req.body)
+    res.json(req.body[0].address)
+    console.log(req.body[0].address)
     //connect this to the database
 })
 
