@@ -17,7 +17,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
     return {    
-        onSaveRoute: () => dispatch(saveRoute(newRoute)),
+        onSaveRoute: () => dispatch(saveRoute(route)),
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
         //onUpdateRouteProperties: (properiesy, routeName) => dispatch(UpdateRouteProperties(properties, routeName))
     }
@@ -99,7 +99,8 @@ class RouteEditor extends Component {
     };
 
     onSave = () => {
-        this.onSaveRoute(this.state.selected)
+        const route = this.state.selected
+        this.onSaveRoute(route)
     }
 
     getList = id => this.state[this.id2List[id]];
