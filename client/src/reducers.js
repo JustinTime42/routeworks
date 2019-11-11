@@ -115,7 +115,7 @@ export const initialStateSaveRoute = {
     addresses: [],
     error: ''
 }
-export const saveRoute = (state, action={}) => {
+export const saveRoute = (state = initialStateSaveRoute, action={}) => {
     switch(action.type) {
         case SAVE_ROUTE_PENDING:
             return {...state, isPending: true}
