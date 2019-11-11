@@ -56,7 +56,9 @@ app.get('/api/getroute/:routeName', (req, res) => {
 
 app.post('api/saveroute', (req, res) => {
     const { routeData } = req.body
+    res.json(routeData)
     console.log(routeData)
+    //connect this to the database
 })
 
 // The "catchall" handler: for any request that doesn't
