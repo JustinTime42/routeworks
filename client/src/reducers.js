@@ -110,6 +110,11 @@ export const getRouteProperties = (state = initialStateRouteProperties, action={
     }
 }
 
+export const initialStateSaveRoute = {
+    isPending: false,
+    addresses: [],
+    error: ''
+}
 export const saveRoute = (state, action={}) => {
     switch(action.type) {
         case SAVE_ROUTE_PENDING:
