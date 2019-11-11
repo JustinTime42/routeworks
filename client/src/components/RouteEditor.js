@@ -99,7 +99,7 @@ class RouteEditor extends Component {
     };
 
     onSave = () => {
-        console.log(this.state)
+        this.onSaveRoute(this.state.selected)
     }
 
     getList = id => this.state[this.id2List[id]];
