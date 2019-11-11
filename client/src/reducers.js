@@ -111,10 +111,11 @@ export const getRouteProperties = (state = initialStateRouteProperties, action={
 }
 
 export const initialStateSaveRoute = {
-    isPending: false,
     addresses: [],
+    isPending: true,
     error: ''
 }
+
 export const saveRoute = (state = initialStateSaveRoute, action={}) => {
     switch(action.type) {
         case SAVE_ROUTE_PENDING:
