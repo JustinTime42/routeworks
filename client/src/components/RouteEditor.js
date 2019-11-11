@@ -17,6 +17,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
     return {    
+        onSaveRoute: () => dispatch(saveRoute(newRoute)),
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
         //onUpdateRouteProperties: (properiesy, routeName) => dispatch(UpdateRouteProperties(properties, routeName))
     }
