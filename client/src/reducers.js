@@ -124,5 +124,7 @@ export const saveRoute = (state = initialStateSaveRoute, action={}) => {
             return {...state, addresses: action.payload, isPending: false}
         case SAVE_ROUTE_FAILED: 
             return {...state, error: action.payload, isPending: false}
+        default: 
+            return state
     }
 }
