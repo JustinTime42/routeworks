@@ -9,7 +9,10 @@ import { SET_ACTIVE_ROUTE,
     GET_ROUTE_SUCCESS,
     GET_ROUTE_PENDING,
     GET_ROUTE_FAILED,
-    SET_ACTIVE_PROPERTY
+    SET_ACTIVE_PROPERTY,
+    SAVE_ROUTE_SUCCESS,
+    SAVE_ROUTE_PENDING,
+    SAVE_ROUTE_FAILED
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -104,5 +107,16 @@ export const getRouteProperties = (state = initialStateRouteProperties, action={
             return {...state, error: action.payload, isPending: false}
         default:
             return state
+    }
+}
+
+export const saveRoute = (state, action={}) => {
+    switch(action.type) {
+        case SAVE_ROUTE_PENDING:
+            return {...state, isPending: true}
+        case SAVE_ROUTE_SUCCESS:
+            return {...state, addresses: action.payload, isPending: false}
+        case SAVE_ROUTE_FAILED: 
+            return {...state, error: action.payload, isPending: false}
     }
 }

@@ -11,6 +11,9 @@ import {
     GET_ROUTE_PENDING,
     GET_ROUTE_FAILED,
     SET_ACTIVE_PROPERTY,
+    SAVE_ROUTE_SUCCESS,
+    SAVE_ROUTE_PENDING,
+    SAVE_ROUTE_FAILED
 } from './constants.js'
 
 export const setActiveRoute = (routeName) => {
@@ -30,7 +33,7 @@ export const requestRoutes = () => (dispatch) => {
     dispatch({ type: REQUEST_ROUTES_PENDING })
     fetch('https://snowline-route-manager.herokuapp.com/api/routelist')
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_ROUTES_SUCCESS, payload: data}))
+    .then(data => dispatch({ type: REQUEST_ROUTES_SUCCESS, payload: data }))
     .catch(error => dispatch({ type: REQUEST_ROUTES_FAILED, payload: error }))
 }
 
@@ -38,8 +41,20 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
     dispatch({ type: GET_ROUTE_PENDING})
     fetch(`https://snowline-route-manager.herokuapp.com/api/getroute/${activeRoute}`)
     .then(response => response.json())
-    .then(data => dispatch({ type: GET_ROUTE_SUCCESS, payload: data}))
+    .then(data => dispatch({ type: GET_ROUTE_SUCCESS, payload: data }))
     .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
+}
+
+export const saveRoute = (newRoute) => (dispatch) => {
+    dispatch({ type: SAVE_ROUTE_PENDING})
+    fetch('https://snowline-route-manager.herokuapp.com/api/saveroute', {
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({newRoute})
+    })
+    .then(response => response.json())
+    .then(data => dispatch({ type: SAVE_ROUTE_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: SAVE_ROUTE_FAILED, payload: error }))
 }
 
 export const setDriverName = (driverName) => {

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { connect } from "react-redux"
 import { requestAllAddresses, getRouteProperties, UpdateRouteProperties } from "../actions"
+import Button from 'react-bootstrap/Button'
 
 const mapStateToProps = state => {
     return {
@@ -96,6 +97,10 @@ class RouteEditor extends Component {
         droppable2: 'selected'
     };
 
+    onSave = () => {
+        console.log(this.state)
+    }
+
     getList = id => this.state[this.id2List[id]];
 
     onDragEnd = result => {
@@ -141,12 +146,13 @@ class RouteEditor extends Component {
         return this.props.isAllPending || this.props.isRoutePending ?
         <h1> loading </h1> :(
             <DragDropContext onDragEnd={this.onDragEnd}>
-                <Droppable droppableId="droppable">
+                <Droppable droppableId="droppable2">                    
                     {(provided, snapshot) => (
                         <div
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
-                            {this.state.items.map((item, index) => (
+                                <Button variant="primary" onClick={this.onSave}>Save Route</Button>
+                            {this.state.selected.map((item, index) => (
                                 <Draggable
                                     key={item.key}
                                     draggableId={item.key.toString()}
@@ -169,12 +175,12 @@ class RouteEditor extends Component {
                         </div>
                     )}
                 </Droppable>
-                <Droppable droppableId="droppable2">
+                <Droppable droppableId="droppable">
                     {(provided, snapshot) => (
                         <div
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
-                            {this.state.selected.map((item, index) => (
+                            {this.state.items.map((item, index) => (
                                 <Draggable
                                     key={item.key}
                                     draggableId={item.key.toString()}

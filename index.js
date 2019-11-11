@@ -54,6 +54,11 @@ app.get('/api/getroute/:routeName', (req, res) => {
     })
 });
 
+app.post('api/saveroute', (req, res) => {
+    const { routeData } = req.body
+    console.log(routeData)
+})
+
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
  app.get('*', (req, res) => {
