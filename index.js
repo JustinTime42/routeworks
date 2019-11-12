@@ -50,8 +50,6 @@ app.post('/api/saveroute', (req, res) => {
         }
     let promises = []
     add.forEach((item, i) => {
-        console.log(item.address)
-        console.log(item.route_name)
         promises.push(
             db('properties')
             .returning('address')
@@ -67,22 +65,24 @@ app.post('/api/saveroute', (req, res) => {
         )
        
     })
+    remove.forEach((item, i) => {
+        promises.push(
+            db('properties')
+            .returning('address')
+            .where('address', item.address)
+            .update({
+                route_name: null,
+                route_position: null
+            })
+            .then(address => {
+                response.remove.push(address)
+            })  
+            .catch(err => response.err.push(err)) 
+        )             
+    })    
     Promise.all(promises).then(() => res.json(response))
     
-    // let RemoveProperties = remove.forEach((item, i) => {
-    //     db('properties')
-    //     .returning('address')
-    //     .where('address', item.address)
-    //     .update({
-    //         route_name: null,
-    //         route_position: null
-    //     })
-    //     .then(address => {
-    //         return new Promise(response.remove.push(address))
-    //     })        
-    // })    
-    // Promise.all([addProperties, RemoveProperties])
-    // .then(response => res.json(response))
+
 })
 
 app.get('/api/properties', (req, res) => {
