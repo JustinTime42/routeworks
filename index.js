@@ -15,7 +15,7 @@ const db = knex({
 
 const app = express();
 app.use(cors())
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 //Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
@@ -55,8 +55,8 @@ app.get('/api/getroute/:routeName', (req, res) => {
 });
 
 app.post('api/saveroute', (req, res) => {
-    res.json(req.body.addresses)
-    console.log(req.body.address)
+    res.json(req.body)
+    console.log(req.body)
     //connect this to the database
 })
 
