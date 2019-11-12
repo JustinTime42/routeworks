@@ -29,6 +29,11 @@ app.get('/api/routelist', (req, res) => {
     })  
 });
 
+app.post('api/saveroute', (req, res) => {
+    res.json(req.body.addresses)
+    //connect this to the database
+})
+
 app.post('/api/addroute', (req, res) => {
     db('routes')
     .returning('route_name')
@@ -53,11 +58,6 @@ app.get('/api/getroute/:routeName', (req, res) => {
         res.json(data)
     })
 });
-
-app.post('api/saveroute', (req, res) => {
-    res.json(req.body.addresses)
-    //connect this to the database
-})
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
