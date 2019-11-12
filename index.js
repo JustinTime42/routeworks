@@ -45,7 +45,7 @@ app.post('/api/saveroute', (req, res) => {
     let response = 
         {
             add: [],
-            remove: []
+            err: []
         }
     let promises = []
     add.forEach((item, i) => {
@@ -60,7 +60,7 @@ app.post('/api/saveroute', (req, res) => {
             .then(address => {
                 response.add.push(address)            
             }) 
-            .catch(err => res.json(err))
+            .catch(err => response.err.push(err))
         )
        
     })
