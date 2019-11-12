@@ -42,10 +42,11 @@ app.post('/api/addroute', (req, res) => {
 app.post('/api/saveroute', (req, res) => {
     const add = req.body.selected
     const remove = req.body.unselected
-    let response = {
-        add: [],
-        remove: []
-    }
+    let response = 
+        {
+            add: [],
+            remove: []
+        }
     let addProperties = add.forEach((item, i) => {
         db('properties')
         .returning('address')
@@ -55,7 +56,7 @@ app.post('/api/saveroute', (req, res) => {
             route_position: i
         })
         .then(address => {
-            response.add.push(address)
+            return new Promise(response.add.push(address))            
         })        
     })
     let RemoveProperties = remove.forEach((item, i) => {
@@ -67,7 +68,7 @@ app.post('/api/saveroute', (req, res) => {
             route_position: null
         })
         .then(address => {
-            response.remove.push(address)
+            return new Promise(response.remove.push(address))
         })        
     })    
     Promise.all([addProperties, RemoveProperties])
