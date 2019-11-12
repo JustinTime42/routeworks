@@ -53,10 +53,7 @@ app.post('/api/saveroute', (req, res) => {
             db('properties')
             .returning('address')
             .where('address', item.address)
-            .update({
-                route_name: item.route_name,
-                route_position: i
-            })
+            .update(route_name, item.route_name)
             .then(address => {
                 response.add.push(address)            
             }) 
