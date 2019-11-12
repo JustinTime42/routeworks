@@ -50,6 +50,7 @@ app.post('/api/saveroute', (req, res) => {
     let promises = []
     add.forEach((item, i) => {
         console.log(item.address)
+        console.log(item.route_name)
         promises.push(
             db('properties')
             .returning('address')
