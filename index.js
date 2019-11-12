@@ -47,7 +47,7 @@ app.post('/api/saveroute', (req, res) => {
             add: [],
             remove: []
         }
-    let addProperties = add.forEach((item, i) => {
+    add.forEach((item, i) => {
         db('properties')
         .returning('address')
         .where('address', item.address)
@@ -56,23 +56,24 @@ app.post('/api/saveroute', (req, res) => {
             route_position: i
         })
         .then(address => {
-            return new Promise(response.add.push(address))            
+            response.add.push(address)            
         })        
     })
-    let RemoveProperties = remove.forEach((item, i) => {
-        db('properties')
-        .returning('address')
-        .where('address', item.address)
-        .update({
-            route_name: null,
-            route_position: null
-        })
-        .then(address => {
-            return new Promise(response.remove.push(address))
-        })        
-    })    
-    Promise.all([addProperties, RemoveProperties])
-    .then(response => res.json(response))
+    res.json(response)
+    // let RemoveProperties = remove.forEach((item, i) => {
+    //     db('properties')
+    //     .returning('address')
+    //     .where('address', item.address)
+    //     .update({
+    //         route_name: null,
+    //         route_position: null
+    //     })
+    //     .then(address => {
+    //         return new Promise(response.remove.push(address))
+    //     })        
+    // })    
+    // Promise.all([addProperties, RemoveProperties])
+    // .then(response => res.json(response))
 })
 
 app.get('/api/properties', (req, res) => {
