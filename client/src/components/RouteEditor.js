@@ -74,8 +74,8 @@ class RouteEditor extends Component {
     constructor(props){
         super(props)
         this.state = { 
-            items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-            selected: this.props.routeProperties
+            items: [],
+            selected: []
          }
         }
     
@@ -84,9 +84,10 @@ class RouteEditor extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.routeProperties !== this.props.routeProperties){
+        if(prevProps.routeProperties != this.props.routeProperties){
+            console.log("new route properties")
           this.setState({selected: this.props.routeProperties })
-          this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
+          this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
         }
       }
     /**
@@ -108,9 +109,10 @@ class RouteEditor extends Component {
             }
         )
         .then(res => {
-          console.log(res)
+            this.props.onGetAllAddresses() 
+            console.log(res)
         })
-        .catch(err => console.log(err)) //this is not updating the live list...
+        .catch(err => console.log(err)) 
     }
   
     getList = id => this.state[this.id2List[id]];
@@ -156,7 +158,7 @@ class RouteEditor extends Component {
     // But in this example everything is just done in one place for simplicity
     render() {
         return this.props.isAllPending || this.props.isRoutePending ?
-        <h1> loading </h1> :(
+        <h1>    </h1> :(
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <Droppable droppableId="droppable2">                    
                     {(provided, snapshot) => (

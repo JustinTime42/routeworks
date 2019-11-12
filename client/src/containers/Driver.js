@@ -13,7 +13,7 @@ const Driver = () => {
             <div className="leftSide">
                 <RouteSelector />
                 <DriverName />
-                <DisplayRoute />
+                {/* <DisplayRoute /> */}
                 
             </div>
             <div className="rightSide">
