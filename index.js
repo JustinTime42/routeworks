@@ -69,7 +69,7 @@ app.post('/api/saveroute', (req, res) => {
         promises.push(
             db('properties')
             .returning('address')
-            .where('address', item.address)
+            .where('route_name', item.route_name)
             .update({
                 route_name: null,
                 route_position: null
@@ -78,7 +78,7 @@ app.post('/api/saveroute', (req, res) => {
                 response.remove.push(address)
             })  
             .catch(err => response.err.push(err)) 
-        )             
+        )
     })    
     Promise.all(promises).then(() => res.json(response))
 })
