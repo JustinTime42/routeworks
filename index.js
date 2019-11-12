@@ -49,11 +49,15 @@ app.post('/api/saveroute', (req, res) => {
         }
     let promises = []
     add.forEach((item, i) => {
+        console.log(item.address)
         promises.push(
             db('properties')
             .returning('address')
             .where('address', item.address)
-            .update(route_name, item.route_name)
+            .update({
+                route_name: item.route_name,
+                route_position: i
+            })
             .then(address => {
                 response.add.push(address)            
             }) 
