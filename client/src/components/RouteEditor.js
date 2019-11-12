@@ -74,7 +74,7 @@ class RouteEditor extends Component {
     constructor(props){
         super(props)
         this.state = { 
-            items: this.props.addresses,
+            items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
             selected: this.props.routeProperties
          }
         }
@@ -86,7 +86,7 @@ class RouteEditor extends Component {
     componentDidUpdate(prevProps) {
         if(prevProps.routeProperties !== this.props.routeProperties){
           this.setState({selected: this.props.routeProperties })
-          this.setState({items: this.props.addresses })
+          this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
         }
       }
     /**
@@ -100,7 +100,13 @@ class RouteEditor extends Component {
     };
 
     onSave = () => {
-        axios.post('https://snowline-route-manager.herokuapp.com/api/saveroute', {properties: this.state.selected} )
+        axios.post('https://snowline-route-manager.herokuapp.com/api/saveroute', 
+            {
+                route: this.props.activeRoute,
+                selected: this.state.selected,
+                unselected: this.state.items
+            }
+        )
         .then(res => {
           console.log(res)
         })

@@ -45,6 +45,7 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
     .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
 }
 
+//currently not in use. consider removing
 export const saveRoute = (newRoute) => (dispatch) => {
     dispatch({ type: SAVE_ROUTE_PENDING})
     fetch('https://snowline-route-manager.herokuapp.com/api/saveroute', {
