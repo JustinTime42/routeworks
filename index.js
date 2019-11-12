@@ -29,11 +29,6 @@ app.get('/api/routelist', (req, res) => {
     })  
 });
 
-app.post('api/saveroute', (req, res) => {
-    res.json(req.body.addresses)
-    //connect this to the database
-})
-
 app.post('/api/addroute', (req, res) => {
     db('routes')
     .returning('route_name')
@@ -41,6 +36,11 @@ app.post('/api/addroute', (req, res) => {
     .then(routeName => {
         res.json(routeName)
     }) 
+})
+
+app.post('api/saveroute', (req, res) => {
+    res.json(req.body.addresses)
+    //connect this to the database
 })
 
 app.get('/api/properties', (req, res) => {
