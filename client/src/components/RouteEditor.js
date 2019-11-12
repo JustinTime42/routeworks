@@ -3,7 +3,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { connect } from "react-redux"
 import { requestAllAddresses, getRouteProperties, UpdateRouteProperties, saveRoute } from "../actions"
 import Button from 'react-bootstrap/Button'
-import axios from 'axios'
+import axios from "axios"
 
 const mapStateToProps = state => {
     return {
@@ -100,7 +100,7 @@ class RouteEditor extends Component {
     };
 
     onSave = () => {
-        axios.post(`https://snowline-route-manager.herokuapp.com/api/saveroute`, { addresses: this.state.selected })
+        axios.post('https://snowline-route-manager.herokuapp.com/api/saveroute', {properties: this.state.selected} )
         .then(res => {
           console.log(res)
         })

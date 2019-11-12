@@ -40,7 +40,7 @@ app.post('/api/addroute', (req, res) => {
 })
 
 app.post('/api/saveroute', (req, res) => {
-    res.json(req.body.addresses)
+    res.json(req.body.properties)
     //connect this to the database
 })
 
