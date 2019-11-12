@@ -49,7 +49,7 @@ export const saveRoute = (newRoute) => (dispatch) => {
     dispatch({ type: SAVE_ROUTE_PENDING})
     fetch('https://snowline-route-manager.herokuapp.com/api/saveroute', {
         method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
+        
         body: JSON.stringify({newRoute})
     })
     .then(response => response.json())

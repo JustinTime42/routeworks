@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { connect } from "react-redux"
 import { requestAllAddresses, getRouteProperties, UpdateRouteProperties, saveRoute } from "../actions"
 import Button from 'react-bootstrap/Button'
+import axios from 'axios'
 
 const mapStateToProps = state => {
     return {
@@ -99,9 +100,13 @@ class RouteEditor extends Component {
     };
 
     onSave = () => {
-        this.props.onSaveRoute(this.state.selected)
+        axios.post(`https://snowline-route-manager.herokuapp.com/api/saveroute`, { addresses: this.state.selected })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => console.log(err)) //this is not updating the live list...
     }
-
+  
     getList = id => this.state[this.id2List[id]];
 
     onDragEnd = result => {
