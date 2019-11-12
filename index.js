@@ -72,7 +72,7 @@ app.post('/api/saveroute', (req, res) => {
             .where({
                 address: item.address,
                 route_name: route
-            }
+            })
             .update({
                 route_name: null,
                 route_position: null
