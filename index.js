@@ -40,8 +40,38 @@ app.post('/api/addroute', (req, res) => {
 })
 
 app.post('/api/saveroute', (req, res) => {
-    res.json(req.body.properties)
-    //connect this to the database
+    const add = req.body.selected
+    const remove = req.body.unselected
+    let response = {
+        add: [],
+        remove: []
+    }
+    let addProperties = add.forEach((item, i) => {
+        db('properties')
+        .returning('address')
+        .where('address', item.address)
+        .update({
+            route_name: item.route_name,
+            route_position: i
+        })
+        .then(address => {
+            response.add.push(address)
+        })        
+    })
+    let RemoveProperties = remove.forEach((item, i) => {
+        db('properties')
+        .returning('address')
+        .where('address', item.address)
+        .update({
+            route_name: null,
+            route_position: null
+        })
+        .then(address => {
+            response.remove.push(address)
+        })        
+    })    
+    Promise.all([addProperties, RemoveProperties])
+    .then(res.json(response))
 })
 
 app.get('/api/properties', (req, res) => {
