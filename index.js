@@ -71,7 +71,7 @@ app.post('/api/saveroute', (req, res) => {
         })        
     })    
     Promise.all([addProperties, RemoveProperties])
-    .then(res.json(response))
+    .then(response => res.json(response))
 })
 
 app.get('/api/properties', (req, res) => {
