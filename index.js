@@ -29,17 +29,17 @@ app.get('/api/routelist', (req, res) => {
     })  
 });
 
-// app.post('/api/addroute', (req, res) => {
-//     res.json(req.body.route_name)
-//     // db('routes')
-//     // .returning('route_name')
-//     // .insert({route_name: req.body.route_name})
-//     // .then(routeName => {
-//     //     res.json(routeName)
-//     // }) 
-// })
+app.post('/api/addroute', (req, res) => {
+    res.json(req.body.route_name)
+    // db('routes')
+    // .returning('route_name')
+    // .insert({route_name: req.body.route_name})
+    // .then(routeName => {
+    //     res.json(routeName)
+    // }) 
+})
 
-app.post('api/saveroute', (req, res) => {
+app.post('/api/saveroute', (req, res) => {
     res.json(req.body.addresses)
     //connect this to the database
 })
