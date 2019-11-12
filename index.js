@@ -47,18 +47,23 @@ app.post('/api/saveroute', (req, res) => {
             add: [],
             remove: []
         }
+    let promises = []
     add.forEach((item, i) => {
-        db('properties')
-        .returning('address')
-        .where('address', item.address)
-        .update({
-            route_name: item.route_name,
-            route_position: i
-        })
-        .then(address => {
-            response.add.push(address)            
-        })        
-    }).then(res.json(response))
+        promises.push(
+            db('properties')
+            .returning('address')
+            .where('address', item.address)
+            .update({
+                route_name: item.route_name,
+                route_position: i
+            })
+            .then(address => {
+                response.add.push(address)            
+            }) 
+        )
+       
+    })
+    Promise.all(promises).then(() => res.json(response))
     
     // let RemoveProperties = remove.forEach((item, i) => {
     //     db('properties')
