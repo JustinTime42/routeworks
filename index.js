@@ -42,6 +42,7 @@ app.post('/api/addroute', (req, res) => {
 app.post('/api/saveroute', (req, res) => {
     const add = req.body.selected
     const remove = req.body.unselected
+    const route = req.body.route
     let response = 
         {
             add: [],
@@ -56,7 +57,7 @@ app.post('/api/saveroute', (req, res) => {
             .returning('address')
             .where('address', item.address)
             .update({
-                route_name: item.route_name,
+                route_name: route,
                 route_position: i
             })
             .then(address => {
