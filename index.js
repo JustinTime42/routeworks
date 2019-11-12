@@ -60,6 +60,7 @@ app.post('/api/saveroute', (req, res) => {
             .then(address => {
                 response.add.push(address)            
             }) 
+            .catch(err => res.json(err))
         )
        
     })
