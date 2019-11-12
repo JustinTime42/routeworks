@@ -58,8 +58,8 @@ app.post('/api/saveroute', (req, res) => {
         .then(address => {
             response.add.push(address)            
         })        
-    })
-    res.json(response)
+    }).then(res.json(response))
+    
     // let RemoveProperties = remove.forEach((item, i) => {
     //     db('properties')
     //     .returning('address')
