@@ -4,12 +4,11 @@ import Card from "react-bootstrap/Card"
 const PropertyCard = (props) => {
 
     return(
-        <Card onClick={() => props.handleClick(props.address)}>
-            <Card.Body>
-                <Card.Text>{props.address.address}</Card.Text>
-                <Card.Text>{props.address.cust_name}</Card.Text>
-            </Card.Body>
-        </Card>
+        <div onClick={() => props.handleClick(props.address)}>
+            <p>{props.address.address}</p>
+            <p>{props.address.cust_name}</p>
+            <p>route: {props.address.route_name}</p>        
+        </div>
     )
 }   
 

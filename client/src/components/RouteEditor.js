@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { connect } from "react-redux"
-import { requestAllAddresses, getRouteProperties, UpdateRouteProperties, saveRoute } from "../actions"
+import { requestAllAddresses, getRouteProperties, UpdateRouteProperties, saveRoute, setActiveProperty } from "../actions"
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
+import PropertyCard from "./PropertyCard"
 
 const mapStateToProps = state => {
     return {
@@ -20,6 +21,8 @@ const mapDispatchToProps = (dispatch) => {
     return {    
         onSaveRoute: (route) => dispatch(saveRoute(route)),
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
+        onSetActiveProperty: (property) => dispatch(setActiveProperty(property)),
+        onGetRouteProperties: (route) => dispatch(getRouteProperties(route))
         //onUpdateRouteProperties: (properiesy, routeName) => dispatch(UpdateRouteProperties(properties, routeName))
     }
 }
@@ -75,28 +78,27 @@ class RouteEditor extends Component {
         super(props)
         this.state = { 
             items: [],
-            selected: []
-         }
+            filteredItems: [],
+            selected: [],
+            searchField: '',
         }
+    }
     
     componentDidMount() {
         this.props.onGetAllAddresses() 
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.routeProperties != this.props.routeProperties){
+        if(prevProps.routeProperties !== this.props.routeProperties){
             console.log("new route properties")
           this.setState({selected: this.props.routeProperties })
-          this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
+          this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
+          this.setState({filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
         }
       }
-    /**
-     * A semi-generic way to handle multiple lists. Matches
-     * the IDs of the droppable container to the names of the
-     * source arrays stored in the state.
-     */
+
     id2List = {
-        droppable: 'items',
+        droppable: 'filteredItems',
         droppable2: 'selected'
     };
 
@@ -105,11 +107,12 @@ class RouteEditor extends Component {
             {
                 route: this.props.activeRoute,
                 selected: this.state.selected,
-                unselected: this.state.items
+                unselected: this.state.filteredItems
             }
         )
         .then(res => {
             this.props.onGetAllAddresses() 
+            this.props.onGetRouteProperties(this.props.activeRoute)
             console.log(res)
         })
         .catch(err => console.log(err)) 
@@ -126,16 +129,16 @@ class RouteEditor extends Component {
         }
 
         if (source.droppableId === destination.droppableId) {
-            const items = reorder(
+            const filteredItems = reorder(
                 this.getList(source.droppableId),
                 source.index,
                 destination.index
             );
 
-            let state = { items };
+            let state = { filteredItems };
 
             if (source.droppableId === 'droppable2') {
-                state = { selected: items };
+                state = { selected: filteredItems };
             }
 
             this.setState(state);
@@ -148,11 +151,32 @@ class RouteEditor extends Component {
             );
 
             this.setState({
-                items: result.droppable,
+                filteredItems: result.droppable,
                 selected: result.droppable2
             });
         }
     };
+
+    handlePropertyClick = (property) => {
+        this.props.onSetActiveProperty(property)
+    }
+
+    onSearchChange = (event) => {
+        this.setState({searchField: event.target.value})
+        let filteredItems = this.state.items.filter(property => {
+          if (property.address && property.address.toLowerCase().includes(this.state.searchField.toLowerCase())) {
+            return true
+          } else if (property.route_name && property.route_name.toLowerCase().includes(this.state.searchField.toLowerCase())) {
+            return true
+          } else if (property.cust_name && property.cust_name.toLowerCase().includes(this.state.searchField.toLowerCase())) {
+            return true
+          } else if (property.cust_phone && property.cust_phone.toLowerCase().includes(this.state.searchField.toLowerCase())) {
+            return true
+          } else {return false}
+        }
+      )
+        this.setState({filteredItems: filteredItems})
+      }
 
     // Normally you would want to split things out into separate components.
     // But in this example everything is just done in one place for simplicity
@@ -180,7 +204,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            {item.address}
+                                            <PropertyCard key={item.address} address={item} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>
@@ -194,7 +218,11 @@ class RouteEditor extends Component {
                         <div
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
-                            {this.state.items.map((item, index) => (
+                                <input 
+                                    type="search" placeholder="Search" 
+                                    onChange={this.onSearchChange}
+                                />
+                            {this.state.filteredItems.map((item, index) => (
                                 <Draggable
                                     key={item.key}
                                     draggableId={item.key.toString()}
@@ -208,7 +236,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            {item.address}
+                                            <PropertyCard key={item.address} address={item} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>

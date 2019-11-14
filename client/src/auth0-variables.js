@@ -5,5 +5,3 @@ export const AUTH_CONFIG = {
     callbackUrl: "https://snowline-route-manager.herokuapp.com/callback"
     //callbackUrl: "http://localhost:3000/callback"
   };
-
- 
