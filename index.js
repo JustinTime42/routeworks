@@ -74,7 +74,7 @@ app.post('/api/saveroute', (req, res) => {
                 route_name: route
             })
             .update({
-                route_name: null,
+                route_name: unassigned,
                 route_position: null
             })
             .then(address => {
