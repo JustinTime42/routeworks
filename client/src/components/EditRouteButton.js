@@ -24,9 +24,23 @@ class EditRouteButton extends Component {
 
     render() {
         return (
-            <Button variant="primary" onClick={this.handleClick}>
-                {this.props.showEditor ? "Show Route" : "Show Editor"}
-            </Button>
+            <AuthConsumer>
+            {({ user }) => (
+                <Can
+                    role={user.role}
+                    perform="admin:visit"
+                    yes={() => (
+                        <Button variant="primary" onClick={this.handleClick}>
+                            {this.props.showEditor ? "Show Route" : "Show Editor"}
+                        </Button>                        
+                    )}
+                    no={() => null}               
+                />                            
+            )}
+            </AuthConsumer>
+                    
+            // put authconsumer and Can stuff here to only show this if user is admin
+
         )
     }
 }

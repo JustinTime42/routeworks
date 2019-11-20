@@ -65,33 +65,6 @@ class RouteSelector extends Component {
         .catch(err => console.log(err)) //this is not updating the live list...
         this.handleClose()
     }
-    renderRoute = (routeName) => {  
-        return (
-            <AuthConsumer key={routeName}>
-                {({ authenticated }) =>
-                authenticated ? (
-                    <AuthConsumer>
-                    {({ user }) => (
-                        <Can
-                            role={user.role}
-                            perform="admin:visit"
-                            yes={() => (
-                                <Dropdown.Item eventKey={routeName}>
-                                    {routeName}
-                                    <Button size="sm" variant="secondary" style={editStyle} onClick={() => this.props.showRouteEditor}>Edit</Button>
-                                </Dropdown.Item>
-                            )}
-                            no={() => <Dropdown.Item eventKey={routeName}>{routeName}</Dropdown.Item>}               
-                        />                            
-                    )}
-                    </AuthConsumer>
-                ) : (
-                    <div></div>
-                )
-                }
-            </AuthConsumer>           
-        ) 
-    }
 
     componentDidMount() {
         this.props.onRequestRoutes();
@@ -105,7 +78,7 @@ class RouteSelector extends Component {
             <DropdownButton title={activeRoute || "Select Route"} onSelect={onRouteSelect} >        
                 <Dropdown.Item eventKey="Create New Route"><Button variant="primary" onClick={this.handleShow}>Create New Route</Button></Dropdown.Item>
                 {
-                    routes.map(route => this.renderRoute(route.route_name))
+                    routes.map(route => <Dropdown.Item key={route.route_name} eventKey={route.route_name}>{route.route_name}</Dropdown.Item>)
                 }
                 <Modal show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header>Enter New Route</Modal.Header>
