@@ -34,7 +34,7 @@ class EditRouteButton extends Component {
                             {this.props.showEditor ? "Show Route" : "Show Editor"}
                         </Button>                        
                     )}
-                    no={() => null}               
+                    no={() => <p>can't</p>}               
                 />                            
             )}
             </AuthConsumer>
