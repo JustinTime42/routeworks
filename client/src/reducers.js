@@ -12,7 +12,9 @@ import { SET_ACTIVE_ROUTE,
     SET_ACTIVE_PROPERTY,
     SAVE_ROUTE_SUCCESS,
     SAVE_ROUTE_PENDING,
-    SAVE_ROUTE_FAILED
+    SAVE_ROUTE_FAILED,
+    SHOW_ROUTE_EDITOR,
+    SHOW_ROUTE
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -125,6 +127,32 @@ export const saveRoute = (state = initialStateSaveRoute, action={}) => {
         case SAVE_ROUTE_FAILED: 
             return {...state, error: action.payload, isPending: false}
         default: 
+            return state
+    }
+}
+
+export const initialStateShowRouteEditor = {
+    showEditor: false
+}
+
+export const showRouteEditor = (state = initialStateShowRouteEditor, action={}) => {
+    switch(action.type) {
+        case SHOW_ROUTE_EDITOR:
+            return {...state, showEditor: action.payload}
+        default: 
+            return state
+    }    
+}
+
+export const initialStateShowRoute = {
+    showRoute: false
+}
+
+export const showRoute = (state = initialStateShowRoute, action={}) => {
+    switch(action.type) {
+        case SHOW_ROUTE: 
+            return {...state, showRoute: action.payload}
+        default:
             return state
     }
 }

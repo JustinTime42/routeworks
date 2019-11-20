@@ -13,7 +13,9 @@ import {
     SET_ACTIVE_PROPERTY,
     SAVE_ROUTE_SUCCESS,
     SAVE_ROUTE_PENDING,
-    SAVE_ROUTE_FAILED
+    SAVE_ROUTE_FAILED,
+    SHOW_ROUTE_EDITOR,
+    SHOW_ROUTE
 } from './constants.js'
 
 export const setActiveRoute = (routeName) => {
@@ -71,4 +73,18 @@ export const requestAllAddresses = () => (dispatch) => {
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_ADDRESSES_SUCCESS, payload: data}))
     .catch(error => dispatch({ type: REQUEST_ADDRESSES_FAILED}))
+}
+
+export const showRouteEditor = (show) => {
+    return {
+        type: SHOW_ROUTE_EDITOR,
+        payload: show
+    }
+}
+
+export const showRoute = (show) => {
+    return {
+        type: SHOW_ROUTE, 
+        payload: show
+    }
 }

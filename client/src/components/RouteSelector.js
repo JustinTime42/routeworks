@@ -1,13 +1,10 @@
 import React, { Component } from "react"
 import axios from "axios"
-import DropdownButton from "react-bootstrap/DropdownButton"
-import Dropdown from "react-bootstrap/Dropdown"
-import Button from "react-bootstrap/Button"
-import Modal from "react-bootstrap/Modal"
+import { Dropdown, DropdownButton, Button, Modal } from "react-bootstrap"
 import Can from "../components/Can"
 import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
-import { setActiveRoute, requestRoutes, getRouteProperties } from "../actions"
+import { setActiveRoute, requestRoutes, getRouteProperties, showRouteEditor } from "../actions"
 
 const mapStateToProps = state => {
     return {
@@ -17,7 +14,8 @@ const mapStateToProps = state => {
         error: state.requestRoutes.error,
         routeAddresses: state.getRouteProperties.addresses,
         routeIsPending: state.getRouteProperties.isPending,
-        routeError: state.getRouteProperties.error
+        routeError: state.getRouteProperties.error,
+        showRouteEditor: state.showRouteEditor.showEditor
     }
 }
 
@@ -29,6 +27,14 @@ const mapDispatchToProps = (dispatch) => {
         },
         onRequestRoutes: () => dispatch(requestRoutes()),
         onGetRouteProperties: (event) => dispatch(getRouteProperties(event)),
+        onShowEditor: (show) => dispatch(showRouteEditor(show)),
+        //Do I put show editor as boolean true/false. When the item is selected, it runs onRouteSelect
+        //this also happens when the button is pushed. So the button being pushed just needs to call onShowEditor. but...
+        //then will it turn showEditor to false when a route is selected but EDIT button not presses?
+        //the only thing onRouteSelect does is set the activeRoute and fetch the properties... Perhaps clicking the 
+        //"edit" button sets showEditor to true. Then, when rendering, it goes something like this: 
+        // showEditor ? <ShowEditor /> : <ShowRoute />
+        // setActiveRoute would then also need to reset state.showEditor to false?  s
     }
 }
 
@@ -36,34 +42,7 @@ const editStyle = {
     float: "right"
 }
 
-const renderRoute = (routeName) => {  
-    return (
-        <AuthConsumer key={routeName}>
-            {({ authenticated }) =>
-            authenticated ? (
-                <AuthConsumer>
-                {({ user }) => (
-                    <Can
-                        role={user.role}
-                        perform="admin:visit"
-                        yes={() => (
-                            <Dropdown.Item eventKey={routeName}>
-                                {routeName}
-                                <Button size="sm" variant="secondary" style={editStyle} onClick={() => console.log(`edit route ${routeName}`)}>Edit</Button>
-                                {/* onclick: display dragAndDrop with normal <DisplayRoute> on the left and AllAddresses on the right */}
-                            </Dropdown.Item>
-                        )}
-                        no={() => <Dropdown.Item eventKey={routeName}>{routeName}</Dropdown.Item>}               
-                    />                            
-                )}
-                </AuthConsumer>
-            ) : (
-                <div></div>
-            )
-            }
-        </AuthConsumer>           
-    ) 
-}
+
 
 class RouteSelector extends Component {
     constructor(){
@@ -86,6 +65,33 @@ class RouteSelector extends Component {
         .catch(err => console.log(err)) //this is not updating the live list...
         this.handleClose()
     }
+    renderRoute = (routeName) => {  
+        return (
+            <AuthConsumer key={routeName}>
+                {({ authenticated }) =>
+                authenticated ? (
+                    <AuthConsumer>
+                    {({ user }) => (
+                        <Can
+                            role={user.role}
+                            perform="admin:visit"
+                            yes={() => (
+                                <Dropdown.Item eventKey={routeName}>
+                                    {routeName}
+                                    <Button size="sm" variant="secondary" style={editStyle} onClick={() => this.props.showRouteEditor}>Edit</Button>
+                                </Dropdown.Item>
+                            )}
+                            no={() => <Dropdown.Item eventKey={routeName}>{routeName}</Dropdown.Item>}               
+                        />                            
+                    )}
+                    </AuthConsumer>
+                ) : (
+                    <div></div>
+                )
+                }
+            </AuthConsumer>           
+        ) 
+    }
 
     componentDidMount() {
         this.props.onRequestRoutes();
@@ -99,7 +105,7 @@ class RouteSelector extends Component {
             <DropdownButton title={activeRoute || "Select Route"} onSelect={onRouteSelect} >        
                 <Dropdown.Item eventKey="Create New Route"><Button variant="primary" onClick={this.handleShow}>Create New Route</Button></Dropdown.Item>
                 {
-                    routes.map(route => renderRoute(route.route_name))
+                    routes.map(route => this.renderRoute(route.route_name))
                 }
                 <Modal show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header>Enter New Route</Modal.Header>

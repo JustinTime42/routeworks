@@ -13,7 +13,7 @@ const mapStateToProps = state => {
         routeProperties: state.getRouteProperties.addresses,
         isRoutePending: state.getRouteProperties.isPending,
         isAllPending: state.requestAllAddresses.isPending,
-        error: state.requestAllAddresses.error    
+        error: state.requestAllAddresses.error, 
     }
 }
 
@@ -89,7 +89,7 @@ class RouteEditor extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.routeProperties !== this.props.routeProperties){
+        if(prevProps.routeProperties !== this.props.routeProperties || prevProps.isAllPending !== this.props.isAllPending){
             console.log("new route properties")
           this.setState({selected: this.props.routeProperties })
           this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
@@ -181,6 +181,7 @@ class RouteEditor extends Component {
     // Normally you would want to split things out into separate components.
     // But in this example everything is just done in one place for simplicity
     render() {
+        
         return this.props.isAllPending || this.props.isRoutePending ?
         <h1>    </h1> :(
             <DragDropContext onDragEnd={this.onDragEnd}>
