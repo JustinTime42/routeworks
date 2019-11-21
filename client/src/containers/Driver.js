@@ -6,6 +6,7 @@ import DisplayRoute from "../components/DisplayRoute"
 import RouteEditor from "../components/RouteEditor"
 import EditRouteButton from "../components/EditRouteButton"
 import { showRouteEditor } from "../actions"
+import PropertyDetails from "../components/PropertyDetails"
 
 import '../styles/driver.css'
 
@@ -26,16 +27,19 @@ class Driver extends Component {
 
     render() {
         return (
-            <div className="gridContainer">
+            <div>
+                <div className="gridContainer">
                 <div className="leftSide">
                     <RouteSelector />
                     <DriverName />
                 </div>
                 <div className="rightSide">
-                    <EditRouteButton />
-                </div> 
+                    <EditRouteButton />                    
+                </div>                 
+            </div>
                 {this.props.showRouteEditor ? <RouteEditor /> : <DisplayRoute />}
             </div>
+            
         )
     }    
 }

@@ -1,13 +1,14 @@
 import React, { Component } from 'react' 
 import { connect } from "react-redux"
 import PropertyCard from "./PropertyCard"
+import PropertyDetails from "./PropertyDetails"
 import { setActiveProperty } from '../actions'
 
 const mapStateToProps = state => {
     return {
         routeAddresses: state.getRouteProperties.addresses,
-        showRouteEditor: state.showRouteEditor.showRoute
-
+        showRouteEditor: state.showRouteEditor.showRoute,
+        activeProperty: state.setActiveProperty.activeProperty
     }
 }
 
@@ -25,11 +26,25 @@ class DisplayRoute extends Component {
     }
     render(){
         return(
-            <div>
-                {
-                    this.props.routeAddresses.map(address => <PropertyCard key={address.address} address={address} handleClick={this.handlePropertyClick} />)
-                }
-            </div>
+            <div className="gridContainer">
+                <div className="leftSide">
+                    {
+                        this.props.routeAddresses.map(address => {
+                            return (
+                                <PropertyCard 
+                                    key={address.address} 
+                                    address={address}
+                                    activeProperty={this.props.activeProperty}
+                                    handleClick={this.handlePropertyClick}
+                                />  
+                            )                                
+                        }) 
+                    }
+                </div>
+                <div className="rightSide">
+                    <PropertyDetails property={this.props.activeProperty}/>
+                </div> 
+            </div>  
         )
     }
 }

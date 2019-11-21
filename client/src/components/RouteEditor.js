@@ -5,6 +5,7 @@ import { requestAllAddresses, getRouteProperties, UpdateRouteProperties, saveRou
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "./PropertyCard"
+import '../styles/driver.css'
 
 const mapStateToProps = state => {
     return {
@@ -70,7 +71,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 const getListStyle = isDraggingOver => ({
     background: isDraggingOver ? 'lightblue' : 'lightgrey',
     padding: grid,
-    width: 250
+    width: "80%"
 });
 
 class RouteEditor extends Component {
@@ -184,10 +185,12 @@ class RouteEditor extends Component {
         
         return this.props.isAllPending || this.props.isRoutePending ?
         <h1>    </h1> :(
-            <DragDropContext onDragEnd={this.onDragEnd}>
+            <div className="gridContainer">
+                 <DragDropContext onDragEnd={this.onDragEnd}>
                 <Droppable droppableId="droppable2">                    
                     {(provided, snapshot) => (
                         <div
+                            className="leftSide"
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
                                 <Button variant="primary" onClick={this.onSave}>Save Route</Button>
@@ -214,10 +217,11 @@ class RouteEditor extends Component {
                         </div>
                     )}
                 </Droppable>
-                <Droppable droppableId="droppable">
+                <Droppable className="rightSide" droppableId="droppable">
                     {(provided, snapshot) => (
                         <div
                             ref={provided.innerRef}
+                            className="rightSide"
                             style={getListStyle(snapshot.isDraggingOver)}>
                                 <input 
                                     type="search" placeholder="Search" 
@@ -247,6 +251,8 @@ class RouteEditor extends Component {
                     )}
                 </Droppable>
             </DragDropContext>
+            </div>
+           
         );
     }
 }
