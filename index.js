@@ -39,6 +39,35 @@ app.post('/api/addroute', (req, res) => {
     }) 
 })
 
+app.post('/api/initroute', (req, res) => {
+    route = req.body
+    let response = {
+        success: [],
+        err: []
+    } 
+    let promises = []
+    route.forEach(item => {
+        promises.push(
+            db('service_log')
+            .returning('address')
+            .insert({
+                address: item.address,
+                route_name: item.route_name,
+                status: 'waiting',
+                timestamp: Date(),
+                notes: item.notes,
+                user_name: item.user_name
+            })
+            .then(address => {
+                response.success.push(address)            
+            }) 
+            .catch(err => response.err.push(err))
+        )        
+    })
+    Promise.all(promises).then(() => res.json(response))
+    
+})
+
 app.post('/api/saveroute', (req, res) => {
     const add = req.body.selected
     const remove = req.body.unselected
