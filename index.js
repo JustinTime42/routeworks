@@ -39,7 +39,7 @@ app.post('/api/addroute', (req, res) => {
 })
 
 app.post('/api/initroute', (req, res) => {
-    const route = req.body
+    const route = req.body.route
     let response = {
         success: [],
         err: []
