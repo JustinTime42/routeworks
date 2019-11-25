@@ -53,7 +53,7 @@ app.post('/api/initroute', (req, res) => {
                 address: item.address,
                 route_name: item.route_name,
                 status: 'waiting',
-                timestamp: Date(),
+                timestamp: db.fn.now(),
                 notes: item.notes,
                 user_name: item.user_name
             })
