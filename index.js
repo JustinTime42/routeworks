@@ -30,7 +30,6 @@ app.get('/api/routelist', (req, res) => {
 });
 
 app.post('/api/addroute', (req, res) => {
-    res.json(req.body.route_name)
     db('routes')
     .returning('route_name')
     .insert({route_name: req.body.route_name})
@@ -40,7 +39,7 @@ app.post('/api/addroute', (req, res) => {
 })
 
 app.post('/api/initroute', (req, res) => {
-    route = req.body
+    const route = req.body
     let response = {
         success: [],
         err: []
