@@ -115,18 +115,22 @@ app.post('/api/saveroute', (req, res) => {
 })
 
 app.get('/api/properties', (req, res) => {
-    db.select('properties.key', 'properties.address', 'properties.route_name', 'properties.cust_name', 'properties.cust_phone', 'properties.surface_type', 'properties.is_new', 'properties.route_position', 'service_log.status', 'service_log.notes', 'service_log.user_name')
+    db.select('*')
     .from('properties')
-    .leftJoin('service_log', 'properties.address', 'service_log.address')
     .then(data => {
         res.json(data)
     })
 });
+//Probably don't need this on allproperties, because we just need it displayed on the route. 
+//just do the join on the route properties for now and call it good. And don't forget to use MAX() to only get 
+//most recent service log entry. 
 
 app.get('/api/getroute/:routeName', (req, res) => {
     const { routeName } = req.params
     db.where('route_name', routeName)
+    .select('properties.key', 'properties.address', 'properties.route_name', 'properties.cust_name', 'properties.cust_phone', 'properties.surface_type', 'properties.is_new', 'properties.route_position', 'service_log.status', 'service_log.notes', 'MAX(service_log.user_name)', 'service_log.timestamp')
     .from('properties')
+    .leftJoin('service_log', 'properties.address', 'service_log.address')
     .then(data => {
         res.json(data)
     })
