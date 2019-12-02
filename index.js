@@ -115,7 +115,7 @@ app.post('/api/saveroute', (req, res) => {
 })
 
 app.get('/api/properties', (req, res) => {
-    db.select('properties.key', 'address', 'route_name', 'cust_name', 'cust_phone', 'surface_type', 'is_new', 'route_position', 'status', 'notes', 'user_name')
+    db.select('properties.key', 'properties.address', 'properties.route_name', 'properties.cust_name', 'properties.cust_phone', 'properties.surface_type', 'properties.is_new', 'properties.route_position', 'service_log.status', 'service_log.notes', 'service_log.user_name')
     .from('properties')
     .leftJoin('service_log', 'properties.address', 'service_log.address')
     .then(data => {
