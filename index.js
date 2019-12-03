@@ -133,7 +133,7 @@ app.get('/api/getroute/:routeName', (req, res) => {
     // .select(db.raw(``properties`.`key`, `properties`.`address`, `properties`.`route_name`, `properties`.`cust_name`, `properties`.`cust_phone`, `properties`.`surface_type`, `properties`.`is_new, `properties`.`route_position`, `service_log`.`status`, `service_log`.`notes`, `service_log`.`user_name`, MAX(`timestamp`) from `service_log``))
     .from('properties')
     .leftJoin('service_log', 'properties.address', 'service_log.address')
-    //.groupBy('properties.key')
+    .groupBy('properties.key')
     .then(data => {
         res.json(data)
     })
