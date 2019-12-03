@@ -53,7 +53,7 @@ const move = (source, destination, droppableSource, droppableDestination) => {
     return result;
 };
 
-const grid = 8;
+const grid = 2;
 
 const getItemStyle = (isDragging, draggableStyle) => ({
     // some basic styles to make the items look a bit nicer

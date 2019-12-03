@@ -26,12 +26,13 @@ class DisplayRoute extends Component {
     }
     render(){
         return(
-            <div className="gridContainer">
+            <div className="gridContainer" style={{height: "100%", overflow: "auto"}}>
                 <div className="leftSide">
                     {
                         this.props.routeAddresses.map(address => {
                             return (
                                 <PropertyCard 
+                                    width="80%"
                                     key={address.address} 
                                     address={address}
                                     activeProperty={this.props.activeProperty}
