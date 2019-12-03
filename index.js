@@ -47,15 +47,11 @@ app.post('/api/initroute', (req, res) => {
     let promises = []
     route.forEach(item => {
         promises.push(
-            db('service_log')
+            db('properties')
             .returning('address')
-            .insert({
-                address: item.address,
-                route_name: item.route_name,
+            .where('address', item.address)
+            .update({
                 status: 'waiting',
-                timestamp: db.fn.now(),
-                notes: item.notes,
-                user_name: item.user_name
             })
             .then(address => {
                 response.success.push(address)            
@@ -128,12 +124,12 @@ app.get('/api/properties', (req, res) => {
 app.get('/api/getroute/:routeName', (req, res) => {
     const { routeName } = req.params
     db.where('properties.route_name', routeName)
-    .select(db.raw('properties.key, properties.address, properties.route_name, properties.cust_name, properties.cust_phone, properties.surface_type, properties.is_new, properties.route_position, service_log.status, service_log.notes, service_log.user_name, MAX(service_log.timestamp)'))
+    .select('*') // db.raw('properties.key, properties.address, properties.route_name, properties.cust_name, properties.cust_phone, properties.surface_type, properties.is_new, properties.route_position, service_log.status, service_log.notes, service_log.user_name, MAX(service_log.timestamp)'))
 //use direct connection to figure out correct query. Then, use db.raw to make the whole thing...
     // .select(db.raw(``properties`.`key`, `properties`.`address`, `properties`.`route_name`, `properties`.`cust_name`, `properties`.`cust_phone`, `properties`.`surface_type`, `properties`.`is_new, `properties`.`route_position`, `service_log`.`status`, `service_log`.`notes`, `service_log`.`user_name`, MAX(`timestamp`) from `service_log``))
     .from('properties')
-    .leftJoin('service_log', 'properties.address', 'service_log.address')
-    .groupBy('properties.key')
+   // .leftJoin('service_log', 'properties.address', 'service_log.address')
+    //.groupBy('properties.key')
     .then(data => {
         res.json(data)
     })
