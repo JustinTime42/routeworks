@@ -118,7 +118,21 @@ class RouteEditor extends Component {
         })
         .catch(err => console.log(err)) 
     }
-  
+
+    onInitRoute = () => {
+        axios.post('https://snowline-route-manager.herokuapp.com/api/initroute',
+            {
+                route: this.state.selected               
+            }
+        )
+        .then(res => {
+            this.props.onGetAllAddresses() 
+            this.props.onGetRouteProperties(this.props.activeRoute)
+            console.log(res)
+        })
+        .catch(err => console.log)
+    }
+    
     getList = id => this.state[this.id2List[id]];
 
     onDragEnd = result => {
@@ -193,7 +207,11 @@ class RouteEditor extends Component {
                             className="leftSide"
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
-                                <Button variant="primary" onClick={this.onSave}>Save Route</Button>
+                                <div style={{display: "inlineBlock"}}>
+                                    <Button variant="primary" onClick={this.onSave}>Save Route</Button>
+                                    <Button variant="primary" onClick={this.onInitRoute}>Initialize Route</Button>
+                                </div>
+                                
                             {this.state.selected.map((item, index) => (
                                 <Draggable
                                     key={item.key}
