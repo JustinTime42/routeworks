@@ -43,13 +43,10 @@ app.post('/api/newProperty', (req, res) => {
     .returning('address')
     .insert({
         address: req.body.address,
-        route_name: req.body.route_name,
         cust_name: req.body.cust_name,
         cust_phone: req.body.cust_phone,
         surface_type: req.body.surface_type,
-        is_new: req.body.is_new,
-        route_position: req.body.route_position,
-        status: req.body.status
+        is_new: req.body.is_new
      })
      .then(address => res.json(address))
      .catch(err => res.json(err))
