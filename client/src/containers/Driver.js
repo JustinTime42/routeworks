@@ -28,15 +28,21 @@ class Driver extends Component {
     render() {
         return (
             <div>
-                <div className="gridContainer">
-                <div className="leftSide">
+                <div style={{display: "flex", justifyContent: "space-around", margin: "5px"}}>
                     <RouteSelector />
                     <DriverName />
+                    <EditRouteButton /> 
+                {/* <div className="gridContainer"> 
+                <div style={{display: "flex", justifyContent: "space-between"}}>
+                    <RouteSelector />
+                    <DriverName />
+                    <EditRouteButton /> 
                 </div>
                 <div className="rightSide">
-                    <EditRouteButton />                    
-                </div>                 
-            </div>
+                                       
+                </div>                  */}
+
+                </div>
                 {this.props.showRouteEditor ? <RouteEditor /> : <DisplayRoute />}
             </div>
             

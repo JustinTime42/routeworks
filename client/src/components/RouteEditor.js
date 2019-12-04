@@ -72,7 +72,9 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 const getListStyle = isDraggingOver => ({
     background: isDraggingOver ? 'lightblue' : 'lightgrey',
     padding: grid,
-    width: "80%"
+    height: "600px", 
+    overflow: "scroll", 
+    width: "90%"
 });
 
 class RouteEditor extends Component {
@@ -248,11 +250,13 @@ class RouteEditor extends Component {
                             ref={provided.innerRef}
                             className="rightSide"
                             style={getListStyle(snapshot.isDraggingOver)}>
-                                <input 
-                                    type="search" placeholder="Search" 
-                                    onChange={this.onSearchChange}
-                                />
-                                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onNewPropertyClick}>New</Button>
+                                <div style={{display: "flex", justifyContent:"space-around", margin: "3px"}}>
+                                    <input 
+                                        type="search" placeholder="Search" 
+                                        onChange={this.onSearchChange}
+                                    />
+                                    <Button variant="primary" size="sm"onClick={this.onNewPropertyClick}>New</Button>
+                                </div>
                             {this.state.filteredItems.map((item, index) => (
                                 <Draggable
                                     key={item.key}

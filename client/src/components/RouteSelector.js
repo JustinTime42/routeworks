@@ -28,21 +28,12 @@ const mapDispatchToProps = (dispatch) => {
         onRequestRoutes: () => dispatch(requestRoutes()),
         onGetRouteProperties: (event) => dispatch(getRouteProperties(event)),
         onShowEditor: (show) => dispatch(showRouteEditor(show)),
-        //Do I put show editor as boolean true/false. When the item is selected, it runs onRouteSelect
-        //this also happens when the button is pushed. So the button being pushed just needs to call onShowEditor. but...
-        //then will it turn showEditor to false when a route is selected but EDIT button not presses?
-        //the only thing onRouteSelect does is set the activeRoute and fetch the properties... Perhaps clicking the 
-        //"edit" button sets showEditor to true. Then, when rendering, it goes something like this: 
-        // showEditor ? <ShowEditor /> : <ShowRoute />
-        // setActiveRoute would then also need to reset state.showEditor to false?  s
     }
 }
 
 const editStyle = {
     float: "right"
 }
-
-
 
 class RouteSelector extends Component {
     constructor(){
@@ -62,7 +53,7 @@ class RouteSelector extends Component {
           console.log(res)
           this.props.onRequestRoutes()
         })
-        .catch(err => console.log(err)) //this is not updating the live list...
+        .catch(err => console.log(err)) 
         this.handleClose()
     }
 

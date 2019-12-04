@@ -5,7 +5,7 @@ const PropertyCard = (props) => {
         margin: '3px',
         padding: '3px',
         width: props.width,
-        backgroundColor: props.activeProperty ? props.activeProperty.address == props.address.address ? '#DCBD61' : '#BCD4DE' : null
+        backgroundColor: props.activeProperty ? props.activeProperty.address === props.address.address ? '#DCBD61' : '#BCD4DE' : null
     }
 
     const statusStyle = {
