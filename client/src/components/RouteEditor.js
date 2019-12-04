@@ -5,6 +5,7 @@ import { requestAllAddresses, getRouteProperties, UpdateRouteProperties, saveRou
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "./PropertyCard"
+import NewProperty from "./NewProperty"
 import '../styles/driver.css'
 
 const mapStateToProps = state => {
@@ -82,6 +83,7 @@ class RouteEditor extends Component {
             filteredItems: [],
             selected: [],
             searchField: '',
+            showModal: false
         }
     }
     
@@ -131,6 +133,7 @@ class RouteEditor extends Component {
             console.log(res)
         })
         .catch(err => console.log)
+        this.onSave()
     }
     
     getList = id => this.state[this.id2List[id]];
@@ -191,7 +194,11 @@ class RouteEditor extends Component {
         }
       )
         this.setState({filteredItems: filteredItems})
-      }
+    }
+
+    onNewPropertyClick = () => {
+        this.setState({showModal: !this.state.showModal})
+    }
 
     // Normally you would want to split things out into separate components.
     // But in this example everything is just done in one place for simplicity
@@ -207,9 +214,9 @@ class RouteEditor extends Component {
                             className="leftSide"
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
-                                <div style={{display: "inlineBlock"}}>
-                                    <Button variant="primary" onClick={this.onSave}>Save Route</Button>
-                                    <Button variant="primary" onClick={this.onInitRoute}>Initialize Route</Button>
+                                <div style={{display: "flex", justifyContent: "space-around"}}>
+                                    <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Route</Button>
+                                    <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onInitRoute}>Initialize Route</Button>
                                 </div>
                                 
                             {this.state.selected.map((item, index) => (
@@ -245,6 +252,7 @@ class RouteEditor extends Component {
                                     type="search" placeholder="Search" 
                                     onChange={this.onSearchChange}
                                 />
+                                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onNewPropertyClick}>New</Button>
                             {this.state.filteredItems.map((item, index) => (
                                 <Draggable
                                     key={item.key}
@@ -269,6 +277,7 @@ class RouteEditor extends Component {
                     )}
                 </Droppable>
             </DragDropContext>
+                <NewProperty show={this.state.showModal} close={this.onNewPropertyClick}/>
             </div>
            
         );

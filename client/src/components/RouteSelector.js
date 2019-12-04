@@ -76,7 +76,7 @@ class RouteSelector extends Component {
         <h1>Loading</h1> :
             (           
             <DropdownButton title={activeRoute || "Select Route"} onSelect={onRouteSelect} >        
-                <Dropdown.Item eventKey="Create New Route"><Button variant="primary" onClick={this.handleShow}>Create New Route</Button></Dropdown.Item>
+                <Dropdown.Item eventKey="Create New Route"><Button variant="primary" size="sm" onClick={this.handleShow}>Create New Route</Button></Dropdown.Item>
                 {
                     routes.map(route => <Dropdown.Item key={route.route_name} eventKey={route.route_name}>{route.route_name}</Dropdown.Item>)
                 }
