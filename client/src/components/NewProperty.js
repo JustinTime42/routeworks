@@ -5,7 +5,6 @@ class NewProperty extends Component {
     constructor(props){
         super(props)
         this.state = {
-            show: false,
             address: '',
             cust_name: '',
             cust_phone: '',
@@ -21,9 +20,13 @@ class NewProperty extends Component {
     }
 
     onChange = (event) => {
-        console.log(event.target.value)
         const name = event.target.name
         const value = event.target.value
+        console.log(value)
+        name === "is_new" ? 
+        this.setState(prevState => ({
+            is_new: !prevState.is_new
+        })) : 
         this.setState({
             [name]: value
         })
@@ -53,17 +56,33 @@ class NewProperty extends Component {
                                     <Form.Control name="cust_phone" type="text" placeholder="Phone" onChange={this.onChange}/>
                                 </Col>
                             </Form.Group>
-                            <Form.Group as={Row}>
-                                <Form.Label>Surface Type</Form.Label>
-                                <Form.Control as="select" onChange={this.onChange}>
-                                    <option value="paved">Paved</option>
-                                    <option value="gravel">Gravel</option>
-                                    <option value="partial">Partial</option>
-                                </Form.Control>
+                            <Row>
+                                <Col>
+                                    <Form.Group as={Row}>
+                                        <Form.Label>Surface Type</Form.Label>
+                                        <Form.Control name="surface_type" as="select" onChange={this.onChange}>
+                                            <option value="select">Select</option>
+                                            <option value="paved">Paved</option>
+                                            <option value="gravel">Gravel</option>
+                                            <option value="partial">Partial</option>
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Check 
+                                        name="is_new"
+                                        type="checkbox"
+                                        value="new"
+                                        label="New Property?"
+                                        onChange={this.onChange}
+                                    />
+                                </Col>
+                            </Row>
+                            <Form.Group>
+                                <Form.Label>Notes</Form.Label>
+                                    <Form.Control name="notes" type="textarea" rows="3" placeholder="notes" onChange={this.onChange}/>
                             </Form.Group>
-                            
-                            
-                        <Form.Control type="textarea" rows="3" />
+
                         <Button variant="primary" onClick={this.onSubmit}>Save Changes</Button>
                         </Form>        
                         {/* address: req.body.address,
