@@ -1,5 +1,20 @@
 import React, { Component } from 'react'
 import { Button, Modal, Form, Row, Col } from 'react-bootstrap'
+import { connect } from 'react-redux'
+import axios from "axios"
+import { requestAllAddresses } from '../actions'
+
+const mapStateToProps = state => {
+    return {        
+        addresses: state.requestAllAddresses.addresses, 
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {    
+        onGetAllAddresses: () => dispatch(requestAllAddresses()),
+    }
+}
 
 class NewProperty extends Component {
     constructor(props){
@@ -15,8 +30,16 @@ class NewProperty extends Component {
     }
 
     onSubmit = () => {
-        console.log(this.state)
-   
+        axios.post('https://snowline-route-manager.herokuapp.com/api/newproperty', 
+            {
+                ...this.state
+            }
+        )
+        .then(res => {
+            this.props.onGetAllAddresses() 
+            console.log(res)
+        })
+        .catch(err => console.log(err)) 
     }
 
     onChange = (event) => {
@@ -82,26 +105,15 @@ class NewProperty extends Component {
                                 <Form.Label>Notes</Form.Label>
                                     <Form.Control name="notes" type="textarea" rows="3" placeholder="notes" onChange={this.onChange}/>
                             </Form.Group>
-
-                        <Button variant="primary" onClick={this.onSubmit}>Save Changes</Button>
-                        </Form>        
-                        {/* address: req.body.address,
-                        cust_name: req.body.cust_name,
-                        cust_phone: req.body.cust_phone,
-                        surface_type: req.body.surface_type,
-                        is_new: req.body.is_new,
-                        notes: req.body.notes */}
+                        </Form> 
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={this.props.close}>
-                        Close
-                        </Button>
-                        
-                        
+                        <Button variant="primary" onClick={this.onSubmit}>Save Changes</Button>
+                        <Button variant="secondary" onClick={this.props.close}>Close</Button>
                     </Modal.Footer>
                 </Modal>
         )
     }
 }
 
-export default NewProperty
+export default connect(mapStateToProps, mapDispatchToProps)(NewProperty)
