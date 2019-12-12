@@ -35,7 +35,7 @@ class NewProperty extends Component {
         )
         .then(res => {
             this.props.onGetAllAddresses() 
-            alert(res.statusText)
+            console.log(res)
         })
         .catch(err => console.log(err)) 
     }

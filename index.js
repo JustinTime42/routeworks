@@ -55,7 +55,7 @@ app.post('/api/newproperty', (req, res) => {
 
 app.post('/api/editproperty', (req, res) => {
     db('properties')
-    .returning('address')
+    .returning('*')
     .where('key', req.body.key)
     .update({
         address: req.body.address,
@@ -65,7 +65,7 @@ app.post('/api/editproperty', (req, res) => {
         is_new: req.body.is_new,
         notes: req.body.notes
     })
-    .then(address => res.json(address))
+    .then(details => res.json(details))
     .catch(err => res.json(err))
 })
 
