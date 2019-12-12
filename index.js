@@ -38,18 +38,35 @@ app.post('/api/addroute', (req, res) => {
     }) 
 })
 
-app.post('/api/newProperty', (req, res) => {
-    db('properties')
+app.post('/api/newproperty', (req, res) => {
+    db('properties')    
     .returning('address')
     .insert({
         address: req.body.address,
         cust_name: req.body.cust_name,
         cust_phone: req.body.cust_phone,
         surface_type: req.body.surface_type,
-        is_new: req.body.is_new
+        is_new: req.body.is_new,
+        notes: req.body.notes
      })
      .then(address => res.json(address))
      .catch(err => res.json(err))
+})
+
+app.post('/api/editproperty', (req, res) => {
+    db('properties')
+    .returning('address')
+    .where('key', req.body.key)
+    .update({
+        address: req.body.address,
+        cust_name: req.body.cust_name,
+        cust_phone: req.body.cust_phone,
+        surface_type: req.body.surface_type,
+        is_new: req.body.is_new,
+        notes: req.body.notes
+    })
+    .then(address => res.json(address))
+    .catch(err => res.json(err))
 })
 
 app.post('/api/initroute', (req, res) => {

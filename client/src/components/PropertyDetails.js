@@ -3,7 +3,7 @@ import '../styles/driver.css'
 
 const PropertyDetails = (props) => {
     return (
-        <div>{props.property.address}</div>
+        <div>{props.property ? props.property.address : null}</div>
     )
 }
 

@@ -21,7 +21,7 @@ class NewProperty extends Component {
         super(props)
         this.state = {
             ...this.props.details,
-            api: this.props.api
+            api: this.props.details ? "editproperty" : "newproperty"
         }
     }
 
@@ -43,11 +43,12 @@ class NewProperty extends Component {
     onChange = (event) => {
         const name = event.target.name
         const value = event.target.value
-        console.log(value)
+        const checked = event.target.checked
+        console.log(checked)
         name === "is_new" ? 
         this.setState(prevState => ({
             is_new: !prevState.is_new
-        })) : 
+        })) :         
         this.setState({
             [name]: value
         })
@@ -100,8 +101,8 @@ class NewProperty extends Component {
                                     <Form.Check 
                                         name="is_new"
                                         type="checkbox"
-                                        value="new"
                                         label="New Property?"
+                                        defaultChecked = {this.state.details ? this.state.details.is_new : false}
                                         onChange={this.onChange}
                                     />
                                 </Col>
