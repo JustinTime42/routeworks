@@ -10,6 +10,7 @@ import '../styles/driver.css'
 
 const mapStateToProps = state => {
     return {
+        activeProperty: state.setActiveProperty.activeProperty,
         activeRoute: state.setActiveRoute.activeRoute,
         addresses: state.requestAllAddresses.addresses, 
         routeProperties: state.getRouteProperties.addresses,
@@ -199,6 +200,11 @@ class RouteEditor extends Component {
     }
 
     onNewPropertyClick = () => {
+        this.props.onSetActiveProperty(null)
+        this.setState({showModal: !this.state.showModal})
+    }
+
+    onEditPropertyClick = () => {
         this.setState({showModal: !this.state.showModal})
     }
 
@@ -235,7 +241,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard key={item.address} address={item} admin={true} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard key={item.address} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>
@@ -255,7 +261,7 @@ class RouteEditor extends Component {
                                         type="search" placeholder="Search" 
                                         onChange={this.onSearchChange}
                                     />
-                                    <Button variant="primary" size="sm"onClick={this.onNewPropertyClick}>New</Button>
+                                    <Button variant="primary" size="sm" onClick={this.onNewPropertyClick}>New</Button>
                                 </div>
                             {this.state.filteredItems.map((item, index) => (
                                 <Draggable
@@ -271,7 +277,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard key={item.address} address={item} admin={true} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard key={item.address} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>
@@ -281,11 +287,11 @@ class RouteEditor extends Component {
                     )}
                 </Droppable>
             </DragDropContext>
-                <NewProperty show={this.state.showModal} close={this.onNewPropertyClick}/>
+                <NewProperty details={this.props.activeProperty} api="newproperty" show={this.state.showModal} close={this.onNewPropertyClick}/>
             </div>
            
         );
     }
-}
+}   
 
 export default connect(mapStateToProps, mapDispatchToProps)(RouteEditor)

@@ -20,20 +20,18 @@ class NewProperty extends Component {
     constructor(props){
         super(props)
         this.state = {
-            address: '',
-            cust_name: '',
-            cust_phone: '',
-            surface_type: '',
-            is_new: false,
-            notes: ''
+            ...this.props.details,
+            api: this.props.api
         }
     }
 
     onSubmit = () => {
-        axios.post('https://snowline-route-manager.herokuapp.com/api/newproperty', 
+        console.log(this.state)
+        axios.post(`https://snowline-route-manager.herokuapp.com/api/${this.state.api}`, 
             {
                 ...this.state
             }
+            // on the server, make the editproperty endpoint update properties where key===key??
         )
         .then(res => {
             this.props.onGetAllAddresses() 
@@ -64,19 +62,26 @@ class NewProperty extends Component {
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Address</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="address" type="text" placeholder="Address" onChange={this.onChange}/>
+                                    <Form.Control name="address" type="text" placeholder={this.props.details ? this.props.details.address : "address"} onChange={this.onChange}/>
                                 </Col>
+                                {/* Use placeholder this.props.details.[field]. Change api to a postgres upsert
+                                Nope. cause maybe there is going to be more than one address. And key won't work because
+                                Key is auto generated. So...
+                                Pass a different prop that determines if we are creating a new one or not...
+                                Or... check for the existence of this.props.details? maybe 
+                                componentdidmount() {this.props.details ? this.setState api: update : this.setState api: insert
+                                No, lets declare it. Pass it a edit or add prop so it knows what to do with the info} */}
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Name</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="cust_name" type="text" placeholder="Name" onChange={this.onChange}/>
+                                    <Form.Control name="cust_name" type="text" placeholder={this.props.details ? this.props.details.cust_name : "name"} onChange={this.onChange}/>
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Phone</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="cust_phone" type="text" placeholder="Phone" onChange={this.onChange}/>
+                                    <Form.Control name="cust_phone" type="text" placeholder={this.props.details ? this.props.details.cust_phone : "phone"} onChange={this.onChange}/>
                                 </Col>
                             </Form.Group>
                             <Row>
