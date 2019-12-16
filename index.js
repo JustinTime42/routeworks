@@ -66,7 +66,7 @@ app.post('/api/editproperty', (req, res) => {
         notes: req.body.notes
     })
     .then(details => res.json(details))
-    .catch(err => res.json(err))
+    .catch(err => res.json("error: " + err))
 })
 
 app.post('/api/initroute', (req, res) => {
