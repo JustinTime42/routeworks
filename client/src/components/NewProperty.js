@@ -7,6 +7,7 @@ import { requestAllAddresses } from '../actions'
 const mapStateToProps = state => {
     return {        
         addresses: state.requestAllAddresses.addresses, 
+        activeProperty: state.setActiveProperty.activeProperty,
     }
 }
 
@@ -20,10 +21,16 @@ class NewProperty extends Component {
     constructor(props){
         super(props)
         this.state = {
-            ...this.props.details,
-            api: this.props.details ? "editproperty" : "newproperty"
+            ...this.props.activeProperty,
+            api: this.props.activeProperty ? "editproperty" : "newproperty"
         }
     }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.activeProperty !== this.props.activeProperty){
+          this.setState({...this.props.activeProperty })
+        }
+      }
 
     onSubmit = () => {
         console.log(this.state)
@@ -35,7 +42,7 @@ class NewProperty extends Component {
         )
         .then(res => {
             this.props.onGetAllAddresses() 
-            console.log(res)
+            console.log("updated address: " + res.key)
         })
         .catch(err => console.log(err)) 
     }
@@ -63,15 +70,8 @@ class NewProperty extends Component {
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Address</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="address" type="text" placeholder={this.props.details ? this.props.details.address : "address"} onChange={this.onChange}/>
+                                    <Form.Control name="address" type="text" placeholder={this.state.address ? this.state.address : "address"} onChange={this.onChange}/>
                                 </Col>
-                                {/* Use placeholder this.props.details.[field]. Change api to a postgres upsert
-                                Nope. cause maybe there is going to be more than one address. And key won't work because
-                                Key is auto generated. So...
-                                Pass a different prop that determines if we are creating a new one or not...
-                                Or... check for the existence of this.props.details? maybe 
-                                componentdidmount() {this.props.details ? this.setState api: update : this.setState api: insert
-                                No, lets declare it. Pass it a edit or add prop so it knows what to do with the info} */}
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Name</Form.Label>
@@ -102,7 +102,7 @@ class NewProperty extends Component {
                                         name="is_new"
                                         type="checkbox"
                                         label="New Property?"
-                                        defaultChecked = {this.state.details ? this.state.details.is_new : false}
+                                        checked = {this.state.is_new ? this.state.is_new : false}
                                         onChange={this.onChange}
                                     />
                                 </Col>
@@ -121,5 +121,11 @@ class NewProperty extends Component {
         )
     }
 }
+
+// Now new property doesn't properly clear fields... because of the destructuring to populate state. 
+// new property and edit property does property write to database
+// need to update code to default populate with activeProperty fields. is_new does work now though for default
+// this seems to be getting really bad spagghetti code, ponder
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewProperty)

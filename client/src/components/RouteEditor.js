@@ -287,7 +287,7 @@ class RouteEditor extends Component {
                     )}
                 </Droppable>
             </DragDropContext>
-                <NewProperty details={this.props.activeProperty} show={this.state.showModal} close={this.onNewPropertyClick}/>
+                <NewProperty show={this.state.showModal} close={this.onNewPropertyClick}/>
             </div>
            
         );
