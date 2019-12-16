@@ -65,7 +65,7 @@ app.post('/api/editproperty', (req, res) => {
         is_new: req.body.is_new,
         notes: req.body.notes
     })
-    .then(details => res.json(details))
+    .then(details => res.json(details.address + " " + details.key))
     .catch(err => res.json("error: " + err))
 })
 
