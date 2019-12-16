@@ -49,8 +49,8 @@ app.post('/api/newproperty', (req, res) => {
         is_new: req.body.is_new,
         notes: req.body.notes
      })
-     .then(address => res.json(address))
-     .catch(err => res.json(err))
+     .then(address =>  res.json(address))
+     .catch(err => res.json("error: " + err))
 })
 
 app.post('/api/editproperty', (req, res) => {
