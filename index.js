@@ -39,7 +39,7 @@ app.post('/api/addroute', (req, res) => {
 })
 
 app.post('/api/newproperty', (req, res) => {
-    const property = req.body.activeProperty
+    const property = req.body
     db('properties')    
     .returning('address')
     .insert({
