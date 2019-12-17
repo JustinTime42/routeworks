@@ -95,11 +95,12 @@ class RouteEditor extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.routeProperties !== this.props.routeProperties || prevProps.isAllPending !== this.props.isAllPending){
+        if(prevProps.routeProperties !== this.props.routeProperties || prevProps.isAllPending !== this.props.isAllPending || prevProps.activeProperty !== this.props.activeProperty){
             console.log("new route properties")
           this.setState({selected: this.props.routeProperties })
           this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
           this.setState({filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
+          this.setState({activeProperty: this.props.activeProperty})
         }
       }
 

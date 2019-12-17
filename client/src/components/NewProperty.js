@@ -5,8 +5,7 @@ import axios from "axios"
 import { requestAllAddresses } from '../actions'
 
 const mapStateToProps = state => {
-    return {        
-        addresses: state.requestAllAddresses.addresses, 
+    return {         
         activeProperty: state.setActiveProperty.activeProperty,
     }
 }
@@ -18,17 +17,18 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 class NewProperty extends Component {
-    constructor(props){
+    constructor(props){ 
         super(props)
         this.state = {
-            ...this.props.activeProperty,
+            checked: this.props.activeProperty.is_new,
+            activeProperty: {...this.props.activeProperty},
             api: this.props.activeProperty ? "editproperty" : "newproperty"
         }
     }
 
     componentDidUpdate(prevProps) {
         if(prevProps.activeProperty !== this.props.activeProperty){
-          this.setState({...this.props.activeProperty })
+          this.setState({ activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" })
         }
       }
 
@@ -38,7 +38,6 @@ class NewProperty extends Component {
             {
                 ...this.state
             }
-            // on the server, make the editproperty endpoint update properties where key===key??
         )
         .then(res => {
             this.props.onGetAllAddresses() 
@@ -51,14 +50,19 @@ class NewProperty extends Component {
         const name = event.target.name
         const value = event.target.value
         const checked = event.target.checked
-        console.log(checked)
-        name === "is_new" ? 
-        this.setState(prevState => ({
-            is_new: !prevState.is_new
-        })) :         
-        this.setState({
-            [name]: value
-        })
+        const property = this.state.activeProperty
+        if (name === "is_new") {
+            property.is_new = !property.is_new  
+            this.setState(({                       
+                checked: !this.state.checked
+            }))
+        }
+        else {
+            this.setState({
+                [`activeProperty.${name}`]: value
+            })
+        }
+        console.log(this.state.checked)
     }
 
     render() {
@@ -70,19 +74,19 @@ class NewProperty extends Component {
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Address</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="address" type="text" placeholder={this.state.address ? this.state.address : "address"} onChange={this.onChange}/>
+                                    <Form.Control name="address" type="text" placeholder={this.state.activeProperty.address || "address"} onChange={this.onChange}/>
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Name</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="cust_name" type="text" placeholder={this.props.details ? this.props.details.cust_name : "name"} onChange={this.onChange}/>
+                                    <Form.Control name="cust_name" type="text" placeholder={this.state.activeProperty.cust_name || "name"} onChange={this.onChange}/>
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Phone</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="cust_phone" type="text" placeholder={this.props.details ? this.props.details.cust_phone : "phone"} onChange={this.onChange}/>
+                                    <Form.Control name="cust_phone" type="text" placeholder={this.state.activeProperty.cust_phone || "phone"} onChange={this.onChange}/>
                                 </Col>
                             </Form.Group>
                             <Row>
@@ -102,7 +106,7 @@ class NewProperty extends Component {
                                         name="is_new"
                                         type="checkbox"
                                         label="New Property?"
-                                        checked = {this.state.is_new ? this.state.is_new : false}
+                                        checked = {this.state.checked}
                                         onChange={this.onChange}
                                     />
                                 </Col>
@@ -122,7 +126,7 @@ class NewProperty extends Component {
     }
 }
 
-// Now new property doesn't properly clear fields... because of the destructuring to populate state. 
+// Now new property doesn't properly clear fields... 
 // new property and edit property does property write to database
 // need to update code to default populate with activeProperty fields. is_new does work now though for default
 // this seems to be getting really bad spagghetti code, ponder

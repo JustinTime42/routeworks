@@ -64,7 +64,7 @@ app.post('/api/editproperty', (req, res) => {
         cust_name: property.cust_name,
         cust_phone: property.cust_phone,
         surface_type: property.surface_type,
-        is_new: property.is_new,
+        is_new: req.body.checked,
         notes: property.notes
     })
     .then(details => res.json(details.address + " " + details.key))
