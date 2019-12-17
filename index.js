@@ -39,31 +39,33 @@ app.post('/api/addroute', (req, res) => {
 })
 
 app.post('/api/newproperty', (req, res) => {
+    const property = req.body.activeProperty
     db('properties')    
     .returning('address')
     .insert({
-        address: req.body.address,
-        cust_name: req.body.cust_name,
-        cust_phone: req.body.cust_phone,
-        surface_type: req.body.surface_type,
-        is_new: req.body.is_new,
-        notes: req.body.notes
+        address: property.address,
+        cust_name: property.cust_name,
+        cust_phone: property.cust_phone,
+        surface_type: property.surface_type,
+        is_new: property.is_new,
+        notes: property.notes
      })
      .then(address =>  res.json(address))
      .catch(err => res.json("error: " + err))
 })
 
 app.post('/api/editproperty', (req, res) => {
+    const property = req.body.activeProperty
     db('properties')
     .returning('*')
-    .where('key', req.body.key)
+    .where('key', property.key)
     .update({
-        address: req.body.address,
-        cust_name: req.body.cust_name,
-        cust_phone: req.body.cust_phone,
-        surface_type: req.body.surface_type,
-        is_new: req.body.is_new,
-        notes: req.body.notes
+        address: property.address,
+        cust_name: property.cust_name,
+        cust_phone: property.cust_phone,
+        surface_type: property.surface_type,
+        is_new: property.is_new,
+        notes: property.notes
     })
     .then(details => res.json(details.address + " " + details.key))
     .catch(err => res.json("error: " + err))
