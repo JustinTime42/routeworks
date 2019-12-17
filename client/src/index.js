@@ -9,6 +9,7 @@ import App from './containers/App'
 import thunkMiddleWare from 'redux-thunk'
 import { createLogger } from 'redux-logger'
 import { setActiveRoute, requestRoutes, setDriverName, requestAllAddresses, getRouteProperties, setActiveProperty, saveRoute, showRouteEditor } from './reducers';
+//import "./index.css"
 
 const logger = createLogger()
 const rootReducer = combineReducers( { setActiveRoute, requestRoutes, setDriverName, requestAllAddresses, getRouteProperties, setActiveProperty, saveRoute, showRouteEditor })

@@ -6,9 +6,7 @@ import Admin from "./Admin"
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import CallbackPage from "../components/Callback";
 import Auth from "../components/Auth";
-
-
-
+//import "../App.css"
 
 function App() { 
 

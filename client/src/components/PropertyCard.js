@@ -6,7 +6,7 @@ const PropertyCard = (props) => {
         margin: '3px',
         padding: '3px',
         width: props.width,
-        backgroundColor: props.activeProperty ? props.activeProperty.address === props.address.address ? '#DCBD61' : '#BCD4DE' : null
+        backgroundColor: props.activeProperty ? props.activeProperty.address === props.address.address ? '#4E8098' : '#303030' : null
     }
     const rightStyle = {
         float: "right", 
@@ -19,9 +19,9 @@ const PropertyCard = (props) => {
         padding: "10px",
         border: "2px, solid, black",
         borderRadius: "10px",
-        backgroundColor: props.address.status === "waiting" ? "yellow" : 
-        props.address.status === "skipped" ? "red" :
-        props.address.status === "done" ? "green" : null
+        backgroundColor: props.address.status === "waiting" ? `rgba(255,255,0,0.7)` : 
+        props.address.status === "skipped" ? `rgba(255,0,0,0.7)` :
+        props.address.status === "done" ? `rgba(0,255,0,0.7)` : null
     }
 
     const editStyle = {

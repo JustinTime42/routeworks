@@ -11,23 +11,30 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return {    
+    return {
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
     }
 }
 
 class NewProperty extends Component {
-    constructor(props){ 
+    constructor(props){
         super(props)
         this.state = {
-            checked: this.props.activeProperty.is_new,
             activeProperty: {...this.props.activeProperty},
             api: this.props.activeProperty ? "editproperty" : "newproperty"
         }
     }
 
+    // componentDidMount() {
+    //     if(!this.state.activeProperty) {
+    //         let property = {...this.state.activeProperty}
+    //         property.is_new = false
+    //         this.setState({property})
+    //     }
+    // }
+
     componentDidUpdate(prevProps) {
-        if(prevProps.activeProperty !== this.props.activeProperty){
+        if(prevProps !== this.props){
           this.setState({ activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" })
         }
       }
@@ -36,11 +43,11 @@ class NewProperty extends Component {
         console.log(this.state)
         axios.post(`https://snowline-route-manager.herokuapp.com/api/${this.state.api}`, 
             {
-                ...this.state
+                ...this.state.activeProperty
             }
         )
         .then(res => {
-            this.props.onGetAllAddresses() 
+            //this.props.onGetAllAddresses() 
             console.log("updated address: " + res.key)
         })
         .catch(err => console.log(err)) 
@@ -49,20 +56,23 @@ class NewProperty extends Component {
     onChange = (event) => {
         const name = event.target.name
         const value = event.target.value
-        const checked = event.target.checked
-        const property = this.state.activeProperty
-        if (name === "is_new") {
-            property.is_new = !property.is_new  
-            this.setState(({                       
-                checked: !this.state.checked
-            }))
-        }
-        else {
-            this.setState({
-                [`activeProperty.${name}`]: value
+        if (name === "is_new") {           
+            this.setState(function(state, props) {
+                let property = state.activeProperty
+                property.is_new = !state.activeProperty.is_new
+                return {
+                  property
+                }
             })
         }
-        console.log(this.state.checked)
+        else {
+            this.setState({ activeProperty: { ...this.state.activeProperty, [name]: value} });
+            // this.setState({
+            //     let property = 
+            //     [`activeProperty.${name}`]: value
+            // })
+        }
+        console.log(this.state.activeProperty.notes)
     }
 
     render() {
@@ -106,7 +116,7 @@ class NewProperty extends Component {
                                         name="is_new"
                                         type="checkbox"
                                         label="New Property?"
-                                        checked = {this.state.checked}
+                                        checked = {!!this.state.activeProperty.is_new}
                                         onChange={this.onChange}
                                     />
                                 </Col>
@@ -130,6 +140,5 @@ class NewProperty extends Component {
 // new property and edit property does property write to database
 // need to update code to default populate with activeProperty fields. is_new does work now though for default
 // this seems to be getting really bad spagghetti code, ponder
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewProperty)

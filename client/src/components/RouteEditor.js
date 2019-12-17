@@ -64,14 +64,13 @@ const getItemStyle = (isDragging, draggableStyle) => ({
     margin: `0 0 ${grid}px 0`,
 
     // change background colour if dragging
-    background: isDragging ? 'lightgreen' : 'grey',
+    background: isDragging ? '#4E8098' : '#303030',
 
     // styles we need to apply on draggables
     ...draggableStyle
 });
 
-const getListStyle = isDraggingOver => ({
-    background: isDraggingOver ? 'lightblue' : 'lightgrey',
+const getListStyle = isDraggingOver => ({   
     padding: grid,
     height: "600px", 
     overflow: "scroll", 
@@ -92,6 +91,7 @@ class RouteEditor extends Component {
     
     componentDidMount() {
         this.props.onGetAllAddresses() 
+        console.log("active property is_new " + this.props.activeProperty.is_new)
     }
 
     componentDidUpdate(prevProps) {
