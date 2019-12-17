@@ -55,7 +55,7 @@ app.post('/api/newproperty', (req, res) => {
 })
 
 app.post('/api/editproperty', (req, res) => {
-    const property = req.body.activeProperty
+    const property = req.body
     db('properties')
     .returning('*')
     .where('key', property.key)
