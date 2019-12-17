@@ -25,14 +25,6 @@ class NewProperty extends Component {
         }
     }
 
-    // componentDidMount() {
-    //     if(!this.state.activeProperty) {
-    //         let property = {...this.state.activeProperty}
-    //         property.is_new = false
-    //         this.setState({property})
-    //     }
-    // }
-
     componentDidUpdate(prevProps) {
         if(prevProps !== this.props){
           this.setState({ activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" })
@@ -67,10 +59,6 @@ class NewProperty extends Component {
         }
         else {
             this.setState({ activeProperty: { ...this.state.activeProperty, [name]: value} });
-            // this.setState({
-            //     let property = 
-            //     [`activeProperty.${name}`]: value
-            // })
         }
         console.log(this.state.activeProperty.notes)
     }
@@ -123,7 +111,7 @@ class NewProperty extends Component {
                             </Row>
                             <Form.Group>
                                 <Form.Label>Notes</Form.Label>
-                                    <Form.Control name="notes" type="textarea" rows="3" placeholder="notes" onChange={this.onChange}/>
+                                    <Form.Control name="notes" type="textarea" rows="3" placeholder={this.state.activeProperty.notes || "notes"} onChange={this.onChange}/>
                             </Form.Group>
                         </Form> 
                     </Modal.Body>
@@ -136,9 +124,5 @@ class NewProperty extends Component {
     }
 }
 
-// Now new property doesn't properly clear fields... 
-// new property and edit property does property write to database
-// need to update code to default populate with activeProperty fields. is_new does work now though for default
-// this seems to be getting really bad spagghetti code, ponder
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewProperty)

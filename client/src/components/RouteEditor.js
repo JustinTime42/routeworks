@@ -202,7 +202,9 @@ class RouteEditor extends Component {
 
     onNewPropertyClick = () => {
         this.props.onSetActiveProperty(null)
+        this.props.onGetAllAddresses()
         this.setState({showModal: !this.state.showModal})
+        
     }
 
     onEditPropertyClick = () => {

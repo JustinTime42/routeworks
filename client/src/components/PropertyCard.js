@@ -6,7 +6,7 @@ const PropertyCard = (props) => {
         margin: '3px',
         padding: '3px',
         width: props.width,
-        backgroundColor: props.activeProperty ? props.activeProperty.address === props.address.address ? '#4E8098' : '#303030' : null
+        backgroundColor: props.activeProperty ? props.activeProperty.address === props.address.address ? '#4E8098' : '#303030   ' : null
     }
     const rightStyle = {
         float: "right", 
