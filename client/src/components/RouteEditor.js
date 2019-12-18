@@ -90,8 +90,7 @@ class RouteEditor extends Component {
     }
     
     componentDidMount() {
-        this.props.onGetAllAddresses() 
-        console.log("active property is_new " + this.props.activeProperty.is_new)
+        this.props.onGetAllAddresses()        
     }
 
     componentDidUpdate(prevProps) {
@@ -202,12 +201,14 @@ class RouteEditor extends Component {
 
     onNewPropertyClick = () => {
         this.props.onSetActiveProperty(null)
-        this.props.onGetAllAddresses()
+        // this.props.onGetAllAddresses()
         this.setState({showModal: !this.state.showModal})
         
     }
 
     onEditPropertyClick = () => {
+        this.props.onGetAllAddresses()
+        this.props.onGetRouteProperties(this.props.activeRoute)
         this.setState({showModal: !this.state.showModal})
     }
 
@@ -290,7 +291,7 @@ class RouteEditor extends Component {
                     )}
                 </Droppable>
             </DragDropContext>
-                <NewProperty show={this.state.showModal} close={this.onNewPropertyClick}/>
+                <NewProperty show={this.state.showModal} close={this.onEditPropertyClick}/>
             </div>
            
         );

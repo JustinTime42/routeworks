@@ -84,7 +84,7 @@ class NewProperty extends Component {
 
     render() {
         return (
-            <Modal show={this.props.show} onHide={this.handleClose}>
+            <Modal show={this.props.show} onHide={this.props.close}>
                     <Modal.Header>New Property</Modal.Header>
                     <Modal.Body>
                         <Form>
@@ -135,7 +135,7 @@ class NewProperty extends Component {
                         </Form> 
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button disabled={!this.state.activeProperty.address} variant="danger" onClick={() => this.setShow(true)}>DELETE PROPERTY</Button>
+        <Button disabled={!this.state.activeProperty.address} variant="danger" onClick={() => this.setShow(true)}>{this.state.deleteAlert ? "Cancel" : "DELETE PROPERTY"}</Button>
                         <Button variant="primary" onClick={this.onSubmit}>Save Changes</Button>
                         <Button variant="secondary" onClick={this.props.close}>Close</Button>
                     </Modal.Footer>
