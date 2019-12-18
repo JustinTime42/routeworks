@@ -71,6 +71,15 @@ app.post('/api/editproperty', (req, res) => {
     .catch(err => res.json("error: " + err))
 })
 
+app.post('/api/deleteproperty', (req, res) => {
+    db('properties')
+    .returning('*')
+    .where('key', req.body.key)
+    .del()
+    .then(property => res.json(property))
+    .catch(err => res.json(err))
+})
+
 app.post('/api/initroute', (req, res) => {
     const route = req.body.route
     let response = {
