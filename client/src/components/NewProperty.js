@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Modal, Form, Row, Col } from 'react-bootstrap'
+import { Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import axios from "axios"
 import { requestAllAddresses } from '../actions'
@@ -21,7 +21,8 @@ class NewProperty extends Component {
         super(props)
         this.state = {
             activeProperty: {...this.props.activeProperty},
-            api: this.props.activeProperty ? "editproperty" : "newproperty"
+            api: this.props.activeProperty ? "editproperty" : "newproperty",
+            deleteAlert: false
         }
     }
 
@@ -45,6 +46,20 @@ class NewProperty extends Component {
         .catch(err => console.log(err)) 
     }
 
+    onDelete = () => {
+        axios.post('https://snowline-route-manager.herokuapp.com/api/deleteproperty', 
+            {
+                ...this.state.activeProperty
+            }
+        )
+        .then(res => {
+            console.log("deleted " + res.address)
+            this.props.close()
+        })
+        .catch(err => console.log(err))
+
+    }
+
     onChange = (event) => {
         const name = event.target.name
         const value = event.target.value
@@ -61,6 +76,10 @@ class NewProperty extends Component {
             this.setState({ activeProperty: { ...this.state.activeProperty, [name]: value} });
         }
         console.log(this.state.activeProperty.notes)
+    }
+
+    setShow = (show) => {
+        this.setState(prevProps => ({deleteAlert: !prevProps.deleteAlert}))
     }
 
     render() {
@@ -91,7 +110,7 @@ class NewProperty extends Component {
                                 <Col>
                                     <Form.Group as={Row}>
                                         <Form.Label>Surface Type</Form.Label>
-                                        <Form.Control name="surface_type" as="select" onChange={this.onChange}>
+                                        <Form.Control name="surface_type" as="select" value={this.state.activeProperty.surface_type || "select"} onChange={this.onChange}>
                                             <option value="select">Select</option>
                                             <option value="paved">Paved</option>
                                             <option value="gravel">Gravel</option>
@@ -116,9 +135,22 @@ class NewProperty extends Component {
                         </Form> 
                     </Modal.Body>
                     <Modal.Footer>
+                        <Button disabled={!this.state.activeProperty.address} variant="danger" onClick={() => this.setShow(true)}>DELETE PROPERTY</Button>
                         <Button variant="primary" onClick={this.onSubmit}>Save Changes</Button>
                         <Button variant="secondary" onClick={this.props.close}>Close</Button>
                     </Modal.Footer>
+                    <Alert show={this.state.deleteAlert} variant="danger">
+                    <Alert.Heading>Delete Property?</Alert.Heading>
+                    <p>
+                    {this.state.activeProperty.address}
+                    </p>
+                    <hr />
+                    <div className="d-flex justify-content-end">
+                    <Button onClick={this.onDelete} variant="outline-success">
+                        Permanently Delete This Property
+                    </Button>
+                    </div>
+                </Alert>
                 </Modal>
         )
     }
