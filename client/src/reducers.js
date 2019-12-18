@@ -31,7 +31,7 @@ export const setActiveRoute = (state=initialStateActiveRoute, action={}) => {
 }
 
 const initialStateActiveProperty = {
-    activeProperty: {}
+    activeProperty: null
 }
 
 export const setActiveProperty = (state=initialStateActiveProperty, action={}) => {
