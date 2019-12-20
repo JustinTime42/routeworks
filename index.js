@@ -111,7 +111,7 @@ app.post('/api/saveroute', (req, res) => {
     const route = req.body.route
     console.log("route: " + route)
     console.log(add)
-    //console.log(remove)
+    //dfsconsole.log(remove)
     let response = 
         {
             add: [],
@@ -129,6 +129,7 @@ app.post('/api/saveroute', (req, res) => {
                 route_position: i
             })
             .then(address => {
+                console.log(address)
                 response.add.push(address)            
             }) 
             .catch(err => response.err.push(err))
