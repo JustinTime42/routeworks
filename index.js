@@ -109,6 +109,7 @@ app.post('/api/saveroute', (req, res) => {
     const add = req.body.selected
     const remove = req.body.unselected
     const route = req.body.route
+    console.log("route: " + route)
     let response = 
         {
             add: [],
