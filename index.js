@@ -111,7 +111,7 @@ app.post('/api/saveroute', (req, res) => {
     const route = req.body.route
     console.log("route: " + route)
     console.log(add)
-    console.log(remove)
+    //console.log(remove)
     let response = 
         {
             add: [],
