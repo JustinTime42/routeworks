@@ -91,7 +91,7 @@ app.post('/api/initroute', (req, res) => {
         promises.push(
             db('properties')
             .returning('address')
-            .where('address', item.address)
+            .where('key', item.key)
             .update({
                 status: 'waiting',
             })
@@ -120,7 +120,7 @@ app.post('/api/saveroute', (req, res) => {
         promises.push(
             db('properties')
             .returning('address')
-            .where('address', item.address)
+            .where('key', item.key)
             .update({
                 route_name: route,
                 route_position: i
@@ -136,7 +136,7 @@ app.post('/api/saveroute', (req, res) => {
             db('properties')
             .returning('address')
             .where({
-                address: item.address,
+                key: item.key,
                 route_name: route
             })
             .update({
