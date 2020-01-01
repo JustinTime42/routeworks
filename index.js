@@ -170,6 +170,7 @@ app.get('/api/getroute/:routeName', (req, res) => {
 //use direct connection to figure out correct query. Then, use db.raw to make the whole thing...
     // .select(db.raw(``properties`.`key`, `properties`.`address`, `properties`.`route_name`, `properties`.`cust_name`, `properties`.`cust_phone`, `properties`.`surface_type`, `properties`.`is_new, `properties`.`route_position`, `service_log`.`status`, `service_log`.`notes`, `service_log`.`user_name`, MAX(`timestamp`) from `service_log``))
     .from('properties')
+    .orderBy('route_position')
    // .leftJoin('service_log', 'properties.address', 'service_log.address')
     //.groupBy('properties.key')
     .then(data => {
