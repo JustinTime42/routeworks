@@ -24,6 +24,11 @@ class DisplayRoute extends Component {
     handlePropertyClick = (property) => {
         this.props.onSetActiveProperty(property)
     }
+
+    changeActiveProperty = (position) => {
+        this.props.onSetActiveProperty(this.props.routeAddresses.find( item => item.route_position === position))        
+    }
+
     render(){
         return(
             <div className="gridContainer" style={{height: "100%", overflow: "auto"}}>
@@ -42,7 +47,7 @@ class DisplayRoute extends Component {
                     }
                 </div>
                 <div className="rightSide">
-                    <PropertyDetails property={this.props.activeProperty}/>
+                    <PropertyDetails property={this.props.activeProperty} changeProperty={this.changeActiveProperty}/>
                 </div> 
             </div>  
         )

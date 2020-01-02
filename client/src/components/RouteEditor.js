@@ -109,6 +109,7 @@ class RouteEditor extends Component {
     };
 
     onSave = () => {
+        console.log(this.state.selected)
         axios.post('https://snowline-route-manager.herokuapp.com/api/saveroute', 
             {
                 route: this.props.activeRoute,
@@ -219,7 +220,7 @@ class RouteEditor extends Component {
         return this.props.isAllPending || this.props.isRoutePending ?
         <h1>    </h1> :(
             <div className="gridContainer">
-                 <DragDropContext onDragEnd={this.onDragEnd}>
+            <DragDropContext onDragEnd={this.onDragEnd}>
                 <Droppable droppableId="droppable2">                    
                     {(provided, snapshot) => (
                         <div
