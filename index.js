@@ -152,6 +152,19 @@ app.post('/api/saveroute', (req, res) => {
     Promise.all(promises).then(() => res.json(response))
 })
 
+app.post('/api/setstatus', (req, res) => {
+    db('properties')
+    .returning('*')
+    .where('key', req.body.property.key)
+    .update({status: req.body.newStatus})
+    .then(property => res.json(property))
+    //where req.property.key from properties
+    //insert fields to service log including req.newstatus
+    //also
+    //update properties where key=req.property.key set status=req.newstatus
+
+
+})
 app.get('/api/properties', (req, res) => {
     db.select('*')
     .from('properties')
@@ -159,29 +172,21 @@ app.get('/api/properties', (req, res) => {
         res.json(data)
     })
 });
-//Probably don't need this on allproperties, because we just need it displayed on the route. 
-//just do the join on the route properties for now and call it good. And don't forget to use MAX() to only get 
-//most recent service log entry. 
+
 
 app.get('/api/getroute/:routeName', (req, res) => {
     const { routeName } = req.params
     db.where('properties.route_name', routeName)
-    .select('*') // db.raw('properties.key, properties.address, properties.route_name, properties.cust_name, properties.cust_phone, properties.surface_type, properties.is_new, properties.route_position, service_log.status, service_log.notes, service_log.user_name, MAX(service_log.timestamp)'))
-//use direct connection to figure out correct query. Then, use db.raw to make the whole thing...
-    // .select(db.raw(``properties`.`key`, `properties`.`address`, `properties`.`route_name`, `properties`.`cust_name`, `properties`.`cust_phone`, `properties`.`surface_type`, `properties`.`is_new, `properties`.`route_position`, `service_log`.`status`, `service_log`.`notes`, `service_log`.`user_name`, MAX(`timestamp`) from `service_log``))
+    .select('*') 
     .from('properties')
     .orderBy('route_position')
-   // .leftJoin('service_log', 'properties.address', 'service_log.address')
-    //.groupBy('properties.key')
     .then(data => {
         res.json(data)
     })
 });
 
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
  app.get('*', (req, res) => {
    res.sendFile(path.join(__dirname+'/client/build/index.html'));
  });
-//app.listen(5000)
+
 app.listen(process.env.PORT || 5000);
