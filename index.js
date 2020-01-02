@@ -153,15 +153,39 @@ app.post('/api/saveroute', (req, res) => {
 })
 
 app.post('/api/setstatus', (req, res) => {
-    db('properties')
-    .returning('*')
-    .where('key', req.body.property.key)
-    .update({status: req.body.newStatus})
-    .then(property => res.json(property))
+    let property = req.body.property
+    let promises = []
+    let response = {
+        properties: {},
+        serviceLog: {},
+        err: []
+    }
+
+    promises.push(
+        db('properties')
+        .returning('*')
+        .where('key', req.body.property.key)
+        .update({status: req.body.newStatus})
+        .then(property => response.properties = property)
+        .catch(err => response.err.push(err))
+    )
+
+    promises.push(
+        db('service_log')
+        .returning('*')
+        .insert({
+            address: property.address,
+            route_name: property.route_name,
+            status: req.body.newStatus,
+            timestamp: Date().toString(),
+            user_name: req.body.driver
+        })
+        .then(property => response.serviceLog = property)
+        .catch(err => response.err.push(err))       
+    )
+    Promise.all(promises).then(() => res.json(response))
     //where req.property.key from properties
     //insert fields to service log including req.newstatus
-    //also
-    //update properties where key=req.property.key set status=req.newstatus
 
 
 })
