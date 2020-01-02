@@ -11,8 +11,7 @@ const PropertyCard = (props) => {
     const rightStyle = {
         float: "right", 
         textAlign: "center",
-        width: "70px",        
-                
+        width: "70px",               
     }
 
     const statusStyle = {
@@ -36,7 +35,7 @@ const PropertyCard = (props) => {
                     <p style={statusStyle}>{props.address.status}</p>  : <p style={statusStyle}></p>             
                 } 
                 {props.admin === true ? 
-                    <p style={editStyle}><Button variant="secondary" onClick={() => props.editClick()}>Edit </Button></p>  : <p></p>               
+                    <p style={editStyle}><Button variant="secondary" onClick={() => props.editClick(props.address)}>Edit </Button></p>  : <p></p>               
                 }
             </div>
 

@@ -4,11 +4,11 @@ import { connect } from 'react-redux'
 import axios from "axios"
 import { requestAllAddresses } from '../actions'
 
-const mapStateToProps = state => {
-    return {         
-        activeProperty: state.setActiveProperty.activeProperty,
-    }
-}
+// const mapStateToProps = state => {
+//     return {         
+//         activeProperty: state.setActiveProperty.activeProperty,
+//     }
+// }
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -27,7 +27,7 @@ class NewProperty extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps !== this.props){
+        if(prevProps.activeProperty !== this.props.activeProperty){
           this.setState({ activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" })
         }
       }
@@ -157,4 +157,4 @@ class NewProperty extends Component {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(NewProperty)
+export default connect(mapDispatchToProps)(NewProperty)

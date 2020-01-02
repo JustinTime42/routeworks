@@ -85,7 +85,8 @@ class RouteEditor extends Component {
             filteredItems: [],
             selected: [],
             searchField: '',
-            showModal: false
+            showModal: false,
+            activeProperty: {}
         }
     }
     
@@ -99,7 +100,7 @@ class RouteEditor extends Component {
           this.setState({selected: this.props.routeProperties })
           this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
           this.setState({filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
-          this.setState({activeProperty: this.props.activeProperty})
+          //this.setState({activeProperty: this.props.activeProperty})
         }
       }
 
@@ -201,20 +202,23 @@ class RouteEditor extends Component {
     }
 
     onNewPropertyClick = () => {
-        this.props.onSetActiveProperty(null)
+        //this.props.onSetActiveProperty(null)
         // this.props.onGetAllAddresses()
-        this.setState({showModal: !this.state.showModal})
+        this.setState({showModal: !this.state.showModal, activeProperty: null})
         
     }
 
-    onEditPropertyClick = () => {
-        this.props.onGetAllAddresses()
-        this.props.onGetRouteProperties(this.props.activeRoute)
-        this.setState({showModal: !this.state.showModal})
+    onEditPropertyClick = (property) => {
+        // this.props.onGetAllAddresses()
+        console.log(property)
+        //this.props.onSetActiveProperty(property)        
+        this.setState({showModal: !this.state.showModal, activeProperty: property})
     }
 
-    // Normally you would want to split things out into separate components.
-    // But in this example everything is just done in one place for simplicity
+    onCloseClick = () => {
+        this.setState({showModal: !this.state.showModal})
+    }
+    
     render() {
         
         return this.props.isAllPending || this.props.isRoutePending ?
@@ -246,7 +250,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard key={item.address} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>
@@ -282,7 +286,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard key={item.address} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>
@@ -292,7 +296,7 @@ class RouteEditor extends Component {
                     )}
                 </Droppable>
             </DragDropContext>
-                <NewProperty show={this.state.showModal} close={this.onEditPropertyClick}/>
+                <NewProperty activeProperty={this.state.activeProperty} show={this.state.showModal} close={this.onCloseClick}/>
             </div>
            
         );

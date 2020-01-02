@@ -22,6 +22,7 @@ const mapDispatchToProps = (dispatch) => {
 class DisplayRoute extends Component {
 
     handlePropertyClick = (property) => {
+        console.log("click")
         this.props.onSetActiveProperty(property)
     }
 
