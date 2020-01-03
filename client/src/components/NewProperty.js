@@ -130,12 +130,12 @@ class NewProperty extends Component {
                             </Row>
                             <Form.Group>
                                 <Form.Label>Notes</Form.Label>
-                                    <Form.Control name="notes" type="textarea" rows="3" placeholder={this.state.activeProperty.notes || "notes"} onChange={this.onChange}/>
+                                    <Form.Control name="notes" as="textarea" rows="3" placeholder={this.state.activeProperty.notes || "notes"} onChange={this.onChange}/>
                             </Form.Group>
                         </Form> 
                     </Modal.Body>
                     <Modal.Footer>
-        <Button disabled={!this.state.activeProperty.address} variant="danger" onClick={() => this.setShow(true)}>{this.state.deleteAlert ? "Cancel" : "DELETE PROPERTY"}</Button>
+                        <Button disabled={!this.state.activeProperty.address} variant="danger" onClick={() => this.setShow(true)}>{this.state.deleteAlert ? "Cancel" : "DELETE PROPERTY"}</Button>
                         <Button variant="primary" onClick={this.onSubmit}>Save Changes</Button>
                         <Button variant="secondary" onClick={this.props.close}>Close</Button>
                     </Modal.Footer>

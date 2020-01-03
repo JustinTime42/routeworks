@@ -96,7 +96,6 @@ class RouteEditor extends Component {
 
     componentDidUpdate(prevProps) {
         if(prevProps.activeRoute !== this.props.activeRoute || prevProps.isAllPending !== this.props.isAllPending || prevProps.routeProperties !== this.props.routeProperties){
-            console.log("new route properties")
           this.setState({selected: this.props.routeProperties })
           this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
           this.setState({filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
@@ -119,6 +118,7 @@ class RouteEditor extends Component {
             }
         )
         .then(res => {
+            this.props.onGetRouteProperties(this.props.activeRoute)
             console.log(res)
         })
         .catch(err => console.log(err)) 
@@ -229,7 +229,7 @@ class RouteEditor extends Component {
                 <Droppable droppableId="droppable2">                    
                     {(provided, snapshot) => (
                         <div
-                            className="leftSide"
+                            className="leftSide, scrollable"
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
                                 <div style={{display: "flex", justifyContent: "space-around"}}>
@@ -264,7 +264,7 @@ class RouteEditor extends Component {
                     {(provided, snapshot) => (
                         <div
                             ref={provided.innerRef}
-                            className="rightSide"
+                            className="rightSide, scrollable"
                             style={getListStyle(snapshot.isDraggingOver)}>
                                 <div style={{display: "flex", justifyContent:"space-around", margin: "3px"}}>
                                     <input 

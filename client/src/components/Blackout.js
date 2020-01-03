@@ -1,19 +1,27 @@
 import React from "react"
 
 const Blackout = () => {
+    const goInactive = () => {
+        if (document.getElementById("blackOutScreen")){
+          document.getElementById("blackOutScreen").style.height="0%"
+        }        
+      }
+
     const divStyle = {
-        margin: '-1em',
+        
         // padding: '2em',
-        width: '110%',
+        width: '100vw',
         backgroundColor: 'black',
         position: 'absolute',
-        zIndex: 99,
+        zIndex: 999,
+        
     };
     return (
         <div 
             style={divStyle}
             className="blackOut" 
-            id="blackOutScreen">
+            id="blackOutScreen"
+            onClick={goInactive}>
         </div>
     )
 } 

@@ -10,3 +10,12 @@
 .rightSide {
     grid-column-start: 2;
 }
+
+.scrollable::-webkit-scrollbar {
+    display: none;
+}
+
+
+.scrollable {
+    overflow: scroll;
+}

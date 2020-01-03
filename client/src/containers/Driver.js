@@ -5,6 +5,7 @@ import DriverName from "../components/DriverName"
 import DisplayRoute from "../components/DisplayRoute"
 import RouteEditor from "../components/RouteEditor"
 import EditRouteButton from "../components/EditRouteButton"
+import BlackoutButton from "../components/BlackoutButton"
 import { showRouteEditor } from "../actions"
 import PropertyDetails from "../components/PropertyDetails"
 
@@ -28,10 +29,12 @@ class Driver extends Component {
     render() {
         return (
             <div>
-                <div style={{display: "flex", justifyContent: "space-around", margin: "5px"}}>
+                <div style={{display: "flex", justifyContent: "space-around", margin: "5px"}}>                    
+                    
                     <RouteSelector />
                     <DriverName />
                     <EditRouteButton /> 
+                    <BlackoutButton /> 
                 {/* <div className="gridContainer"> 
                 <div style={{display: "flex", justifyContent: "space-between"}}>
                     <RouteSelector />
