@@ -177,7 +177,6 @@ app.post('/api/setstatus', (req, res) => {
             address: property.address,
             route_name: property.route_name,
             status: req.body.newStatus,
-            timestamp: Date().toString(),
             user_name: req.body.driver
         })
         .then(property => response.serviceLog = property)
