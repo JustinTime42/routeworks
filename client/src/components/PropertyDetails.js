@@ -1,9 +1,10 @@
 import React from 'react'
-import { Card, Container, Col, Row, Button } from 'react-bootstrap'
+import { Card, Col, Row, Button } from 'react-bootstrap'
 
 import '../styles/driver.css'
 
 const PropertyDetails = (props) => {
+
     return (
         props.property ?
         <Card style={{padding: "1em", height: "100%"}}>
@@ -21,8 +22,8 @@ const PropertyDetails = (props) => {
             {props.property ? props.property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Text>{props.property.notes}</Card.Text></Card.Body> : null : null }
             <Card.Body style={{verticalAlign: "bottom", display:"flex", alignItems: "flex-end", justifyContent: "space-between"}}>
                 <Button variant="primary" onClick={() => props.changeProperty(props.property.route_position - 1)} >Prev</Button>
-                <Button variant="warning">Skip</Button>
-                <Button variant="success">Done</Button>
+                <Button variant="warning" onClick={() => props.onStatusChange('Skipped')}>Skip</Button>
+                <Button variant="success" onClick={() => props.onStatusChange('Done')}>Done</Button>
                 <Button variant="primary" onClick={() => props.changeProperty(props.property.route_position  + 1)} >Next</Button>
             </Card.Body>
         </Card> : null

@@ -19,8 +19,8 @@ const PropertyCard = (props) => {
         border: "2px, solid, black",
         borderRadius: "10px",
         backgroundColor: props.address.status === "waiting" ? `rgba(255,255,0,0.7)` : 
-        props.address.status === "skipped" ? `rgba(255,0,0,0.7)` :
-        props.address.status === "done" ? `rgba(0,255,0,0.7)` : null
+        props.address.status === "Skipped" ? `rgba(255,0,0,0.7)` :
+        props.address.status === "Done" ? `rgba(0,255,0,0.7)` : null
     }
 
     const editStyle = {
@@ -40,7 +40,7 @@ const PropertyCard = (props) => {
             </div>
 
             <p style={{textAlign: "left", width: "100%"}}>
-            {props.address.route_position}. {props.address.cust_name}{props.address.is_new ? " (NEW)" : null}            
+            {props.address.cust_name}{props.address.is_new ? " (NEW)" : null}            
             </p>                             
             <p>{props.address.address}</p>            
             {props.admin ? <p>route: {props.address.route_name}</p> : <div></div>}

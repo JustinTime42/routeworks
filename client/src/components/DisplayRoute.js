@@ -2,32 +2,62 @@ import React, { Component } from 'react'
 import { connect } from "react-redux"
 import PropertyCard from "./PropertyCard"
 import PropertyDetails from "./PropertyDetails"
-import { setActiveProperty } from '../actions'
+import { setActiveProperty, getRouteProperties } from '../actions'
+import axios from 'axios'
 
 const mapStateToProps = state => {
     return {
-        routeAddresses: state.getRouteProperties.addresses,
+        routeProperties: state.getRouteProperties.addresses,
         showRouteEditor: state.showRouteEditor.showRoute,
-        activeProperty: state.setActiveProperty.activeProperty
+        activeProperty: state.setActiveProperty.activeProperty,
+        activeRoute: state.setActiveRoute.activeRoute,
+        driver: state.setDriverName.driverName
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onSetActiveProperty: (property) => dispatch(setActiveProperty(property))
-        
+        onSetActiveProperty: (property) => dispatch(setActiveProperty(property)),
+        onGetRouteProperties: (route) => dispatch(getRouteProperties(route))        
     }
 }
 
 class DisplayRoute extends Component {
+    constructor(props){
+        super(props)
+        this.state = { 
+            selected: [],
+            activeProperty: {}
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if(prevProps !== this.props){
+          this.setState({selected: this.props.routeProperties, activeProperty: this.props.activeProperty})
+        }
+      }
 
     handlePropertyClick = (property) => {
-        console.log("click")
         this.props.onSetActiveProperty(property)
     }
 
     changeActiveProperty = (position) => {
-        this.props.onSetActiveProperty(this.props.routeAddresses.find( item => item.route_position === position))        
+        this.props.onSetActiveProperty(this.props.routeProperties.find( item => item.route_position === position))        
+    }
+
+    onStatusChange = (status) => {
+        axios.post(`https://snowline-route-manager.herokuapp.com/api/setstatus`, 
+            {
+                property: this.props.activeProperty,
+                newStatus: status,
+                driver: this.props.driver
+            }
+        )
+        .then(res => {
+            this.props.onGetRouteProperties(this.props.activeRoute) 
+            console.log(res)
+        })
+        .catch(err => console.log(err)) 
     }
 
     render(){
@@ -35,20 +65,21 @@ class DisplayRoute extends Component {
             <div className="gridContainer" style={{height: "100%", overflow: "auto"}}>
                 <div className="leftSide" style={{height: "600px", overflow: "scroll", width:"80%"}}>
                     {
-                        this.props.routeAddresses.map(address => {
+                        this.props.routeProperties.map(address => {
                             return (
                                 <PropertyCard                                     
                                     key={address.address} 
                                     address={address}
                                     activeProperty={this.props.activeProperty}
                                     handleClick={this.handlePropertyClick}
+
                                 />  
                             )                                
                         }) 
                     }
                 </div>
                 <div className="rightSide">
-                    <PropertyDetails property={this.props.activeProperty} changeProperty={this.changeActiveProperty}/>
+                    <PropertyDetails onStatusChange={this.onStatusChange} property={this.props.activeProperty} changeProperty={this.changeActiveProperty}/>
                 </div> 
             </div>  
         )
