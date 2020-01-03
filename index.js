@@ -177,6 +177,7 @@ app.post('/api/setstatus', (req, res) => {
             address: property.address,
             route_name: property.route_name,
             status: req.body.newStatus,
+            notes: req.body.noteField,
             user_name: req.body.driver
         })
         .then(property => response.serviceLog = property)
