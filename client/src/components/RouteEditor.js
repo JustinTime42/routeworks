@@ -118,6 +118,7 @@ class RouteEditor extends Component {
             }
         )
         .then(res => {
+            this.props.onGetAllAddresses()
             this.props.onGetRouteProperties(this.props.activeRoute)
             console.log(res)
         })
