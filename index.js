@@ -124,10 +124,10 @@ app.post('/api/saveroute', (req, res) => {
             .update({
                 route_name: route,
                 route_position: i,
-                status: "waiting"
+                status: req.body.selected.status || "waiting"
             })
             .then(address => {
-                response.add.push(address)            
+                response.add.push(address)
             }) 
             .catch(err => response.err.push(err))
         )       
