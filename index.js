@@ -123,7 +123,8 @@ app.post('/api/saveroute', (req, res) => {
             .where('key', item.key)
             .update({
                 route_name: route,
-                route_position: i
+                route_position: i,
+                status: "waiting"
             })
             .then(address => {
                 response.add.push(address)            
@@ -141,7 +142,8 @@ app.post('/api/saveroute', (req, res) => {
             })
             .update({
                 route_name: "unassigned",
-                route_position: null
+                route_position: null,
+                status: null
             })
             .then(address => {
                 response.remove.push(address)
