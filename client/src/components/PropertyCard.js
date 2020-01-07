@@ -2,11 +2,11 @@ import React from 'react'
 import { Button } from 'react-bootstrap'
 
 const PropertyCard = (props) => {
-    let test = false
-    let status = props.address.status
-    if (props.address.route_name !== "unassigned" && !props.address.status) {
-        status = "waiting"
-    }
+    // let test = false
+    // let status = props.address.status
+    // if (props.address.route_name !== "unassigned" && !props.address.status) {
+    //     status = "waiting"
+    // }
 
     const cardStyle = {
         margin: '3px',
@@ -24,9 +24,9 @@ const PropertyCard = (props) => {
         padding: "10px",
         border: "2px, solid, black",
         borderRadius: "10px",
-        backgroundColor: status === "waiting" ? `rgba(255,200,0,0.9)` : 
-        status === "Skipped" ? `rgba(255,0,0,0.7)` :
-        status === "Done" ? `rgba(0,255,0,0.7)` : null
+        backgroundColor: props.address.status === "waiting" ? `rgba(255,200,0,0.9)` : 
+        props.address.status === "Skipped" ? `rgba(255,0,0,0.7)` :
+        props.address.status === "Done" ? `rgba(0,255,0,0.7)` : null
     }
 
     const editStyle = {
@@ -37,8 +37,8 @@ const PropertyCard = (props) => {
     return(
         <div style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>
-                {props.address.route_name !== "unassigned" ? 
-                    <p style={statusStyle}>{status}</p> : <p style={statusStyle}></p>             
+                {props.address.status ? 
+                    <p style={statusStyle}>{props.address.status}</p> : <p style={statusStyle}></p>             
                 } 
                 {props.admin === true ? 
                     <p style={editStyle}><Button variant="secondary" onClick={() => props.editClick(props.address)}>Edit </Button></p>  : <p></p>               

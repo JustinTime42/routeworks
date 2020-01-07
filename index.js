@@ -93,7 +93,7 @@ app.post('/api/initroute', (req, res) => {
             .returning('address')
             .where('key', item.key)
             .update({
-                status: 'waiting',
+                status: 'Waiting',
             })
             .then(address => {
                 response.success.push(address)            
@@ -124,7 +124,7 @@ app.post('/api/saveroute', (req, res) => {
             .update({
                 route_name: route,
                 route_position: i,
-                status: item.status || "waiting"
+                status: item.status || "Waiting"
             })
             .then(address => {
                 response.add.push(address)

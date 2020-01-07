@@ -126,18 +126,27 @@ class RouteEditor extends Component {
     }
 
     onInitRoute = () => {
-        axios.post('https://snowline-route-manager.herokuapp.com/api/initroute',
+        axios.post('https://snowline-route-manager.herokuapp.com/api/saveroute', 
             {
-                route: this.state.selected               
+                route: this.props.activeRoute,
+                selected: this.state.selected,
+                unselected: this.state.filteredItems
             }
         )
         .then(res => {
-            this.props.onGetAllAddresses() 
-            this.props.onGetRouteProperties(this.props.activeRoute)
-            console.log(res)
+            axios.post('https://snowline-route-manager.herokuapp.com/api/initroute',
+            {
+                route: this.state.selected               
+            }
+            )
+            .then(res => {
+                console.log(res)
+                this.props.onGetAllAddresses()
+                this.props.onGetRouteProperties(this.props.activeRoute)
+            })
         })
-        .catch(err => console.log)
-        this.onSave()
+        .catch(err => console.log(err))
+        
     }
     
     getList = id => this.state[this.id2List[id]];
