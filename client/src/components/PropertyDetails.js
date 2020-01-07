@@ -10,6 +10,7 @@ const mapStateToProps = state => {
     return {
         property: state.setActiveProperty.activeProperty,
         driver: state.setDriverName.driverName,
+        tractor: state.setTractorName.tractorName,
         activeRoute: state.setActiveRoute.activeRoute,
     }
 }
@@ -46,7 +47,8 @@ class PropertyDetails extends Component {
                 property: this.props.property,
                 newStatus: status,
                 driver: this.props.driver,
-                noteField: this.state.noteField
+                noteField: this.state.noteField,
+                tractor: this.props.tractor
             }
         )
         .then(res => {

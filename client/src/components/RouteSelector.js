@@ -22,8 +22,13 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => {
     return {    
         onRouteSelect: (event) => {
-            dispatch(setActiveRoute(event))
-            dispatch(getRouteProperties(event))
+            if (event === "Create New Route") {
+                return
+            } else {
+                dispatch(setActiveRoute(event))
+                dispatch(getRouteProperties(event))
+            }
+
         },
         onRequestRoutes: () => dispatch(requestRoutes()),
         onGetRouteProperties: (event) => dispatch(getRouteProperties(event)),
@@ -45,7 +50,7 @@ class RouteSelector extends Component {
     }
 
     onSetRouteName = (event) => this.setState({routeName: event.target.value}) 
-    handleClose = () => this.setState({show: false})
+    handleClose = () => this.setState({show: false, routeName: ""})
     handleShow = () => this.setState({show: true})
     handleSave = () => {
         axios.post(`https://snowline-route-manager.herokuapp.com/api/addroute`, { route_name: this.state.routeName })

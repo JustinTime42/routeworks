@@ -24,3 +24,5 @@ export const SHOW_ROUTE_EDITOR = 'SHOW_ROUTE_EDITOR'
 
 export const SHOW_ROUTE = 'SHOW_ROUTE'
 
+export const SET_TRACTOR_NAME = 'SET_TRACTOR_NAME'
+

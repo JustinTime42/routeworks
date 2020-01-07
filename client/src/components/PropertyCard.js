@@ -24,7 +24,7 @@ const PropertyCard = (props) => {
         padding: "10px",
         border: "2px, solid, black",
         borderRadius: "10px",
-        backgroundColor: props.address.status === "waiting" ? `rgba(255,200,0,0.9)` : 
+        backgroundColor: props.address.status === "Waiting" ? `rgba(255,200,0,0.9)` : 
         props.address.status === "Skipped" ? `rgba(255,0,0,0.7)` :
         props.address.status === "Done" ? `rgba(0,255,0,0.7)` : null
     }

@@ -15,7 +15,8 @@ import {
     SAVE_ROUTE_PENDING,
     SAVE_ROUTE_FAILED,
     SHOW_ROUTE_EDITOR,
-    SHOW_ROUTE
+    SHOW_ROUTE,
+    SET_TRACTOR_NAME
 } from './constants.js'
 
 export const setActiveRoute = (routeName) => {
@@ -64,6 +65,13 @@ export const setDriverName = (driverName) => {
     return {
         type: SET_DRIVER_NAME,
         payload: driverName
+    }
+}
+
+export const setTractorName = (tractorName) => {
+    return {
+        type: SET_TRACTOR_NAME,
+        payload: tractorName
     }
 }
 

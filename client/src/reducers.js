@@ -14,7 +14,8 @@ import { SET_ACTIVE_ROUTE,
     SAVE_ROUTE_PENDING,
     SAVE_ROUTE_FAILED,
     SHOW_ROUTE_EDITOR,
-    SHOW_ROUTE
+    SHOW_ROUTE,
+    SET_TRACTOR_NAME
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -71,6 +72,19 @@ export const setDriverName = (state = initialStateDriver, action={}) => {
         case SET_DRIVER_NAME:
             return {...state, driverName: action.payload}
         default:
+            return state
+    }
+}
+
+const initialStateTractor = {
+    tractorName: ''
+}
+
+export const setTractorName = (state = initialStateTractor, action={}) => {
+    switch(action.type) {
+        case SET_TRACTOR_NAME:
+            return {...state, tractorName: action.payload}
+        default: 
             return state
     }
 }

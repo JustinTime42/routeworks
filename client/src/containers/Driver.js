@@ -8,6 +8,7 @@ import EditRouteButton from "../components/EditRouteButton"
 import BlackoutButton from "../components/BlackoutButton"
 import { showRouteEditor } from "../actions"
 import PropertyDetails from "../components/PropertyDetails"
+import TractorName from "../components/TractorName"
 
 import '../styles/driver.css'
 
@@ -33,6 +34,7 @@ class Driver extends Component {
                     
                     <RouteSelector />
                     <DriverName />
+                    <TractorName />
                     <EditRouteButton /> 
                     <BlackoutButton /> 
                 {/* <div className="gridContainer"> 
