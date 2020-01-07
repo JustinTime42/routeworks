@@ -95,7 +95,7 @@ class RouteEditor extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.activeRoute !== this.props.activeRoute || prevProps.isAllPending !== this.props.isAllPending || prevProps.routeProperties !== this.props.routeProperties){
+        if(prevProps.addresses !== this.props.addresses || prevProps.activeRoute !== this.props.activeRoute || prevProps.isAllPending !== this.props.isAllPending || prevProps.routeProperties !== this.props.routeProperties || prevProps.isRoutePending !== this.props.isRoutePending){
           this.setState({selected: this.props.routeProperties })
           this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
           this.setState({filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
@@ -120,6 +120,7 @@ class RouteEditor extends Component {
         .then(res => {
             this.props.onGetAllAddresses()
             this.props.onGetRouteProperties(this.props.activeRoute)
+            console.log("onSave done ")
             console.log(res)
         })
         .catch(err => console.log(err)) 
@@ -227,7 +228,7 @@ class RouteEditor extends Component {
             // this.props.onGetAllAddresses() 
             // this.props.onGetRouteProperties(this.props.activeRoute)
         this.onSave()
-        this.props.onSetActiveProperty(null)
+        //this.props.onSetActiveProperty(null)
         this.setState({showModal: !this.state.showModal})
     }
     
