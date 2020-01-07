@@ -2,17 +2,19 @@ import React, { Component } from 'react'
 import { Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import axios from "axios"
-import { requestAllAddresses } from '../actions'
+import { requestAllAddresses, getRouteProperties } from '../actions'
 
-// const mapStateToProps = state => {
-//     return {         
-//         activeProperty: state.setActiveProperty.activeProperty,
-//     }
-// }
+const mapStateToProps = state => {
+    return {         
+        activeProperty: state.setActiveProperty.activeProperty,
+        activeRoute: state.setActiveRoute.activeRoute,
+    }
+}
 
 const mapDispatchToProps = (dispatch) => {
     return {
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
+        onGetRouteProperties: (route) => dispatch(getRouteProperties(route))        
     }
 }
 
@@ -40,7 +42,8 @@ class NewProperty extends Component {
             }
         )
         .then(res => {
-            //this.props.onGetAllAddresses() 
+            // this.props.onGetAllAddresses()
+            // this.props.onGetRouteProperties(this.props.activeRoute) 
             console.log("updated address: " + res.key)
         })
         .catch(err => console.log(err)) 
@@ -157,4 +160,4 @@ class NewProperty extends Component {
 }
 
 
-export default connect(mapDispatchToProps)(NewProperty)
+export default connect(mapStateToProps, mapDispatchToProps)(NewProperty)

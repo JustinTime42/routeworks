@@ -224,8 +224,9 @@ class RouteEditor extends Component {
     }
 
     onCloseClick = () => {
-        this.props.onGetAllAddresses() 
-        this.props.onGetRouteProperties(this.props.activeRoute)
+            // this.props.onGetAllAddresses() 
+            // this.props.onGetRouteProperties(this.props.activeRoute)
+        this.onSave()
         this.props.onSetActiveProperty(null)
         this.setState({showModal: !this.state.showModal})
     }
