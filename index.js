@@ -119,7 +119,7 @@ app.post('/api/saveroute', (req, res) => {
     add.forEach((item, i) => {
         promises.push(
             db('properties')
-            .returning('address')
+            .returning('*')
             .where('key', item.key)
             .update({
                 route_name: route,
@@ -180,7 +180,8 @@ app.post('/api/setstatus', (req, res) => {
             route_name: property.route_name,
             status: req.body.newStatus,
             notes: req.body.noteField,
-            user_name: req.body.driver
+            user_name: req.body.driver,
+            tractor: req.body.tractor
         })
         .then(property => response.serviceLog = property)
         .catch(err => response.err.push(err))       
