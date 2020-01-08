@@ -80,7 +80,7 @@ export const requestAllAddresses = () => (dispatch) => {
     fetch('https://snowline-route-manager.herokuapp.com/api/properties')
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_ADDRESSES_SUCCESS, payload: data}))
-    .catch(error => dispatch({ type: REQUEST_ADDRESSES_FAILED}))
+    .catch(error => dispatch({ type: REQUEST_ADDRESSES_FAILED, payload: error}))
 }
 
 export const showRouteEditor = (show) => {

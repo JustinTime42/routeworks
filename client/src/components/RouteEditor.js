@@ -94,12 +94,21 @@ class RouteEditor extends Component {
         this.props.onGetAllAddresses()        
     }
 
-    componentDidUpdate(prevProps) {
-        if(prevProps.addresses !== this.props.addresses || prevProps.activeRoute !== this.props.activeRoute || prevProps.isAllPending !== this.props.isAllPending || prevProps.routeProperties !== this.props.routeProperties || prevProps.isRoutePending !== this.props.isRoutePending){
-          this.setState({selected: this.props.routeProperties })
-          this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
-          this.setState({filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
-          this.setState({activeProperty: this.props.activeProperty})
+    componentDidUpdate(prevProps, prevState) {
+        // if(prevState.selected !== this.props.routeProperties) {
+        //     this.props.onGetRouteProperties()
+        // }
+        if(prevProps.addresses !== this.props.addresses || prevProps.activeRoute !== this.props.activeRoute || prevProps.isAllPending !== this.props.isAllPending || prevProps.routeProperties !== this.props.routeProperties || prevProps.isRoutePending !== this.props.isRoutePending) {
+            this.setState({
+              selected: this.props.routeProperties,
+              items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
+              filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
+              activeProperty: this.props.activeProperty
+            })
+
+        //   this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
+        //   this.setState({filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
+        //   this.setState({activeProperty: this.props.activeProperty})
         }
       }
 
@@ -118,10 +127,17 @@ class RouteEditor extends Component {
             }
         )
         .then(res => {
-            this.props.onGetAllAddresses()
-            this.props.onGetRouteProperties(this.props.activeRoute)
+    
             console.log("onSave done ")
             console.log(res)
+            this.props.onGetRouteProperties(this.props.activeRoute)
+            this.props.onGetAllAddresses()
+            setTimeout(() => { 
+                this.props.onGetRouteProperties(this.props.activeRoute)
+                this.props.onGetAllAddresses()
+            }, 500);
+            
+            // this.props.onGetRouteProperties(this.props.activeRoute)
         })
         .catch(err => console.log(err)) 
     }
@@ -187,10 +203,12 @@ class RouteEditor extends Component {
                 selected: result.droppable2
             });
         }
+        console.log(this.state)
     };
 
     handlePropertyClick = (property) => {
         this.props.onSetActiveProperty(property)
+        console.log(property.key)
     }
 
     onSearchChange = (event) => {
