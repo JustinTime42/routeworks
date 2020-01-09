@@ -33,7 +33,6 @@ const PropertyCard = (props) => {
         verticalAlign: "bottom"
     }
 
-
     return(
         <div style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>

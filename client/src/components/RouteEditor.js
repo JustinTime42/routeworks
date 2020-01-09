@@ -80,13 +80,15 @@ const getListStyle = isDraggingOver => ({
 class RouteEditor extends Component {
     constructor(props){
         super(props)
+        this.scrollRef = React.createRef()
         this.state = { 
             items: [],
             filteredItems: [],
             selected: [],
             searchField: '',
             showModal: false,
-            activeProperty: {}
+            activeProperty: {},
+            
         }
     }
     
@@ -105,12 +107,19 @@ class RouteEditor extends Component {
               filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
               activeProperty: this.props.activeProperty
             })
+            // if(this.props.activeProperty){
+            //     this.setState({ value: this.textInput.current.value})
+            // }
+            // if(this.scrollRef.current) {
 
+            //     window.scrollTo(0, this.scrollRef.current.offsetTop)
+            //     console.log(this.scrollRef.current) 
+            // }  
         //   this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
         //   this.setState({filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
         //   this.setState({activeProperty: this.props.activeProperty})
         }
-      }
+    }
 
     id2List = {
         droppable: 'filteredItems',
@@ -126,11 +135,10 @@ class RouteEditor extends Component {
                 unselected: this.state.filteredItems
             }
         )
-        .then(res => {
-    
+        .then(res => {    
             console.log("onSave done ")
             console.log(res)
-            this.props.onGetRouteProperties(this.props.activeRoute)
+           // this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.onGetAllAddresses()
             setTimeout(() => { 
                 this.props.onGetRouteProperties(this.props.activeRoute)
@@ -281,7 +289,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard ref={this.scrollRef} key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>
