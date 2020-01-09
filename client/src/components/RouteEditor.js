@@ -167,7 +167,10 @@ class RouteEditor extends Component {
             .then(res => {
                 console.log(res)
                 this.props.onGetAllAddresses()
-                this.props.onGetRouteProperties(this.props.activeRoute)
+                setTimeout(() => { 
+                    this.props.onGetRouteProperties(this.props.activeRoute)
+                    this.props.onGetAllAddresses()
+                }, 500);
             })
         })
         .catch(err => console.log(err))
