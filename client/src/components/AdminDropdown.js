@@ -91,7 +91,7 @@ class EditRouteButton extends Component {
                                         <Form.Control name="date" type="date" onChange={this.onSetDate}/>
                                         {
                                             this.state.showDownload ?
-                                            <CSVLink data={this.state.logs} headers={this.headers}>
+                                            <CSVLink data={this.state.logs} headers={this.headers} filename={`servicelogs_${this.state.date}`}>
                                             Download
                                             </CSVLink> : <></>
                                         }                                        
