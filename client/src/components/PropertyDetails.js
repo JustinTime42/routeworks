@@ -67,7 +67,7 @@ class PropertyDetails extends Component {
                     <Col>
                         <Card.Title>{property ? property.address ? property.address : null : null}</Card.Title>
                     </Col>
-                    <Col><Card.Title style={{textAlign: "right"}}>{property ? property.surface_type ? <p>Surface:<br></br>{property.surface_type}</p> : null : null }</Card.Title></Col>
+                    <Col><Card.Title style={{textAlign: "right"}}>{property ? property.surface_type ? <p>Surface:<br></br>{property.surface_type.toUpperCase()}</p> : null : null }</Card.Title></Col>
                 </Row>
                 
                 <Card.Body>
