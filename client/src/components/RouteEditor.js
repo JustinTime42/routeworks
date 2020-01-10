@@ -292,7 +292,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard i={index} key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>
@@ -328,7 +328,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard i={index} key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>

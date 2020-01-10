@@ -51,9 +51,10 @@ class DisplayRoute extends Component {
             <div className="driverGridContainer" style={{height: "100%", overflow: "auto"}}>
                 <div className="leftSide scrollable" style={{height: "600px", width:"100%"}}>
                     {
-                        this.props.routeProperties.map(address => {
+                        this.props.routeProperties.map((address, i )=> {
                             return (
-                                <PropertyCard                                     
+                                <PropertyCard
+                                    i={i}                                     
                                     key={address.key} 
                                     address={address}
                                     activeProperty={this.props.activeProperty}
