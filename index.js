@@ -216,6 +216,7 @@ app.get('/api/getlogs/:date', (req,res) => {
     const { date } = req.params
     db.where('service_log.timestamp', '>', date)
     .select('*')
+    .from('service_log')
     .then(data => res.json(data))
 })
 
