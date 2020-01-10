@@ -212,6 +212,13 @@ app.get('/api/getroute/:routeName', (req, res) => {
     })
 });
 
+app.get('/api/getlogs/:date', (req,res) => {
+    const { date } = req.params
+    db.where('service_log.timestamp', '>', date)
+    .select('*')
+    .then(data => res.json(data))
+})
+
  app.get('*', (req, res) => {
    res.sendFile(path.join(__dirname+'/client/build/index.html'));
  });
