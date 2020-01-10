@@ -265,7 +265,7 @@ class RouteEditor extends Component {
         
         return this.props.isAllPending || this.props.isRoutePending ?
         <h1>    </h1> :(
-            <div className="gridContainer">
+            <div className="adminGridContainer">
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <Droppable droppableId="droppable2">                    
                     {(provided, snapshot) => (
@@ -292,7 +292,7 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard ref={this.scrollRef} key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>

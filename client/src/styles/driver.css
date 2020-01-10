@@ -1,4 +1,9 @@
-.gridContainer {
+.driverGridContainer {
+    display: grid;
+    grid-template-columns: 40% 60%;
+}
+
+.adminGridContainer {
     display: grid;
     grid-template-columns: 50% 50%;
 }
