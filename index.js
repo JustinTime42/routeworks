@@ -181,7 +181,8 @@ app.post('/api/setstatus', (req, res) => {
             status: req.body.newStatus,
             notes: req.body.noteField,
             user_name: req.body.driver,
-            tractor: req.body.tractor
+            tractor: req.body.tractor,
+            cust_name: property.cust_name
         })
         .then(property => response.serviceLog = property)
         .catch(err => response.err.push(err))       
