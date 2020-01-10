@@ -99,7 +99,7 @@ class EditRouteButton extends Component {
                              </Form>                              
                          </Modal.Body>
                          <Modal.Footer>
-                            <Button variant="primary" onClick={this.onDownload}>Download</Button>
+                            <Button variant="primary" onClick={this.onDownload}>Create File</Button>
                             <Button variant="secondary" onClick={this.onClose}>Close</Button>
                          </Modal.Footer>
                      </Modal>
