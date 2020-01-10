@@ -7,6 +7,7 @@ const PropertyCard = (props) => {
     // if (props.address.route_name !== "unassigned" && !props.address.status) {
     //     status = "waiting"
     // }
+    const routePosition = props.i >= 0 ? `${props.i + 1}. ` : ''
 
     const cardStyle = {
         margin: '3px',
@@ -45,7 +46,7 @@ const PropertyCard = (props) => {
             </div>
 
             <p style={{textAlign: "left", width: "100%"}}>
-            {props.i}. {props.address.cust_name}{props.address.is_new ? " (NEW)" : null}            
+            {routePosition}{props.address.cust_name}{props.address.is_new ? " (NEW)" : null}            
             </p>                             
             <p>{props.address.address}</p>            
             {props.admin ? <p>route: {props.address.route_name}</p> : <div></div>}
