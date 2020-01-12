@@ -7,8 +7,8 @@ import RouteEditor from "../components/RouteEditor"
 import EditRouteButton from "../components/AdminDropdown"
 import BlackoutButton from "../components/BlackoutButton"
 import { showRouteEditor } from "../actions"
-import PropertyDetails from "../components/PropertyDetails"
 import TractorName from "../components/TractorName"
+import { Alert } from "react-bootstrap"
 
 import '../styles/driver.css'
 
@@ -17,6 +17,8 @@ const mapStateToProps = state => {
         showRouteEditor: state.showRouteEditor.showEditor,
         isRoutePending: state.getRouteProperties.isPending,
         isAllPending: state.requestAllAddresses.isPending,
+        driverName: state.setDriverName.driverName,
+        tractorName: state.setTractorName.tractorName
     }
 }
 
@@ -25,32 +27,24 @@ const mapDispatchToProps = (dispatch) => {
         onShowEditor: () => dispatch(showRouteEditor(true))
     }
 }
-class Driver extends Component {
 
+class Driver extends Component {
     render() {
         return (
             <div>
-                <div style={{display: "flex", justifyContent: "space-around", margin: "5px"}}>                    
-                    
+                <div style={{display: "flex", justifyContent: "space-around", margin: "5px"}}>    
                     <RouteSelector />
                     <DriverName />
                     <TractorName />
                     <EditRouteButton /> 
                     <BlackoutButton /> 
-                {/* <div className="gridContainer"> 
-                <div style={{display: "flex", justifyContent: "space-between"}}>
-                    <RouteSelector />
-                    <DriverName />
-                    <EditRouteButton /> 
                 </div>
-                <div className="rightSide">
-                                       
-                </div>                  */}
-
-                </div>
-                {this.props.showRouteEditor ? <RouteEditor /> : <DisplayRoute />}
-            </div>
-            
+                { 
+                this.props.showRouteEditor ? <RouteEditor /> : 
+                this.props.tractorName && this.props.driverName ? <DisplayRoute /> :
+                <Alert variant="warning">Please enter driver and tractor name to begin.</Alert>                
+                }                
+            </div>            
         )
     }    
 }

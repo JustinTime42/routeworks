@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import { connect } from 'react-redux'
+import { Form, Button } from 'react-bootstrap'
 import { setDriverName } from '../actions'
 
 const mapStateToProps = state => {
@@ -10,18 +11,32 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onSetDriverName: (event) => dispatch(setDriverName(event.target.value))
+        onSetDriverName: (name) => dispatch(setDriverName(name))
     }
 }
 
 class DriverName extends Component {
+    constructor() {
+        super()
+        this.state = {
+            driverName: ''
+        }
+    }
+
+    onChangeDriverName = (event) => {
+        this.setState({driverName: event.target.value})
+    }
+
+    onSaveDriverName = () => {
+        this.props.onSetDriverName(this.state.driverName)
+    }
 
     render() {
-        const { onSetDriverName } = this.props
-        return (
-            <form>
-            <input onChange={onSetDriverName} type="text" name="driverName" placeholder="Driver Name"></input>
-        </form>
+        return ( 
+            <div style={{display: "flex"}}>
+                <Form.Control type="text" placeholder="Driver Name" onChange={this.onChangeDriverName} />
+                <Button variant="primary" onClick={this.onSaveDriverName}>Set</Button>
+            </div>        
         )
     } 
 }
