@@ -48,7 +48,8 @@ app.post('/api/newproperty', (req, res) => {
         cust_phone: property.cust_phone,
         surface_type: property.surface_type,
         is_new: property.is_new,
-        notes: property.notes
+        notes: property.notes,
+        seasonal: property.seasonal
      })
      .then(address =>  res.json(address))
      .catch(err => res.json("error: " + err))
@@ -65,7 +66,8 @@ app.post('/api/editproperty', (req, res) => {
         cust_phone: property.cust_phone,
         surface_type: property.surface_type,
         is_new: property.is_new,
-        notes: property.notes
+        notes: property.notes,
+        seasonal: property.seasonal
     })
     .then(details => res.json(details))
     .catch(err => res.json("error: " + err))
