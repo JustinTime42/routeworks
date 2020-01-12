@@ -69,11 +69,14 @@ class PropertyDetails extends Component {
                     </Col>
                     <Col><Card.Title style={{textAlign: "right"}}>{property ? property.surface_type ? <p>Surface:<br></br>{property.surface_type.toUpperCase()}</p> : null : null }</Card.Title></Col>
                 </Row>
-                
                 <Card.Body>
                     <Card.Title>{property ? property.cust_name ? property.cust_name : null : null}{this.props.address? this.props.address.is_new ? " (NEW)" : null : null}</Card.Title>
                     <Card.Subtitle>{this.props.property ? this.props.property.cust_phone ? this.props.property.cust_phone : null : null}</Card.Subtitle>
-                </Card.Body>                
+                </Card.Body>        
+                <Card.Body>
+                    <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
+                    <Card.Title>{property ? property.seasonal ? "SEASONAL" : null : null}</Card.Title>
+                </Card.Body>        
                 {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Text className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Text></Card.Body> : null : null }
                 <Card.Body>
                 <Form.Group>

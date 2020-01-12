@@ -75,10 +75,18 @@ class NewProperty extends Component {
                 }
             })
         }
+        else if (name === "seasonal") {
+            this.setState(function(state, props) {
+                let property = state.activeProperty
+                property.seasonal = !state.activeProperty.seasonal
+                return {
+                  property
+                }
+            }) 
+        }
         else {
             this.setState({ activeProperty: { ...this.state.activeProperty, [name]: value} });
         }
-        console.log(this.state.activeProperty.notes)
     }
 
     setShow = (show) => {
@@ -127,6 +135,13 @@ class NewProperty extends Component {
                                         type="checkbox"
                                         label="New Property?"
                                         checked = {!!this.state.activeProperty.is_new}
+                                        onChange={this.onChange}
+                                    />
+                                    <Form.Check 
+                                        name="seasonal"
+                                        type="checkbox"
+                                        label="Seasonal?"
+                                        checked = {!!this.state.activeProperty.seasonal}
                                         onChange={this.onChange}
                                     />
                                 </Col>

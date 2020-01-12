@@ -30,6 +30,15 @@ const PropertyCard = (props) => {
         props.address.status === "Done" ? `rgba(0,255,0,0.7)` : null
     }
 
+    const seasonalStyle = {
+        display: "inline",
+        float: "left",
+        padding: "5px",
+        border: "1px, solid, #CCE5FF",
+        borderRadius: "5px",
+        backgroundColor: props.address.seasonal ? "#375A7F" : `rgba(0,0,0,0.0)`
+    }
+
     const editStyle = {
         verticalAlign: "bottom"
     }
@@ -37,6 +46,7 @@ const PropertyCard = (props) => {
     return(
         <div style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>
+                <div style={seasonalStyle}></div>
                 {props.address.status ? 
                     <p style={statusStyle}>{props.address.status}</p> : <p style={statusStyle}></p>             
                 } 
@@ -46,7 +56,7 @@ const PropertyCard = (props) => {
             </div>
 
             <p style={{textAlign: "left", width: "100%"}}>
-            {routePosition}{props.address.cust_name}{props.address.is_new ? " (NEW)" : null}            
+            {routePosition}{props.address.cust_name}{props.address.is_new ? "*" : null}            
             </p>                             
             <p>{props.address.address}</p>            
             {props.admin ? <p>route: {props.address.route_name}</p> : <div></div>}
