@@ -56,9 +56,9 @@ const PropertyCard = (props) => {
             </div>
 
             <p style={{textAlign: "left", width: "100%"}}>  
-            {routePosition}{props.address.cust_name}{props.address.is_new ? "*" : null}            
+            {routePosition}{props.address.cust_name ? props.address.cust_name : "name"}{props.address.is_new ? "*" : null}            
             </p>                             
-            <p>{props.address.address}</p>            
+            <p>{props.address.address ? props.address.address : "address"} </p>            
             {props.admin ? <p>route: {props.address.route_name}</p> : <div></div>}
         </div>
     )
