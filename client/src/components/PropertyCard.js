@@ -44,7 +44,7 @@ const PropertyCard = (props) => {
     }
 
     return(
-        <div style={cardStyle} onClick={() => props.handleClick(props.address)}>
+        <div id={`card${props.i}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>
                 <div style={seasonalStyle}></div>
                 {props.address.status ? 
@@ -55,7 +55,7 @@ const PropertyCard = (props) => {
                 }
             </div>
 
-            <p style={{textAlign: "left", width: "100%"}}>
+            <p style={{textAlign: "left", width: "100%"}}>  
             {routePosition}{props.address.cust_name}{props.address.is_new ? "*" : null}            
             </p>                             
             <p>{props.address.address}</p>            

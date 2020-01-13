@@ -43,7 +43,13 @@ class DisplayRoute extends Component {
     }
 
     changeActiveProperty = (position) => {
-        this.props.onSetActiveProperty(this.props.routeProperties.find( item => item.route_position === position))        
+        this.props.onSetActiveProperty(this.props.routeProperties.find( item => item.route_position === position)) 
+        console.log(`card${position}`)
+        if (document.getElementById(`card${position}`)) {
+            console.log(`card${position}`)
+            document.getElementById(`card${position}`).scrollIntoView(true) //.scroll(0,100)
+        } 
+       
     }
 
     render(){
@@ -53,7 +59,7 @@ class DisplayRoute extends Component {
                     {
                         this.props.routeProperties.map((address, i )=> {
                             return (
-                                <PropertyCard
+                                <PropertyCard                                    
                                     i={i}                                     
                                     key={address.key} 
                                     address={address}
