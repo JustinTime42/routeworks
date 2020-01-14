@@ -150,9 +150,9 @@ app.post('/api/saveroute', (req, res) => {
                 route_name: route
             })
             .update({
-                route_name: "unassigned",
-                route_position: null,
-                status: null,
+                route_name: route_name === route ? "unassigned" : item.route_name,
+                route_position: route_name === route ? null : item.route_position,
+                status: route_name === route ? null : item.status,
                 address: item.address,
                 cust_name: item.cust_name,
                 cust_phone: item.cust_phone,
