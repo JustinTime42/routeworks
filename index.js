@@ -147,7 +147,6 @@ app.post('/api/saveroute', (req, res) => {
             .returning('address')
             .where({
                 key: item.key,
-                route_name: route
             })
             .update({
                 route_name: item.route_name === route ? "unassigned" : item.route_name,
