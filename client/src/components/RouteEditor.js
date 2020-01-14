@@ -80,7 +80,6 @@ const getListStyle = isDraggingOver => ({
 class RouteEditor extends Component {
     constructor(props){
         super(props)
-        this.scrollRef = React.createRef()
         this.state = { 
             items: [],
             filteredItems: [],
@@ -93,14 +92,15 @@ class RouteEditor extends Component {
     }
     
     componentDidMount() {
-        this.props.onGetAllAddresses()        
+        this.props.onGetAllAddresses()   
+      //  this.props.onGetRouteProperties()     
     }
 
     componentDidUpdate(prevProps, prevState) {
         // if(prevState.selected !== this.props.routeProperties) {
         //     this.props.onGetRouteProperties()
         // }
-        if(prevProps.addresses !== this.props.addresses || prevProps.activeRoute !== this.props.activeRoute || prevProps.isAllPending !== this.props.isAllPending || prevProps.routeProperties !== this.props.routeProperties || prevProps.isRoutePending !== this.props.isRoutePending) {
+        if(prevProps.activeRoute !== this.props.activeRoute || prevProps.isAllPending !== this.props.isAllPending || prevProps.isRoutePending !== this.props.isRoutePending) {
             this.setState({
               selected: this.props.routeProperties,
               items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
@@ -127,6 +127,7 @@ class RouteEditor extends Component {
     };
 
     onSave = () => {
+        console.log("onsave starting")
         console.log(this.state.selected)
         axios.post('https://snowline-route-manager.herokuapp.com/api/saveroute', 
             {
@@ -140,10 +141,12 @@ class RouteEditor extends Component {
             console.log(res)
            // this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.onGetAllAddresses()
+           // this.props.onGetRouteProperties(this.props.activeRoute)
+
             setTimeout(() => { 
                 this.props.onGetRouteProperties(this.props.activeRoute)
                 this.props.onGetAllAddresses()
-            }, 500);
+            }, 1000);
         })
         .catch(err => console.log(err)) 
     }
@@ -238,14 +241,11 @@ class RouteEditor extends Component {
     }
 
     onNewPropertyClick = () => {
-        //this.props.onSetActiveProperty(null)
-        // this.props.onGetAllAddresses()
         this.setState({showModal: !this.state.showModal, activeProperty: null})
         
     }
 
     onEditPropertyClick = (property) => {
-        
         console.log(property)
         //this.props.onSetActiveProperty(property)        
         this.setState({showModal: !this.state.showModal, activeProperty: property})
@@ -254,9 +254,29 @@ class RouteEditor extends Component {
     onCloseClick = () => {
             // this.props.onGetAllAddresses() 
             // this.props.onGetRouteProperties(this.props.activeRoute)
-        this.onSave()
+        //this.onSave()
         //this.props.onSetActiveProperty(null)
         this.setState({showModal: !this.state.showModal})
+        console.log(this.state.selected)
+    }
+
+    onPropertySave = (newDetails) => {
+        //Look in filtered items and selected and find the property where key =property.key. 
+        //Save the property info to the appropriate list. 
+        // We could also update the properties in the redux store? lets start with just local state. 
+        if (!this.props.activeProperty) return
+
+        if(this.props.activeProperty.route_name === this.props.activeRoute) {
+            let properties = this.state.selected
+            let index = this.state.selected.findIndex(item => item.key === this.props.activeProperty.key)
+            properties[index] = newDetails
+            this.setState({selected: properties})
+        } else {
+            let properties = this.state.filteredItems
+            let index = this.state.filteredItems.findIndex(item => item.key === this.props.activeProperty.key)
+            properties[index] = newDetails
+            this.setState({filteredItems: properties})
+        }
     }
     
     render() {
@@ -290,7 +310,14 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard i={index} key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard 
+                                                i={index} 
+                                                key={item.key} 
+                                                address={item} 
+                                                admin={true} 
+                                                editClick={this.onEditPropertyClick} 
+                                                handleClick={this.handlePropertyClick}
+                                                onSave={this.onPropertySave}/>
                                         </div>
                                     )}
                                 </Draggable>
@@ -336,7 +363,12 @@ class RouteEditor extends Component {
                     )}
                 </Droppable>
             </DragDropContext>
-                <NewProperty activeProperty={this.state.activeProperty} show={this.state.showModal} close={this.onCloseClick}/>
+                <NewProperty 
+                    activeProperty={this.state.activeProperty} 
+                    onSave={this.onPropertySave}
+                    show={this.state.showModal}
+                    close={this.onCloseClick}
+                />
             </div>
            
         );
