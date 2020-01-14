@@ -72,7 +72,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 
 const getListStyle = isDraggingOver => ({   
     padding: grid,
-    height: "600px", 
+    height: "90vh", 
     overflow: "scroll", 
     width: "90%"
 });
