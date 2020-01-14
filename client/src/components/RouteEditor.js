@@ -139,10 +139,7 @@ class RouteEditor extends Component {
         .then(res => {    
             console.log("onSave done ")
             console.log(res)
-           // this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.onGetAllAddresses()
-           // this.props.onGetRouteProperties(this.props.activeRoute)
-
             setTimeout(() => { 
                 this.props.onGetRouteProperties(this.props.activeRoute)
                 this.props.onGetAllAddresses()
@@ -246,29 +243,20 @@ class RouteEditor extends Component {
     }
 
     onEditPropertyClick = (property) => {
-        console.log(property)
-        //this.props.onSetActiveProperty(property)        
+        console.log(property)       
         this.setState({showModal: !this.state.showModal, activeProperty: property})
     }
 
     onCloseClick = () => {
-            // this.props.onGetAllAddresses() 
-            // this.props.onGetRouteProperties(this.props.activeRoute)
-        //this.onSave()
-        //this.props.onSetActiveProperty(null)
         this.setState({showModal: !this.state.showModal})
         console.log(this.state.selected)
     }
 
-    onPropertySave = (newDetails) => {
-        //Look in filtered items and selected and find the property where key =property.key. 
-        //Save the property info to the appropriate list. 
-        // We could also update the properties in the redux store? lets start with just local state. 
-        if (!this.props.activeProperty) return
-
-        if(this.props.activeProperty.route_name === this.props.activeRoute) {
+    onPropertySave = (newDetails) => {       
+        let index = this.state.selected.findIndex(item => item.key === this.props.activeProperty.key)
+        console.log(index)        
+        if (index !== -1) {
             let properties = this.state.selected
-            let index = this.state.selected.findIndex(item => item.key === this.props.activeProperty.key)
             properties[index] = newDetails
             this.setState({selected: properties})
         } else {
