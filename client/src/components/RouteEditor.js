@@ -292,7 +292,7 @@ class RouteEditor extends Component {
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
                                 <div style={{display: "flex", justifyContent: "space-around"}}>
-                                    <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Route</Button>
+                                    <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Changes</Button>
                                     <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onInitRoute}>Initialize Route</Button>
                                 </div>
                                 
