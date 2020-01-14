@@ -127,13 +127,13 @@ app.post('/api/saveroute', (req, res) => {
                 route_name: route,
                 route_position: i,
                 status: item.status || "Waiting",
-                address: property.address,
-                cust_name: property.cust_name,
-                cust_phone: property.cust_phone,
-                surface_type: property.surface_type,
-                is_new: property.is_new,
-                notes: property.notes,
-                seasonal: property.seasonal
+                address: item.address,
+                cust_name: item.cust_name,
+                cust_phone: item.cust_phone,
+                surface_type: item.surface_type,
+                is_new: item.is_new,
+                notes: item.notes,
+                seasonal: item.seasonal
             })
             .then(address => {
                 response.add.push(address)
@@ -153,13 +153,13 @@ app.post('/api/saveroute', (req, res) => {
                 route_name: "unassigned",
                 route_position: null,
                 status: null,
-                address: property.address,
-                cust_name: property.cust_name,
-                cust_phone: property.cust_phone,
-                surface_type: property.surface_type,
-                is_new: property.is_new,
-                notes: property.notes,
-                seasonal: property.seasonal
+                address: item.address,
+                cust_name: item.cust_name,
+                cust_phone: item.cust_phone,
+                surface_type: item.surface_type,
+                is_new: item.is_new,
+                notes: item.notes,
+                seasonal: item.seasonal
             })
             .then(address => {
                 response.remove.push(address)
