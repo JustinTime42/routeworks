@@ -34,20 +34,20 @@ class NewProperty extends Component {
         }
       }
 
-    onSubmit = () => {
-        console.log(this.state)
-        axios.post(`https://snowline-route-manager.herokuapp.com/api/${this.state.api}`, 
-            {
-                ...this.state.activeProperty
-            }
-        )
-        .then(res => {
-            // this.props.onGetAllAddresses()
-            // this.props.onGetRouteProperties(this.props.activeRoute) 
-            console.log("updated address: " + res.key)
-        })
-        .catch(err => console.log(err)) 
-    }
+    // onSubmit = () => {
+    //     console.log(this.state)
+    //     axios.post(`https://snowline-route-manager.herokuapp.com/api/${this.state.api}`, 
+    //         {
+    //             ...this.state.activeProperty
+    //         }
+    //     )
+    //     .then(res => {
+    //         // this.props.onGetAllAddresses()
+    //         // this.props.onGetRouteProperties(this.props.activeRoute) 
+    //         console.log("updated address: " + res.key)
+    //     })
+    //     .catch(err => console.log(err)) 
+    // }
 
     onDelete = () => {
         axios.post('https://snowline-route-manager.herokuapp.com/api/deleteproperty', 
@@ -57,6 +57,8 @@ class NewProperty extends Component {
         )
         .then(res => {
             console.log("deleted " + res.address)
+            this.props.onGetAllAddresses()
+            this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.close()
         })
         .catch(err => console.log(err))
@@ -95,7 +97,7 @@ class NewProperty extends Component {
 
     render() {
         return (
-            <Modal show={this.props.show} onHide={this.props.close}>
+            <Modal style={{maxHeight: "600px", overflow: "scroll"}} show={this.props.show} onHide={this.props.close}>
                     <Modal.Header>New Property</Modal.Header>
                     <Modal.Body>
                         <Form>

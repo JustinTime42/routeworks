@@ -72,7 +72,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 
 const getListStyle = isDraggingOver => ({   
     padding: grid,
-    height: "90vh", 
+    height: "600px", 
     overflow: "scroll", 
     width: "90%"
 });
@@ -86,20 +86,15 @@ class RouteEditor extends Component {
             selected: [],
             searchField: '',
             showModal: false,
-            activeProperty: {},
-            
+            activeProperty: {},            
         }
     }
     
     componentDidMount() {
-        this.props.onGetAllAddresses()   
-      //  this.props.onGetRouteProperties()     
+        this.props.onGetAllAddresses()       
     }
 
     componentDidUpdate(prevProps, prevState) {
-        // if(prevState.selected !== this.props.routeProperties) {
-        //     this.props.onGetRouteProperties()
-        // }
         if(prevProps.activeRoute !== this.props.activeRoute || prevProps.isAllPending !== this.props.isAllPending || prevProps.isRoutePending !== this.props.isRoutePending) {
             this.setState({
               selected: this.props.routeProperties,
@@ -107,17 +102,6 @@ class RouteEditor extends Component {
               filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
               activeProperty: this.props.activeProperty
             })
-            // if(this.props.activeProperty){
-            //     this.setState({ value: this.textInput.current.value})
-            // }
-            // if(this.scrollRef.current) {
-
-            //     window.scrollTo(0, this.scrollRef.current.offsetTop)
-            //     console.log(this.scrollRef.current) 
-            // }  
-        //   this.setState({items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) })
-        //   this.setState({filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute) }) 
-        //   this.setState({activeProperty: this.props.activeProperty})
         }
     }
 
@@ -238,12 +222,11 @@ class RouteEditor extends Component {
     }
 
     onNewPropertyClick = () => {
-        this.setState({showModal: !this.state.showModal, activeProperty: null})
-        
+        this.props.onSetActiveProperty(null)
+        this.setState({showModal: !this.state.showModal})        
     }
 
     onEditPropertyClick = (property) => {
-        console.log(property)       
         this.setState({showModal: !this.state.showModal, activeProperty: property})
     }
 
@@ -252,19 +235,34 @@ class RouteEditor extends Component {
         console.log(this.state.selected)
     }
 
-    onPropertySave = (newDetails) => {       
-        let index = this.state.selected.findIndex(item => item.key === this.props.activeProperty.key)
-        console.log(index)        
-        if (index !== -1) {
-            let properties = this.state.selected
-            properties[index] = newDetails
-            this.setState({selected: properties})
+    onPropertySave = (newDetails) => {     
+        if (!newDetails.key) {
+            axios.post(`https://snowline-route-manager.herokuapp.com/api/newproperty`, 
+                {
+                    ...newDetails
+                }
+            )
+            .then(res => {
+                this.props.onGetAllAddresses()
+                this.props.onGetRouteProperties(this.props.activeRoute)
+                console.log("updated address: " + res)
+            })
+            .catch(err => console.log(err)) 
         } else {
-            let properties = this.state.filteredItems
-            let index = this.state.filteredItems.findIndex(item => item.key === this.props.activeProperty.key)
-            properties[index] = newDetails
-            this.setState({filteredItems: properties})
+            let index = this.state.selected.findIndex(item => item.key === this.props.activeProperty.key)
+            console.log(index)        
+            if (index !== -1) {
+                let properties = this.state.selected
+                properties[index] = newDetails
+                this.setState({selected: properties})
+            } else {
+                let properties = this.state.filteredItems
+                let index = this.state.filteredItems.findIndex(item => item.key === this.props.activeProperty.key)
+                properties[index] = newDetails
+                this.setState({filteredItems: properties})
+            }
         }
+
     }
     
     render() {
