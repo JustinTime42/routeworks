@@ -45,6 +45,7 @@ class EditRouteButton extends Component {
         switch(event) {
             case "editor": return this.props.showEditor ? this.props.onShowEditor(false) : this.props.onShowEditor(true)
             case "logs": return this.showLogs()
+            default: return
         }
     }
 
@@ -78,7 +79,7 @@ class EditRouteButton extends Component {
                                     {this.props.showEditor ? "Show Route" : "Show Editor"}                               
                             </Dropdown.Item>
                             <Dropdown.Item key="logs" eventKey="logs">                                
-                                    Show Logs                                
+                                    Show Logs                            
                             </Dropdown.Item>                   
                         
                         </DropdownButton>
@@ -103,10 +104,10 @@ class EditRouteButton extends Component {
                             <Button variant="secondary" onClick={this.onClose}>Close</Button>
                          </Modal.Footer>
                      </Modal>
-                     </>
+                        </>
                                                
                     )}
-                    no={() => <p>can't</p>}               
+                    no={() => <p></p>}               
                 />                            
             )}
             </AuthConsumer>
