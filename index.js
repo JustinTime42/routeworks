@@ -41,7 +41,7 @@ app.post('/api/addroute', (req, res) => {
 app.post('/api/newproperty', (req, res) => {
     const property = req.body
     db('properties')    
-    .returning('address')
+    .returning('*')
     .insert({
         address: property.address,
         cust_name: property.cust_name,
@@ -51,7 +51,7 @@ app.post('/api/newproperty', (req, res) => {
         notes: property.notes,
         seasonal: property.seasonal
      })
-     .then(address =>  res.json(address))
+     .then(property =>  res.json(property))
      .catch(err => res.json("error: " + err))
 })
 
