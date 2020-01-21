@@ -232,7 +232,33 @@ class RouteEditor extends Component {
 
     onCloseClick = () => {
         this.setState({showModal: !this.state.showModal})
-        console.log(this.state.selected)
+    }
+
+    onDelete = () => {
+        axios.post('https://snowline-route-manager.herokuapp.com/api/deleteproperty', 
+            {
+                ...this.state.activeProperty
+            }
+        )
+        .then(res => {
+            let sIndex = this.state.selected.findIndex(item => item.key === this.props.activeProperty.key)           
+            let selectedProperties = this.state.selected
+            selectedProperties.splice(sIndex, 1)
+            this.setState({selected: selectedProperties})
+        
+            let filteredProperties = this.state.filteredItems
+            let fIndex = this.state.filteredItems.findIndex(item => item.key === this.props.activeProperty.key)
+            filteredProperties.splice(fIndex, 1)              
+
+            let allProperties = this.state.items
+            let iIndex = this.state.items.findIndex(item => item.key === this.props.activeProperty.key)
+            allProperties.splice(iIndex, 1) 
+            this.setState({items: allProperties, filteredItems: filteredProperties})
+            
+            this.onCloseClick()
+        })
+        .catch(err => console.log(err))
+
     }
 
     onPropertySave = (newDetails) => {     
@@ -243,9 +269,12 @@ class RouteEditor extends Component {
                 }
             )
             .then(res => {
-                this.props.onGetAllAddresses()
-                this.props.onGetRouteProperties(this.props.activeRoute)
-                console.log("updated address: " + res)
+                let filteredAddresses = this.state.filteredItems
+                filteredAddresses.push(res.data[0])
+                let allAddresses = this.state.items
+                allAddresses.push(res.data[0])
+                this.setState({items: allAddresses})   
+
             })
             .catch(err => console.log(err)) 
         } else {
@@ -354,6 +383,7 @@ class RouteEditor extends Component {
                     onSave={this.onPropertySave}
                     show={this.state.showModal}
                     close={this.onCloseClick}
+                    onDelete={this.onDelete}
                 />
             </div>
            

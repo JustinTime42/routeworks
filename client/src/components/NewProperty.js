@@ -49,21 +49,21 @@ class NewProperty extends Component {
     //     .catch(err => console.log(err)) 
     // }
 
-    onDelete = () => {
-        axios.post('https://snowline-route-manager.herokuapp.com/api/deleteproperty', 
-            {
-                ...this.state.activeProperty
-            }
-        )
-        .then(res => {
-            console.log("deleted " + res.address)
-            this.props.onGetAllAddresses()
-            this.props.onGetRouteProperties(this.props.activeRoute)
-            this.props.close()
-        })
-        .catch(err => console.log(err))
+    // onDelete = () => {
+    //     axios.post('https://snowline-route-manager.herokuapp.com/api/deleteproperty', 
+    //         {
+    //             ...this.state.activeProperty
+    //         }
+    //     )
+    //     .then(res => {
+    //         console.log("deleted " + res.address)
+    //         this.props.onGetAllAddresses()
+    //         this.props.onGetRouteProperties(this.props.activeRoute)
+    //         this.props.close()
+    //     })
+    //     .catch(err => console.log(err))
 
-    }
+    // }
 
     onChange = (event) => {
         const name = event.target.name
@@ -166,7 +166,7 @@ class NewProperty extends Component {
                     </p>
                     <hr />
                     <div className="d-flex justify-content-end">
-                    <Button onClick={this.onDelete} variant="outline-success">
+                    <Button onClick={this.props.onDelete} variant="outline-success">
                         Permanently Delete This Property
                     </Button>
                     </div>
