@@ -4,9 +4,9 @@ import {
     REQUEST_ROUTES_SUCCESS,
     REQUEST_ROUTES_FAILED, 
     SET_DRIVER_NAME,
-    REQUEST_ADDRESSES_PENDING,
-    REQUEST_ADDRESSES_SUCCESS,
-    REQUEST_ADDRESSES_FAILED,
+    UPDATE_ADDRESSES_PENDING,
+    UPDATE_ADDRESSES_SUCCESS,
+    UPDATE_ADDRESSES_FAILED,
     GET_ROUTE_SUCCESS,
     GET_ROUTE_PENDING,
     GET_ROUTE_FAILED,
@@ -16,7 +16,10 @@ import {
     SAVE_ROUTE_FAILED,
     SHOW_ROUTE_EDITOR,
     SHOW_ROUTE,
-    SET_TRACTOR_NAME
+    SET_TRACTOR_NAME,
+    NEW_PROPERTY_SUCCESS,
+    NEW_PROPERTY_PENDING,
+    NEW_PROPERTY_FAILED
 } from './constants.js'
 
 export const setActiveRoute = (routeName) => {
@@ -48,12 +51,55 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
     .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
 }
 
-//currently not in use. consider removing
+export const saveNewProperty = (property, allAddresses) => (dispatch) => {
+    dispatch({ type: UPDATE_ADDRESSES_PENDING})
+    fetch('https://snowline-route-manager.herokuapp.com/api/newproperty', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },   
+        body: JSON.stringify(property)
+    })
+    .then(response => response.json())
+    .then(res => {
+        console.log(res)
+        allAddresses.push(res[0])
+        dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
+    })
+    .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error }))
+}
+
+export const deleteProperty = (property, allAddresses) => (dispatch) => {
+    dispatch({ type: UPDATE_ADDRESSES_PENDING})
+    fetch('https://snowline-route-manager.herokuapp.com/api/deleteproperty', {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(property)
+    })
+    .then(res => res.json())
+    .then(res => {
+        console.log(res)
+        allAddresses.splice(allAddresses.indexOf(property), 1)
+        dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
+    })
+    .catch(err => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: err}))
+}
+
+export const editProperty = (property, allAddresses) => (dispatch) => {
+    dispatch({ type: UPDATE_ADDRESSES_PENDING})
+    let index = allAddresses.findIndex(item => item.key === property.key)
+    allAddresses[index] = property
+    console.log(allAddresses[index])
+    dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
+}
+
+//currently not in use. refactor routeEditor.onSave to use
 export const saveRoute = (newRoute) => (dispatch) => {
     dispatch({ type: SAVE_ROUTE_PENDING})
     fetch('https://snowline-route-manager.herokuapp.com/api/saveroute', {
-        method: 'POST', 
-        
+        method: 'POST',     
         body: JSON.stringify({newRoute})
     })
     .then(response => response.json())
@@ -76,11 +122,11 @@ export const setTractorName = (tractorName) => {
 }
 
 export const requestAllAddresses = () => (dispatch) => {
-    dispatch({ type: REQUEST_ADDRESSES_PENDING })
+    dispatch({ type: UPDATE_ADDRESSES_PENDING })
     fetch('https://snowline-route-manager.herokuapp.com/api/properties')
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_ADDRESSES_SUCCESS, payload: data}))
-    .catch(error => dispatch({ type: REQUEST_ADDRESSES_FAILED, payload: error}))
+    .then(data => dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: data}))
+    .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error}))
 }
 
 export const showRouteEditor = (show) => {

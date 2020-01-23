@@ -3,9 +3,9 @@ import { SET_ACTIVE_ROUTE,
     REQUEST_ROUTES_SUCCESS,
     REQUEST_ROUTES_FAILED,
     SET_DRIVER_NAME,
-    REQUEST_ADDRESSES_PENDING,
-    REQUEST_ADDRESSES_SUCCESS,
-    REQUEST_ADDRESSES_FAILED,
+    UPDATE_ADDRESSES_PENDING,
+    UPDATE_ADDRESSES_SUCCESS,
+    UPDATE_ADDRESSES_FAILED,
     GET_ROUTE_SUCCESS,
     GET_ROUTE_PENDING,
     GET_ROUTE_FAILED,
@@ -15,7 +15,13 @@ import { SET_ACTIVE_ROUTE,
     SAVE_ROUTE_FAILED,
     SHOW_ROUTE_EDITOR,
     SHOW_ROUTE,
-    SET_TRACTOR_NAME
+    SET_TRACTOR_NAME,
+    NEW_PROPERTY_SUCCESS,
+    NEW_PROPERTY_PENDING,
+    NEW_PROPERTY_FAILED,
+    DEL_PROPERTY_SUCCESS,
+    DEL_PROPERTY_PENDING,
+    DEL_PROPERTY_FAILED
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -89,6 +95,25 @@ export const setTractorName = (state = initialStateTractor, action={}) => {
     }
 }
 
+// const initialStateNewProperty = {
+//     addresses: {},
+//     isPending: false,
+//     error: ''
+// }
+
+// export const saveNewProperty = (state = initialStateNewProperty, action={}) => {
+//     switch(action.type) {
+//         case NEW_PROPERTY_PENDING:
+//             return {...state, isPending: true}
+//         // case NEW_PROPERTY_SUCCESS: 
+//         //     return {...state, addresses: action.payload, isPending: false}
+//         case NEW_PROPERTY_FAILED:
+//             return {...state, error: action.payload, isPending: false}
+//         default:
+//             return state
+//     }
+// }
+
 const initialStateAllAddresses = {
     addresses: [],
     isPending: true,
@@ -97,11 +122,11 @@ const initialStateAllAddresses = {
 
 export const requestAllAddresses = (state = initialStateAllAddresses, action={}) => {
     switch(action.type) {
-        case REQUEST_ADDRESSES_PENDING: 
+        case UPDATE_ADDRESSES_PENDING: 
             return {...state, isPending: true}
-        case REQUEST_ADDRESSES_SUCCESS:
+        case UPDATE_ADDRESSES_SUCCESS:
             return {...state, addresses: action.payload, isPending: false}
-        case REQUEST_ADDRESSES_FAILED:
+        case UPDATE_ADDRESSES_FAILED:
             return {...state, error: action.payload, isPending: false}
         default:
             return state

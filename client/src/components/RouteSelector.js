@@ -69,7 +69,7 @@ class RouteSelector extends Component {
     render() {
         const { routes, isPending, activeRoute, error, onRouteSelect } = this.props
         return isPending ?
-        <h1>Loading</h1> :
+        <p>Loading</p> :
             (           
             <DropdownButton title={activeRoute || "Select Route"} onSelect={onRouteSelect} >      
                    <AuthConsumer>
