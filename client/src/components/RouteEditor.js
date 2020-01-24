@@ -98,15 +98,6 @@ class RouteEditor extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        // if(this.props.activeRoute !== prevProps.activeRoute) {
-        //     console.log("different!")
-        //     this.setState({
-        //       selected: this.props.addresses.filter(address => address.route_name === this.props.activeRoute),
-        //       items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-        //       filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-        //       activeProperty: this.props.activeProperty
-        //     })
-        // }
 
         if(this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
             console.log("different!")
@@ -117,16 +108,6 @@ class RouteEditor extends Component {
                 activeProperty: this.props.activeProperty
             })   
         }
-        
-        //NOTE: now just need to figure out why it isn't populating until you change the active route
-      
-        // if(prevProps.activeRoute !== this.props.activeRoute){
-        //     this.setState({
-        //         selected: this.props.addresses.filter(address => address.route_name === this.props.activeRoute),
-        //         items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-        //         filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-        //     })
-        // }
     }
 
     id2List = {
@@ -244,12 +225,6 @@ class RouteEditor extends Component {
                 }
             })
             this.onFilterProperties(this.state.searchField)
-        
-            //console.log(selected)
-            // this.setState({
-            //     items: this.props.addresses,
-            //     selected: this.props.addresses.filter(item => item.route_name === this.props.activeRoute)
-            // })
         }        
     }
 
@@ -279,8 +254,7 @@ class RouteEditor extends Component {
 
     onSearchChange = (event) => {
         const filteredItems = this.onFilterProperties(event.target.value)
-        this.setState({searchField: event.target.value, filteredItems: filteredItems})
-        
+        this.setState({searchField: event.target.value, filteredItems: filteredItems})        
     }
 
     onNewPropertyClick = () => {
@@ -298,31 +272,6 @@ class RouteEditor extends Component {
 
     onDelete = () => {
         this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses)
-
-        // axios.post('https://snowline-route-manager.herokuapp.com/api/deleteproperty', 
-        //     {
-        //         ...this.state.activeProperty
-        //     }
-        // )
-        // .then(res => {
-        //     let sIndex = this.state.selected.findIndex(item => item.key === this.props.activeProperty.key)           
-        //     let selectedProperties = this.state.selected
-        //     selectedProperties.splice(sIndex, 1)
-        //     this.setState({selected: selectedProperties})
-        
-        //     let filteredProperties = this.state.filteredItems
-        //     let fIndex = this.state.filteredItems.findIndex(item => item.key === this.props.activeProperty.key)
-        //     filteredProperties.splice(fIndex, 1)              
-
-        //     let allProperties = this.state.items
-        //     let iIndex = this.state.items.findIndex(item => item.key === this.props.activeProperty.key)
-        //     allProperties.splice(iIndex, 1) 
-        //     this.setState({items: allProperties, filteredItems: filteredProperties})
-            
-        //     this.onCloseClick()
-        // })
-        // .catch(err => console.log(err))
-
     }
 
     onPropertySave = (newDetails) => {  
@@ -338,47 +287,23 @@ class RouteEditor extends Component {
             filteredItems: this.onFilterProperties(this.state.searchField),                          
             selected: this.props.addresses.filter(item => item.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
         })
-        //Now it updates, but messes with the order. 
-
-
-
-        // if (!newDetails.key) {
-        //     axios.post(`https://snowline-route-manager.herokuapp.com/api/newproperty`, 
-        //         {
-        //             ...newDetails
-        //         }
-        //     )
-        //     .then(res => {
-        //         console.log(res)
-        //         let filteredAddresses = this.state.filteredItems
-        //         filteredAddresses.push(res.data[0])
-        //         let allAddresses = this.state.items
-        //         allAddresses.push(res.data[0])
-        //         this.setState({items: allAddresses})
-
-        //     })
-        //     .catch(err => console.log(err)) 
-        // } else {
-        //     let index = this.state.selected.findIndex(item => item.key === this.props.activeProperty.key)
-        //     console.log(index)        
-        //     if (index !== -1) {
-        //         let properties = this.state.selected
-        //         properties[index] = newDetails
-        //         this.setState({selected: properties})
-        //     } else {
-        //         let properties = this.state.filteredItems
-        //         let index = this.state.filteredItems.findIndex(item => item.key === this.props.activeProperty.key)
-        //         properties[index] = newDetails
-        //         this.setState({filteredItems: properties})
-        //     }
-        // }
 
     }
     
     render() {
         
         return this.props.isAllPending || this.props.isRoutePending ?
-        <h1>    </h1> :(
+        <h1></h1> :(
+            <>
+            <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
+                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Changes</Button>
+                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onInitRoute}>Initialize Route</Button>
+                <input 
+                    type="search" placeholder="Search" 
+                    onChange={this.onSearchChange}
+                />
+                <Button variant="primary" size="sm" onClick={this.onNewPropertyClick}>New</Button>
+            </div>
             <div className="adminGridContainer">
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <Droppable droppableId="droppable2">                    
@@ -387,11 +312,6 @@ class RouteEditor extends Component {
                             className="leftSide, scrollable"
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
-                                <div style={{display: "flex", justifyContent: "space-around"}}>
-                                    <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Changes</Button>
-                                    <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onInitRoute}>Initialize Route</Button>
-                                </div>
-                                
                             {this.state.selected.map((item, index) => (
                                 <Draggable
                                     key={item.key}
@@ -417,7 +337,7 @@ class RouteEditor extends Component {
                                         </div>
                                     )}
                                 </Draggable>
-                            ))//.sort((a, b) => a.route_position < b.route_position ? 1 : -1)
+                            ))
                             }
                             {provided.placeholder}
                         </div>
@@ -429,13 +349,6 @@ class RouteEditor extends Component {
                             ref={provided.innerRef}
                             className="rightSide, scrollable"
                             style={getListStyle(snapshot.isDraggingOver)}>
-                                <div style={{display: "flex", justifyContent:"space-around", margin: "3px"}}>
-                                    <input 
-                                        type="search" placeholder="Search" 
-                                        onChange={this.onSearchChange}
-                                    />
-                                    <Button variant="primary" size="sm" onClick={this.onNewPropertyClick}>New</Button>
-                                </div>
                             {this.state.filteredItems.map((item, index) => (
                                 <Draggable
                                     key={item.key}
@@ -468,8 +381,8 @@ class RouteEditor extends Component {
                     onDelete={this.onDelete}
                 />
             </div>
-           
-        );
+            </>  
+        )
     }
 }   
 
