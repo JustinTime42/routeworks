@@ -55,7 +55,7 @@ class DisplayRoute extends Component {
     render(){
         return(
             <div className="driverGridContainer" style={{height: "100%", overflow: "auto"}}>
-                <div className="leftSide scrollable" style={{height: "600px", width:"100%"}}>
+                <div className="leftSide scrollable" style={{height: "90vh", width:"100%"}}>
                     {
                         this.props.routeProperties.map((address, i )=> {
                             return (

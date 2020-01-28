@@ -75,7 +75,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 
 const getListStyle = isDraggingOver => ({   
     padding: grid,
-    height: "600px", 
+    height: "100vh", 
     overflow: "scroll", 
     width: "90%"
 });
@@ -287,7 +287,6 @@ class RouteEditor extends Component {
             filteredItems: this.onFilterProperties(this.state.searchField),                          
             selected: this.props.addresses.filter(item => item.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
         })
-
     }
     
     render() {
