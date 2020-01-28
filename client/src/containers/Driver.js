@@ -31,7 +31,7 @@ const mapDispatchToProps = (dispatch) => {
 class Driver extends Component {
     render() {
         return (
-            <div>
+            <div style={{margin: "1em"}}>
                 <div style={{display: "flex", justifyContent: "space-around", margin: "5px"}}>    
                     <RouteSelector />
                     <DriverName />
