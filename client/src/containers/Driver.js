@@ -8,6 +8,7 @@ import EditRouteButton from "../components/AdminDropdown"
 import BlackoutButton from "../components/BlackoutButton"
 import { showRouteEditor } from "../actions"
 import TractorName from "../components/TractorName"
+import FullScreen from "../components/FullScreen"
 import { Alert } from "react-bootstrap"
 
 import '../styles/driver.css'
@@ -37,6 +38,7 @@ class Driver extends Component {
                     <DriverName />
                     <TractorName />
                     <EditRouteButton /> 
+                    <FullScreen />
                     <BlackoutButton /> 
                 </div>
                 { 
