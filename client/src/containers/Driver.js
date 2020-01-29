@@ -33,7 +33,7 @@ class Driver extends Component {
     render() {
         return (
             <div style={{margin: "1em"}}>
-                <div style={{display: "flex", justifyContent: "space-around", margin: "5px"}}>    
+                <div style={{display: "flex", flexWrap: "wrap", justifyContent: "space-around", margin: "5px"}}>    
                     <RouteSelector />
                     <DriverName />
                     <TractorName />

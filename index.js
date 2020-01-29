@@ -49,7 +49,9 @@ app.post('/api/newproperty', (req, res) => {
         surface_type: property.surface_type,
         is_new: property.is_new,
         notes: property.notes,
-        seasonal: property.seasonal
+        seasonal: property.seasonal,
+        route_name: "unassigned",
+        route_position: null
      })
      .then(property =>  res.json(property))
      .catch(err => res.json("error: " + err))
