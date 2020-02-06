@@ -86,7 +86,7 @@ class RouteEditor extends Component {
         this.state = { 
             items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
             filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-            selected: this.props.addresses.filter(address => address.route_name === this.props.activeRoute),
+            selected: this.props.addresses.filter(address => address.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1),
             searchField: '',
             showModal: false,
             activeProperty: this.props.activeProperty,            
@@ -220,7 +220,7 @@ class RouteEditor extends Component {
                     this.setState({
                         items: this.props.addresses.filter(item => item.route_name !== this.props.activeRoute),
                         filteredItems: this.onFilterProperties(this.state.searchField),                          
-                        selected: this.props.addresses.filter(item => item.route_name === this.props.activeRoute)
+                        selected: this.props.addresses.filter(item => item.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
                     })
                 }
             })
