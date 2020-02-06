@@ -10,7 +10,7 @@ const HomePage = () => (
       authenticated ? (                    
                   <Driver />              
       ) : (
-        <div>
+        <div style={{maxWidth:'600px', margin:'auto', paddingTop:'2em'}}>
           <h2>Snowline Alaska.</h2>
           <Login />
         </div>
