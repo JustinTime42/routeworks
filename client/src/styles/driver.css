@@ -6,10 +6,13 @@
 .adminGridContainer {
     display: grid;
     grid-template-columns: 50% 50%;
+    
+    
 }
 
 .leftSide {
     grid-column-start: 1;
+   
 }
 
 .rightSide {
@@ -22,5 +25,6 @@
 
 
 .scrollable {
+    
     overflow: scroll;
 }

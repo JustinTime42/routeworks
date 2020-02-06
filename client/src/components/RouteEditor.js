@@ -75,7 +75,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 
 const getListStyle = isDraggingOver => ({   
     padding: grid,
-    height: "100vh", 
+    height: "85vh", 
     overflow: "scroll", 
     width: "90%"
 });
@@ -107,7 +107,7 @@ class RouteEditor extends Component {
                 filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
                 activeProperty: this.props.activeProperty
             })   
-        }
+        } 
     }
 
     id2List = {
@@ -208,10 +208,10 @@ class RouteEditor extends Component {
                     items: this.props.addresses.filter(item => item.route_name !== this.props.activeRoute),  
                     filteredItems: this.onFilterProperties(this.state.searchField),
                     selected: this.props.addresses.filter(item => item.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
-                })               
+                })                                                                                                
             })
             
-            result.droppable.forEach(item => {
+            result.droppable.forEach((item, i) => {
                 if (item.route_name === this.props.activeRoute){
                     item.route_name = "unassigned"
                     item.status = ""
@@ -373,7 +373,7 @@ class RouteEditor extends Component {
                 </Droppable>
             </DragDropContext>
                 <NewProperty 
-                    activeProperty={this.state.activeProperty} 
+                    activeProperty={this.props.activeProperty} 
                     onSave={this.onPropertySave}
                     show={this.state.showModal}
                     close={this.onCloseClick}
