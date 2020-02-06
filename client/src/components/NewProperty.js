@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import axios from "axios"
 import { requestAllAddresses, getRouteProperties } from '../actions'
 
+import '../styles/driver.css'
+
 const mapStateToProps = state => {
     return {         
         activeProperty: state.setActiveProperty.activeProperty,
@@ -67,7 +69,7 @@ class NewProperty extends Component {
 
     render() {
         return (
-            <Modal style={{maxHeight: "600px", overflow: "scroll"}} show={this.props.show} onHide={this.props.close}>
+            <Modal className="scrollable" show={this.props.show} onHide={this.props.close}>
                     <Modal.Header>New Property</Modal.Header>
                     <Modal.Body>
                         <Form>

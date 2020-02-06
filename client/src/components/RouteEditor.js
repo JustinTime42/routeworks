@@ -245,6 +245,7 @@ class RouteEditor extends Component {
 
     onDelete = () => {
         this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses)
+        this.props.onSetActiveProperty(null)
     }
 
     onPropertySave = (newDetails) => {
