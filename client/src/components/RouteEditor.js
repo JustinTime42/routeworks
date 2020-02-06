@@ -29,7 +29,6 @@ const mapDispatchToProps = (dispatch) => {
         onSaveNewProperty: (property, allAddresses) => dispatch(saveNewProperty(property, allAddresses)),
         onEditProperty: (property, allAddresses) => dispatch(editProperty(property, allAddresses)),
         onDeleteProperty: (property, allAddresses) => dispatch(deleteProperty(property, allAddresses))
-        //onUpdateRouteProperties: (properiesy, routeName) => dispatch(UpdateRouteProperties(properties, routeName))
     }
 }
 
@@ -100,7 +99,6 @@ class RouteEditor extends Component {
     componentDidUpdate(prevProps, prevState) {
 
         if(this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
-            console.log("different!")
             this.setState({
                 selected: this.props.addresses.filter(address => address.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1),
                 items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
@@ -116,28 +114,6 @@ class RouteEditor extends Component {
     };
 
     onSave = () => {
-        console.log("onsave starting")
-        console.log(this.state.selected)
-        axios.post('https://snowline-route-manager.herokuapp.com/api/saveroute', 
-            {
-                route: this.props.activeRoute,
-                selected: this.state.selected,
-                unselected: this.state.filteredItems
-            }
-        )
-        .then(res => {    
-            console.log("onSave done ")
-            console.log(res)
-            this.props.onGetAllAddresses()
-            // setTimeout(() => { 
-            //     this.props.onGetRouteProperties(this.props.activeRoute)
-            //     this.props.onGetAllAddresses()
-            // }, 1000);
-        })
-        .catch(err => console.log(err)) 
-    }
-
-    onInitRoute = () => {
         axios.post('https://snowline-route-manager.herokuapp.com/api/saveroute', 
             {
                 route: this.props.activeRoute,
@@ -146,22 +122,20 @@ class RouteEditor extends Component {
             }
         )
         .then(res => {
-            axios.post('https://snowline-route-manager.herokuapp.com/api/initroute',
-            {
-                route: this.state.selected               
-            }
-            )
-            .then(res => {
-                console.log(res)
-                this.props.onGetAllAddresses()
-                setTimeout(() => { 
-                    this.props.onGetRouteProperties(this.props.activeRoute)
-                    this.props.onGetAllAddresses()
-                }, 500);
-            })
+            this.props.onGetAllAddresses()
         })
+        .catch(err => console.log(err)) 
+    }
+
+    onInitRoute = () => {
+        axios.post('https://snowline-route-manager.herokuapp.com/api/initroute',
+        {
+            route: this.state.selected               
+        })
+        .then(res => {
+            this.onSave()
+        }) 
         .catch(err => console.log(err))
-        
     }
     
     getList = id => this.state[this.id2List[id]];
@@ -229,7 +203,6 @@ class RouteEditor extends Component {
     }
 
     handlePropertyClick = (property) => {
-        console.log(this.state)
         this.props.onSetActiveProperty(property)
     }
 
@@ -274,8 +247,7 @@ class RouteEditor extends Component {
         this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses)
     }
 
-    onPropertySave = (newDetails) => {  
-        console.log(newDetails)
+    onPropertySave = (newDetails) => {
         if (!newDetails.key) {
             this.props.onSaveNewProperty(newDetails, this.props.addresses)
 
