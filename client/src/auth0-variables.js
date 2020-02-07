@@ -5,4 +5,5 @@ export const AUTH_CONFIG = {
   callbackUrl: process.env.REACT_APP_CALLBACK_URL,
   // callbackUrl: "https://snowline-route-dev.herokuapp.com/callback",
   // callbackUrl: "http://localhost:3000/callback"
+  
 }
