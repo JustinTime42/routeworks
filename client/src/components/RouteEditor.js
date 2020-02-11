@@ -99,11 +99,13 @@ class RouteEditor extends Component {
     componentDidUpdate(prevProps, prevState) {
 
         if(this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
-            this.setState({
-                selected: this.props.addresses.filter(address => address.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1),
-                items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-                filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-                activeProperty: this.props.activeProperty
+            this.setState((prevState, prevProps) => {
+                return {
+                    selected: prevProps.addresses.filter(address => address.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1),
+                    items: prevProps.addresses.filter(address => address.route_name !== prevProps.activeRoute),
+                    filteredItems: prevProps.addresses.filter(address => address.route_name !== prevProps.activeRoute),
+                    activeProperty: prevProps.activeProperty
+                }
             })   
         } 
     }
@@ -178,10 +180,12 @@ class RouteEditor extends Component {
                 item.status = "Waiting"
                 item.route_position = i
                 this.props.onEditProperty(item, this.props.addresses)
-                this.setState({
-                    items: this.props.addresses.filter(item => item.route_name !== this.props.activeRoute),  
-                    filteredItems: this.onFilterProperties(this.state.searchField),
-                    selected: this.props.addresses.filter(item => item.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+                this.setState((prevState, prevProps) => {
+                    return {
+                    items: prevProps.addresses.filter(item => item.route_name !== prevProps.activeRoute),  
+                    filteredItems: this.onFilterProperties(prevState.searchField),
+                    selected: prevProps.addresses.filter(item => item.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+                    }
                 })                                                                                                
             })
             
@@ -191,10 +195,12 @@ class RouteEditor extends Component {
                     item.status = ""
                     item.route_position = null
                     this.props.onEditProperty(item, this.props.addresses)
-                    this.setState({
-                        items: this.props.addresses.filter(item => item.route_name !== this.props.activeRoute),
-                        filteredItems: this.onFilterProperties(this.state.searchField),                          
-                        selected: this.props.addresses.filter(item => item.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+                    this.setState((prevState, prevProps) => {
+                        return {
+                            items: prevProps.addresses.filter(item => item.route_name !== prevProps.activeRoute),
+                            filteredItems: this.onFilterProperties(prevState.searchField),                          
+                            selected: prevProps.addresses.filter(item => item.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+                        }
                     })
                 }
             })
@@ -232,15 +238,15 @@ class RouteEditor extends Component {
 
     onNewPropertyClick = () => {
         this.props.onSetActiveProperty(null)
-        this.setState({showModal: !this.state.showModal})        
+        this.setState((prevState) => ({showModal: !prevState.showModal}))       
     }
 
     onEditPropertyClick = (property) => {
-        this.setState({showModal: !this.state.showModal, activeProperty: property})
+        this.setState((prevState) => ({showModal: !prevState.showModal, activeProperty: property}))
     }
 
     onCloseClick = () => {
-        this.setState({showModal: !this.state.showModal})
+        this.setState((prevState) => ({showModal: !prevState.showModal}))
     }
 
     onDelete = () => {
@@ -255,10 +261,12 @@ class RouteEditor extends Component {
         } else {
             this.props.onEditProperty(newDetails, this.props.addresses)
         }
-        this.setState({
-            items: this.props.addresses.filter(item => item.route_name !== this.props.activeRoute),
-            filteredItems: this.onFilterProperties(this.state.searchField),                          
-            selected: this.props.addresses.filter(item => item.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+        this.setState((prevState, prevProps) => {
+            return {
+            items: prevProps.addresses.filter(item => item.route_name !== prevProps.activeRoute),
+            filteredItems: this.onFilterProperties(prevState.searchField),                          
+            selected: prevProps.addresses.filter(item => item.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+            }
         })
     }
     
