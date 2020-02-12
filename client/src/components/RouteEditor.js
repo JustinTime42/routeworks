@@ -125,19 +125,23 @@ class RouteEditor extends Component {
         )
         .then(res => {
             this.props.onGetAllAddresses()
+            console.log(res)
         })
         .catch(err => console.log(err)) 
     }
 
     onInitRoute = () => {
-        axios.post('https://snowline-route-manager.herokuapp.com/api/initroute',
-        {
-            route: this.state.selected               
-        })
-        .then(res => {
-            this.onSave()
-        }) 
-        .catch(err => console.log(err))
+        this.setState((prevState) => ({selected: prevState.selected.map(item => item.status = "Waiting")}, this.onSave()))
+        // axios.post('https://snowline-route-manager.herokuapp.com/api/initroute',
+        // {
+        //     route: this.state.selected               
+        // })
+        // .then(res => {
+        //     this.props.onGetAllAddresses()
+        //     this.onSave()
+        //     console.log(res)
+        // }) 
+        // .catch(err => console.log(err))
     }
     
     getList = id => this.state[this.id2List[id]];
@@ -172,12 +176,10 @@ class RouteEditor extends Component {
                 source,
                 destination
             )
-
-            console.log(result)
             
             result.droppable2.forEach((item, i) => {
                 item.route_name = this.props.activeRoute
-                item.status = "Waiting"
+                item.status = !item.status ? "Waiting" : item.status
                 item.route_position = i
                 this.props.onEditProperty(item, this.props.addresses)
                 this.setState((prevState, prevProps) => {
