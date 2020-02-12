@@ -94,13 +94,13 @@ app.post('/api/initroute', (req, res) => {
     route.forEach(item => {
         promises.push(
             db('properties')
-            .returning('address')
+            .returning('*')
             .where('key', item.key)
             .update({
                 status: 'Waiting',
             })
-            .then(address => {
-                response.success.push(address)            
+            .then(item => {
+                response.success.push(item)            
             }) 
             .catch(err => response.err.push(err))
         )        
