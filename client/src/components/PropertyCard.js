@@ -1,12 +1,9 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
+import { shallow, mount, render } from 'enzyme'
 
 const PropertyCard = (props) => {
-    // let test = false
-    // let status = props.address.status
-    // if (props.address.route_name !== "unassigned" && !props.address.status) {
-    //     status = "waiting"
-    // }
+
     const routePosition = props.i >= 0 ? `${props.i + 1}. ` : ''
 
     const cardStyle = {
@@ -25,9 +22,9 @@ const PropertyCard = (props) => {
         padding: "10px",
         border: "2px, solid, black",
         borderRadius: "10px",
-        backgroundColor: props.address.status === "Waiting" ? `rgba(255,200,0,0.9)` : 
+        backgroundColor: props.address ? props.address.status === "Waiting" ? `rgba(255,200,0,0.9)` : 
         props.address.status === "Skipped" ? `rgba(255,0,0,0.7)` :
-        props.address.status === "Done" ? `rgba(0,255,0,0.7)` : null
+        props.address.status === "Done" ? `rgba(0,255,0,0.7)` : null : null
     }
 
     const seasonalStyle = {
@@ -36,7 +33,7 @@ const PropertyCard = (props) => {
         padding: "5px",
         border: "1px, solid, #CCE5FF",
         borderRadius: "5px",
-        backgroundColor: props.address.seasonal ? "#375A7F" : `rgba(0,0,0,0.0)`
+        backgroundColor: props.address ? props.address.seasonal ? "#375A7F" : `rgba(0,0,0,0.0)` : `rgba(0,0,0,0.0)`
     }
 
     const editStyle = {
@@ -47,7 +44,7 @@ const PropertyCard = (props) => {
         <div id={`card${props.i}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>
                 <div style={seasonalStyle}></div>
-                {props.address.status ? 
+                {props.address ? 
                     <p style={statusStyle}>{props.address.status}</p> : <p style={statusStyle}></p>             
                 } 
                 {props.admin === true ? 
@@ -56,9 +53,9 @@ const PropertyCard = (props) => {
             </div>
 
             <p style={{textAlign: "left", width: "100%"}}>  
-            {routePosition}{props.address.cust_name ? props.address.cust_name : "name"}{props.address.is_new ? "*" : null}            
+            {routePosition}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </p>                             
-            <p>{props.address.address ? props.address.address : "address"} </p>            
+            <p>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
             {props.admin ? <p>route: {props.address.route_name}</p> : <div></div>}
         </div>
     )

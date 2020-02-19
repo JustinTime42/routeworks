@@ -34,8 +34,8 @@ class DriverName extends Component {
     render() {
         return ( 
             <div style={{display: "flex"}}>
-                <Form.Control type="text" placeholder="Driver Name" onChange={this.onChangeDriverName} />
-                <Button variant="primary" onClick={this.onSaveDriverName}>Set</Button>
+                <Form.Control id="changeDriverName" type="text" placeholder="Driver Name" onChange={this.onChangeDriverName} />
+                <Button id="saveDriverName" variant="primary" onClick={this.onSaveDriverName}>Set</Button>
             </div>        
         )
     } 

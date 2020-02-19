@@ -48,8 +48,7 @@ class DisplayRoute extends Component {
         if (document.getElementById(`card${position}`)) {
             console.log(`card${position}`)
             document.getElementById(`card${position}`).scrollIntoView(true) //.scroll(0,100)
-        } 
-       
+        }        
     }
 
     render(){
