@@ -103,7 +103,7 @@ class RouteEditor extends Component {
                 return {
                     selected: prevProps.addresses.filter(address => address.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1),
                     items: prevProps.addresses.filter(address => address.route_name !== prevProps.activeRoute),
-                    filteredItems: prevProps.addresses.filter(address => address.route_name !== prevProps.activeRoute),
+                    filteredItems: this.onFilterProperties(this.state.searchField),     //prevProps.addresses.filter(address => address.route_name !== prevProps.activeRoute),
                     activeProperty: prevProps.activeProperty
                 }
             })   
@@ -203,7 +203,7 @@ class RouteEditor extends Component {
                             filteredItems: this.onFilterProperties(prevState.searchField),                          
                             selected: prevProps.addresses.filter(item => item.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
                         }
-                    })
+                    }, () => console.log(this.state))
                 }
             })
             this.onFilterProperties(this.state.searchField)
@@ -281,7 +281,7 @@ class RouteEditor extends Component {
                 <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Changes</Button>
                 <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onInitRoute}>Initialize Route</Button>
                 <input 
-                    type="search" placeholder="Search" 
+                    type="search" placeholder="Search" value={this.state.searchField}
                     onChange={this.onSearchChange}
                 />
                 <Button variant="primary" size="sm" onClick={this.onNewPropertyClick}>New</Button>
