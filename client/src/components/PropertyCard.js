@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
-import { shallow, mount, render } from 'enzyme'
+//import { shallow, mount, render } from 'enzyme'
 
 const PropertyCard = (props) => {
 
