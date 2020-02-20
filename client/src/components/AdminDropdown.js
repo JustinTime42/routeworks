@@ -55,12 +55,11 @@ class EditRouteButton extends Component {
     
     onSetDate = (event) => {
         const date = event.target.value.toLocaleString("en-US", {timeZone: "America/Anchorage"})
-        this.setState({date: date})
+        this.setState({date: date}, () => console.log(this.state.date))
     } 
 
     onDownload = () => {
-        console.log("downloading")
-        const since = this.state.date.toLocaleString("en-US", {timeZone: "Australia/Brisbane"})
+        const since = this.state.date.toLocaleString("en-US", {timeZone: "America/Anchorage"})
         fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs/${since}`)
         .then(response => response.json())
         .then(logs => {
