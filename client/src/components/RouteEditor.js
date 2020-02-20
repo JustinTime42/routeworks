@@ -120,7 +120,7 @@ class RouteEditor extends Component {
             {
                 route: this.props.activeRoute,
                 selected: this.state.selected,
-                unselected: this.state.filteredItems
+                unselected: this.state.items
             }
         )
         .then(res => {
