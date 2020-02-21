@@ -12,6 +12,7 @@ const mapStateToProps = state => {
         driver: state.setDriverName.driverName,
         tractor: state.setTractorName.tractorName,
         activeRoute: state.setActiveRoute.activeRoute,
+        routePending: state.getRouteProperties.isPending,
     }
 }
 
@@ -25,7 +26,8 @@ class PropertyDetails extends Component {
     constructor(props){
         super(props)
         this.state = {
-            noteField: ''
+            noteField: '',
+            disabled: false,
         }
     }
     
@@ -42,6 +44,7 @@ class PropertyDetails extends Component {
     }
 
     onStatusChange = (status) => {
+        this.setState({disabled: true})
         axios.post(`https://snowline-route-manager.herokuapp.com/api/setstatus`, 
             {
                 property: this.props.property,
@@ -54,8 +57,9 @@ class PropertyDetails extends Component {
         .then(res => {
             this.props.onGetRouteProperties(this.props.activeRoute) 
             console.log(res)
+            this.setState({disabled: false})
         })
-        .catch(err => console.log(err)) 
+        .catch(err => alert(err)) 
     }
 
     render() {
@@ -86,8 +90,8 @@ class PropertyDetails extends Component {
                 </Card.Body>
                 <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "flex-end", justifyContent: "space-between"}}>
                     <Button variant="primary" onClick={() => this.props.changeProperty(property.route_position - 1)} >Prev</Button>
-                    <Button variant="warning" onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
-                    <Button variant="success" onClick={() => this.onStatusChange('Done')}>Done</Button>
+                    <Button variant="warning" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
+                    <Button variant="success" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Done')}>Done</Button>
                     <Button variant="primary" onClick={() => this.props.changeProperty(property.route_position  + 1)} >Next</Button>
                 </Card.Body>
             </Card> : null

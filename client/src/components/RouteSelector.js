@@ -28,7 +28,6 @@ const mapDispatchToProps = (dispatch) => {
                 dispatch(setActiveRoute(event))
                 dispatch(getRouteProperties(event))
             }
-
         },
         onRequestRoutes: () => dispatch(requestRoutes()),
         onGetRouteProperties: (event) => dispatch(getRouteProperties(event)),
