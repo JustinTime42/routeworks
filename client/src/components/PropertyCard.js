@@ -52,9 +52,9 @@ const PropertyCard = (props) => {
                 }
             </div>
 
-            <p style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
+            <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
             {routePosition}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
-            </p>                             
+            </h5>                             
             <p>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
             {props.admin ? <p>route: {props.address.route_name}</p> : <div></div>}
         </div>
