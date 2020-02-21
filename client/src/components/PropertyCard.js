@@ -55,7 +55,7 @@ const PropertyCard = (props) => {
             <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
             {routePosition}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </h5>                             
-            <p>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
+            <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
             {props.admin ? <p>route: {props.address.route_name}</p> : <div></div>}
         </div>
     )
