@@ -55,7 +55,7 @@ class EditRouteButton extends Component {
     
     onSetDate = (event) => {
         const date = event.target.value.toLocaleString("en-US", {timeZone: "America/Anchorage"})
-        this.setState({date: date}, () => console.log(this.state.date))
+        this.setState({date: date})
     } 
 
     onDownload = () => {
@@ -67,7 +67,6 @@ class EditRouteButton extends Component {
                
                 item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
             })) 
-            console.log(logs)
             this.setState({logs: logs, showDownload: true})
         })
         .catch(error => console.log(error))
