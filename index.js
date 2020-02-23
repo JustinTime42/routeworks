@@ -239,6 +239,14 @@ app.get('/api/getlogs/:date', (req,res) => {
     .then(data => res.json(data))
 })
 
+app.get('/api/getlogs/:property', (req, res) => {
+    const { property } = req.params
+    db.where('service_log.property_key', property.key)
+    .select('*')
+    .from('service_log')
+    .then(data => res.json(data))
+})
+
  app.get('*', (req, res) => {
    res.sendFile(path.join(__dirname+'/client/build/index.html'));
  });
