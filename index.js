@@ -221,10 +221,19 @@ app.get('/api/properties', (req, res) => {
 
 
 app.get('/api/getroute/:routeName', (req, res) => {
+    // need to add a column here, so that's a join? 
+    // the column is latest record for that property from service_log table
+
+    // for each property, take the most recent record from service_log
+    //WHERE key===key ORDER BY timestamp DESC LIMIT 1;
+
     const { routeName } = req.params
     db.where('properties.route_name', routeName)
     .select('*') 
     .from('properties')
+    .leftJoin('service_log', () => {
+        on('properties.key', 'service_log.property_key').orderBy('service_log.timestamp', 'desc').limit(1)
+    })
     .orderBy('route_position')
     .then(data => {
         res.json(data)
