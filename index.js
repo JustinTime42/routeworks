@@ -199,7 +199,8 @@ app.post('/api/setstatus', (req, res) => {
             notes: req.body.noteField,
             user_name: req.body.driver,
             tractor: req.body.tractor,
-            cust_name: property.cust_name
+            cust_name: property.cust_name,
+            property_key: property.key
         })
         .then(property => response.serviceLog = property)
         .catch(err => response.err.push(err))       
