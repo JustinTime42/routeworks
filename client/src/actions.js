@@ -47,7 +47,10 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
     dispatch({ type: GET_ROUTE_PENDING})
     fetch(`https://snowline-route-manager.herokuapp.com/api/getroute/${activeRoute}`)
     .then(response => response.json())
-    .then(data => dispatch({ type: GET_ROUTE_SUCCESS, payload: data }))
+    .then(data => {
+        console.log(data)
+        dispatch({ type: GET_ROUTE_SUCCESS, payload: data })
+    })
     .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
 }
 
