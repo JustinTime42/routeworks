@@ -232,7 +232,7 @@ app.get('/api/getroute/:routeName', (req, res) => {
     .select('*') 
     .from('properties')
     .leftJoin('service_log', () => {
-        on('properties.key', 'service_log.property_key').orderBy('service_log.timestamp', 'desc').limit(1)
+        distinct('properties.key', 'service_log.property_key')
     })
     .orderBy('route_position')
     .then(data => {
