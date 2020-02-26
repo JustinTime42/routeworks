@@ -238,6 +238,7 @@ app.get('/api/getroute/:routeName', (req, res) => {
     .then(data => {
         res.json(data)
     })
+    .catch(err => res.json(err))
     // const { routeName } = req.params
     // db.where('properties.route_name', routeName)
     // .select('*') 
