@@ -44,6 +44,7 @@ class PropertyDetails extends Component {
     }
 
     onStatusChange = (status) => {
+        console.log(this.props.property)
         this.setState({disabled: true})
         axios.post(`https://snowline-route-manager.herokuapp.com/api/setstatus`, 
             {
