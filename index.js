@@ -227,25 +227,25 @@ app.get('/api/getroute/:routeName', (req, res) => {
     // for each property, take the most recent record from service_log
     //WHERE key===key ORDER BY date DESC LIMIT 1;
 
-    // const { routeName } = req.params
-    // db.where('properties.route_name', routeName)
-    // .select('*') 
-    // .from('properties')
-    // .leftJoin('service_log', () => {
-    //     on('properties.key', 'service_log.property_key').orderBy('service_log.timestamp', 'desc').limit(1)
-    // })
-    // .orderBy('route_position')
-    // .then(data => {
-    //     res.json(data)
-    // })
     const { routeName } = req.params
     db.where('properties.route_name', routeName)
     .select('*') 
     .from('properties')
+    .leftJoin('service_log', () => {
+        on('properties.key', 'service_log.property_key').orderBy('service_log.timestamp', 'desc').limit(1)
+    })
     .orderBy('route_position')
     .then(data => {
         res.json(data)
     })
+    // const { routeName } = req.params
+    // db.where('properties.route_name', routeName)
+    // .select('*') 
+    // .from('properties')
+    // .orderBy('route_position')
+    // .then(data => {
+    //     res.json(data)
+    // })
 });
 
 app.get('/api/getlogs/:date', (req,res) => {
