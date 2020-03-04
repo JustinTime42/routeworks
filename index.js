@@ -219,6 +219,48 @@ app.get('/api/properties', (req, res) => {
     })
 });
 
+app.get('/api/drivers', (req, res) => {
+    db.select('*')
+    .from('drivers')
+    .then(data => {
+        res.json(data)
+    })
+})
+
+app.post('/api/newdriver', (req, res) => {
+    const driver = req.body
+    db('drivers')    
+    .returning('*')
+    .insert({
+        name: driver.name,
+        percentage: driver.percentage
+     })
+     .then(driver =>  res.json(driver))
+     .catch(err => res.json("error: " + err))
+})
+
+app.post('/api/editdriver', (req, res) => {
+    const driver = req.body
+    db('drivers')    
+    .returning('*')
+    .where('key', driver.key)
+    .update({
+        name: driver.name,
+        percentage: driver.percentage
+     })
+     .then(driver =>  res.json(driver))
+     .catch(err => res.json("error: " + err))
+})
+
+app.post('/api/deletedriver', (req, res) => {
+    db('drivers')
+    .returning('*')
+    .where('key', req.body.key)
+    .del()
+    .then(property => res.json(property))
+    .catch(err => res.json(err))
+})
+
 
 app.get('/api/getroute/:routeName', (req, res) => {
     // need to add a column here, so that's a join? 
@@ -226,8 +268,18 @@ app.get('/api/getroute/:routeName', (req, res) => {
 
     // for each property, take the most recent record from service_log
     //WHERE key===key ORDER BY date DESC LIMIT 1;
-
+    //or 
+    //select distinct property_key from service_log order by timestamp
+    // take above and
+    //leftJoin('properties', 'service_log.property_key', 'properties.key'   )
     // const { routeName } = req.params
+
+    //select * from properties, max(service_log.timestamp) where route_name='routeName'
+    //leftJoin service_log  
+        //on properties.key=service_log.property_key 
+        //
+    //where 
+    db.where('properties.route)')
     // db.where('properties.route_name', routeName)
     // .select('*') 
     // .from('properties')
