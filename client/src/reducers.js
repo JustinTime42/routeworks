@@ -21,7 +21,10 @@ import { SET_ACTIVE_ROUTE,
     NEW_PROPERTY_FAILED,
     DEL_PROPERTY_SUCCESS,
     DEL_PROPERTY_PENDING,
-    DEL_PROPERTY_FAILED
+    DEL_PROPERTY_FAILED,
+    GET_DRIVERS_PENDING,
+    GET_DRIVERS_SUCCESS,
+    GET_DRIVERS_FAILED,
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -70,13 +73,36 @@ export const requestRoutes = (state = initialStateRoutes, action={}) => {
 }
 
 const initialStateDriver = {
-    driverName: ''
+    driver: {
+        key: '',
+        name: '',
+        percentage: ''
+    }
 }
 
-export const setDriverName = (state = initialStateDriver, action={}) => {
+export const setActiveDriver = (state = initialStateDriver, action={}) => {
     switch(action.type) {
         case SET_DRIVER_NAME:
-            return {...state, driverName: action.payload}
+            return {...state, driver: action.payload}
+        default:
+            return state
+    }
+}
+
+const initialStateDrivers = {
+    isPending: false,
+    drivers: [],
+    error: ''    
+}
+
+export const getDrivers = (state = initialStateDrivers, action={}) => {
+    switch(action.type) {
+        case GET_DRIVERS_PENDING: 
+            return {...state, isPending: true}
+        case GET_DRIVERS_SUCCESS:
+            return {...state, drivers: action.payload, isPending: false}
+        case GET_DRIVERS_FAILED:
+            return {...state, error: action.payload, isPending: false}
         default:
             return state
     }

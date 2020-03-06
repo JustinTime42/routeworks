@@ -19,7 +19,10 @@ import {
     SET_TRACTOR_NAME,
     NEW_PROPERTY_SUCCESS,
     NEW_PROPERTY_PENDING,
-    NEW_PROPERTY_FAILED
+    NEW_PROPERTY_FAILED,
+    GET_DRIVERS_PENDING,
+    GET_DRIVERS_SUCCESS,
+    GET_DRIVERS_FAILED,
 } from './constants.js'
 
 export const setActiveRoute = (routeName) => {
@@ -111,10 +114,19 @@ export const saveRoute = (newRoute) => (dispatch) => {
     .catch(error => dispatch({ type: SAVE_ROUTE_FAILED, payload: error }))
 }
 
-export const setDriverName = (driverName) => {
+export const getDrivers = () => (dispatch) => {
+    dispatch({ type: GET_DRIVERS_PENDING })
+    fetch('https://snowline-route-manager.herokuapp.com/api/drivers')
+    .then(res => res.json())
+    .then(data => dispatch({ type: GET_DRIVERS_SUCCESS, payload: data}))
+    .catch(err => dispatch({ type: GET_DRIVERS_FAILED, payload: err}))
+}
+
+export const setActiveDriver = (driver) => {    
+    console.log(driver)
     return {
         type: SET_DRIVER_NAME,
-        payload: driverName
+        payload: driver
     }
 }
 

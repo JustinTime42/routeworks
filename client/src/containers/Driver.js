@@ -18,7 +18,7 @@ const mapStateToProps = state => {
         showRouteEditor: state.showRouteEditor.showEditor,
         isRoutePending: state.getRouteProperties.isPending,
         isAllPending: state.requestAllAddresses.isPending,
-        driverName: state.setDriverName.driverName,
+        driverName: state.setActiveDriver.driver,
         tractorName: state.setTractorName.tractorName
     }
 }
