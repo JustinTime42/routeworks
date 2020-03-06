@@ -51,7 +51,10 @@ app.post('/api/newproperty', (req, res) => {
         notes: property.notes,
         seasonal: property.seasonal,
         route_name: "unassigned",
-        route_position: null
+        route_position: null,
+        price: property.price,
+        temp: property.temp,
+        inactive: property.inactive
      })
      .then(property =>  res.json(property))
      .catch(err => res.json("error: " + err))
@@ -138,7 +141,10 @@ app.post('/api/saveroute', (req, res) => {
                 surface_type: item.surface_type,
                 is_new: item.is_new,
                 notes: item.notes,
-                seasonal: item.seasonal
+                seasonal: item.seasonal,
+                price: property.price,
+                temp: property.temp,
+                inactive: property.inactive
             })
             .then(address => {
                 response.add.push(address)
@@ -163,7 +169,10 @@ app.post('/api/saveroute', (req, res) => {
                 surface_type: item.surface_type,
                 is_new: item.is_new,
                 notes: item.notes,
-                seasonal: item.seasonal
+                seasonal: item.seasonal,
+                price: property.price,
+                temp: property.temp,
+                inactive: property.inactive
             })
             .then(address => {
                 response.remove.push(address)
@@ -200,10 +209,12 @@ app.post('/api/setstatus', (req, res) => {
             route_name: property.route_name,
             status: req.body.newStatus,
             notes: req.body.noteField,
-            user_name: req.body.driver,
+            user_name: req.body.driver.name,
             tractor: req.body.tractor,
             cust_name: property.cust_name,
-            property_key: property.key
+            property_key: property.key,
+            price: property.price,
+            driver_earning: req.body.driver.percentage * .01 * property.price,
         })
         .then(property => response.serviceLog = property)
         .catch(err => response.err.push(err))       
