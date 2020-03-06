@@ -38,7 +38,9 @@ class EditRouteButton extends Component {
         { label: "Notes", key: "notes" },
         { label: "Driver", key: "user_name" },
         { label: "Tractor", key: "tractor" },
-        { label: "Address", key: "address" }
+        { label: "Address", key: "address" },
+        { label: "Price", key: "price"},
+        { label: "Driver Earning", key: "driver_earning"}
       ];
 
     onSelect = (event) => {
