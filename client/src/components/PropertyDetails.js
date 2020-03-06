@@ -9,7 +9,7 @@ import '../styles/driver.css'
 const mapStateToProps = state => {
     return {
         property: state.setActiveProperty.activeProperty,
-        driver: state.setActiveDriver.driver.name,
+        driver: state.setActiveDriver.driver,
         tractor: state.setTractorName.tractorName,
         activeRoute: state.setActiveRoute.activeRoute,
         routePending: state.getRouteProperties.isPending,
@@ -39,8 +39,6 @@ class PropertyDetails extends Component {
 
     onNoteChange = (event) => {
         this.setState({noteField: event.target.value})
-        console.log(this.state.noteField)
-        console.log(this.props.driver)
     }
 
     onStatusChange = (status) => {

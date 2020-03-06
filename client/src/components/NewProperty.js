@@ -40,23 +40,17 @@ class NewProperty extends Component {
         console.log(this.props.activeProperty)
         const name = event.target.name
         const value = event.target.value
-        if (name === "is_new") {           
+        console.log(typeof value)
+        console.log(value)
+        if (value === "on") {      
+            console.log(event.target.name)     
             this.setState(function(state, props) {
                 let property = state.activeProperty
-                property.is_new = !state.activeProperty.is_new
+                property[name] = !state.activeProperty[name]
                 return {
                   property
                 }
             })
-        }
-        else if (name === "seasonal") {
-            this.setState(function(state, props) {
-                let property = state.activeProperty
-                property.seasonal = !state.activeProperty.seasonal
-                return {
-                  property
-                }
-            }) 
         }
         else {
             this.setState({ activeProperty: { ...this.state.activeProperty, [name]: value} });
@@ -101,6 +95,7 @@ class NewProperty extends Component {
                                             <option value="gravel">Gravel</option>
                                             <option value="partial">Partial</option>
                                         </Form.Control>
+                                        <Form.Control name="price" type="text" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -116,6 +111,20 @@ class NewProperty extends Component {
                                         type="checkbox"
                                         label="Seasonal?"
                                         checked = {!!this.state.activeProperty.seasonal}
+                                        onChange={this.onChange}
+                                    />
+                                    <Form.Check 
+                                        name="inactive"
+                                        type="checkbox"
+                                        label="Inactive?"
+                                        checked = {!!this.state.activeProperty.inactive}
+                                        onChange={this.onChange}
+                                    />
+                                    <Form.Check 
+                                        name="temp"
+                                        type="checkbox"
+                                        label="Temporary?"
+                                        checked = {!!this.state.activeProperty.temp}
                                         onChange={this.onChange}
                                     />
                                 </Col>

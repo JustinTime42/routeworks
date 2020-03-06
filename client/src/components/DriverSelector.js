@@ -6,10 +6,6 @@ import { setActiveDriver, getDrivers } from '../actions'
 import Can from "./Can"
 import { AuthConsumer } from "../authContext"
 
-
-// Ok i need to connect the display on top to the redux activeDriver rather than local state. 
-// because right now there are cases where I can have a null driver and yet see the driver view
-
 const mapStateToProps = state => {
     return {
         activeDriver: state.setActiveDriver.driver,
@@ -43,7 +39,9 @@ class DriverName extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(this.props.isAllPending !== prevProps.isAllPending || prevProps.activeDriver !== this.props.activeDriver) {
+        if(this.props.isPending !== prevProps.isPending || this.props.activeDriver !== prevProps.activeDriver) {
+            console.log("update")
+            console.log(!!this.props.activeDriver)
             this.setState({...this.props.activeDriver})
         } 
     }

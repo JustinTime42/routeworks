@@ -43,7 +43,7 @@ class Driver extends Component {
                 </div>
                 { 
                 this.props.showRouteEditor ? <RouteEditor /> : 
-                this.props.tractorName && this.props.driverName ? <DisplayRoute /> :
+                this.props.tractorName && (this.props.driverName.key !== '') ? <DisplayRoute /> :
                 <Alert variant="warning">Please enter driver and tractor name to begin.</Alert>                
                 }                
             </div>            
