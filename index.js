@@ -170,9 +170,9 @@ app.post('/api/saveroute', (req, res) => {
                 is_new: item.is_new,
                 notes: item.notes,
                 seasonal: item.seasonal,
-                price: property.price,
-                temp: property.temp,
-                inactive: property.inactive
+                price: item.price,
+                temp: item.temp,
+                inactive: item.inactive
             })
             .then(address => {
                 response.remove.push(address)
