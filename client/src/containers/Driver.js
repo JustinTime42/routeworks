@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import {connect } from "react-redux"
 import RouteSelector from "../components/RouteSelector"
-import DriverName from "../components/DriverName"
+import DriverName from "../components/DriverSelector"
 import DisplayRoute from "../components/DisplayRoute"
 import RouteEditor from "../components/RouteEditor"
 import EditRouteButton from "../components/AdminDropdown"

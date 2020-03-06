@@ -9,7 +9,7 @@ import '../styles/driver.css'
 const mapStateToProps = state => {
     return {
         property: state.setActiveProperty.activeProperty,
-        driver: state.setDriverName.driverName,
+        driver: state.setActiveDriver.driver.name,
         tractor: state.setTractorName.tractorName,
         activeRoute: state.setActiveRoute.activeRoute,
         routePending: state.getRouteProperties.isPending,

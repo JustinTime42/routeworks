@@ -132,17 +132,17 @@ class NewProperty extends Component {
                         <Button variant="secondary" onClick={this.props.close}>Close</Button>
                     </Modal.Footer>
                     <Alert show={this.state.deleteAlert} variant="danger">
-                    <Alert.Heading>Delete Property?</Alert.Heading>
-                    <p>
-                    {this.state.activeProperty.address}
-                    </p>
-                    <hr />
-                    <div className="d-flex justify-content-end">
-                    <Button onClick={this.props.onDelete} variant="outline-success">
-                        Permanently Delete This Property
-                    </Button>
-                    </div>
-                </Alert>
+                        <Alert.Heading>Delete Property?</Alert.Heading>
+                        <p>
+                        {this.state.activeProperty.address}
+                        </p>
+                        <hr />
+                        <div className="d-flex justify-content-end">
+                        <Button onClick={this.props.onDelete} variant="outline-success">
+                            Permanently Delete This Property
+                        </Button>
+                        </div>
+                    </Alert>
                 </Modal>
         )
     }

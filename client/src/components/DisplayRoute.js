@@ -12,7 +12,7 @@ const mapStateToProps = state => {
         showRouteEditor: state.showRouteEditor.showRoute,
         activeProperty: state.setActiveProperty.activeProperty,
         activeRoute: state.setActiveRoute.activeRoute,
-        driver: state.setDriverName.driverName
+        driver: state.setActiveDriver.name
     }
 }
 
