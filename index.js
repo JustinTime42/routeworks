@@ -69,7 +69,10 @@ app.post('/api/editproperty', (req, res) => {
         surface_type: property.surface_type,
         is_new: property.is_new,
         notes: property.notes,
-        seasonal: property.seasonal
+        seasonal: property.seasonal,
+        price: property.price,
+        temp: property.temp,
+        inactive: property.inactive
     })
     .then(details => res.json(details))
     .catch(err => res.json("error: " + err))
