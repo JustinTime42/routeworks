@@ -95,7 +95,7 @@ class NewProperty extends Component {
                                             <option value="gravel">Gravel</option>
                                             <option value="partial">Partial</option>
                                         </Form.Control>
-                                        <Form.Control name="price" type="text" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
+                                        <Form.Control name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>

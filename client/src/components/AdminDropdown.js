@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Dropdown, DropdownButton, Modal, Form } from 'react-bootstrap'
 import { CSVLink } from "react-csv";
-
-
 import Can from './Can'
 import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
