@@ -63,8 +63,7 @@ class EditRouteButton extends Component {
         fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs/${since}`)
         .then(response => response.json())
         .then(logs => {
-            logs.forEach((item => {
-               
+            logs.forEach((item => {               
                 item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
             })) 
             this.setState({logs: logs, showDownload: true})
