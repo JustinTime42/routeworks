@@ -65,7 +65,7 @@ class EditRouteButton extends Component {
         .then(logs => {
             logs.forEach((item => {
                
-                item.timestamp = new Date(item.timestamp).toLocaleString("en-CA", {timeZone: "America/Anchorage"})
+                item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
             })) 
             this.setState({logs: logs, showDownload: true})
         })
@@ -118,9 +118,6 @@ class EditRouteButton extends Component {
                 />                            
             )}
             </AuthConsumer>
-                    
-            // put authconsumer and Can stuff here to only show this if user is admin
-
         )
     }
 }
