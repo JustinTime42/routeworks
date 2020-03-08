@@ -79,6 +79,7 @@ class PropertyDetails extends Component {
                 <Card.Body>
                     <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
                     <Card.Title>{property ? property.seasonal ? "SEASONAL" : null : null}</Card.Title>
+                    <Card.Title>{property ? !!property.temp ? "TEMPORARY" : null : null}</Card.Title>
                 </Card.Body>        
                 {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Text className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Text></Card.Body> : null : null }
                 <Card.Body>
