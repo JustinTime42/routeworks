@@ -55,16 +55,19 @@ class DisplayRoute extends Component {
                 <div className="leftSide scrollable" style={{height: "90vh", width:"100%"}}>
                     {
                         this.props.routeProperties.map((address, i )=> {
-                            return (
-                                <PropertyCard                                    
-                                    i={i}                                     
-                                    key={address.key} 
-                                    address={address}
-                                    activeProperty={this.props.activeProperty}
-                                    handleClick={this.handlePropertyClick}
-
-                                />  
-                            )                                
+                            if(!address.inactive){
+                                return (
+                                    <PropertyCard                                    
+                                        i={i}                                     
+                                        key={address.key} 
+                                        address={address}
+                                        activeProperty={this.props.activeProperty}
+                                        handleClick={this.handlePropertyClick}
+    
+                                    />  
+                                )     
+                            } else return null
+                                                       
                         }) 
                     }
                 </div>

@@ -89,7 +89,7 @@ class PropertyDetails extends Component {
                 </Card.Body>
                 <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "flex-end", justifyContent: "space-between"}}>
                     <Button variant="primary" size="lg" onClick={() => this.props.changeProperty(property.route_position - 1)} >Prev</Button>
-                    <Button variant="warning" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
+                    <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
                     <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Done')}>Done</Button>
                     <Button variant="primary" size="lg" onClick={() => this.props.changeProperty(property.route_position  + 1)} >Next</Button>
                 </Card.Body>
