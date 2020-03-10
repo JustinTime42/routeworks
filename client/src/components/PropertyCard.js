@@ -6,11 +6,17 @@ const PropertyCard = (props) => {
 
     const routePosition = props.i >= 0 ? `${props.i + 1}. ` : ''
  
+    const cardBg = () => {
+        if (props.address.inactive === true) return `rgba(231,76,60,0.7)`  
+        else if (props.address.temp) return `rgba(235,185,5,0.7)`
+        else if (props.activeProperty && props.activeProperty.key === props.address.key) return '#4E8098'
+        else return null
+    }
     const cardStyle = {
         margin: '3px',
         padding: '3px',
         width: props.width,
-        backgroundColor: props.address.temp ? `rgba(231,76,60,0.7)` : props.activeProperty ? props.activeProperty.key === props.address.key ? '#4E8098' : '#303030   ' : null
+        backgroundColor: cardBg(), //props.address.temp ? `rgba(231,76,60,0.7)` : props.activeProperty ? props.activeProperty.key === props.address.key ? '#4E8098' : '#303030   ' : null
     }
     const rightStyle = {
         float: "right", 

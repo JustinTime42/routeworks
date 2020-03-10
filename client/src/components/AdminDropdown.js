@@ -32,7 +32,8 @@ class EditRouteButton extends Component {
     headers = [
         { label: "Customer Name", key: "cust_name" },
         { label: "status", key: "status" },
-        { label: "Timestamp", key: "timestamp" },
+        { label: "Date", key: "date" },
+        { label: "Time", key: "time" },
         { label: "Notes", key: "notes" },
         { label: "Driver", key: "user_name" },
         { label: "Tractor", key: "tractor" },
@@ -63,8 +64,10 @@ class EditRouteButton extends Component {
         fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs/${since}`)
         .then(response => response.json())
         .then(logs => {
-            logs.forEach((item => {               
-                item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
+            logs.forEach((item => { 
+                item.date = new Date(item.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+                item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                console.log(item.time)
             })) 
             this.setState({logs: logs, showDownload: true})
         })
