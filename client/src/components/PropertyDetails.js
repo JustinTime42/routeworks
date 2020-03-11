@@ -32,7 +32,7 @@ class PropertyDetails extends Component {
     }
     
     componentDidUpdate(prevProps) {
-        if(prevProps.property !== this.props.property){
+        if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
           this.setState({noteField: ''})
         }
       }
@@ -42,23 +42,28 @@ class PropertyDetails extends Component {
     }
 
     onStatusChange = (status) => {
-        console.log(this.props.property)
-        this.setState({disabled: true})
-        axios.post(`https://snowline-route-manager.herokuapp.com/api/setstatus`, 
-            {
-                property: this.props.property,
-                newStatus: status,
-                driver: this.props.driver,
-                noteField: this.state.noteField,
-                tractor: this.props.tractor
-            }
-        )
-        .then(res => {
-            this.props.onGetRouteProperties(this.props.activeRoute) 
-            console.log(res)
-            this.setState({disabled: false})
-        })
-        .catch(err => alert(err)) 
+        // no do an alert like the delete properties. put in above though
+        //if (this.props.property.status !== status) {
+            console.log(this.props.property)
+            this.setState({disabled: true})
+            axios.post(`https://snowline-route-manager.herokuapp.com/api/setstatus`, 
+                {
+                    property: this.props.property,
+                    newStatus: status,
+                    driver: this.props.driver,
+                    noteField: this.state.noteField,
+                    tractor: this.props.tractor
+                }
+            )
+            .then(res => {
+                this.props.onGetRouteProperties(this.props.activeRoute) 
+                console.log(res)
+                this.setState({disabled: false})
+            })
+            .catch(err => alert(err)) 
+       // } else {
+        //    alert(`This property is already ${this.props.property.status}`)
+//}        
     }
 
     render() {
