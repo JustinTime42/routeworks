@@ -58,6 +58,7 @@ class PropertyDetails extends Component {
             .then(res => {
                 this.props.onGetRouteProperties(this.props.activeRoute) 
                 console.log(res)
+                if (res.data.err.length > 0) alert(res.data.err)
                 this.setState({disabled: false})
             })
             .catch(err => alert(err)) 
