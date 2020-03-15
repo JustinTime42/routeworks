@@ -47,7 +47,7 @@ const PropertyCard = (props) => {
     }
 
     return(
-        <div id={`card${props.i}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
+        <div id={`card${props.address.route_position}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>
                 <div style={seasonalStyle}></div>
                 {props.address ? 

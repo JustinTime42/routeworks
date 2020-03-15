@@ -27,14 +27,16 @@ class DisplayRoute extends Component {
     constructor(props){
         super(props)
         this.state = { 
-            selected: [],
+            routeProperties: this.props.routeProperties.filter(item => !item.inactive),
             activeProperty: {}
         }
     }
 
     componentDidUpdate(prevProps) {
         if(prevProps !== this.props){
-          this.setState({selected: this.props.routeProperties, activeProperty: this.props.activeProperty})
+          this.setState({
+            //routeProperties: this.props.routeProperties.filter(item => !item.inactive), //not currently in use
+            activeProperty: this.props.activeProperty})
         }
       }
 
@@ -42,11 +44,19 @@ class DisplayRoute extends Component {
         this.props.onSetActiveProperty(property)
     }
 
-    changeActiveProperty = (position) => {
-        this.props.onSetActiveProperty(this.props.routeProperties.find( item => item.route_position === position)) 
-        if (document.getElementById(`card${position}`)) {
-            document.getElementById(`card${position}`).scrollIntoView(true) //.scroll(0,100)
-        }        
+    changeActiveProperty = (direction) => {
+        const previous = (i) => {
+            return this.props.routeProperties.slice().reverse().find(item => item.route_position < this.props.activeProperty.route_position + i)
+        }
+        if (direction === "next") {
+            this.props.onSetActiveProperty(this.props.routeProperties.find( item => item.route_position > this.props.activeProperty.route_position))
+        } else {            
+            this.props.onSetActiveProperty(previous(0))
+        }     
+        if (previous(-2)) {    
+            const id = previous(-2).route_position           
+            document.getElementById(`card${id}`).scrollIntoView(true) //.scrollBy(0,50) // //.scroll(0,100)
+        }
     }
 
     render(){
@@ -54,20 +64,16 @@ class DisplayRoute extends Component {
             <div className="driverGridContainer" style={{height: "100%", overflow: "auto"}}>
                 <div className="leftSide scrollable" style={{height: "90vh", width:"100%"}}>
                     {
-                        this.props.routeProperties.map((address, i )=> {
-                            if(!address.inactive){
-                                return (
-                                    <PropertyCard                                    
-                                        i={i}                                     
-                                        key={address.key} 
-                                        address={address}
-                                        activeProperty={this.props.activeProperty}
-                                        handleClick={this.handlePropertyClick}
-    
-                                    />  
-                                )     
-                            } else return null
-                                                       
+                        this.props.routeProperties.map((address, i )=> {                            
+                            return (
+                                <PropertyCard                                    
+                                    i={i}                                     
+                                    key={address.key} 
+                                    address={address}
+                                    activeProperty={this.props.activeProperty}
+                                    handleClick={this.handlePropertyClick}
+                                />  
+                            )                                                            
                         }) 
                     }
                 </div>
