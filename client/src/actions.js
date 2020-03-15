@@ -59,6 +59,12 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
     .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
 }
 
+export const filterRouteProperties = (allAddresses, routeName) => (dispatch) => {
+    const routeProperties = allAddresses.filter(address => address.route_name === routeName).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+    dispatch({ type: GET_ROUTE_PENDING})
+    dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties})
+}
+
 export const saveNewProperty = (property, allAddresses) => (dispatch) => {
     dispatch({ type: UPDATE_ADDRESSES_PENDING})
     fetch('https://snowline-route-manager.herokuapp.com/api/newproperty', {

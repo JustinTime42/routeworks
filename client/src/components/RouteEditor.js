@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { connect } from "react-redux"
-import { requestAllAddresses, getRouteProperties, UpdateRouteProperties, saveRoute, setActiveProperty, saveNewProperty, editProperty, deleteProperty } from "../actions"
+import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRoute, setActiveProperty, saveNewProperty, editProperty, deleteProperty } from "../actions"
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "./PropertyCard"
@@ -28,7 +28,8 @@ const mapDispatchToProps = (dispatch) => {
         onGetRouteProperties: (route) => dispatch(getRouteProperties(route)),
         onSaveNewProperty: (property, allAddresses) => dispatch(saveNewProperty(property, allAddresses)),
         onEditProperty: (property, allAddresses) => dispatch(editProperty(property, allAddresses)),
-        onDeleteProperty: (property, allAddresses) => dispatch(deleteProperty(property, allAddresses))
+        onDeleteProperty: (property, allAddresses) => dispatch(deleteProperty(property, allAddresses)),
+        onFilterRouteProperties: (addresses, route) => dispatch(filterRouteProperties(addresses, route))
     }
 }
 
@@ -125,7 +126,7 @@ class RouteEditor extends Component {
         )
         .then(res => {
             this.props.onGetAllAddresses()
-            console.log(res)
+            this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
         })
         .catch(err => console.log(err)) 
     }
