@@ -4,7 +4,7 @@ import { Dropdown, DropdownButton, Button, Modal } from "react-bootstrap"
 import Can from "../components/Can"
 import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
-import { setActiveRoute, requestRoutes, getRouteProperties, showRouteEditor } from "../actions"
+import { setActiveRoute, requestRoutes, getRouteProperties, showRouteEditor, setActiveProperty } from "../actions"
 
 const mapStateToProps = state => {
     return {
@@ -27,6 +27,7 @@ const mapDispatchToProps = (dispatch) => {
             } else {
                 dispatch(setActiveRoute(event))
                 dispatch(getRouteProperties(event))
+                dispatch(setActiveProperty(null))
             }
         },
         onRequestRoutes: () => dispatch(requestRoutes()),

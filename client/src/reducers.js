@@ -142,7 +142,7 @@ export const setTractorName = (state = initialStateTractor, action={}) => {
 
 const initialStateAllAddresses = {
     addresses: [],
-    isPending: true,
+    isPending: false,
     error: ''
 }
 
@@ -161,7 +161,7 @@ export const requestAllAddresses = (state = initialStateAllAddresses, action={})
 
 export const initialStateRouteProperties = {
     addresses: [],
-    isPending: true,
+    isPending: false,
     error: ''
 }
 export const getRouteProperties = (state = initialStateRouteProperties, action={}) => {
