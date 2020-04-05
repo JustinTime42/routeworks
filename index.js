@@ -183,6 +183,27 @@ app.post('/api/saveroute', (req, res) => {
     Promise.all(promises).then(() => res.json(response))
 })
 
+app.post('/api/tempfill', (req, res) => {
+    db.select('*').from('service_log_temp')
+    .then(data => {
+        data.forEach(item => {
+            if (!item.price) {
+                db.raw(`update service_log_temp set price=(select price from properties where key = ${item.property_key}), driver_earnings=((select percentage from drivers where name = ${item.user_name}) * .01 * (select price from properties where key = ${item.property_key}) )`)
+            }
+        })
+    })  
+
+})
+    //  update service_log 
+    //  set price=(select properties.price from properties, service_log where service_log.property_key = properties.key) 
+    //  where driver_earning ISNULL
+    // select properties.price, property_key, properties.key from properties, service_log where service_log.property_key=249;
+    // select properties.price, properties.key, service_log.property_key, service_log.price
+    // from 
+
+    
+
+
 app.post('/api/setstatus', (req, res) => {
     let property = req.body.property
     let promises = []
@@ -218,7 +239,9 @@ app.post('/api/setstatus', (req, res) => {
         })
         .then(property => response.serviceLog = property)
         .catch(err => response.err.push(err))       
-    )
+    ) 
+
+    
     Promise.all(promises).then(() => res.json(response))
     //where req.property.key from properties
     //insert fields to service log including req.newstatus
