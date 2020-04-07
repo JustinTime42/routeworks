@@ -196,10 +196,6 @@ app.post('/api/propertykey', (req, res) => {
             .catch(err => response.err.push(err))            
         })
     })  
-    .then(finalRes => {
-        response.res.push(finalRes)
-        res.json(response)
-    } )
     .catch(finalErr => {
         response.err.push(finalErr)
         res.json(response)
