@@ -193,7 +193,7 @@ app.post('/api/propertykey', (req, res) => {
         data.forEach(item => {
             db.raw(`update service_log_temp set property_key=(select key from properties where cust_name=${item.cust_name}) where key=${item.key}`)
             .then(response => response.res.push(response))
-            .catch(err => err.push(err))            
+            .catch(err => response.err.push(err))            
         })
     })  
     .then(finalRes => {
