@@ -188,7 +188,7 @@ app.post('/api/propertykey', (req, res) => {
         res: [],
         err: []
     }
-    db.select('*').from('service_log_temp').where('property_key', 'isnull')
+    db.select('*').from('service_log_temp').whereNull('property_key')
     .then(data => {
         data.forEach(item => {
             db.raw(`update service_log_temp set property_key=(select key from properties where cust_name=${item.cust_name}) where key=${item.key}`)
