@@ -190,12 +190,12 @@ app.post('/api/tempfill', (req, res) => {
             console.log("next item:")
             console.log(item)
             db.raw(`update service_log_temp set property_key=(select key from properties where cust_name=${item.cust_name}) where key=item.key`)
-            .then(() => {
-                db.raw(`update service_log_temp set price=(select price from properties where key = ${parseInt(item.property_key)}) where key=${item.key}`)  //, driver_earnings=((select percentage from drivers where name = ${item.user_name}) * .01 * (select price from properties where key = ${item.property_key}) )
-                .then(() => {
-                    db.raw(`update service_log_temp set driver_earning=((select percentage from drivers where name = ${item.user_name}) * .01 * ${item.price}`)
-                })
-            })
+            // .then(() => {
+            //     db.raw(`update service_log_temp set price=(select price from properties where key = ${parseInt(item.property_key)}) where key=${item.key}`)  //, driver_earnings=((select percentage from drivers where name = ${item.user_name}) * .01 * (select price from properties where key = ${item.property_key}) )
+            //     .then(() => {
+            //         db.raw(`update service_log_temp set driver_earning=((select percentage from drivers where name = ${item.user_name}) * .01 * ${item.price}`)
+            //     })
+            // })
             // .then(response => {
             //     res.json(response)
             //     console.log("response:")
