@@ -184,30 +184,26 @@ app.post('/api/saveroute', (req, res) => {
 })
 
 app.post('/api/propertykey', (req, res) => {
+    let response = {
+        res: [],
+        err: []
+    }
     db.select('*').from('service_log_temp')
     .then(data => {
         data.forEach(item => {
-            console.log("next item:")
-            console.log(item)
             db.raw(`update service_log_temp set property_key=(select key from properties where cust_name=${item.cust_name}) where key=item.key`)
-            // .then(() => {
-            //     db.raw(`update service_log_temp set price=(select price from properties where key = ${parseInt(item.property_key)}) where key=${item.key}`)  //, driver_earnings=((select percentage from drivers where name = ${item.user_name}) * .01 * (select price from properties where key = ${item.property_key}) )
-            //     .then(() => {
-            //         db.raw(`update service_log_temp set driver_earning=((select percentage from drivers where name = ${item.user_name}) * .01 * ${item.price}`)
-            //     })
-            // })
-            // .then(response => {
-            //     res.json(response)
-            //     console.log("response:")
-            //     console.log(response)
-            // } )
-            .catch(error => {
-                console.log(error)
-                res.json(error)
-            })
-            
+            .then(response => response.res.push(response))
+            .catch(err => err.push(err))            
         })
     })  
+    .then(finalRes => {
+        response.res.push(finalRes)
+        res.json(response)
+    } )
+    .catch(finalErr => {
+        response.err.push(finalErr)
+        res.json(response)
+    })
 
 })
     //  update service_log 
