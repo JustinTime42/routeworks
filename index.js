@@ -191,7 +191,32 @@ app.post('/api/propertykey', (req, res) => {
     db.select('*').from('service_log_temp').whereNull('property_key')
     .then(data => {
         data.forEach(item => {
-            db.raw(`update service_log_temp set property_key=(select key from properties where cust_name='${item.cust_name}' and address='${item.address}') where key=${item.key}`)
+            db.raw(`update service_log_temp set property_key=(select key from properties where cust_name='${item.cust_name.replace(/'/g, "''")}' and address='${item.address}') where key=${item.key}`)
+            .then(res => response.res.push(res))
+            .catch(err => {
+                console.log(err)
+                response.err.push(err)                
+            })            
+        })
+    })  
+    .catch(finalErr => {
+        response.err.push(finalErr)
+        res.json(response)
+    })
+
+})
+
+
+app.post('/api/price', (req, res) => {
+    let response = {
+        res: [],
+        err: []
+    }
+    db.select('*').from('service_log_temp').whereNull('price')
+    .then(data => {
+        data.forEach(item => {
+            // db.raw(`update service_log_temp set property_key=(select key from properties where cust_name='${item.cust_name}' and address='${item.address}') where key=${item.key}`)
+            db.raw(`update service_log_temp set price=(select price from properties where key = ${parseInt(item.property_key)}) where key=${item.key}`) 
             .then(res => response.res.push(res))
             .catch(err => {
                 console.log(err)
@@ -212,41 +237,31 @@ app.post('/api/propertykey', (req, res) => {
 
 
     
-app.post('/api/price', (req, res) => {
-    db.select('*').from('service_log_temp')
-    .then(data => {
-        data.forEach(item => {
-            console.log("next item:")
-            console.log(item)
-            db.raw(`update service_log_temp set price=(select price from properties where key = ${parseInt(item.property_key)}) where key=${item.key}`) 
-            .catch(error => {
-                console.log(error)
-                res.json(error)
-            })
-            
-        })
-    })  
-})
 
 app.post('/api/earning', (req, res) => {
-    db.select('*').from('service_log_temp')
+    let response = {
+        res: [],
+        err: []
+    }
+    db.select('*').from('service_log_temp').whereNull('driver_earning')
     .then(data => {
         data.forEach(item => {
-            console.log("next item:")
-            console.log(item)
-            db.raw(`update service_log_temp set driver_earning=((select percentage from drivers where name = ${item.user_name}) * .01 * ${item.price}`)
-            .catch(error => {
-                console.log(error)
-                res.json(error)
-            })
-            
+            db.raw(`update service_log_temp set driver_earning=((select percentage from drivers where name = ${item.user_name}) * .01 * ${item.price}) where key=${item.key}`)
+
+          //  db.raw(`update service_log_temp set price=(select price from properties where key = ${parseInt(item.property_key)}) where key=${item.key}`) 
+            .then(res => response.res.push(res))
+            .catch(err => {
+                console.log(err)
+                response.err.push(err)                
+            })            
         })
     })  
+    .catch(finalErr => {
+        response.err.push(finalErr)
+        res.json(response)
+    })
+
 })
-    
-        
-    
-    
 
 app.post('/api/setstatus', (req, res) => {
     let property = req.body.property
