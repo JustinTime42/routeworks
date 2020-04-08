@@ -191,7 +191,7 @@ app.post('/api/propertykey', (req, res) => {
     db.select('*').from('service_log_temp').whereNull('property_key')
     .then(data => {
         data.forEach(item => {
-            db.raw(`update service_log_temp set property_key=(select key from properties where cust_name='${item.cust_name}') where key=${item.key}`)
+            db.raw(`update service_log_temp set property_key=(select key from properties where cust_name='${item.cust_name}' and address='${item.address}') where key=${item.key}`)
             .then(res => response.res.push(res))
             .catch(err => {
                 console.log(err)
@@ -205,12 +205,11 @@ app.post('/api/propertykey', (req, res) => {
     })
 
 })
-    //  update service_log 
-    //  set price=(select properties.price from properties, service_log where service_log.property_key = properties.key) 
-    //  where driver_earning ISNULL
-    // select properties.price, property_key, properties.key from properties, service_log where service_log.property_key=249;
-    // select properties.price, properties.key, service_log.property_key, service_log.price
-    // from 
+    /*
+    This worked for all but a couple customers where there's duplicate names. We'll have to match name AND address...
+    Now do the above, and copy technique for price and driver earning.  
+    */
+
 
     
 app.post('/api/price', (req, res) => {
