@@ -27,6 +27,7 @@ const tractors = [
     "Stubby",
     "Baby Sands",
     "Whitey",
+    "Sweeper"
 ]
 
 class TractorName extends Component {
