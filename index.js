@@ -118,7 +118,7 @@ app.post('/api/initroute', (req, res) => {
 app.post('/api/saveroute', (req, res) => {
     const add = req.body.selected
     const remove = req.body.unselected
-    const route = `, ${req.body.route}`
+    const route = req.body.route
     let response = 
         {
             add: [],
@@ -128,17 +128,36 @@ app.post('/api/saveroute', (req, res) => {
     let promises = []
     add.forEach((item, i) => {
         promises.push(
-            db.raw(`update properties set route_name = concat(route_name, ${route}), route_position = ${i}, 
-            status = ${item.status} || "Waiting", address = ${item.address}, 
-            cust_name = ${item.cust_name}, cust_phone = ${item.cust_phone},
-            surface_type = ${item.surface_type}, is_new = ${item.is_new},
-            notes = ${item.notes}, seasonal = ${item.seasonal}, price = ${item.price},
-            temp = ${item.temp}, inactive = ${item.inactive} returning *` 
-            )
+            db('properties')
+            .returning('*')
+            .where('key', item.key)
+            .update({
+                route_name: route,
+                route_position: i,
+                status: item.status || "Waiting",
+                address: item.address,
+                cust_name: item.cust_name,
+                cust_phone: item.cust_phone,
+                surface_type: item.surface_type,
+                is_new: item.is_new,
+                notes: item.notes,
+                seasonal: item.seasonal,
+                price: item.price,
+                temp: item.temp,
+                inactive: item.inactive
+            })
             .then(address => {
                 response.add.push(address)
             }) 
             .catch(err => response.err.push(err))
+
+            // db.raw(`update properties set route_name = concat(route_name, ${route}), route_position = ${i}, 
+            // status = ${item.status} || "Waiting", address = ${item.address}, 
+            // cust_name = ${item.cust_name}, cust_phone = ${item.cust_phone},
+            // surface_type = ${item.surface_type}, is_new = ${item.is_new},
+            // notes = ${item.notes}, seasonal = ${item.seasonal}, price = ${item.price},
+            // temp = ${item.temp}, inactive = ${item.inactive} returning *` 
+            // ) Was thinking about this, but I think I'll concatenate by editing the field on the front end.
         )       
     })
     remove.forEach((item, i) => {
