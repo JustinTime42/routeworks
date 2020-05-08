@@ -118,7 +118,7 @@ app.post('/api/initroute', (req, res) => {
 app.post('/api/saveroute', (req, res) => {
     const add = req.body.selected
     const remove = req.body.unselected
-    const route = req.body.route
+    const route = `, ${req.body.route}`
     let response = 
         {
             add: [],
@@ -131,21 +131,13 @@ app.post('/api/saveroute', (req, res) => {
             db('properties')
             .returning('*')
             .where('key', item.key)
-            .update({
-                route_name: route,
-                route_position: i,
-                status: item.status || "Waiting",
-                address: item.address,
-                cust_name: item.cust_name,
-                cust_phone: item.cust_phone,
-                surface_type: item.surface_type,
-                is_new: item.is_new,
-                notes: item.notes,
-                seasonal: item.seasonal,
-                price: item.price,
-                temp: item.temp,
-                inactive: item.inactive
-            })
+            .update(db.raw(`route_name = concat(route_name, ${route}, route_position = ${i}, 
+            status = ${item.status} || "Waiting", address = ${item.address}, 
+            cust_name = ${item.cust_name}, cust_phone = ${item.cust_phone},
+            surface_type = ${item.surface_type}, is_new = ${item.is_new},
+            notes = ${item.notes}, seasonal = ${item.seasonal}, price = ${item.price},
+            temp = ${item.temp}, inactive = ${item.inactive}` 
+            ))
             .then(address => {
                 response.add.push(address)
             }) 
