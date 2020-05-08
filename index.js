@@ -128,16 +128,13 @@ app.post('/api/saveroute', (req, res) => {
     let promises = []
     add.forEach((item, i) => {
         promises.push(
-            db('properties')
-            .returning('*')
-            .where('key', item.key)
-            .update(db.raw(`route_name = concat(route_name, ${route}, route_position = ${i}, 
+            db.raw(`update properties set route_name = concat(route_name, ${route}, route_position = ${i}, 
             status = ${item.status} || "Waiting", address = ${item.address}, 
             cust_name = ${item.cust_name}, cust_phone = ${item.cust_phone},
             surface_type = ${item.surface_type}, is_new = ${item.is_new},
             notes = ${item.notes}, seasonal = ${item.seasonal}, price = ${item.price},
-            temp = ${item.temp}, inactive = ${item.inactive}` 
-            ))
+            temp = ${item.temp}, inactive = ${item.inactive} returning *` 
+            )
             .then(address => {
                 response.add.push(address)
             }) 
