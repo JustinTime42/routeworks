@@ -132,7 +132,7 @@ app.post('/api/saveroute', (req, res) => {
             .returning('*')
             .where('key', item.key)
             .update({
-                route_name: route,
+                route_name: route, // maybe change this to item.route since we're updating that on the front end now
                 route_position: i,
                 status: item.status || "Waiting",
                 address: item.address,
@@ -157,7 +157,7 @@ app.post('/api/saveroute', (req, res) => {
             // surface_type = ${item.surface_type}, is_new = ${item.is_new},
             // notes = ${item.notes}, seasonal = ${item.seasonal}, price = ${item.price},
             // temp = ${item.temp}, inactive = ${item.inactive} returning *` 
-            // ) Was thinking about this, but I think I'll concatenate by editing the field on the front end.
+            // ) Was thinking about this, but I think I'll concatenate by editing the field on the front n
         )       
     })
     remove.forEach((item, i) => {

@@ -18,7 +18,7 @@ const mapStateToProps = state => {
         isAllPending: state.requestAllAddresses.isPending,
         error: state.requestAllAddresses.error, 
     }
-}
+} //25:10
 
 const mapDispatchToProps = (dispatch) => {
     return {    
