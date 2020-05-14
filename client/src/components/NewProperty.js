@@ -98,6 +98,7 @@ class NewProperty extends Component {
                                         <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
                                             <option value="select">Select</option>
                                             <option value="per">Per Occurance</option>
+                                            <option value="monthly">Monthly</option>
                                             <option value="seasonal">Seasonal</option>
                                             <option value="5030">5030</option>
                                         </Form.Control>
