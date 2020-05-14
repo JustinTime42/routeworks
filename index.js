@@ -143,8 +143,10 @@ app.post('/api/saveroute', (req, res) => {
                 notes: item.notes,
                 seasonal: item.seasonal,
                 price: item.price,
+                value: item.value,
                 temp: item.temp,
-                inactive: item.inactive
+                inactive: item.inactive,
+                contract_type: item.contract_type,
             })
             .then(address => {
                 response.add.push(address)
