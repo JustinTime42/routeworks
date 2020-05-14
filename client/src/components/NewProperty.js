@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'
-import axios from "axios"
 import { requestAllAddresses, getRouteProperties } from '../actions'
 
 import '../styles/driver.css'
@@ -37,23 +36,16 @@ class NewProperty extends Component {
       }
 
     onChange = (event) => {
-        console.log(this.props.activeProperty)
-        const name = event.target.name
-        const value = event.target.value
-        console.log(typeof value)
-        console.log(value)
-        if (value === "on") {      
-            console.log(event.target.name)     
-            this.setState(function(state, props) {
-                let property = state.activeProperty
-                property[name] = !state.activeProperty[name]
-                return {
-                  property
-                }
-            })
+        const { target: { name, value } } = event
+        if (value === "on") {           
+            this.setState(prevState => (
+                {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty.temp} }               
+            ))
         }
         else {
-            this.setState({ activeProperty: { ...this.state.activeProperty, [name]: value} });
+            this.setState(prevState => (
+                { activeProperty: { ...prevState.activeProperty, [name]: value}}
+            ))
         }
     }
 
@@ -95,10 +87,20 @@ class NewProperty extends Component {
                                             <option value="gravel">Gravel</option>
                                             <option value="partial">Partial</option>
                                         </Form.Control>
+                                        <Form.Label>Price</Form.Label>
                                         <Form.Control name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
+                                        <Form.Label>Value</Form.Label>
+                                        <Form.Control name="value" type="number" placeholder={this.state.activeProperty.value || "value"} onChange={this.onChange}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
+                                    <Form.Label>Contract Type</Form.Label>
+                                        <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
+                                            <option value="select">Select</option>
+                                            <option value="per">Per Occurance</option>
+                                            <option value="seasonal">Seasonal</option>
+                                            <option value="5030">5030</option>
+                                        </Form.Control>
                                     <Form.Check 
                                         name="is_new"
                                         type="checkbox"
