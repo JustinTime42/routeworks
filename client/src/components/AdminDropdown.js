@@ -63,7 +63,7 @@ class EditRouteButton extends Component {
     onDownload = () => {
         const startDate = this.state.startDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
         const endDate = this.state.endDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
-        fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs/?startDate=${startDate}&endDate=${endDate}`)
+        fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs?startDate=${startDate}&endDate=${endDate}`)
         .then(response => response.json())
         .then(logs => {
             logs.forEach((item => { 
@@ -75,6 +75,7 @@ class EditRouteButton extends Component {
         })
         .catch(error => console.log(error))
     } 
+    //figure out how to do query strings property to fix this error. 
 
     render() {
         return (
