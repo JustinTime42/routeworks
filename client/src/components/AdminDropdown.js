@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Dropdown, DropdownButton, Modal, Form } from 'react-bootstrap'
+import { Button, Dropdown, DropdownButton, Modal, Col, Row, Form } from 'react-bootstrap'
 import { CSVLink } from "react-csv";
 import Can from './Can'
 import { AuthConsumer } from "../authContext"
@@ -24,7 +24,8 @@ class EditRouteButton extends Component {
         this.state = {
             showModal: false,
             showDownload: false,
-            date: '',
+            startDate: '',
+            endDate: '',
             logs: []
         }
     }
@@ -56,12 +57,13 @@ class EditRouteButton extends Component {
     
     onSetDate = (event) => {
         const date = event.target.value.toLocaleString("en-US", {timeZone: "America/Anchorage"})
-        this.setState({date: date})
+        this.setState({[event.target.name]: event.target.value})
     } 
 
     onDownload = () => {
-        const since = this.state.date.toLocaleString("en-US", {timeZone: "America/Anchorage"})
-        fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs/${since}`)
+        const startDate = this.state.startDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
+        const endDate = this.state.endDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
+        fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs/?startDate=${startDate}&endDate=${endDate}`)
         .then(response => response.json())
         .then(logs => {
             logs.forEach((item => { 
@@ -96,16 +98,22 @@ class EditRouteButton extends Component {
                          <Modal.Header>Download Service Logs</Modal.Header>
                          <Modal.Body>
                              <Form>
-                                 <Form.Group>
-                                     <Form.Label column sm={2}>Date</Form.Label>
-                                        <Form.Control name="date" type="date" onChange={this.onSetDate}/>
-                                        {
-                                            this.state.showDownload ?
-                                            <CSVLink data={this.state.logs} headers={this.headers} filename={`servicelogs_${this.state.date}.csv`}>
-                                            Download
-                                            </CSVLink> : <></>
-                                        }                                        
+                                 <Form.Group as={Row}>
+                                    <Col sm={10}>
+                                     <Form.Label column sm={2}>Start Date</Form.Label>
+                                        <Form.Control name="startDate" type="date" onChange={this.onSetDate}/> 
+                                    </Col>
+                                    <Col sm={10}>
+                                    <Form.Label column sm={2}>End Date</Form.Label>
+                                        <Form.Control name="endDate" type="date" onChange={this.onSetDate}/>
+                                    </Col>                                                                              
                                  </Form.Group>
+                                 {
+                                    this.state.showDownload ?
+                                    <CSVLink data={this.state.logs} headers={this.headers} filename={`servicelogs_${this.state.date}.csv`}>
+                                    Download
+                                    </CSVLink> : <></>
+                                } 
                              </Form>                              
                          </Modal.Body>
                          <Modal.Footer>

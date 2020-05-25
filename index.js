@@ -409,9 +409,9 @@ app.get('/api/getroute/:routeName', (req, res) => {
     .catch(err => res.json(err))
 });
 
-app.get('/api/getlogs/:date', (req,res) => {
-    const { date } = req.params
-    db.where('service_log.timestamp', '>', date)
+app.get('/api/getlogs/', (req,res) => {
+    const range = req.query
+    db.whereBetween('service_log.timestamp', [range.start, range.end])
     .select('*')
     .from('service_log')
     .then(data => res.json(data))
