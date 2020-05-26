@@ -414,6 +414,7 @@ app.get('/api/getlogs/', (req,res) => {
     db.whereBetween('service_log.timestamp', [range.start, range.end])
     .select('*')
     .from('service_log')
+    .orderBy('timestamp')
     .then(data => res.json(data))
 })
 
