@@ -61,9 +61,14 @@ class EditRouteButton extends Component {
     } 
 
     onDownload = () => {
+
+//         var url = new URL("https://snowline-route-manager.herokuapp.com/api/getlogs"),
+//     params = {lat:35.696233, long:139.570431}
+// Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+// fetch(url)
         const startDate = this.state.startDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
         const endDate = this.state.endDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
-        fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs?startDate=${startDate}&endDate=${endDate}`)
+        fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs?start=${startDate}&end=${endDate}`)
         .then(response => response.json())
         .then(logs => {
             logs.forEach((item => { 
