@@ -416,7 +416,7 @@ app.get('/api/getlogs/', (req,res) => {
     const xeroColumns = []
     const rawColumns = []
         
-    ] //need to pass array to select depending on which type I think.
+     //need to pass array to select depending on which type I think.
     // if options.type = raw, select * from service logs join properties on almost everything
     // else select  
     db.whereBetween('service_log.timestamp', [options.start, options.end])
