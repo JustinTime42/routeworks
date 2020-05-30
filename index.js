@@ -147,7 +147,7 @@ app.post('/api/saveroute', (req, res) => {
                 temp: item.temp,
                 inactive: item.inactive,
                 contract_type: item.contract_type,
-                route_data: JSON.stringify(item.route_data),
+                route_data: item.route_data //JSON.stringify(item.route_data),
             })
             .then(address => {
                 response.add.push(address)
