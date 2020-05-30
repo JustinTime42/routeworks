@@ -184,7 +184,7 @@ app.post('/api/saveroute', (req, res) => {
                 price: item.price,
                 temp: item.temp,
                 inactive: item.inactive,
-                route_data: item.route_data,
+                route_data: JSON.stringify(item.route_data),
             })
             .then(address => {
                 response.remove.push(address)
