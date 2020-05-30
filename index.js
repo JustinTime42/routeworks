@@ -147,6 +147,7 @@ app.post('/api/saveroute', (req, res) => {
                 temp: item.temp,
                 inactive: item.inactive,
                 contract_type: item.contract_type,
+                route_data: item.route_data,
             })
             .then(address => {
                 response.add.push(address)
@@ -182,7 +183,8 @@ app.post('/api/saveroute', (req, res) => {
                 seasonal: item.seasonal,
                 price: item.price,
                 temp: item.temp,
-                inactive: item.inactive
+                inactive: item.inactive,
+                route_data: item.route_data,
             })
             .then(address => {
                 response.remove.push(address)
@@ -410,8 +412,14 @@ app.get('/api/getroute/:routeName', (req, res) => {
 });
 
 app.get('/api/getlogs/', (req,res) => {
-    const range = req.query
-    db.whereBetween('service_log.timestamp', [range.start, range.end])
+    const options = req.query
+    const xeroColumns = []
+    const rawColumns = []
+        
+    ] //need to pass array to select depending on which type I think.
+    // if options.type = raw, select * from service logs join properties on almost everything
+    // else select  
+    db.whereBetween('service_log.timestamp', [options.start, options.end])
     .select('*')
     .from('service_log')
     .orderBy('timestamp')
