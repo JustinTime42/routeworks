@@ -128,28 +128,28 @@ app.post('/api/saveroute', (req, res) => {
     let promises = []
     add.forEach((item, i) => {
         promises.push(
-            db.raw(`update properties set route_data = ${item.route_data} where key=${item.key}`)
-            // db('properties')
-            // .returning('*')
-            // .where('key', item.key)
-            // .update({
-            //     route_name: route, // maybe change this to item.route since we're updating that on the front end now
-            //     route_position: i,
-            //     status: item.status || "Waiting",
-            //     address: item.address,
-            //     cust_name: item.cust_name,
-            //     cust_phone: item.cust_phone,
-            //     surface_type: item.surface_type,
-            //     is_new: item.is_new,
-            //     notes: item.notes,
-            //     seasonal: item.seasonal,
-            //     price: item.price,
-            //     value: item.value,
-            //     temp: item.temp,
-            //     inactive: item.inactive,
-            //     contract_type: item.contract_type,
-            //     route_data: JSON.stringify(item.route_data),
-            // })
+            //db.raw(`update properties set route_data = ${item.route_data} where key=${item.key}`)
+            db('properties')
+            .returning('*')
+            .where('key', item.key)
+            .update({
+                route_name: route, // maybe change this to item.route since we're updating that on the front end now
+                route_position: i,
+                status: item.status || "Waiting",
+                address: item.address,
+                cust_name: item.cust_name,
+                cust_phone: item.cust_phone,
+                surface_type: item.surface_type,
+                is_new: item.is_new,
+                notes: item.notes,
+                seasonal: item.seasonal,
+                price: item.price,
+                value: item.value,
+                temp: item.temp,
+                inactive: item.inactive,
+                contract_type: item.contract_type,
+                route_data: JSON.stringify(item.route_data),
+            })
             .then(address => {
                 response.add.push(address)
             }) 
