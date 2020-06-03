@@ -408,7 +408,7 @@ app.get('/api/getroute/:routeName', (req, res) => {
     //.from('properties')
     //.orderBy('route_position')
     .then(data => {
-        res.json(data)
+        res.json(data.rows)
     })
     .catch(err => res.json(err))
 });
