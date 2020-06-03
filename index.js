@@ -292,7 +292,7 @@ app.post('/api/setstatus', (req, res) => {
         .returning('*')
         .where('key', req.body.property.key)
         .update({route_data: JSON.stringify(property.route_data)})
-        .then(property => response.properties = property)
+        .then(property => response.properties.push(property))
         .catch(err => response.err.push(err))
     )
 
@@ -301,8 +301,7 @@ app.post('/api/setstatus', (req, res) => {
         .returning('*')
         .insert({
             address: property.address,
-            route_name: property.route_name,
-            status: req.body.newStatus,
+            status: req.body.status,
             notes: req.body.noteField,
             user_name: req.body.driver.name,
             tractor: req.body.tractor,
@@ -311,7 +310,7 @@ app.post('/api/setstatus', (req, res) => {
             price: property.price,
             driver_earning: req.body.driver.percentage * .01 * property.price,
         })
-        .then(property => response.serviceLog = property)
+        .then(property => response.serviceLog.push(property))
         .catch(err => response.err.push(err))       
     ) 
 
