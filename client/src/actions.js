@@ -54,6 +54,7 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
         console.log("route properties:")
         console.log(data)
         const routeProperties = data.filter(item => !item.inactive)
+            .sort((a, b) => a.route_data.find(item => item.route_name === activeRoute).route_position > b.route_data.find(item => item.route_name === activeRoute).route_position ? 1 : -1) 
         dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })
     })
     .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))

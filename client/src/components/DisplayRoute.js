@@ -67,7 +67,8 @@ class DisplayRoute extends Component {
                         this.props.routeProperties.map((address, i )=> {                            
                             return (
                                 <PropertyCard                                    
-                                    i={i}                                     
+                                    i={i}  
+                                    route={this.props.activeRoute}                                   
                                     key={address.key} 
                                     address={address}
                                     activeProperty={this.props.activeProperty}

@@ -18,7 +18,7 @@ const mapStateToProps = state => {
         isAllPending: state.requestAllAddresses.isPending,
         error: state.requestAllAddresses.error, 
     }
-} //25:10
+} 
 
 const mapDispatchToProps = (dispatch) => {
     return {    
@@ -84,12 +84,13 @@ class RouteEditor extends Component {
     constructor(props){
         super(props)
         this.state = { 
-            items: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-            filteredItems: this.props.addresses.filter(address => address.route_name !== this.props.activeRoute),
-            selected: this.props.addresses.filter(address => address.route_name === this.props.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1),
+            items: this.setUnselected(this.props.addresses, this.props.activeRoute),
+            filteredItems: this.setUnselected(this.props.addresses, this.props.activeRoute),
+            selected: this.setSelected(this.props.addresses, this.props.activeRoute),
             searchField: '',
             showModal: false,
-            activeProperty: this.props.activeProperty,            
+            activeProperty: this.props.activeProperty,      
+            modified: [],      
         }
     }
     
@@ -98,24 +99,35 @@ class RouteEditor extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-
         if(this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
             this.setState((prevState, prevProps) => {
                 return {
-                    selected: prevProps.addresses.filter(address => address.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1),
-                    items: prevProps.addresses.filter(address => address.route_name !== prevProps.activeRoute),
-                    filteredItems: this.onFilterProperties(this.state.searchField),     //prevProps.addresses.filter(address => address.route_name !== prevProps.activeRoute),
+                    selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
+                    items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
+                    filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
                     activeProperty: prevProps.activeProperty
                 }
             })   
         } 
+        if(this.state.searchField !== prevState.searchField) {
+            this.setState((prevState, prevProps) => ({filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses)}))
+        }
     }
 
     id2List = {
         droppable: 'filteredItems',
         droppable2: 'selected'
-    };
+    }
 
+    setSelected = (addresses, route) => {
+        return addresses.filter(item => item.route_data.some(item => item.route_name === route))
+            .sort((a, b) => a.route_data.find(item => item.route_name === route).route_position > b.route_data.find(item => item.route_name === route).route_position ? 1 : -1) 
+    }
+
+    setUnselected = (addresses, route) => {
+        return addresses.filter(item => !item.route_data.some(item => item.route_name === route))
+    }
+    
     onSave = () => {
         axios.post('https://snowline-route-manager.herokuapp.com/api/saveroute', 
             {
@@ -127,20 +139,26 @@ class RouteEditor extends Component {
         .then(res => {
             this.props.onGetAllAddresses()
             this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
+            console.log(res)
         })
         .catch(err => console.log(err)) 
     }
 
-    onInitRoute = () => {
-        this.setState((prevState) => ({selected: prevState.selected.map(item => item.status = "Waiting")}, this.onSave()))
+    onInitRoute = () => {        
+        this.setState((prevState, prevProps) => {
+            let selected = prevState.selected 
+            selected.forEach(customer => customer.route_data.find(route => route.route_name === prevProps.activeRoute).status = "Waiting")           
+            return {
+                selected: selected
+            }
+        }, this.onSave())
     }
     
     getList = id => this.state[this.id2List[id]];
 
     onDragEnd = result => {
-        const { source, destination } = result;
-
-        // dropped outside the list
+        const { source, destination } = result
+        
         if (!destination) {
             return;
         }
@@ -150,54 +168,90 @@ class RouteEditor extends Component {
                 this.getList(source.droppableId),
                 source.index,
                 destination.index
-            );
+            )
 
-            let state = { orderedItems };
+            let state = { orderedItems }
 
-            if (source.droppableId === 'droppable2') {
-                
+            if (source.droppableId === 'droppable2') { 
+                // Find the dropped item, then find the route element for the activeRoute,
+                // and set the route_position to result.destination.index
+                orderedItems.find(item => item.key === parseInt(result.draggableId))
+                .route_data.find(route => route.route_name === this.props.activeRoute).route_position = result.destination.index
+                //droppedCard.route_data.find(route => route.route_name === this.props.activeRoute).route_position = result.destination.index
                 state = { selected: orderedItems };
             }
 
             this.setState(state);
         } else {
-            const result = move(
+            const newList = move(
                 this.getList(source.droppableId),
                 this.getList(destination.droppableId),
                 source,
                 destination
             )
             
-            result.droppable2.forEach((item, i) => {
+            newList.droppable2.forEach((item, i) => {
+                let route_data = {
+                    route_name: this.props.activeRoute,
+                    route_position: i,
+                    status: "Waiting"
+                }
+                if (item.route_data.some(item => item.route_name === this.props.activeRoute)) {
+                    item.route_data.find(route => route.route_name === this.props.activeRoute).route_position = i
+                } else {
+                    item.route_data.push(route_data)
+                }
+
+                //this stuff will be deprecated once jsonb route_data is finished
                 item.route_name = this.props.activeRoute
-                item.status = !item.status ? "Waiting" : item.status
+                item.status = !item.status ? "Waiting" : item.status    
                 item.route_position = i
+
+                // save changes to redux and state
+                // needs rework. Maybe make a way to send the new property lists at once instead
+                // of dispatching an action per item in the list
                 this.props.onEditProperty(item, this.props.addresses)
+                
+                // this is currently needed to keep the recently dragged item, but is stupid. plz change.
                 this.setState((prevState, prevProps) => {
                     return {
-                    items: prevProps.addresses.filter(item => item.route_name !== prevProps.activeRoute),  
-                    filteredItems: this.onFilterProperties(prevState.searchField),
-                    selected: prevProps.addresses.filter(item => item.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+                        selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
+                        items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
+                        filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
                     }
-                })                                                                                                
+                }, () => console.log(this.state))                                                                                              
             })
-            
-            result.droppable.forEach((item, i) => {
-                if (item.route_name === this.props.activeRoute){
-                    item.route_name = "unassigned"
-                    item.status = ""
-                    item.route_position = null
-                    this.props.onEditProperty(item, this.props.addresses)
-                    this.setState((prevState, prevProps) => {
-                        return {
-                            items: prevProps.addresses.filter(item => item.route_name !== prevProps.activeRoute),
-                            filteredItems: this.onFilterProperties(prevState.searchField),                          
-                            selected: prevProps.addresses.filter(item => item.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
-                        }
-                    }, () => console.log(this.state))
-                }
-            })
-            this.onFilterProperties(this.state.searchField)
+           
+            if (destination.droppableId === "droppable") {
+                let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))
+                droppedCard.route_data.splice(droppedCard.route_data.findIndex(route => route.route_name === this.props.activeRoute), 1)
+                this.props.onEditProperty(droppedCard, this.props.addresses)
+
+                // this is currently needed to keep the recently dragged item, but is stupid. plz change.
+                this.setState((prevState, prevProps) => {
+                    return {
+                        selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
+                        items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
+                        filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
+                    }
+                }, () => console.log(this.state))
+            }
+            // newList.droppable.forEach((item, i) => {
+            //     if (item.route_name === this.props.activeRoute){
+            //         item.route_name = "unassigned"
+            //         item.status = ""
+            //         item.route_position = null
+                    
+            //         this.setState((prevState, prevProps) => {
+            //             return {
+            //                 items: prevProps.addresses.filter(item => item.route_name !== prevProps.activeRoute),
+            //                 filteredItems: this.onFilterProperties(prevState.searchField),                          
+            //                 selected: prevProps.addresses.filter(item => item.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+            //             }
+            //         }, () => console.log(this.state))
+            //     }
+            // })
+           // this.onFilterProperties(this.state.searchField)
         }        
     }
 
@@ -205,28 +259,24 @@ class RouteEditor extends Component {
         this.props.onSetActiveProperty(property)
     }
 
-    onFilterProperties = (filter = "") => {        
-        let filteredItems = this.props.addresses.filter(property => {
-            if (property.route_name !== this.props.activeRoute) {  
-                if (!this.state.searchField) {
-                    return true
-                } else if (property.address && property.address.toLowerCase().includes(filter.toLowerCase())) {
-                    return true
-                } else if (property.route_name && property.route_name.toLowerCase().includes(filter.toLowerCase())) {
-                    return true
-                } else if (property.cust_name && property.cust_name.toLowerCase().includes(filter.toLowerCase())) {
-                    return true
-                } else if (property.cust_phone && property.cust_phone.toLowerCase().includes(filter.toLowerCase())) {
-                    return true
-                } else {return false}
-            } else {return false}            
+    onFilterProperties = (filter = '', addresses = []) => {          
+        let filteredItems = addresses.filter(property => {
+            if (property.route_data.some(route => route.route_name === this.props.activeRoute)) return false
+            else {
+                if (!filter) return true
+                else if (property.address && property.address.toLowerCase().includes(filter.toLowerCase())) return true
+                else if (property.route_data.some(route => route.route_name.toLowerCase().includes(filter.toLowerCase()))) return true
+                else if (property.cust_name && property.cust_name.toLowerCase().includes(filter.toLowerCase())) return true
+                else if (property.cust_phone && property.cust_phone.toLowerCase().includes(filter.toLowerCase())) return true
+                else {return false}
+            }    
         })  
-        return filteredItems  
+        return filteredItems              
     }
 
     onSearchChange = (event) => {
-        const filteredItems = this.onFilterProperties(event.target.value)
-        this.setState({searchField: event.target.value, filteredItems: filteredItems})        
+        //const filteredItems = this.onFilterProperties(event.target.value, this.state.addresses)
+        this.setState({searchField: event.target.value})        
     }
 
     onNewPropertyClick = () => {
@@ -256,9 +306,9 @@ class RouteEditor extends Component {
         }
         this.setState((prevState, prevProps) => {
             return {
-            items: prevProps.addresses.filter(item => item.route_name !== prevProps.activeRoute),
-            filteredItems: this.onFilterProperties(prevState.searchField),                          
-            selected: prevProps.addresses.filter(item => item.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
+            items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
+            filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),                          
+            selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
             }
         })
     }
@@ -301,6 +351,7 @@ class RouteEditor extends Component {
                                             )}>
                                             <PropertyCard 
                                                 i={index} 
+                                                route={this.props.activeRoute}
                                                 key={item.key} 
                                                 address={item} 
                                                 admin={true} 
@@ -336,7 +387,13 @@ class RouteEditor extends Component {
                                                 snapshot.isDragging,
                                                 provided.draggableProps.style
                                             )}>
-                                            <PropertyCard key={item.key} address={item} admin={true} editClick={this.onEditPropertyClick} handleClick={this.handlePropertyClick}/>
+                                            <PropertyCard 
+                                                route={this.props.activeRoute} 
+                                                key={item.key} 
+                                                address={item} 
+                                                admin={true} 
+                                                editClick={this.onEditPropertyClick} 
+                                                handleClick={this.handlePropertyClick}/>
                                         </div>
                                     )}
                                 </Draggable>

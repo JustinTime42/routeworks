@@ -41,15 +41,15 @@ class PropertyDetails extends Component {
         this.setState({noteField: event.target.value})
     }
 
-    onStatusChange = (status) => {
-        // no do an alert like the delete properties. put in above though
-        //if (this.props.property.status !== status) {
-            console.log(this.props.property)
+    onStatusChange = (newStatus) => {
             this.setState({disabled: true})
+            let property = this.props.property
+            property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
+            console.log(property)
             axios.post(`https://snowline-route-manager.herokuapp.com/api/setstatus`, 
                 {
-                    property: this.props.property,
-                    newStatus: status,
+                    property: property,
+                    status: newStatus,
                     driver: this.props.driver,
                     noteField: this.state.noteField,
                     tractor: this.props.tractor
@@ -62,9 +62,6 @@ class PropertyDetails extends Component {
                 this.setState({disabled: false})
             })
             .catch(err => alert(err)) 
-       // } else {
-        //    alert(`This property is already ${this.props.property.status}`)
-//}        
     }
 
     render() {
