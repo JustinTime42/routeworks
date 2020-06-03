@@ -388,7 +388,7 @@ app.get('/api/getroute/:routeName', (req, res) => {
         //on properties.key=service_log.property_key 
         //
     //where 
-    db.where('properties.route)')
+    //db.where('properties.route)')
     // db.where('properties.route_name', routeName)
     // .select('*') 
     // .from('properties')
@@ -402,10 +402,11 @@ app.get('/api/getroute/:routeName', (req, res) => {
     // })
     // .catch(err => res.json(err))
     const { routeName } = req.params
-    db.where('properties.route_name', routeName)
-    .select('*') 
-    .from('properties')
-    .orderBy('route_position')
+    db.raw(`select * from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
+    //db.where('properties.route_name', routeName)
+    //.select('*') 
+    //.from('properties')
+    //.orderBy('route_position')
     .then(data => {
         res.json(data)
     })
