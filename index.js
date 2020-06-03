@@ -282,8 +282,8 @@ app.post('/api/setstatus', (req, res) => {
     let property = req.body.property
     let promises = []
     let response = {
-        properties: {},
-        serviceLog: {},
+        properties: [],
+        serviceLog: [],
         err: []
     }
 
