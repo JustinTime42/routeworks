@@ -54,7 +54,8 @@ app.post('/api/newproperty', (req, res) => {
         route_position: null,
         price: property.price,
         temp: property.temp,
-        inactive: property.inactive
+        inactive: property.inactive,
+        route_data: JSON.stringify(property.route_data),
      })
      .then(property =>  res.json(property))
      .catch(err => res.json("error: " + err))
@@ -75,7 +76,8 @@ app.post('/api/editproperty', (req, res) => {
         seasonal: property.seasonal,
         price: property.price,
         temp: property.temp,
-        inactive: property.inactive
+        inactive: property.inactive,
+        route_data: JSON.stringify(property.route_data), 
     })
     .then(details => res.json(details))
     .catch(err => res.json("error: " + err))
@@ -103,7 +105,7 @@ app.post('/api/initroute', (req, res) => {
             .returning('*')
             .where('key', item.key)
             .update({
-                status: 'Waiting',
+                route_data: JSON.stringify(property.route_data),
             })
             .then(item => {
                 response.success.push(item)            
@@ -289,7 +291,7 @@ app.post('/api/setstatus', (req, res) => {
         db('properties')
         .returning('*')
         .where('key', req.body.property.key)
-        .update({status: req.body.newStatus})
+        .update({route_data: JSON.stringify(property.route_data)})
         .then(property => response.properties = property)
         .catch(err => response.err.push(err))
     )
