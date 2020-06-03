@@ -293,7 +293,10 @@ app.post('/api/setstatus', (req, res) => {
         .where('key', req.body.property.key)
         .update({route_data: JSON.stringify(property.route_data)})
         .then(property => response.properties.push(property))
-        .catch(err => response.err.push(err))
+        .catch(err => {
+            console.log(err)
+            response.err.push(err)
+        })
     )
 
     promises.push(
@@ -311,7 +314,10 @@ app.post('/api/setstatus', (req, res) => {
             driver_earning: req.body.driver.percentage * .01 * property.price,
         })
         .then(property => response.serviceLog.push(property))
-        .catch(err => response.err.push(err))       
+        .catch(err => {
+            console.log(err)
+            response.err.push(err)
+        })       
     ) 
 
     
