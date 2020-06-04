@@ -11,7 +11,7 @@ const PropertyCard = (props) => {
             props.address.route_data.find(item => item.route_name === route)[prop] : null
     }
     const status = findRouteData("status")
-    const route_position = findRouteData("route_position") ? findRouteData("route_position") + ". " : ""
+    const route_position = findRouteData("route_position") !== null ? (findRouteData("route_position") + 1) + ". " : ""
     const route_list = props.address.route_data.map(item => item.route_name + ", ")
     // const status = props.address.route_data.some(item => item.route_name === route) ?
     // props.address.route_data.find(item => item.route_name === route).route_position : null
