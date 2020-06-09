@@ -62,7 +62,7 @@ class DriverName extends Component {
     }
     saveDriver = () => {
         const endpoint = this.state.key ? "editDriver" : "newDriver"        
-        axios.post(`https://snowline-route-manager.herokuapp.com/api/${endpoint}`, { key: this.state.key, name: this.state.name, percentage: this.state.percentage })
+        axios.post(`${process.env.REACT_APP_API_URL}/${endpoint}`, { key: this.state.key, name: this.state.name, percentage: this.state.percentage })
         .then(res => {
         console.log(res)
         this.props.onGetDrivers()
@@ -72,7 +72,7 @@ class DriverName extends Component {
     }
 
     onDeleteDriver = () => {
-        axios.post(`https://snowline-route-manager.herokuapp.com/api/deletedriver`, { key: this.state.key })
+        axios.post(`${process.env.REACT_APP_API_URL}/deletedriver`, { key: this.state.key })
         .then(res => {
         console.log(res)
         this.props.onGetDrivers()

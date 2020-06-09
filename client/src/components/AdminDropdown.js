@@ -80,7 +80,7 @@ class EditRouteButton extends Component {
         const startDate = this.state.startDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
         const endDate = this.state.endDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
         const logType = this.state.logType
-        fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs?type=${logType}&start=${startDate}&end=${endDate}`)
+        fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${startDate}&end=${endDate}`)
         .then(response => response.json())
         .then(logs => {
             logs.forEach((item => { 

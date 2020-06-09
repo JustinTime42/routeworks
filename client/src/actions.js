@@ -40,7 +40,7 @@ export const setActiveProperty = (property) => {
 }
 export const requestRoutes = () => (dispatch) => {
     dispatch({ type: REQUEST_ROUTES_PENDING })
-    fetch('https://snowline-route-manager.herokuapp.com/api/routelist')
+    fetch(`${process.env.REACT_APP_API_URL}/routelist`)
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_ROUTES_SUCCESS, payload: data }))
     .catch(error => dispatch({ type: REQUEST_ROUTES_FAILED, payload: error }))
@@ -48,7 +48,7 @@ export const requestRoutes = () => (dispatch) => {
 
 export const getRouteProperties = (activeRoute) => (dispatch) => {
     dispatch({ type: GET_ROUTE_PENDING})
-    fetch(`https://snowline-route-manager.herokuapp.com/api/getroute/${activeRoute}`)
+    fetch(`${process.env.REACT_APP_API_URL}/getroute/${activeRoute}`)
     .then(response => response.json())
     .then(data => {
         console.log("route properties:")
@@ -68,7 +68,7 @@ export const filterRouteProperties = (allAddresses, routeName) => (dispatch) => 
 
 export const saveNewProperty = (property, allAddresses) => (dispatch) => {
     dispatch({ type: UPDATE_ADDRESSES_PENDING})
-    fetch('https://snowline-route-manager.herokuapp.com/api/newproperty', {
+    fetch(`${process.env.REACT_APP_API_URL}/newproperty`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export const saveNewProperty = (property, allAddresses) => (dispatch) => {
 
 export const deleteProperty = (property, allAddresses) => (dispatch) => {
     dispatch({ type: UPDATE_ADDRESSES_PENDING})
-    fetch('https://snowline-route-manager.herokuapp.com/api/deleteproperty', {
+    fetch(`${process.env.REACT_APP_API_URL}/deleteproperty`, {
         method: 'POST', 
         headers: {
             'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export const editProperty = (property, allAddresses) => (dispatch) => {
 //currently not in use. refactor routeEditor.onSave to use
 export const saveRoute = (newRoute) => (dispatch) => {
     dispatch({ type: SAVE_ROUTE_PENDING})
-    fetch('https://snowline-route-manager.herokuapp.com/api/saveroute', {
+    fetch(`${process.env.REACT_APP_API_URL}/saveroute`, {
         method: 'POST',     
         body: JSON.stringify({newRoute})
     })
@@ -124,7 +124,7 @@ export const saveRoute = (newRoute) => (dispatch) => {
 
 export const getDrivers = () => (dispatch) => {
     dispatch({ type: GET_DRIVERS_PENDING })
-    fetch('https://snowline-route-manager.herokuapp.com/api/drivers')
+    fetch(`${process.env.REACT_APP_API_URL}/drivers`)
     .then(res => res.json())
     .then(data => dispatch({ type: GET_DRIVERS_SUCCESS, payload: data}))
     .catch(err => dispatch({ type: GET_DRIVERS_FAILED, payload: err}))
@@ -147,7 +147,7 @@ export const setTractorName = (tractorName) => {
 
 export const requestAllAddresses = () => (dispatch) => {
     dispatch({ type: UPDATE_ADDRESSES_PENDING })
-    fetch('https://snowline-route-manager.herokuapp.com/api/properties')
+    fetch(`${process.env.REACT_APP_API_URL}/properties`)
     .then(response => response.json())
     .then(data => dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: data}))
     .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error}))
