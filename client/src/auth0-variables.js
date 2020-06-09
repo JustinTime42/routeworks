@@ -1,6 +1,6 @@
 export const AUTH_CONFIG = {
   domain: "justintime42.auth0.com",
-  roleUrl: "https://route-manager-app.herokuapp.com/role",
+  roleUrl: process.env.REACT_APP_ROLE_URL,
   clientId: process.env.REACT_APP_CLIENTID,
   // callbackUrl: process.env.REACT_APP_CALLBACK_URL,
   callbackUrl: process.env.REACT_APP_CALLBACK_URL, // "https://snowline-route-manager.herokuapp.com/callback",
