@@ -53,7 +53,7 @@ class RouteSelector extends Component {
     handleClose = () => this.setState({show: false, routeName: ""})
     handleShow = () => this.setState({show: true})
     handleSave = () => {
-        axios.post(`https://snowline-route-manager.herokuapp.com/api/addroute`, { route_name: this.state.routeName })
+        axios.post(`${process.env.API_URL}/addroute`, { route_name: this.state.routeName })
         .then(res => {
           console.log(res)
           this.props.onRequestRoutes()

@@ -46,7 +46,7 @@ class PropertyDetails extends Component {
             let property = this.props.property
             property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
             console.log(property)
-            axios.post(`https://snowline-route-manager.herokuapp.com/api/setstatus`, 
+            axios.post(`${process.env.API_URL}/setstatus`, 
                 {
                     property: property,
                     status: newStatus,
