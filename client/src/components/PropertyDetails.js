@@ -46,7 +46,7 @@ class PropertyDetails extends Component {
             let property = this.props.property
             property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
             console.log(property)
-            axios.post(`${process.env.API_URL}/setstatus`, 
+            axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
                 {
                     property: property,
                     status: newStatus,
