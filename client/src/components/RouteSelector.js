@@ -54,8 +54,8 @@ class RouteSelector extends Component {
     handleShow = () => this.setState({show: true})
     handleSave = () => {
         //gah! this isn't working. 
-        console.log(process.env.API_URL)
-        axios.post(`${process.env.API_URL}/addroute`, { route_name: this.state.routeName })
+        console.log(process.env.REACT_APP_API_URL)
+        axios.post(`${process.env.REACT_APP_API_URL}/addroute`, { route_name: this.state.routeName })
         .then(res => {
           console.log(res)
           this.props.onRequestRoutes()
