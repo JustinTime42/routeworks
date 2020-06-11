@@ -1,9 +1,9 @@
 import React from 'react'
 import Blackout from "../components/Blackout"
-import HomePage from "../components/Home"
+import HomePage from "../containers/Home"
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import CallbackPage from "../components/Callback";
-import Auth from "../components/Auth";
+import CallbackPage from "../auth/Callback";
+import Auth from "../auth/Auth";
 import "../App.css"
 
 function App() { 
