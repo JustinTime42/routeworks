@@ -1,7 +1,6 @@
 import React from 'react'
 import Blackout from "../components/Blackout"
 import HomePage from "../components/Home"
-import Admin from "./Admin"
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import CallbackPage from "../components/Callback";
 import Auth from "../components/Auth";
@@ -16,7 +15,6 @@ function App() {
             <Router>
                   <Switch>
                     <Route exact path="/" component={HomePage}/>
-                    <Route path="/admin" component={Admin}/>
                     <Route path="/callback" component={CallbackPage}/>
                   </Switch>
                 </Router>     
