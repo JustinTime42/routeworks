@@ -98,11 +98,8 @@ class PropertyDetails extends Component {
                     <Button variant="primary" size="lg" onClick={() => this.props.changeProperty("next")} >Next</Button>
                 </Card.Body>
             </Card> : null
-        )
-    
+        )    
     }
-        
-    
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PropertyDetails)

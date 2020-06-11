@@ -3,7 +3,7 @@ import axios from "axios"
 import { connect } from 'react-redux'
 import { Dropdown, DropdownButton, Button, Modal, Alert } from 'react-bootstrap'
 import { setActiveDriver, getDrivers } from '../actions'
-import Can from "./Can"
+import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
 
 const mapStateToProps = state => {
@@ -124,7 +124,6 @@ class DriverName extends Component {
                         </Dropdown.Item>)           
                 }
                 <Modal show={this.state.show} onHide={this.handleClose}>
-                    
                     <Modal.Body>
                         <form>
                             <input onChange={this.onNameChange} type="text" name="driverName" placeholder="Driver Name" value={this.state.name}></input>
@@ -154,9 +153,7 @@ class DriverName extends Component {
                         </div>
                     </Alert>
                 </Modal>
-                
             </DropdownButton>
-                
             </div>  
         )
     } 

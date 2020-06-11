@@ -10,6 +10,6 @@ const Login = () => (
       </button>
     )}
   </AuthConsumer>
-);
+)
 
 export default Login;

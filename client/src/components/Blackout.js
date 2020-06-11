@@ -9,7 +9,6 @@ const Blackout = () => {
 
     const divStyle = {
         
-        // padding: '2em',
         width: '100vw',
         backgroundColor: 'black',
         position: 'absolute',

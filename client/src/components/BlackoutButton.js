@@ -4,9 +4,9 @@ import { Button } from 'react-bootstrap'
 const BlackoutButton = () => {
     
     const goActive = () => { 
-    if (document.getElementById("blackOutScreen")){
-        document.getElementById("blackOutScreen").style.height="100%"
-    }    
+        if (document.getElementById("blackOutScreen")){
+            document.getElementById("blackOutScreen").style.height="100%"
+        }    
     }  
 
     return (

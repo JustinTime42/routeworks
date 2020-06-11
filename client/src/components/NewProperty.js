@@ -160,5 +160,4 @@ class NewProperty extends Component {
     }
 }
 
-
 export default connect(mapStateToProps, mapDispatchToProps)(NewProperty)

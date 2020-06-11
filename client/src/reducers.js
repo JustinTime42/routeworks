@@ -121,25 +121,6 @@ export const setTractorName = (state = initialStateTractor, action={}) => {
     }
 }
 
-// const initialStateNewProperty = {
-//     addresses: {},
-//     isPending: false,
-//     error: ''
-// }
-
-// export const saveNewProperty = (state = initialStateNewProperty, action={}) => {
-//     switch(action.type) {
-//         case NEW_PROPERTY_PENDING:
-//             return {...state, isPending: true}
-//         // case NEW_PROPERTY_SUCCESS: 
-//         //     return {...state, addresses: action.payload, isPending: false}
-//         case NEW_PROPERTY_FAILED:
-//             return {...state, error: action.payload, isPending: false}
-//         default:
-//             return state
-//     }
-// }
-
 const initialStateAllAddresses = {
     addresses: [],
     isPending: false,

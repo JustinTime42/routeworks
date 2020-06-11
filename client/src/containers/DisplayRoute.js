@@ -1,7 +1,7 @@
 import React, { Component } from 'react' 
 import { connect } from "react-redux"
-import PropertyCard from "./PropertyCard"
-import PropertyDetails from "./PropertyDetails"
+import PropertyCard from "../components/PropertyCard"
+import PropertyDetails from "../components/PropertyDetails"
 import { setActiveProperty, getRouteProperties } from '../actions'
 
 import '../styles/driver.css'

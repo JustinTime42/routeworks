@@ -4,8 +4,8 @@ import { connect } from "react-redux"
 import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRoute, setActiveProperty, saveNewProperty, editProperty, deleteProperty } from "../actions"
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
-import PropertyCard from "./PropertyCard"
-import NewProperty from "./NewProperty"
+import PropertyCard from "../components/PropertyCard"
+import NewProperty from "../components/NewProperty"
 import '../styles/driver.css'
 
 const mapStateToProps = state => {
@@ -39,7 +39,7 @@ const reorder = (list, startIndex, endIndex) => {
     const [removed] = result.splice(startIndex, 1)
     result.splice(endIndex, 0, removed)
     return result
-};
+}
 
 /**
  * Moves an item from one list to another list.
@@ -177,10 +177,8 @@ class RouteEditor extends Component {
                 // and set the route_position to result.destination.index
                 orderedItems.find(item => item.key === parseInt(result.draggableId))
                 .route_data.find(route => route.route_name === this.props.activeRoute).route_position = result.destination.index
-                //droppedCard.route_data.find(route => route.route_name === this.props.activeRoute).route_position = result.destination.index
                 state = { selected: orderedItems };
             }
-
             this.setState(state);
         } else {
             const newList = move(
@@ -201,11 +199,6 @@ class RouteEditor extends Component {
                 } else {
                     item.route_data.push(route_data)
                 }
-
-                //this stuff will be deprecated once jsonb route_data is finished
-                item.route_name = this.props.activeRoute
-                item.status = !item.status ? "Waiting" : item.status    
-                item.route_position = i
 
                 // save changes to redux and state
                 // needs rework. Maybe make a way to send the new property lists at once instead
@@ -236,22 +229,6 @@ class RouteEditor extends Component {
                     }
                 }, () => console.log(this.state))
             }
-            // newList.droppable.forEach((item, i) => {
-            //     if (item.route_name === this.props.activeRoute){
-            //         item.route_name = "unassigned"
-            //         item.status = ""
-            //         item.route_position = null
-                    
-            //         this.setState((prevState, prevProps) => {
-            //             return {
-            //                 items: prevProps.addresses.filter(item => item.route_name !== prevProps.activeRoute),
-            //                 filteredItems: this.onFilterProperties(prevState.searchField),                          
-            //                 selected: prevProps.addresses.filter(item => item.route_name === prevProps.activeRoute).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
-            //             }
-            //         }, () => console.log(this.state))
-            //     }
-            // })
-           // this.onFilterProperties(this.state.searchField)
         }        
     }
 
@@ -275,7 +252,6 @@ class RouteEditor extends Component {
     }
 
     onSearchChange = (event) => {
-        //const filteredItems = this.onFilterProperties(event.target.value, this.state.addresses)
         this.setState({searchField: event.target.value})        
     }
 
@@ -313,8 +289,7 @@ class RouteEditor extends Component {
         })
     }
     
-    render() {
-        
+    render() {        
         return this.props.isAllPending || this.props.isRoutePending ?
         <h1></h1> :(
             <>

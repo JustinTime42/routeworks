@@ -4,8 +4,8 @@ import screenfull from "screenfull"
 
 const FullScreen = () => {
     const fullScreenClick = () => {
-            screenfull.toggle();
-            console.log(screenfull.isFullscreen)
+        screenfull.toggle();
+        console.log(screenfull.isFullscreen)
     }
     return (
         <Button variant="primary" onClick={fullScreenClick}>Screen</Button>

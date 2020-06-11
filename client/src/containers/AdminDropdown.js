@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Button, Dropdown, DropdownButton, Modal, Form } from 'react-bootstrap'
 import { CSVLink } from "react-csv";
-import Can from './Can'
+import Can from '../auth/Can'
 import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
 import {showRouteEditor} from "../actions"
@@ -44,16 +44,16 @@ class EditRouteButton extends Component {
         { label: "Driver Earning", key: "driver_earning"}
       ];
 
+    //coming feature. work in progress
     //   xeroHeaders = [
     //     { label: "ContactName", key: "cust_name" },
     //     { label: "EmailAddress", 	POAddressLine1	POAddressLine2	POAddressLine3	POAddressLine4	POCity	PORegion	POPostalCode	POCountry	*InvoiceNumber	Reference	*InvoiceDate	*DueDate	InventoryItemCode	*Description	*Quantity	*UnitAmount	Discount	*AccountCode	*TaxType	TrackingName1	TrackingOption1	TrackingName2	TrackingOption2	Currency	BrandingTheme
-    //   ]
+    //   ]  
 
     onSelect = (event) => {
         switch(event) {
             case "editor": return this.props.showEditor ? this.props.onShowEditor(false) : this.props.onShowEditor(true)
             case "logs": return this.showLogs()
-
             default: return
         }
     }
@@ -72,11 +72,6 @@ class EditRouteButton extends Component {
     } 
 
     onDownload = () => {
-
-//          var url = new URL("https://snowline-route-manager.herokuapp.com/api/getlogs"),
-//          params = {lat:35.696233, long:139.570431}
-//          Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-//          fetch(url)
         const startDate = this.state.startDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
         const endDate = this.state.endDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
         const logType = this.state.logType
@@ -91,7 +86,6 @@ class EditRouteButton extends Component {
         })
         .catch(error => console.log(error))
     } 
-    //figure out how to do query strings property to fix this error. 
 
     render() {
         return (
@@ -126,8 +120,7 @@ class EditRouteButton extends Component {
                                                 </Dropdown.Item>
                                                 <Dropdown.Item key="raw" eventKey="raw">                                
                                                         Raw                          
-                                                </Dropdown.Item>                   
-                                            
+                                                </Dropdown.Item> 
                                             </DropdownButton>  
                                     </Form.Group>
                                     {
@@ -143,8 +136,7 @@ class EditRouteButton extends Component {
                                 <Button variant="secondary" onClick={this.onClose}>Close</Button>
                             </Modal.Footer>
                         </Modal>
-                        </>
-                                               
+                        </>             
                     )}
                     no={() => <p></p>}               
                 />                            

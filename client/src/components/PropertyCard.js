@@ -1,7 +1,5 @@
-
 import React from 'react'
 import { Button } from 'react-bootstrap'
-//import { shallow, mount, render } from 'enzyme'
 
 const PropertyCard = (props) => {
     const route = props.route  
@@ -13,11 +11,6 @@ const PropertyCard = (props) => {
     const status = findRouteData("status")
     const route_position = findRouteData("route_position") !== null ? (findRouteData("route_position") + 1) + ". " : ""
     const route_list = props.address.route_data.map(item => item.route_name + ", ")
-    // const status = props.address.route_data.some(item => item.route_name === route) ?
-    // props.address.route_data.find(item => item.route_name === route).route_position : null
-         
-    // const route_position = props.address.route_data.some(item => item.route_name === route) ?
-    //         props.address.route_data.find(item => item.route_name === route).status : null 
               
     const routePosition = props.i >= 0 ? `${props.i + 1}. ` : ''
     
@@ -31,7 +24,7 @@ const PropertyCard = (props) => {
         margin: '3px',
         padding: '3px',
         width: props.width,
-        backgroundColor: cardBg(), //props.address.temp ? `rgba(231,76,60,0.7)` : props.activeProperty ? props.activeProperty.key === props.address.key ? '#4E8098' : '#303030   ' : null
+        backgroundColor: cardBg(), 
     }
     const rightStyle = {
         float: "right", 
@@ -72,7 +65,6 @@ const PropertyCard = (props) => {
                     <p style={editStyle}><Button variant="secondary" onClick={() => props.editClick(props.address)}>Edit </Button></p>  : <p></p>               
                 }
             </div>
-
             <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
             {route_position}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </h5>                             

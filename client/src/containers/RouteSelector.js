@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import axios from "axios"
 import { Dropdown, DropdownButton, Button, Modal } from "react-bootstrap"
-import Can from "../components/Can"
+import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
 import { setActiveRoute, requestRoutes, getRouteProperties, showRouteEditor, setActiveProperty } from "../actions"
@@ -38,7 +38,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const editStyle = {
     float: "right"
-}
+} // future feature
 
 class RouteSelector extends Component {
     constructor(){

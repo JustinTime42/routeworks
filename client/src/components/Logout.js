@@ -1,6 +1,6 @@
-import React from "react";
+import React from "react"
 
-import { AuthConsumer } from "../authContext";
+import { AuthConsumer } from "../authContext"
 
 const Logout = () => (
   <AuthConsumer>
@@ -10,6 +10,6 @@ const Logout = () => (
       </button>
     )}
   </AuthConsumer>
-);
+)
 
 export default Logout;

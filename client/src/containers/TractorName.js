@@ -15,6 +15,7 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
+//TODO: Put this in a postgres table, create add/edit/delete functionality to front end. 
 const tractors = [
     "Opie #1",
     "Besse #2",
@@ -43,8 +44,7 @@ class TractorName extends Component {
             <DropdownButton title={this.props.tractorName || "Select Tractor"} onSelect={this.props.onSetTractorName} >        
                 {
                     tractors.map((tractor, i) => <Dropdown.Item key={tractor} eventKey={tractor}>{tractor}</Dropdown.Item>)
-                }
-                
+                }                
             </DropdownButton>
         )
     }

@@ -20,9 +20,7 @@ app.use(bodyParser.json({limit: '50mb'}));
 //Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-// Put all API endpoints under '/api' this is an exampe
 app.get('/api/routelist', (req, res) => {
-
     db.select('*').from('routes')
     .then(data => {
         res.json(data)
@@ -38,6 +36,8 @@ app.post('/api/addroute', (req, res) => {
     }) 
 })
 
+//deprecated: route_name, route_position, status are now stored and retrieved in route_data jsonb field.
+//TODO: remove old columns in tables and update these endpoints accordingly
 app.post('/api/newproperty', (req, res) => {
     const property = req.body
     db('properties')    
@@ -50,7 +50,7 @@ app.post('/api/newproperty', (req, res) => {
         is_new: property.is_new,
         notes: property.notes,
         seasonal: property.seasonal,
-        route_name: "unassigned",
+        route_name: "unassigned",  
         route_position: null,
         price: property.price,
         temp: property.temp,
@@ -113,8 +113,7 @@ app.post('/api/initroute', (req, res) => {
             .catch(err => response.err.push(err))
         )        
     })
-    Promise.all(promises).then(() => res.json(response))
-    
+    Promise.all(promises).then(() => res.json(response))    
 })
 
 app.post('/api/saveroute', (req, res) => {
@@ -130,12 +129,11 @@ app.post('/api/saveroute', (req, res) => {
     let promises = []
     add.forEach((item, i) => {
         promises.push(
-            //db.raw(`update properties set route_data = ${item.route_data} where key=${item.key}`)
             db('properties')
             .returning('*')
             .where('key', item.key)
             .update({
-                route_name: route, // maybe change this to item.route since we're updating that on the front end now
+                route_name: route, 
                 route_position: i,
                 status: item.status || "Waiting",
                 address: item.address,
@@ -156,14 +154,6 @@ app.post('/api/saveroute', (req, res) => {
                 response.add.push(address)
             }) 
             .catch(err => response.err.push(err))
-
-            // db.raw(`update properties set route_name = concat(route_name, ${route}), route_position = ${i}, 
-            // status = ${item.status} || "Waiting", address = ${item.address}, 
-            // cust_name = ${item.cust_name}, cust_phone = ${item.cust_phone},
-            // surface_type = ${item.surface_type}, is_new = ${item.is_new},
-            // notes = ${item.notes}, seasonal = ${item.seasonal}, price = ${item.price},
-            // temp = ${item.temp}, inactive = ${item.inactive} returning *` 
-            // ) Was thinking about this, but I think I'll concatenate by editing the field on the front n
         )       
     })
     remove.forEach((item, i) => {
@@ -198,85 +188,75 @@ app.post('/api/saveroute', (req, res) => {
     Promise.all(promises).then(() => res.json(response))
 })
 
-app.post('/api/propertykey', (req, res) => {
-    let response = {
-        res: [],
-        err: []
-    }
-    db.select('*').from('service_log_temp').whereNull('property_key')
-    .then(data => {
-        data.forEach(item => {
-            db.raw(`update service_log_temp set property_key=(select key from properties where cust_name='${item.cust_name.replace(/'/g, "''")}' and address='${item.address}') where key=${item.key}`)
-            .then(res => response.res.push(res))
-            .catch(err => {
-                console.log(err)
-                response.err.push(err)                
-            })            
-        })
-    })  
-    .catch(finalErr => {
-        response.err.push(finalErr)
-        res.json(response)
-    })
+//The following are temporary functions for importing old data. 
+//Keep for now
 
-})
+// app.post('/api/propertykey', (req, res) => {
+//     let response = {
+//         res: [],
+//         err: []
+//     }
+//     db.select('*').from('service_log_temp').whereNull('property_key')
+//     .then(data => {
+//         data.forEach(item => {
+//             db.raw(`update service_log_temp set property_key=(select key from properties where cust_name='${item.cust_name.replace(/'/g, "''")}' and address='${item.address}') where key=${item.key}`)
+//             .then(res => response.res.push(res))
+//             .catch(err => {
+//                 console.log(err)
+//                 response.err.push(err)                
+//             })            
+//         })
+//     })  
+//     .catch(finalErr => {
+//         response.err.push(finalErr)
+//         res.json(response)
+//     })
+// })
 
+// app.post('/api/price', (req, res) => {
+//     let response = {
+//         res: [],
+//         err: []
+//     }
+//     db.select('*').from('service_log_temp').whereNull('price')
+//     .then(data => {
+//         data.forEach(item => {
+//             db.raw(`update service_log_temp set price=(select price from properties where key = ${parseInt(item.property_key)}) where key=${item.key}`) 
+//             .then(res => response.res.push(res))
+//             .catch(err => {
+//                 console.log(err)
+//                 response.err.push(err)                
+//             })            
+//         })
+//     })  
+//     .catch(finalErr => {
+//         response.err.push(finalErr)
+//         res.json(response)
+//     })
 
-app.post('/api/price', (req, res) => {
-    let response = {
-        res: [],
-        err: []
-    }
-    db.select('*').from('service_log_temp').whereNull('price')
-    .then(data => {
-        data.forEach(item => {
-            // db.raw(`update service_log_temp set property_key=(select key from properties where cust_name='${item.cust_name}' and address='${item.address}') where key=${item.key}`)
-            db.raw(`update service_log_temp set price=(select price from properties where key = ${parseInt(item.property_key)}) where key=${item.key}`) 
-            .then(res => response.res.push(res))
-            .catch(err => {
-                console.log(err)
-                response.err.push(err)                
-            })            
-        })
-    })  
-    .catch(finalErr => {
-        response.err.push(finalErr)
-        res.json(response)
-    })
+// })
 
-})
-    /*
-    This worked for all but a couple customers where there's duplicate names. We'll have to match name AND address...
-    Now do the above, and copy technique for price and driver earning.  
-    */
-
-
-    
-
-app.post('/api/earning', (req, res) => {
-    let response = {
-        res: [],
-        err: []
-    }
-    db.select('*').from('service_log_temp').whereNull('driver_earning')
-    .then(data => {
-        data.forEach(item => {
-            db.raw(`update service_log_temp set driver_earning=((select percentage from drivers where name = ${item.user_name}) * .01 * ${item.price}) where key=${item.key}`)
-
-          //  db.raw(`update service_log_temp set price=(select price from properties where key = ${parseInt(item.property_key)}) where key=${item.key}`) 
-            .then(res => response.res.push(res))
-            .catch(err => {
-                console.log(err)
-                response.err.push(err)                
-            })            
-        })
-    })  
-    .catch(finalErr => {
-        response.err.push(finalErr)
-        res.json(response)
-    })
-
-})
+// app.post('/api/earning', (req, res) => {
+//     let response = {
+//         res: [],
+//         err: []
+//     }
+//     db.select('*').from('service_log_temp').whereNull('driver_earning')
+//     .then(data => {
+//         data.forEach(item => {
+//             db.raw(`update service_log_temp set driver_earning=((select percentage from drivers where name = ${item.user_name}) * .01 * ${item.price}) where key=${item.key}`)
+//             .then(res => response.res.push(res))
+//             .catch(err => {
+//                 console.log(err)
+//                 response.err.push(err)                
+//             })            
+//         })
+//     })  
+//     .catch(finalErr => {
+//         response.err.push(finalErr)
+//         res.json(response)
+//     })
+// })
 
 app.post('/api/setstatus', (req, res) => {
     let property = req.body.property
@@ -320,20 +300,16 @@ app.post('/api/setstatus', (req, res) => {
         })       
     ) 
 
-    
     Promise.all(promises).then(() => res.json(response))
-    //where req.property.key from properties
-    //insert fields to service log including req.newstatus
-
-
 })
+
 app.get('/api/properties', (req, res) => {
     db.select('*')
     .from('properties')
     .then(data => {
         res.json(data)
     })
-});
+})
 
 app.get('/api/drivers', (req, res) => {
     db.select('*')
@@ -377,43 +353,9 @@ app.post('/api/deletedriver', (req, res) => {
     .catch(err => res.json(err))
 })
 
-
 app.get('/api/getroute/:routeName', (req, res) => {
-    // need to add a column here, so that's a join? 
-    // the column is latest record for that property from service_log table
-
-    // for each property, take the most recent record from service_log
-    //WHERE key===key ORDER BY date DESC LIMIT 1;
-    //or 
-    //select distinct property_key from service_log order by timestamp
-    // take above and
-    //leftJoin('properties', 'service_log.property_key', 'properties.key'   )
-    // const { routeName } = req.params
-
-    //select * from properties, max(service_log.timestamp) where route_name='routeName'
-    //leftJoin service_log  
-        //on properties.key=service_log.property_key 
-        //
-    //where 
-    //db.where('properties.route)')
-    // db.where('properties.route_name', routeName)
-    // .select('*') 
-    // .from('properties')
-    // .leftJoin('service_log', () => {
-    //     on('properties.key', 'service_log.property_key')
-    //     .distinct()
-    // })
-    // .orderBy('route_position')
-    // .then(data => {
-    //     res.json(data)
-    // })
-    // .catch(err => res.json(err))
     const { routeName } = req.params
     db.raw(`select * from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
-    //db.where('properties.route_name', routeName)
-    //.select('*') 
-    //.from('properties')
-    //.orderBy('route_position')
     .then(data => {
         res.json(data.rows)
     })
@@ -422,12 +364,8 @@ app.get('/api/getroute/:routeName', (req, res) => {
 
 app.get('/api/getlogs/', (req,res) => {
     const options = req.query
-    const xeroColumns = []
-    const rawColumns = []
-        
-     //need to pass array to select depending on which type I think.
-    // if options.type = raw, select * from service logs join properties on almost everything
-    // else select  
+    //TODO once book keeper provides fields, complete xero option and enable dropdown on client.
+
     db.whereBetween('service_log.timestamp', [options.start, options.end])
     .select('*')
     .from('service_log')
