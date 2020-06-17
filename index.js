@@ -54,6 +54,8 @@ app.post('/api/newproperty', (req, res) => {
         route_position: null,
         price: property.price,
         temp: property.temp,
+        contract_type: property.contract_type,
+        value: property.value,
         inactive: property.inactive,
         route_data: JSON.stringify(property.route_data),
      })
@@ -76,6 +78,8 @@ app.post('/api/editproperty', (req, res) => {
         seasonal: property.seasonal,
         price: property.price,
         temp: property.temp,
+        contract_type: property.contract_type,
+        value: property.value,
         inactive: property.inactive,
         route_data: JSON.stringify(property.route_data), 
     })
