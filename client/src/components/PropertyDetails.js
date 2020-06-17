@@ -36,7 +36,7 @@ class PropertyDetails extends Component {
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-          this.setState({noteField: '', yards: 1})
+          this.setState({noteField: '', yards: 1, work_type: 'snow removal'})
         }
       }
 
@@ -111,8 +111,7 @@ class PropertyDetails extends Component {
                                     <Form.Label>Number of Yards</Form.Label>
                                     <Form.Control name="yards" as="textarea" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
                                 </Form.Group> : null
-                            }
-                            
+                            }                            
                         </Col>
                     </Row>
                 </Card.Body>        

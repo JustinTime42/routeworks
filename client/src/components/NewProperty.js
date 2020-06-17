@@ -79,43 +79,38 @@ class NewProperty extends Component {
                             </Form.Group>
                             <Row>
                                 <Col>
-                                    <Form.Group as={Row}>
-                                        <Form.Label>Surface Type</Form.Label>
-                                        <Form.Control name="surface_type" as="select" value={this.state.activeProperty.surface_type || "select"} onChange={this.onChange}>
-                                            <option value="select">Select</option>
-                                            <option value="paved">Paved</option>
-                                            <option value="gravel">Gravel</option>
-                                            <option value="partial">Partial</option>
-                                        </Form.Control>
+                                    <Form.Group as={Row}>                                        
                                         <Form.Label>Price</Form.Label>
                                         <Form.Control name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
+                                        <Form.Label>Sanding Price Per Yard</Form.Label>
+                                        <Form.Control name="price_per_yard" type="number" placeholder={this.state.activeProperty.price || "price_per_yard"} onChange={this.onChange}/>
                                         <Form.Label>Value</Form.Label>
                                         <Form.Control name="value" type="number" placeholder={this.state.activeProperty.value || "value"} onChange={this.onChange}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
+                                    <Form.Label>Surface Type</Form.Label>
+                                    <Form.Control name="surface_type" as="select" value={this.state.activeProperty.surface_type || "select"} onChange={this.onChange}>
+                                        <option value="select">Select</option>
+                                        <option value="paved">Paved</option>
+                                        <option value="gravel">Gravel</option>
+                                        <option value="partial">Partial</option>
+                                    </Form.Control>
                                     <Form.Label>Contract Type</Form.Label>
-                                        <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
-                                            <option value="select">Select</option>
-                                            <option value="per">Per Occurance</option>
-                                            <option value="monthly">Monthly</option>
-                                            <option value="seasonal">Seasonal</option>
-                                            <option value="5030">5030</option>
-                                        </Form.Control>
+                                    <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
+                                        <option value="select">Select</option>
+                                        <option value="per">Per Occurance</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="seasonal">Seasonal</option>
+                                        <option value="5030">5030</option>
+                                    </Form.Control>
                                     <Form.Check 
                                         name="is_new"
                                         type="checkbox"
                                         label="New Property?"
                                         checked = {!!this.state.activeProperty.is_new}
                                         onChange={this.onChange}
-                                    />
-                                    <Form.Check 
-                                        name="seasonal"
-                                        type="checkbox"
-                                        label="Seasonal?"
-                                        checked = {!!this.state.activeProperty.seasonal}
-                                        onChange={this.onChange}
-                                    />
+                                    />                                    
                                     <Form.Check 
                                         name="inactive"
                                         type="checkbox"
