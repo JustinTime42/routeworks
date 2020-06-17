@@ -103,7 +103,6 @@ export const editProperty = (property, allAddresses) => (dispatch) => {
     dispatch({ type: UPDATE_ADDRESSES_PENDING})
     let index = allAddresses.findIndex(item => item.key === property.key)
     allAddresses[index] = property
-    console.log(allAddresses[index])
     dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
 }
 

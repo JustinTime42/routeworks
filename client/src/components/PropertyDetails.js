@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from "react-redux"
-import { Card, Col, Row, Button, Form } from 'react-bootstrap'
+import { Card, Col, Row, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap'
 import axios from 'axios'
 import { getRouteProperties } from "../actions"
 
 import '../styles/driver.css'
+import DropdownItem from 'react-bootstrap/DropdownItem'
 
 const mapStateToProps = state => {
     return {
@@ -28,6 +29,8 @@ class PropertyDetails extends Component {
         this.state = {
             noteField: '',
             disabled: false,
+            work_type: 'snow removal',
+            yards: 1,
         }
     }
     
@@ -37,31 +40,46 @@ class PropertyDetails extends Component {
         }
       }
 
-    onNoteChange = (event) => {
-        this.setState({noteField: event.target.value})
+    onTextChange = (event) => {
+        this.setState({[event.target.name]: event.target.value})
+    }
+
+    setWorkType = (event) => {
+        this.setState({work_type: event})
     }
 
     onStatusChange = (newStatus) => {
-            this.setState({disabled: true})
-            let property = this.props.property
-            property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
-            console.log(property)
-            axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
-                {
-                    property: property,
-                    status: newStatus,
-                    driver: this.props.driver,
-                    noteField: this.state.noteField,
-                    tractor: this.props.tractor
-                }
-            )
-            .then(res => {
-                this.props.onGetRouteProperties(this.props.activeRoute) 
-                console.log(res)
-                if (res.data.err.length > 0) alert(res.data.err)
-                this.setState({disabled: false})
-            })
-            .catch(err => alert(err)) 
+        /*
+        if work_type = sanding, price is pricePerYard * yards  (price per yard defaults to customer price, yards defaults to 1)
+        else if contract_type is seasonal or monthly and work type = snow removal, price is 0 (price will be pulled separately if monthly)
+
+        If the contract type is 5030 or per occurance, price = price. no modifications needed. You'll have to put '30' or the modified per visit cost in the price field for 5030 customers
+        monthly customers will likewise get billed monthly, the per visit line item will be $0
+        */
+        this.setState({disabled: true})
+        let property = {...this.props.property}
+        property.price = 
+            this.state.work_type === 'sanding' ? property.pricePerYard * this.state.yards :
+            property.contract_type === 'seasonal' || 'monthly' && this.state.work_type === 'snow removal' ? 0 :
+            property.price 
+        property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
+        console.log(property)
+        axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
+            {
+                property: property,
+                status: newStatus,
+                driver: this.props.driver,
+                noteField: this.state.noteField,
+                tractor: this.props.tractor
+            }
+        )
+        .then(res => {
+            this.props.onGetRouteProperties(this.props.activeRoute) 
+            console.log(res)
+            if (res.data.err.length > 0) alert(res.data.err)
+            this.setState({disabled: false})
+        })
+        .catch(err => alert(err)) 
     }
 
     render() {
@@ -76,6 +94,26 @@ class PropertyDetails extends Component {
                     <Col><Card.Title style={{textAlign: "right"}}>{property ? property.surface_type ? <p>Surface:<br></br>{property.surface_type.toUpperCase()}</p> : null : null }</Card.Title></Col>
                 </Row>
                 <Card.Body>
+                    <Row>
+                        <Col>
+                            <Card.Title>{property ? property.cust_name ? property.cust_name : null : null}{this.props.address? this.props.address.is_new ? " (NEW)" : null : null}</Card.Title>
+                            <Card.Subtitle>{this.props.property ? this.props.property.cust_phone ? this.props.property.cust_phone : null : null}</Card.Subtitle>
+                        </Col>
+                        <Col>
+                            <DropdownButton title={this.state.work_type} onSelect={this.setWorkType}>
+                                <Dropdown.Item key="sanding" eventKey="sanding">sanding</Dropdown.Item>
+                                <DropdownItem key="snow removal" eventKey="snow removal">snow removal</DropdownItem> 
+                            </DropdownButton> 
+                            {
+                                this.state.work_type === 'sanding' ?
+                                <Form.Group>
+                                    <Form.Label>Number of Yards</Form.Label>
+                                    <Form.Control name="yards" as="textarea" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
+                                </Form.Group> : null
+                            }
+                            
+                        </Col>
+                    </Row>
                     <Card.Title>{property ? property.cust_name ? property.cust_name : null : null}{this.props.address? this.props.address.is_new ? " (NEW)" : null : null}</Card.Title>
                     <Card.Subtitle>{this.props.property ? this.props.property.cust_phone ? this.props.property.cust_phone : null : null}</Card.Subtitle>
                 </Card.Body>        
@@ -88,7 +126,7 @@ class PropertyDetails extends Component {
                 <Card.Body>
                 <Form.Group>
                     <Form.Label>Driver Notes</Form.Label>
-                    <Form.Control name="notes" as="textarea" rows="3" value={this.state.noteField} onChange={this.onNoteChange}/>
+                    <Form.Control name="noteField" as="textarea" rows="3" value={this.state.noteField} onChange={this.onTextChange}/>
                 </Form.Group>
                 </Card.Body>
                 <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "flex-end", justifyContent: "space-between"}}>

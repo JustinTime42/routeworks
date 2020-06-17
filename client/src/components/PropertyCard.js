@@ -47,7 +47,7 @@ const PropertyCard = (props) => {
         padding: "5px",
         border: "1px, solid, #CCE5FF",
         borderRadius: "5px",
-        backgroundColor: props.address ? props.address.seasonal ? "#375A7F" : `rgba(0,0,0,0.0)` : `rgba(0,0,0,0.0)`
+        backgroundColor: props.address ? props.address.contract_type = 'seasonal' ? "#375A7F" : `rgba(0,0,0,0.0)` : `rgba(0,0,0,0.0)`
     }
 
     const editStyle = {
