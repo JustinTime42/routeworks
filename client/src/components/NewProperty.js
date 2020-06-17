@@ -38,6 +38,7 @@ class NewProperty extends Component {
     onChange = (event) => {
      
         const { target: { name, value } } = event
+        console.log(this.state.activeProperty)
         console.log(name, value)
         if (value === "on") {           
             this.setState(prevState => (
