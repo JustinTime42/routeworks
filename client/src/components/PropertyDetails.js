@@ -36,7 +36,7 @@ class PropertyDetails extends Component {
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-          this.setState({noteField: ''})
+          this.setState({noteField: '', yards: 1})
         }
       }
 
@@ -100,6 +100,7 @@ class PropertyDetails extends Component {
                             <Card.Subtitle>{this.props.property ? this.props.property.cust_phone ? this.props.property.cust_phone : null : null}</Card.Subtitle>
                         </Col>
                         <Col>
+                            <Form.Label>Work Type</Form.Label>
                             <DropdownButton title={this.state.work_type} onSelect={this.setWorkType}>
                                 <Dropdown.Item key="sanding" eventKey="sanding">sanding</Dropdown.Item>
                                 <DropdownItem key="snow removal" eventKey="snow removal">snow removal</DropdownItem> 
@@ -114,8 +115,6 @@ class PropertyDetails extends Component {
                             
                         </Col>
                     </Row>
-                    <Card.Title>{property ? property.cust_name ? property.cust_name : null : null}{this.props.address? this.props.address.is_new ? " (NEW)" : null : null}</Card.Title>
-                    <Card.Subtitle>{this.props.property ? this.props.property.cust_phone ? this.props.property.cust_phone : null : null}</Card.Subtitle>
                 </Card.Body>        
                 <Card.Body>
                     <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
