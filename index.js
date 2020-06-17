@@ -175,7 +175,9 @@ app.post('/api/saveroute', (req, res) => {
                 notes: item.notes,
                 seasonal: item.seasonal,
                 price: item.price,
+                value: item.value,
                 temp: item.temp,
+                contract_type: item.contract_type,
                 inactive: item.inactive,
                 route_data: JSON.stringify(item.route_data),
             })
@@ -360,12 +362,23 @@ app.get('/api/getroute/:routeName', (req, res) => {
         res.json(data.rows)
     })
     .catch(err => res.json(err))
-});
+})
 
 app.get('/api/getlogs/', (req,res) => {
     const options = req.query
-    //TODO once book keeper provides fields, complete xero option and enable dropdown on client.
 
+//Xero Billing
+//Monthly: 
+//  select xeroFields from customers where contract_type='monthly' //this will create a line item per customer with their monthly rate
+//  select xeroFields /*replace price with $50 */ from customers where contract_type='5030'
+//  select xeroFields from service_log where contract_type = 'per occurrance' or '5030'
+//  select xeroFields from service_log where contract_type = 'month' or 'seasonal' and work_type = 'sanding'
+//  
+
+//TODO once book keeper provides fields, complete xero option and enable dropdown on client.
+// xero select properties.cust_name, properties.email, properties.bill_address, properties.bill_address2, 
+//  properties.bill_city, properties.bill_state, properties.bill_zip, service_log.invoice_number, 
+//  service_log.invoice_date, service_log.due_date, service_log.description, service_log.
     db.whereBetween('service_log.timestamp', [options.start, options.end])
     .select('*')
     .from('service_log')
