@@ -47,7 +47,7 @@ class NewProperty extends Component {
         }
         else {
             this.setState(prevState => (
-                { activeProperty: {...prevState.activeProperty, [name]: value.toString()}}
+                { activeProperty: {...prevState.activeProperty, [name]: value}}
             ), () => console.log(this.state.activeProperty))  
         }
     }
@@ -100,7 +100,7 @@ class NewProperty extends Component {
                                         <option value="partial">Partial</option>
                                     </Form.Control>
                                     <Form.Label>Contract Type</Form.Label>
-                                    <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type} onChange={this.onChange}>
+                                    <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
                                         <option value="select">Select</option>
                                         <option value="per">Per Occurance</option>
                                         <option value="monthly">Monthly</option>
