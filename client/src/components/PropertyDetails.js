@@ -58,10 +58,11 @@ class PropertyDetails extends Component {
         */
         this.setState({disabled: true})
         let property = {...this.props.property}
-        property.price = 
-            this.state.work_type === 'sanding' ? property.price_per_yard * this.state.yards :
-            property.contract_type === 'seasonal' || 'monthly' && this.state.work_type === 'snow removal' ? 0 :
-            property.price 
+        if (this.state.work_type === 'sanding') {
+            property.price = property.price_per_yard * this.state.yards
+        } else if ((property.contract_type === 'seasonal' || 'monthly') && (this.state.work_type === 'snow removal')) {
+            property.price = 0
+        }
         property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
         console.log(property)
         axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
