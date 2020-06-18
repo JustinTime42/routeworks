@@ -56,7 +56,7 @@ const PropertyCard = (props) => {
     }
 
     return(
-        <div id={`card${display_position}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
+        <div id={`card${route_position}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>
                 <div style={seasonalStyle}></div>
                 {props.address ? 
@@ -67,7 +67,7 @@ const PropertyCard = (props) => {
                 }
             </div>
             <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
-            {route_position}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
+            {display_position}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </h5>                             
             <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
             {props.admin ? <p>route: {route_list}</p> : <div></div>}
