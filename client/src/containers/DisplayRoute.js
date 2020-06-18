@@ -49,7 +49,7 @@ class DisplayRoute extends Component {
         if (direction) {
             let currentPosition = this.parseRouteData(property, this.props.activeRoute, 'route_position')
                 console.log(currentPosition)
-            let nextPosition = (direction === 'next') ? currentPosition++ : currentPosition--
+            let nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
                 console.log(nextPosition)
             this.props.onSetActiveProperty(this.props.routeProperties.find(customer => (
                 this.parseRouteData(customer, this.props.activeRoute, 'route_position') === nextPosition 
