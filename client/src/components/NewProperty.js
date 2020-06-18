@@ -36,10 +36,10 @@ class NewProperty extends Component {
       }
 
     onChange = (event) => {
-     
+    
         const { target: { name, value } } = event
         console.log("event name, value: ", name, value)
-        //FIXME for some reason contract_type is not updating
+        //FIXME price and value are saving as strings instead of numbers
         if (value === "on") {           
             this.setState(prevState => (
                 {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty.temp}}               
@@ -84,11 +84,11 @@ class NewProperty extends Component {
                                 <Col>
                                     <Form.Group as={Row}>                                        
                                         <Form.Label>Price</Form.Label>
-                                        <Form.Control name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
+                                        <Form.Control name="price" type="number" placeholder={this.state.activeProperty.price || 0} onChange={this.onChange}/>
                                         <Form.Label>Sanding Price Per Yard</Form.Label>
-                                        <Form.Control name="price_per_yard" type="number" placeholder={this.state.activeProperty.price || "price per yard"} onChange={this.onChange}/>
+                                        <Form.Control name="price_per_yard" type="number" placeholder={this.state.activeProperty.price || 0} onChange={this.onChange}/>
                                         <Form.Label>Value</Form.Label>
-                                        <Form.Control name="value" type="number" placeholder={this.state.activeProperty.value || "value"} onChange={this.onChange}/>
+                                        <Form.Control name="value" type="number" placeholder={this.state.activeProperty.value || 0} onChange={this.onChange}/>
                                     </Form.Group>
                                 </Col>
                                 <Col>
