@@ -57,6 +57,7 @@ app.post('/api/newproperty', (req, res) => {
         contract_type: property.contract_type,
         value: property.value,
         inactive: property.inactive,
+        price_per_yard: property.price_per_yard,
         route_data: JSON.stringify(property.route_data),
      })
      .then(property =>  res.json(property))
@@ -81,6 +82,7 @@ app.post('/api/editproperty', (req, res) => {
         contract_type: property.contract_type,
         value: property.value,
         inactive: property.inactive,
+        price_per_yard: property.price_per_yard,
         route_data: JSON.stringify(property.route_data), 
     })
     .then(details => res.json(details))
@@ -152,6 +154,7 @@ app.post('/api/saveroute', (req, res) => {
                 temp: item.temp,
                 inactive: item.inactive,
                 contract_type: item.contract_type,
+                price_per_yard: item.price_per_yard,
                 route_data: JSON.stringify(item.route_data),
             })
             .then(address => {
@@ -182,6 +185,7 @@ app.post('/api/saveroute', (req, res) => {
                 value: item.value,
                 temp: item.temp,
                 contract_type: item.contract_type,
+                price_per_yard: item.price_per_yard,
                 inactive: item.inactive,
                 route_data: JSON.stringify(item.route_data),
             })
