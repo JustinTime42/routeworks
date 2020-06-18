@@ -61,7 +61,8 @@ class PropertyDetails extends Component {
         if (this.state.work_type === 'sanding') {
             property.price = property.price_per_yard * this.state.yards
         } else if ((property.contract_type === 'seasonal' || 'monthly') && (this.state.work_type === 'snow removal')) {
-            property.price = 0
+            console.log('returning 0, contract_type, work type', property.contract_type, this.state.work_type)
+            property.price = 0   // why does this keep returning 0
         }
         property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
         console.log(property)
