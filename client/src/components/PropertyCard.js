@@ -9,7 +9,8 @@ const PropertyCard = (props) => {
             props.address.route_data.find(item => item.route_name === route)[prop] : null
     }
     const status = findRouteData("status")
-    const route_position = findRouteData("route_position") !== null ? (findRouteData("route_position") + 1) + ". " : ""
+    const route_position = findRouteData("route_position") !== null ? (findRouteData("route_position") + 1) : ""
+    const display_position = route_position + ". "
     const route_list = props.address.route_data.map(item => item.route_name + ", ")
               
     const routePosition = props.i >= 0 ? `${props.i + 1}. ` : ''
@@ -55,7 +56,7 @@ const PropertyCard = (props) => {
     }
 
     return(
-        <div id={`card${route_position}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
+        <div id={`card${display_position}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>
                 <div style={seasonalStyle}></div>
                 {props.address ? 

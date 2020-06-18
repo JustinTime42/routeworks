@@ -55,7 +55,7 @@ class DisplayRoute extends Component {
         }     
         if (previous(-2)) {    
             const id = previous(-2).route_position           
-            document.getElementById(`card${id}`).scrollIntoView(true) //.scrollBy(0,50) // //.scroll(0,100)
+            document.getElementById(`card${id}`).scrollIntoView(true) 
         }
     }
 
