@@ -2,18 +2,11 @@ import React from 'react'
 import { Button } from 'react-bootstrap'
 
 const PropertyCard = (props) => {
-    const route = props.route  
 
-    const findRouteData = (prop) => {
-        return props.address.route_data.some(item => item.route_name === route) ?
-            props.address.route_data.find(item => item.route_name === route)[prop] : null
-    }
-    const status = findRouteData("status")
-    const route_position = findRouteData("route_position") !== null ? (findRouteData("route_position") + 1) : ""
-    const display_position = route_position + ". "
+    const status = props.parseRouteData(props.address, "status")
+    const route_position = props.parseRouteData(props.address, "route_position") !== null ? (props.parseRouteData(props.address, "route_position") + 1) : ""
+    //const display_position = route_position + ". "
     const route_list = props.address.route_data.map(item => item.route_name + ", ")
-              
-    const routePosition = props.i >= 0 ? `${props.i + 1}. ` : ''
     
     const cardBg = () => {
         if (props.address.inactive === true) return `rgba(231,76,60,0.7)`  
@@ -67,7 +60,7 @@ const PropertyCard = (props) => {
                 }
             </div>
             <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
-            {display_position}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
+            {props.i ? props.i + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </h5>                             
             <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
             {props.admin ? <p>route: {route_list}</p> : <div></div>}
