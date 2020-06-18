@@ -45,7 +45,7 @@ class DisplayRoute extends Component {
             customer.address.route_data.find(item => item.route_name === route)[field] : null
     }
 
-    changeActiveProperty = (property = {}, direction = '') => {
+    changeActiveProperty = (property = this.props.activeProperty, direction = '') => {
         if (direction) {
             let currentPosition = this.parseRouteData(property, this.props.activeRoute, 'route_position')
                 console.log(currentPosition)
