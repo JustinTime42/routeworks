@@ -38,16 +38,16 @@ class NewProperty extends Component {
     onChange = (event) => {
      
         const { target: { name, value } } = event
-        console.log(this.state.activeProperty)
-        console.log(name, value)
+        console.log("event name, value: ", name, value)
+        //FIXME for some reason contract_type is not updating
         if (value === "on") {           
             this.setState(prevState => (
-                {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty.temp} }               
+                {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty.temp}}               
             ))
         }
         else {
             this.setState(prevState => (
-                { activeProperty: { ...prevState.activeProperty, [name]: value}}
+                { activeProperty: { ...prevState.activeProperty, [name]: value}}, () => console.log(this.state.activeProperty)
             ))
         }
     }

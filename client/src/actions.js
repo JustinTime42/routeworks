@@ -100,10 +100,12 @@ export const deleteProperty = (property, allAddresses) => (dispatch) => {
 }
 
 export const editProperty = (property, allAddresses) => (dispatch) => {
+    console.log(property)
     dispatch({ type: UPDATE_ADDRESSES_PENDING})
     let index = allAddresses.findIndex(item => item.key === property.key)
     allAddresses[index] = property
     dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
+    console.log("new property in address store: ", allAddresses[index])
 }
 
 //currently not in use. refactor routeEditor.onSave to use
