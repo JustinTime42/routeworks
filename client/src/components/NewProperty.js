@@ -42,7 +42,7 @@ class NewProperty extends Component {
         if (numberValues.includes(name)){
             value = Number(value)
         }
-        
+
         if (value === "on") {           
             this.setState(prevState => (
                 {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty.temp}}               
@@ -89,7 +89,7 @@ class NewProperty extends Component {
                                         <Form.Label>Price</Form.Label>
                                         <Form.Control name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
                                         <Form.Label>Sanding Price Per Yard</Form.Label>
-                                        <Form.Control name="price_per_yard" type="number" placeholder={this.state.activeProperty.price || "price per yard"} onChange={this.onChange}/>
+                                        <Form.Control name="price_per_yard" type="number" placeholder={this.state.activeProperty.price_per_yard || "price per yard"} onChange={this.onChange}/>
                                         <Form.Label>Value</Form.Label>
                                         <Form.Control name="value" type="number" placeholder={this.state.activeProperty.value || "value"} onChange={this.onChange}/>
                                     </Form.Group>
