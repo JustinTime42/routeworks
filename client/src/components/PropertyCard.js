@@ -60,7 +60,7 @@ const PropertyCard = (props) => {
                 }
             </div>
             <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
-            {props.i ? props.i + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
+            {typeof(props.i) === 'number'  ? props.i + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </h5>                             
             <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
             {props.admin ? <p>route: {route_list}</p> : <div></div>}

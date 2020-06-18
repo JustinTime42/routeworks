@@ -48,7 +48,7 @@ class DisplayRoute extends Component {
     changeActiveProperty = (property = {}, direction = '') => {
         if (direction) {
             let currentPosition = this.parseRouteData(property, this.props.activeRoute, 'route_position')
-            let nextPosition = direction === 'next' ? currentPosition++ : currentPosition--
+            let nextPosition = (direction === 'next') ? currentPosition++ : currentPosition--
             this.props.onSetActiveProperty(this.props.routeProperties.find(customer => 
                 this.parseRouteData(customer, this.props.activeRoute, 'route_position').route_position = nextPosition))    
         } else {
