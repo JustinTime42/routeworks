@@ -276,8 +276,9 @@ class RouteEditor extends Component {
     onPropertySave = (newDetails) => {
         if (!newDetails.key) {
             this.props.onSaveNewProperty(newDetails, this.props.addresses)
-
+            console.log("added new property: ", newDetails)
         } else {
+            console.log("updated property: ", newDetails)
             this.props.onEditProperty(newDetails, this.props.addresses)
         }
         this.setState((prevState, prevProps) => {

@@ -47,7 +47,7 @@ class NewProperty extends Component {
         }
         else {
             this.setState(prevState => (
-                { activeProperty: { ...prevState.activeProperty, [name]: value}}
+                { activeProperty: {...prevState.activeProperty, [name]: value}}
             ), () => console.log(this.state.activeProperty))
         }
     }
