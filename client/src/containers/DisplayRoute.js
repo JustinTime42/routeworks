@@ -42,7 +42,7 @@ class DisplayRoute extends Component {
 
     parseRouteData = (customer, route, field) => {
         return customer.route_data.some(item => item.route_name === route) ?
-            customer.address.route_data.find(item => item.route_name === route)[field] : null
+            customer.route_data.find(item => item.route_name === route)[field] : null
     }
 
     changeActiveProperty = (property = this.props.activeProperty, direction = '') => {
@@ -52,7 +52,7 @@ class DisplayRoute extends Component {
             let nextPosition = (direction === 'next') ? currentPosition++ : currentPosition--
                 console.log(nextPosition)
             this.props.onSetActiveProperty(this.props.routeProperties.find(customer => (
-                this.parseRouteData(customer, this.props.activeRoute, 'route_position').route_position === nextPosition 
+                this.parseRouteData(customer, this.props.activeRoute, 'route_position') === nextPosition 
             )))  
         } else {
             this.props.onSetActiveProperty(property)
