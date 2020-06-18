@@ -60,12 +60,10 @@ class PropertyDetails extends Component {
         let property = {...this.props.property}
         if (this.state.work_type === 'sanding') {
             property.price = property.price_per_yard * this.state.yards
-        } else if ((property.contract_type === 'seasonal' || 'monthly') && (this.state.work_type === 'snow removal')) {
-            console.log('returning 0, contract_type, work type', property.contract_type, this.state.work_type)
-            property.price = 0   // why does this keep returning 0
+        } else if ((property.contract_type === 'seasonal' || property.contract_type === 'monthly') && (this.state.work_type === 'snow removal')) {            
+            property.price = 0  
         }
         property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
-        console.log(property)
         axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
             {
                 property: property,
