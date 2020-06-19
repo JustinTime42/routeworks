@@ -35,7 +35,6 @@ class DisplayRoute extends Component {
     componentDidUpdate(prevProps) {
         if(prevProps !== this.props){
           this.setState({
-            //routeProperties: this.props.routeProperties.filter(item => !item.inactive), //not currently in use
             activeProperty: this.props.activeProperty})
         }
       }
@@ -47,19 +46,10 @@ class DisplayRoute extends Component {
 
     changeActiveProperty = (property = this.props.activeProperty, direction = '') => {
         if (direction) {
-            //let current position be indexOf(this.props.routeProperties) = of the active property right?
-            // I just need the index of activeProperty within routeProperties. That's the 
-
-            // let currentPosition = this.parseRouteData(property, this.props.activeRoute, 'route_position')
-            //     console.log(currentPosition)
             let currentPosition = this.props.routeProperties.indexOf(property)
 
             let nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
-                console.log(nextPosition)
-
-            // this.props.onSetActiveProperty(this.props.routeProperties.find(customer => (
-            //     this.parseRouteData(customer, this.props.activeRoute, 'route_position') === nextPosition 
-            // )))  
+                console.log(nextPosition) 
             this.props.onSetActiveProperty(this.props.routeProperties[nextPosition])
             if ((currentPosition - 2) > 0) {                              
                 document.getElementById(`card${currentPosition - 2}`).scrollIntoView(true) 
@@ -67,26 +57,6 @@ class DisplayRoute extends Component {
         } else {
             this.props.onSetActiveProperty(property)
         }
-
-        
-
-        // const previous = (i) => {
-        //     return this.props.routeProperties.slice().reverse().find(item => {
-        //         return (
-        //             this.parseRouteData(item, this.props.activeRoute, 'route_position') < this.parseRouteData(item, this.props.activeRoute, 'route_position') + i
-        //         )   
-        //     }) 
-        // }
-        // if (direction === "next") {
-        //     this.props.onSetActiveProperty(this.props.routeProperties.find( item => item.route_position > this.props.activeProperty.route_position))
-        // } else {            
-        //     this.props.onSetActiveProperty(previous(0))
-        // }     
-        // if (previous(-2)) {    
-        //     const id = previous(-2).route_position           
-        //     document.getElementById(`card${id}`).scrollIntoView(true) 
-        // }
-
     }
 
     render(){

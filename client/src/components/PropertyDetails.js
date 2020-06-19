@@ -49,13 +49,7 @@ class PropertyDetails extends Component {
     }
 
     onStatusChange = (newStatus) => {
-        /*
-        if work_type = sanding, price is pricePerYard * yards  (price per yard defaults to customer price, yards defaults to 1)
-        else if contract_type is seasonal or monthly and work type = snow removal, price is 0 (price will be pulled separately if monthly)
-
-        If the contract type is 5030 or per occurance, price = price. no modifications needed. You'll have to put '30' or the modified per visit cost in the price field for 5030 customers
-        monthly customers will likewise get billed monthly, the per visit line item will be $0
-        */
+  
         this.setState({disabled: true})
         let property = {...this.props.property}
         if (this.state.work_type === 'sanding') {

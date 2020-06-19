@@ -177,10 +177,6 @@ class RouteEditor extends Component {
                 orderedItems.forEach((item, i) => {
                     item.route_data.find(route => route.route_name === this.props.activeRoute).route_position = i
                 })
-                // Find the dropped item, then find the route element for the activeRoute,
-                // and set the route_position to result.destination.index
-                // orderedItems.find(item => item.key === parseInt(result.draggableId))
-                // .route_data.find(route => route.route_name === this.props.activeRoute).route_position = result.destination.index
                 state = { selected: orderedItems };
             }
             this.setState(state);
