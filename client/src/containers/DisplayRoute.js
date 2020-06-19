@@ -52,7 +52,7 @@ class DisplayRoute extends Component {
 
             // let currentPosition = this.parseRouteData(property, this.props.activeRoute, 'route_position')
             //     console.log(currentPosition)
-            let currentPosition = this.routeProperties.indexOf(this.props.activeProperty)
+            let currentPosition = this.props.routeProperties.indexOf(property)
 
             let nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
                 console.log(nextPosition)
@@ -60,7 +60,7 @@ class DisplayRoute extends Component {
             // this.props.onSetActiveProperty(this.props.routeProperties.find(customer => (
             //     this.parseRouteData(customer, this.props.activeRoute, 'route_position') === nextPosition 
             // )))  
-            this.props.onSetActiveProperty(this.routeProperties[nextPosition])
+            this.props.onSetActiveProperty(this.props.routeProperties[nextPosition])
             if ((currentPosition - 2) > 0) {                              
                 document.getElementById(`card${currentPosition - 2}`).scrollIntoView(true) 
             }
