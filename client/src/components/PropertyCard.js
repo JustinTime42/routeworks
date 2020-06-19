@@ -7,7 +7,7 @@ const PropertyCard = (props) => {
     //const route_position = parseRouteData(props.address, props.route, "route_position") !== null ? (parseRouteData(props.address, props.route, "route_position") + 1) : ""
     const route_list = props.address.route_data.map(item => item.route_name + ", ")
     
-    parseRouteData = (customer, route, field) => {
+    const parseRouteData = (customer, route, field) => {
         return customer.route_data.some(item => item.route_name === route) ?
             customer.route_data.find(item => item.route_name === route)[field] : null
     }
