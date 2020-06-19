@@ -47,13 +47,20 @@ class DisplayRoute extends Component {
 
     changeActiveProperty = (property = this.props.activeProperty, direction = '') => {
         if (direction) {
-            let currentPosition = this.parseRouteData(property, this.props.activeRoute, 'route_position')
-                console.log(currentPosition)
+            //let current position be indexOf(this.props.routeProperties) = of the active property right?
+            // I just need the index of activeProperty within routeProperties. That's the 
+
+            // let currentPosition = this.parseRouteData(property, this.props.activeRoute, 'route_position')
+            //     console.log(currentPosition)
+            let currentPosition = this.routeProperties.indexOf(this.props.activeProperty)
+
             let nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
                 console.log(nextPosition)
-            this.props.onSetActiveProperty(this.props.routeProperties.find(customer => (
-                this.parseRouteData(customer, this.props.activeRoute, 'route_position') === nextPosition 
-            )))  
+
+            // this.props.onSetActiveProperty(this.props.routeProperties.find(customer => (
+            //     this.parseRouteData(customer, this.props.activeRoute, 'route_position') === nextPosition 
+            // )))  
+            this.props.onSetActiveProperty(this.routeProperties[nextPosition])
             if ((currentPosition - 2) > 0) {                              
                 document.getElementById(`card${currentPosition - 2}`).scrollIntoView(true) 
             }
