@@ -3,8 +3,8 @@ import { Button } from 'react-bootstrap'
 
 const PropertyCard = (props) => {
 
-    const status = props.address.route_data.some(item => item.route_name === route) ?
-        props.address.route_data.find(item => item.route_name === route).status : null
+    const status = props.address.route_data.some(item => item.route_name === props.route) ?
+        props.address.route_data.find(item => item.route_name === .props.route).status : null
     
     // parseRouteData(props.address, props.route, "status")
     //const route_position = parseRouteData(props.address, props.route, "route_position") !== null ? (parseRouteData(props.address, props.route, "route_position") + 1) : ""
