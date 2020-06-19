@@ -3,11 +3,15 @@ import { Button } from 'react-bootstrap'
 
 const PropertyCard = (props) => {
 
-    const status = props.parseRouteData(props.address, "status")
-    const route_position = props.parseRouteData(props.address, "route_position") !== null ? (props.parseRouteData(props.address, "route_position") + 1) : ""
-    //const display_position = route_position + ". "
+    const status = parseRouteData(props.address, props.route, "status")
+    //const route_position = parseRouteData(props.address, props.route, "route_position") !== null ? (parseRouteData(props.address, props.route, "route_position") + 1) : ""
     const route_list = props.address.route_data.map(item => item.route_name + ", ")
     
+    parseRouteData = (customer, route, field) => {
+        return customer.route_data.some(item => item.route_name === route) ?
+            customer.route_data.find(item => item.route_name === route)[field] : null
+    }
+
     const cardBg = () => {
         if (props.address.inactive === true) return `rgba(231,76,60,0.7)`  
         else if (props.address.temp) return `rgba(235,185,5,0.7)`
@@ -49,7 +53,7 @@ const PropertyCard = (props) => {
     }
 
     return(
-        <div id={`card${route_position}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
+        <div id={`card${props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>
                 <div style={seasonalStyle}></div>
                 {props.address ? 

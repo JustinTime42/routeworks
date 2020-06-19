@@ -91,8 +91,7 @@ class DisplayRoute extends Component {
                                     key={address.key} 
                                     address={address}
                                     activeProperty={this.props.activeProperty}
-                                    handleClick={this.changeActiveProperty}
-                                    parseRouteData={this.parseRouteData}
+                                    handleClick={this.changeActiveProperty}                                    
                                 />  
                             )                                                            
                         }) 
