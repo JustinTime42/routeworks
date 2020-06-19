@@ -181,7 +181,7 @@ class RouteEditor extends Component {
                 // and set the route_position to result.destination.index
                 // orderedItems.find(item => item.key === parseInt(result.draggableId))
                 // .route_data.find(route => route.route_name === this.props.activeRoute).route_position = result.destination.index
-                // state = { selected: orderedItems };
+                state = { selected: orderedItems };
             }
             this.setState(state);
         } else {
