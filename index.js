@@ -3,7 +3,8 @@ var cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser')
 const knex = require('knex')
-const pg = require('pg')
+const pg = require('pg');
+const { ESRCH } = require('constants');
 
 const db = knex({
     client: 'pg',
@@ -373,25 +374,53 @@ app.get('/api/getroute/:routeName', (req, res) => {
 })
 
 app.get('/api/getlogs/', (req,res) => {
+
     const options = req.query
+ 
+    if (options.type === 'xero') {
+        const getFields =
+        [
+            'properties.cust_name', 'properties.cust_email', 'properties.address', 'properties.city', 
+            'properties.state', 'properties.zip', 'service_log.invoice_number', 'service_log.reference', 
+            'service_log.item_code', 'service_log.description', '1 as quantity', 'service_log.price', 
+            'service_log.account_code', 'service_log.tax_type'
+        ]
+       
+        db.select(getFields)
+        .whereBetween('service_log.timestamp', [options.start, options.end])
+        .whereIn('properties.contract_type' = ['per', '5030'])
+        .andWhere(service_log.status = 'Done')
+        .then(data => res.json(data))
+        .catch(err => res.json(err))
+        
+    } else {
+        db.whereBetween('service_log.timestamp', [options.start, options.end])
+        .select('*')
+        .from('service_log')
+        .orderBy('timestamp')
+        .then(data => res.json(data))
+    }
+    
 
-//Xero Billing
-//Monthly: 
-//  select xeroFields from customers where contract_type='monthly' //this will create a line item per customer with their monthly rate
-//  select xeroFields /*replace price with $50 */ from customers where contract_type='5030'
-//  select xeroFields from service_log where contract_type = 'per occurrance' or '5030'
-//  select xeroFields from service_log where contract_type = 'month' or 'seasonal' and work_type = 'sanding'
-//  
 
-//TODO once book keeper provides fields, complete xero option and enable dropdown on client.
-// xero select properties.cust_name, properties.email, properties.bill_address, properties.bill_address2, 
-//  properties.bill_city, properties.bill_state, properties.bill_zip, service_log.invoice_number, 
-//  service_log.invoice_date, service_log.due_date, service_log.description, service_log.
-    db.whereBetween('service_log.timestamp', [options.start, options.end])
-    .select('*')
-    .from('service_log')
-    .orderBy('timestamp')
-    .then(data => res.json(data))
+   
+  
+/*
+invoice date and due date will be input by front end through date field in log options. 
+Xero Billing
+Monthly: 
+ select '50' from customers where contract_type='monthly' //this will create a line item per customer with their monthly rate
+ select xeroFields replace price with $50  from customers where contract_type='5030'
+ select xeroFields from service_log where contract_type = 'per occurrance' or '5030'
+ select xeroFields from service_log where contract_type = 'month' or 'seasonal' and work_type = 'sanding'
+ 
+
+TODO once book keeper provides fields, complete xero option and enable dropdown on client.
+xero select properties.cust_name, properties.email, properties.bill_address, properties.bill_address2, 
+ properties.bill_city, properties.bill_state, properties.bill_zip, service_log.invoice_number, 
+ service_log.invoice_date, service_log.due_date, service_log.description, service_log.
+*/
+
 })
 
 app.get('/api/getlogs/:property', (req, res) => {
