@@ -389,7 +389,7 @@ app.get('/api/getlogs/', (req,res) => {
         db.select(getFields)
         .whereBetween('service_log.timestamp', [options.start, options.end])
         .whereIn('properties.contract_type', ['per', '5030'])
-        .andWhere('service_log.status' = 'Done')
+        .andWhere('service_log.status', 'Done')
         .then(data => res.json(data))
         .catch(err => res.json(err))
         
