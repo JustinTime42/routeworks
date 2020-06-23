@@ -383,12 +383,12 @@ app.get('/api/getlogs/', (req,res) => {
             'properties.cust_name', 'properties.cust_email', 'properties.address', 'properties.city', 
             'properties.state', 'properties.zip', 'service_log.invoice_number', 'service_log.reference', 
             'service_log.item_code', 'service_log.description', 'service_log.price',  
-        ]
-       
-        
+        ]        
 
-        db.select(getFields)
-        .from('properties', 'service_log')
+        db('service_log')
+        .join('properties', 'service_log.property_key', '=', 'properties.key')
+        .select(getFields)
+        //.from('properties', 'service_log')
         .whereBetween('service_log.timestamp', [options.start, options.end])
         .whereIn('properties.contract_type', ['per', '5030'])
         .andWhere('service_log.status', 'Done')
