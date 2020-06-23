@@ -382,8 +382,7 @@ app.get('/api/getlogs/', (req,res) => {
         [
             'properties.cust_name', 'properties.cust_email', 'properties.address', 'properties.city', 
             'properties.state', 'properties.zip', 'service_log.invoice_number', 'service_log.reference', 
-            'service_log.item_code', 'service_log.description', '1 as quantity', 'service_log.price', 
-            '4000 as account_code', 'Tax Exempt (0%) as tax_type'
+            'service_log.item_code', 'service_log.description', 'service_log.price',  
         ]
        
         db.select(getFields)
