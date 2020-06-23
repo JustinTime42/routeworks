@@ -385,7 +385,10 @@ app.get('/api/getlogs/', (req,res) => {
             'service_log.item_code', 'service_log.description', 'service_log.price',  
         ]
        
+        
+
         db.select(getFields)
+        .from('properties', 'service_log')
         .whereBetween('service_log.timestamp', [options.start, options.end])
         .whereIn('properties.contract_type', ['per', '5030'])
         .andWhere('service_log.status', 'Done')
