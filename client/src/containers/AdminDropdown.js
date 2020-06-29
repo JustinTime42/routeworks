@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Dropdown, DropdownButton, Modal, Form } from 'react-bootstrap'
+import { Button, Dropdown, DropdownButton, Modal, Form, Row, Col } from 'react-bootstrap'
 import { CSVLink } from "react-csv";
 import Can from '../auth/Can'
 import { AuthConsumer } from "../authContext"
@@ -28,6 +28,8 @@ class EditRouteButton extends Component {
             endDate: '',
             logs: [],
             logType: '',
+            invoiceDate: '',
+            dueDate: '';
         }
     }
 
@@ -51,14 +53,17 @@ class EditRouteButton extends Component {
                 { label: "ContactName", key: "cust_name" },
                 { label: "EmailAddress", key: "cust_email" },
                 { label: "POAddressLine1", key: "address" },
-                { label: "Date", key: "date" },
-                { label: "Time", key: "time" },
-                { label: "Notes", key: "notes" },
-                { label: "Driver", key: "user_name" },
-                { label: "Tractor", key: "tractor" },
-                { label: "Address", key: "address" },
-                { label: "Price", key: "price"},
-                { label: "Driver Earning", key: "driver_earning"}
+                { label: "POCity", key: "city" },
+                { label: "PORegion", key: "state" },
+                { label: "POPostalCode", key: "zip" },
+                { label: "InvoiceNumber", key: "invoice_number" },
+                { label: "InvoiceDate", key: "invoiceDate" },
+                { label: "DueDate", key: "dueDate" },
+                { label: "Description", key: "description" },
+                { label: "Quantity", key: "quantity" },
+                { label: "UnitAmount", key: "price" },
+                { label: "AccountCode", key: "accountCode" },
+                { label: "TaxType", key: "taxType" },
             ]  
         }
         return headers        
@@ -92,6 +97,13 @@ class EditRouteButton extends Component {
         fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${startDate}&end=${endDate}`)
         .then(response => response.json())
         .then(logs => {
+            logs.forEach(entry => {
+                entry.invoiceDate = this.state.invoiceDate
+                entry.dueDate = this.state.dueDate
+                entry.quantity = 1
+                entry.accountCode = 4000
+                entry.taxType = 'Tax Exempt (0%)'
+            })
             // logs.forEach((item => { 
             //     item.date = new Date(item.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
             //     item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
@@ -125,17 +137,27 @@ class EditRouteButton extends Component {
                                 <Form>
                                     <Form.Group>                                    
                                         <Form.Label>Start Date</Form.Label>
-                                            <Form.Control name="startDate" type="date" onChange={this.setLogOptions}/> 
+                                        <Form.Control name="startDate" type="date" onChange={this.setLogOptions}/> 
                                         <Form.Label>End Date</Form.Label>
-                                            <Form.Control name="endDate" type="date" onChange={this.setLogOptions}/>                                               
-                                            <DropdownButton title={this.state.logType || "Type"} onSelect={this.setLogOptions}>        
-                                                <Dropdown.Item key="xero" eventKey="xero">                                
-                                                        Xero                             
-                                                </Dropdown.Item>
-                                                <Dropdown.Item key="raw" eventKey="raw">                                
-                                                        Raw                          
-                                                </Dropdown.Item> 
-                                            </DropdownButton>  
+                                        <Form.Control name="endDate" type="date" onChange={this.setLogOptions}/>                                               
+                                        <Row>
+                                            <Col>
+                                                <DropdownButton title={this.state.logType || "Type"} onSelect={this.setLogOptions}>        
+                                                    <Dropdown.Item key="xero" eventKey="xero">                                
+                                                            Xero                             
+                                                    </Dropdown.Item>
+                                                    <Dropdown.Item key="raw" eventKey="raw">                                
+                                                            Raw                          
+                                                    </Dropdown.Item> 
+                                                </DropdownButton> 
+                                            </Col>
+                                            <Col>
+                                                <Form.Label>Invoice Date</Form.Label>
+                                                <Form.Control name="invoiceDate" type="date" onChange={this.setLogOptions}/> 
+                                                <Form.Label>Due Date</Form.Label>
+                                                <Form.Control name="dueDate" type="date" onChange={this.setLogOptions}/>  
+                                            </Col>
+                                        </Row>  
                                     </Form.Group>
                                     {
                                         this.state.showDownload ?
