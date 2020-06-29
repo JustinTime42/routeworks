@@ -32,9 +32,9 @@ class EditRouteButton extends Component {
     }
 
     headers = () => {
-        return (
-            this.state.logType === "raw" ? 
-            [
+        let headers = []
+        if (this.state.logType === "raw"){
+            headers = [
                 { label: "Customer Name", key: "cust_name" },
                 { label: "status", key: "status" },
                 { label: "Date", key: "date" },
@@ -45,8 +45,9 @@ class EditRouteButton extends Component {
                 { label: "Address", key: "address" },
                 { label: "Price", key: "price"},
                 { label: "Driver Earning", key: "driver_earning"}
-            ] :
-            [
+            ]
+        } else {
+            headers = [
                 { label: "ContactName", key: "cust_name" },
                 { label: "EmailAddress", key: "cust_email" },
                 { label: "POAddressLine1", key: "address" },
@@ -59,7 +60,8 @@ class EditRouteButton extends Component {
                 { label: "Price", key: "price"},
                 { label: "Driver Earning", key: "driver_earning"}
             ]  
-        )
+        }
+        return headers        
     }  
 
     onSelect = (event) => {
