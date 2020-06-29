@@ -31,7 +31,7 @@ class EditRouteButton extends Component {
         }
     }
 
-    headers = this.state.logType === raw ? 
+    headers = this.state.logType === "raw" ? 
         [
             { label: "Customer Name", key: "cust_name" },
             { label: "status", key: "status" },
