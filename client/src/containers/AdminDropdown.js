@@ -139,7 +139,7 @@ class EditRouteButton extends Component {
                                     </Form.Group>
                                     {
                                         this.state.showDownload ?
-                                        <CSVLink data={this.state.logs} headers={this.headers} filename={`servicelogs_${this.state.startDate}-${this.state.endDate}_${this.state.logType}.csv`}>
+                                        <CSVLink data={this.state.logs} headers={this.headers()} filename={`servicelogs_${this.state.startDate}-${this.state.endDate}_${this.state.logType}.csv`}>
                                         Download
                                         </CSVLink> : <></>
                                     } 
