@@ -31,32 +31,36 @@ class EditRouteButton extends Component {
         }
     }
 
-    headers = this.state.logType === "raw" ? 
-        [
-            { label: "Customer Name", key: "cust_name" },
-            { label: "status", key: "status" },
-            { label: "Date", key: "date" },
-            { label: "Time", key: "time" },
-            { label: "Notes", key: "notes" },
-            { label: "Driver", key: "user_name" },
-            { label: "Tractor", key: "tractor" },
-            { label: "Address", key: "address" },
-            { label: "Price", key: "price"},
-            { label: "Driver Earning", key: "driver_earning"}
-        ] :
-        [
-            { label: "ContactName", key: "cust_name" },
-            { label: "EmailAddress", key: "cust_email" },
-            { label: "POAddressLine1", key: "address" },
-            { label: "Date", key: "date" },
-            { label: "Time", key: "time" },
-            { label: "Notes", key: "notes" },
-            { label: "Driver", key: "user_name" },
-            { label: "Tractor", key: "tractor" },
-            { label: "Address", key: "address" },
-            { label: "Price", key: "price"},
-            { label: "Driver Earning", key: "driver_earning"}
-        ]  
+    headers = () => {
+        return (
+            this.state.logType === "raw" ? 
+            [
+                { label: "Customer Name", key: "cust_name" },
+                { label: "status", key: "status" },
+                { label: "Date", key: "date" },
+                { label: "Time", key: "time" },
+                { label: "Notes", key: "notes" },
+                { label: "Driver", key: "user_name" },
+                { label: "Tractor", key: "tractor" },
+                { label: "Address", key: "address" },
+                { label: "Price", key: "price"},
+                { label: "Driver Earning", key: "driver_earning"}
+            ] :
+            [
+                { label: "ContactName", key: "cust_name" },
+                { label: "EmailAddress", key: "cust_email" },
+                { label: "POAddressLine1", key: "address" },
+                { label: "Date", key: "date" },
+                { label: "Time", key: "time" },
+                { label: "Notes", key: "notes" },
+                { label: "Driver", key: "user_name" },
+                { label: "Tractor", key: "tractor" },
+                { label: "Address", key: "address" },
+                { label: "Price", key: "price"},
+                { label: "Driver Earning", key: "driver_earning"}
+            ]  
+        )
+    }  
 
     onSelect = (event) => {
         switch(event) {

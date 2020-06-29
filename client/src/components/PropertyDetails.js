@@ -65,7 +65,9 @@ class PropertyDetails extends Component {
                 driver: this.props.driver,
                 route: this.props.activeRoute,
                 noteField: this.state.noteField,
-                tractor: this.props.tractor
+                tractor: this.props.tractor,
+                work_type: this.state.work_type,
+
             }
         )
         .then(res => {

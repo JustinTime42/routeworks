@@ -285,7 +285,6 @@ app.post('/api/setstatus', (req, res) => {
         .update({route_data: JSON.stringify(property.route_data)})
         .then(property => response.properties.push(property))
         .catch(err => {
-            console.log(err)
             response.err.push(err)
         })
     )
@@ -298,11 +297,14 @@ app.post('/api/setstatus', (req, res) => {
             status: req.body.status,
             notes: req.body.noteField,
             user_name: req.body.driver.name,
+            route_name: req.body.route,
             tractor: req.body.tractor,
             cust_name: property.cust_name,
             property_key: property.key,
             price: property.price,
             driver_earning: req.body.driver.percentage * .01 * property.price,
+            description: req.body.work_type,
+            invoice_number: `APP${property.key}${new Date().getMonth()}${new Date().getFullYear()}`
         })
         .then(property => response.serviceLog.push(property))
         .catch(err => {
@@ -388,7 +390,6 @@ app.get('/api/getlogs/', (req,res) => {
         db('service_log')
         .join('properties', 'service_log.property_key', '=', 'properties.key')
         .select(getFields)
-        //.from('properties', 'service_log')
         .whereBetween('service_log.timestamp', [options.start, options.end])
         .whereIn('properties.contract_type', ['per', '5030'])
         .andWhere('service_log.status', 'Done')
