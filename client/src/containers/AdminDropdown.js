@@ -93,10 +93,10 @@ class EditRouteButton extends Component {
         fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${startDate}&end=${endDate}`)
         .then(response => response.json())
         .then(logs => {
-            logs.forEach((item => { 
-                item.date = new Date(item.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
-                item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-            })) 
+            // logs.forEach((item => { 
+            //     item.date = new Date(item.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+            //     item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+            // })) 
             this.setState({logs: logs, showDownload: true})
         })
         .catch(error => console.log(error))
