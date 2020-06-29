@@ -45,6 +45,7 @@ class DisplayRoute extends Component {
     }
 
     changeActiveProperty = (property = this.props.activeProperty, direction = '') => {
+        console.log(property, direction)
         if (direction) {
             let currentPosition = this.props.routeProperties.indexOf(property)
 
@@ -53,6 +54,8 @@ class DisplayRoute extends Component {
             this.props.onSetActiveProperty(this.props.routeProperties[nextPosition])
             if ((currentPosition - 2) > 0) {                              
                 document.getElementById(`card${currentPosition - 2}`).scrollIntoView(true) 
+            } else {
+                document.getElementById(`card${currentPosition}`).scrollIntoView(true)
             }
         } else {
             this.props.onSetActiveProperty(property)

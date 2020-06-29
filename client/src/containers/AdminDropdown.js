@@ -97,17 +97,21 @@ class EditRouteButton extends Component {
         fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${startDate}&end=${endDate}`)
         .then(response => response.json())
         .then(logs => {
-            logs.forEach(entry => {
-                entry.invoiceDate = this.state.invoiceDate
-                entry.dueDate = this.state.dueDate
-                entry.quantity = 1
-                entry.accountCode = 4000
-                entry.taxType = 'Tax Exempt (0%)'
-            })
-            // logs.forEach((item => { 
-            //     item.date = new Date(item.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
-            //     item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-            // })) 
+            if (this.state.logType === 'xero') {
+                logs.forEach(entry => {
+                    entry.invoiceDate = this.state.invoiceDate
+                    entry.dueDate = this.state.dueDate
+                    entry.quantity = 1
+                    entry.accountCode = 4000
+                    entry.taxType = 'Tax Exempt (0%)'
+                    entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
+                })
+            } else {
+                logs.forEach((item => { 
+                item.date = new Date(item.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+                item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                })) 
+            }
             this.setState({logs: logs, showDownload: true})
         })
         .catch(error => console.log(error))
