@@ -49,7 +49,7 @@ const PropertyCard = (props) => {
     }
 
     return(
-        <div id={`card${props.i ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
+        <div id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>
                 <div style={seasonalStyle}></div>
                 {props.address ? 
