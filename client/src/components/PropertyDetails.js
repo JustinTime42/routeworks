@@ -9,7 +9,7 @@ import DropdownItem from 'react-bootstrap/DropdownItem'
 
 const mapStateToProps = state => {
     return {
-        property: state.setActiveProperty.activeProperty,
+        //property: state.setActiveProperty.activeProperty,
         driver: state.setActiveDriver.driver,
         tractor: state.setTractorName.tractorName,
         activeRoute: state.setActiveRoute.activeRoute,

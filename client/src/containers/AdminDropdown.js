@@ -29,7 +29,7 @@ class EditRouteButton extends Component {
             logs: [],
             logType: '',
             invoiceDate: '',
-            dueDate: '';
+            dueDate: '',
         }
     }
 
