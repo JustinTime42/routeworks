@@ -31,18 +31,33 @@ class EditRouteButton extends Component {
         }
     }
 
-    headers = [
-        { label: "Customer Name", key: "cust_name" },
-        { label: "status", key: "status" },
-        { label: "Date", key: "date" },
-        { label: "Time", key: "time" },
-        { label: "Notes", key: "notes" },
-        { label: "Driver", key: "user_name" },
-        { label: "Tractor", key: "tractor" },
-        { label: "Address", key: "address" },
-        { label: "Price", key: "price"},
-        { label: "Driver Earning", key: "driver_earning"}
-      ];
+    headers = this.state.logType === raw ? 
+        [
+            { label: "Customer Name", key: "cust_name" },
+            { label: "status", key: "status" },
+            { label: "Date", key: "date" },
+            { label: "Time", key: "time" },
+            { label: "Notes", key: "notes" },
+            { label: "Driver", key: "user_name" },
+            { label: "Tractor", key: "tractor" },
+            { label: "Address", key: "address" },
+            { label: "Price", key: "price"},
+            { label: "Driver Earning", key: "driver_earning"}
+        ] :
+        [
+            { label: "ContactName", key: "cust_name" },
+            { label: "EmailAddress", key: "cust_email" },
+            { label: "POAddressLine1", key: "address" },
+            { label: "Date", key: "date" },
+            { label: "Time", key: "time" },
+            { label: "Notes", key: "notes" },
+            { label: "Driver", key: "user_name" },
+            { label: "Tractor", key: "tractor" },
+            { label: "Address", key: "address" },
+            { label: "Price", key: "price"},
+            { label: "Driver Earning", key: "driver_earning"}
+        ] 
+        
 
     //coming feature. work in progress
     //   xeroHeaders = [
@@ -113,8 +128,8 @@ class EditRouteButton extends Component {
                                         <Form.Label>Start Date</Form.Label>
                                             <Form.Control name="startDate" type="date" onChange={this.setLogOptions}/> 
                                         <Form.Label>End Date</Form.Label>
-                                            <Form.Control name="endDate" type="date" onChange={this.setLogOptions}/>   
-                                            <DropdownButton title="Type" onSelect={this.setLogOptions}>        
+                                            <Form.Control name="endDate" type="date" onChange={this.setLogOptions}/>                                               
+                                            <DropdownButton title={this.state.logType || "Type"} onSelect={this.setLogOptions}>        
                                                 <Dropdown.Item key="xero" eventKey="xero">                                
                                                         Xero                             
                                                 </Dropdown.Item>
@@ -125,7 +140,7 @@ class EditRouteButton extends Component {
                                     </Form.Group>
                                     {
                                         this.state.showDownload ?
-                                        <CSVLink data={this.state.logs} headers={this.headers} filename={`servicelogs_${this.state.date}.csv`}>
+                                        <CSVLink data={this.state.logs} headers={this.headers} filename={`servicelogs_${this.state.startDate}-${this.state.endDate}_${this.state.logType}.csv`}>
                                         Download
                                         </CSVLink> : <></>
                                     } 
