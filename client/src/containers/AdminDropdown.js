@@ -56,14 +56,7 @@ class EditRouteButton extends Component {
             { label: "Address", key: "address" },
             { label: "Price", key: "price"},
             { label: "Driver Earning", key: "driver_earning"}
-        ] 
-        
-
-    //coming feature. work in progress
-    //   xeroHeaders = [
-    //     { label: "ContactName", key: "cust_name" },
-    //     { label: "EmailAddress", 	POAddressLine1	POAddressLine2	POAddressLine3	POAddressLine4	POCity	PORegion	POPostalCode	POCountry	*InvoiceNumber	Reference	*InvoiceDate	*DueDate	InventoryItemCode	*Description	*Quantity	*UnitAmount	Discount	*AccountCode	*TaxType	TrackingName1	TrackingOption1	TrackingName2	TrackingOption2	Currency	BrandingTheme
-    //   ]  
+        ]  
 
     onSelect = (event) => {
         switch(event) {
