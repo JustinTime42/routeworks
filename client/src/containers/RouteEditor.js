@@ -107,7 +107,7 @@ class RouteEditor extends Component {
                     filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
                     activeProperty: prevProps.activeProperty
                 }
-            })   
+            })
         } 
         if(this.state.searchField !== prevState.searchField) {
             this.setState((prevState, prevProps) => ({filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses)}))
@@ -240,10 +240,10 @@ class RouteEditor extends Component {
         let filteredItems = addresses.filter(property => {
             if (property.route_data.some(route => route.route_name === this.props.activeRoute)) return false
             else {
-                if (!filter) return true
-                else if (property.address && property.address.toLowerCase().includes(filter.toLowerCase())) return true
-                else if (property.route_data.some(route => route.route_name.toLowerCase().includes(filter.toLowerCase()))) return true
+                if (!filter) return true                          
                 else if (property.cust_name && property.cust_name.toLowerCase().includes(filter.toLowerCase())) return true
+                else if (property.address && property.address.toLowerCase().includes(filter.toLowerCase())) return true
+                else if (property.route_data.some(route => route.route_name.toLowerCase().includes(filter.toLowerCase()))) return true                
                 else if (property.cust_phone && property.cust_phone.toLowerCase().includes(filter.toLowerCase())) return true
                 else {return false}
             }    

@@ -47,15 +47,17 @@ class DisplayRoute extends Component {
     changeActiveProperty = (property = this.props.activeProperty, direction = '') => {
         console.log(property, direction)
         if (direction) {
-            let currentPosition = this.props.routeProperties.indexOf(property)
+            let currentPosition = this.props.routeProperties.findIndex(i => i.key === property.key)
             console.log(currentPosition)
             let nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
-                console.log(nextPosition) 
-            this.props.onSetActiveProperty(this.props.routeProperties[nextPosition])
-            if ((nextPosition - 2) > 0) {                              
-                document.getElementById(`card${nextPosition - 2}`).scrollIntoView(true) 
-            } else {
-                document.getElementById(`card${nextPosition}`).scrollIntoView(true)
+                console.log(nextPosition)
+            if (nextPosition >= 0 && nextPosition < this.props.routeProperties.length) {
+                this.props.onSetActiveProperty(this.props.routeProperties[nextPosition])
+                if ((nextPosition - 1) > 0) {                              
+                    document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
+                } else {
+                    document.getElementById(`card${nextPosition}`).scrollIntoView(true)
+                }
             }
         } else {
             this.props.onSetActiveProperty(property)
@@ -65,8 +67,8 @@ class DisplayRoute extends Component {
     render(){
         
         return(
-            <div className="driverGridContainer" style={{height: "100%", overflow: "auto"}}>
-                <div className="leftSide scrollable" style={{height: "90vh", width:"100%"}}>
+            <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
+                <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                     {
                         this.props.routeProperties.map((address, i )=> {                            
                             return (

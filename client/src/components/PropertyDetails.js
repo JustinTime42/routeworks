@@ -49,7 +49,7 @@ class PropertyDetails extends Component {
     }
 
     onStatusChange = (newStatus) => {
-  
+        
         this.setState({disabled: true})
         let property = {...this.props.property}
         if (this.state.work_type === 'sanding') {
