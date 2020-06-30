@@ -304,7 +304,8 @@ app.post('/api/setstatus', (req, res) => {
             price: property.price,
             driver_earning: req.body.driver.percentage * .01 * property.price,
             description: req.body.work_type,
-            invoice_number: `APP${property.key}${new Date().getMonth()}${new Date().getFullYear()}`
+            invoice_number: `APP${property.key}${new Date().getMonth()}${new Date().getFullYear()}`,
+            reference: property.address,
         })
         .then(property => response.serviceLog.push(property))
         .catch(err => {

@@ -57,6 +57,7 @@ class EditRouteButton extends Component {
                 { label: "PORegion", key: "state" },
                 { label: "POPostalCode", key: "zip" },
                 { label: "InvoiceNumber", key: "invoice_number" },
+                { label: "Reference", key: "reference" },
                 { label: "InvoiceDate", key: "invoiceDate" },
                 { label: "DueDate", key: "dueDate" },
                 { label: "Description", key: "description" },
@@ -64,6 +65,7 @@ class EditRouteButton extends Component {
                 { label: "UnitAmount", key: "price" },
                 { label: "AccountCode", key: "accountCode" },
                 { label: "TaxType", key: "taxType" },
+
             ]  
         }
         return headers        
