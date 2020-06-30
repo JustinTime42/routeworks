@@ -114,6 +114,7 @@ class EditRouteButton extends Component {
                 item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                 })) 
             }
+            console.log(logs)
             this.setState({logs: logs, showDownload: true})
         })
         .catch(error => console.log(error))
