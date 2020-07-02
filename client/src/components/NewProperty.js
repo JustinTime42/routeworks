@@ -12,6 +12,8 @@ const mapStateToProps = state => {
     }
 }
 
+const contractTypes = ["Select", "Per Occurance", "Monthly", "Seasonal", "5030", "Sweeping", "Will Call", "Asphalt", "Normand Sales"]
+
 const mapDispatchToProps = (dispatch) => {
     return {
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
@@ -51,7 +53,7 @@ class NewProperty extends Component {
         else {
             this.setState(prevState => (
                 { activeProperty: {...prevState.activeProperty, [name]: value}}
-            ), () => console.log(this.state.activeProperty))  
+            ))  
         }
     }
 
@@ -61,16 +63,10 @@ class NewProperty extends Component {
 
     render() {
         return (
-            <Modal className="scrollable" show={this.props.show} onHide={this.props.close}>
-                    <Modal.Header>New Property</Modal.Header>
+            <Modal className="scrollable" show={this.props.show} onHide={this.props.close} size='lg'>
+                    <Modal.Header>Property Editor</Modal.Header>
                     <Modal.Body>
-                        <Form>
-                            <Form.Group as={Row}>
-                                <Form.Label column sm={2}>Address</Form.Label>
-                                <Col sm={10}>
-                                    <Form.Control name="address" type="text" placeholder={this.state.activeProperty.address} onChange={this.onChange}/>
-                                </Col>
-                            </Form.Group>
+                        <Form>                            
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Name</Form.Label>
                                 <Col sm={10}>
@@ -83,6 +79,72 @@ class NewProperty extends Component {
                                     <Form.Control name="cust_phone" type="text" placeholder={this.state.activeProperty.cust_phone || "phone"} onChange={this.onChange}/>
                                 </Col>
                             </Form.Group>
+                            <Form.Group as={Row}>
+                                <Form.Label column sm={2}>Email</Form.Label>
+                                <Col sm={10}>
+                                    <Form.Control name="cust_email" type="text" placeholder={this.state.activeProperty.cust_email || "email"} onChange={this.onChange}/>
+                                </Col>
+                            </Form.Group>
+                            <Row>
+                            <Col>
+                                <Form.Label>Job Location</Form.Label>                  
+                                <Form.Group as={Row}>
+                                    <Form.Label>Address</Form.Label>
+                                    <Col>
+                                        <Form.Control name="address" type="text" placeholder={this.state.activeProperty.address} onChange={this.onChange}/>
+                                    </Col>
+                                </Form.Group>
+                                <Form.Group as={Row}>
+                                    <Form.Label>City</Form.Label>
+                                    <Col>
+                                        <Form.Control name="city" type="text" placeholder={this.state.activeProperty.city} onChange={this.onChange}/>
+                                    </Col>
+                                </Form.Group>
+                                <Row>
+                                <Col>
+                                <Form.Group>                                                                                                    
+                                    <Form.Label>State</Form.Label>   
+                                    <Form.Control name="state" type="text" placeholder={this.state.activeProperty.state} onChange={this.onChange}/>
+                                </Form.Group>
+                                </Col>
+                                <Col>
+                                <Form.Group>
+                                    <Form.Label>Zip</Form.Label>                              
+                                    <Form.Control name="zip" type="text" placeholder={this.state.activeProperty.zip} onChange={this.onChange}/> 
+                                </Form.Group>
+                                </Col>   
+                                </Row>                                
+                            </Col>
+                            <Col>
+                                <Form.Label>Billing Address</Form.Label>                  
+                                <Form.Group as={Row}>
+                                    <Form.Label>Address</Form.Label>
+                                    <Col>
+                                        <Form.Control name="bill_address" type="text" placeholder={this.state.activeProperty.bill_address} onChange={this.onChange}/>
+                                    </Col>
+                                </Form.Group>
+                                <Form.Group as={Row}>
+                                    <Form.Label>City</Form.Label>
+                                    <Col>
+                                        <Form.Control name="bill_city" type="text" placeholder={this.state.activeProperty.bill_city} onChange={this.onChange}/>
+                                    </Col>
+                                </Form.Group>
+                                <Row>                                
+                                <Col>
+                                <Form.Group>                                                                                                    
+                                    <Form.Label>State</Form.Label>   
+                                    <Form.Control name="bill_state" type="text" placeholder={this.state.activeProperty.bill_state} onChange={this.onChange}/>
+                                </Form.Group>
+                                </Col>
+                                <Col>
+                                <Form.Group>
+                                    <Form.Label>Zip</Form.Label>                              
+                                    <Form.Control name="bill_zip" type="text" placeholder={this.state.activeProperty.bill_zip} onChange={this.onChange}/> 
+                                </Form.Group>
+                                </Col>   
+                                </Row>
+                            </Col>
+                            </Row>                 
                             <Row>
                                 <Col>
                                     <Form.Group as={Row}>                                        
@@ -104,19 +166,17 @@ class NewProperty extends Component {
                                     </Form.Control>
                                     <Form.Label>Contract Type</Form.Label>
                                     <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
-                                        <option value="select">Select</option>
-                                        <option value="per">Per Occurance</option>
-                                        <option value="monthly">Monthly</option>
-                                        <option value="seasonal">Seasonal</option>
-                                        <option value="5030">5030</option>
+                                        {
+                                            contractTypes.map(type => <option key={type} value={type}>{type}</option>)
+                                        }
                                     </Form.Control>
-                                    <Form.Check 
+                                    <Form.Check
                                         name="is_new"
                                         type="checkbox"
                                         label="New Property?"
                                         checked = {!!this.state.activeProperty.is_new}
                                         onChange={this.onChange}
-                                    />                                    
+                                    />   
                                     <Form.Check 
                                         name="inactive"
                                         type="checkbox"
@@ -124,7 +184,7 @@ class NewProperty extends Component {
                                         checked = {!!this.state.activeProperty.inactive}
                                         onChange={this.onChange}
                                     />
-                                    <Form.Check 
+                                    <Form.Check
                                         name="temp"
                                         type="checkbox"
                                         label="Temporary?"

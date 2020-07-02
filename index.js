@@ -140,22 +140,23 @@ app.post('/api/saveroute', (req, res) => {
             .returning('*')
             .where('key', item.key)
             .update({
+                ...item, 
                 route_name: route, 
                 route_position: i,
                 status: item.status || "Waiting",
-                address: item.address,
-                cust_name: item.cust_name,
-                cust_phone: item.cust_phone,
-                surface_type: item.surface_type,
-                is_new: item.is_new,
-                notes: item.notes,
-                seasonal: item.seasonal,
-                price: item.price,
-                value: item.value,
-                temp: item.temp,
-                inactive: item.inactive,
-                contract_type: item.contract_type,
-                price_per_yard: item.price_per_yard,
+                // address: item.address,
+                // cust_name: item.cust_name,
+                // cust_phone: item.cust_phone,
+                // surface_type: item.surface_type,
+                // is_new: item.is_new,
+                // notes: item.notes,
+                // seasonal: item.seasonal,
+                // price: item.price,
+                // value: item.value,
+                // temp: item.temp,
+                // inactive: item.inactive,
+                // contract_type: item.contract_type,
+                // price_per_yard: item.price_per_yard,
                 route_data: JSON.stringify(item.route_data),
             })
             .then(address => {
@@ -392,7 +393,7 @@ app.get('/api/getlogs/', (req,res) => {
         .join('properties', 'service_log.property_key', '=', 'properties.key')
         .select(getFields)
         .whereBetween('service_log.timestamp', [options.start, options.end])
-        .whereIn('properties.contract_type', ['per', '5030'])
+        .whereNotIn('properties.contract_type', ['Monthly', 'Seasonal'])   
         .andWhere('service_log.status', 'Done')
         .then(data => res.json(data))
         .catch(err => res.json(err))
