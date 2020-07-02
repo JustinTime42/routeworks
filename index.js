@@ -44,21 +44,22 @@ app.post('/api/newproperty', (req, res) => {
     db('properties')    
     .returning('*')
     .insert({
-        address: property.address,
-        cust_name: property.cust_name,
-        cust_phone: property.cust_phone,
-        surface_type: property.surface_type,
-        is_new: property.is_new,
-        notes: property.notes,
-        seasonal: property.seasonal,
+        ...property,
+        // address: property.address,
+        // cust_name: property.cust_name,
+        // cust_phone: property.cust_phone,
+        // surface_type: property.surface_type,
+        // is_new: property.is_new,
+        // notes: property.notes,
+        // seasonal: property.seasonal,
         route_name: "unassigned",  
         route_position: null,
-        price: property.price,
-        temp: property.temp,
-        contract_type: property.contract_type,
-        value: property.value,
-        inactive: property.inactive,
-        price_per_yard: property.price_per_yard,
+        // price: property.price,
+        // temp: property.temp,
+        // contract_type: property.contract_type,
+        // value: property.value,
+        // inactive: property.inactive,
+        // price_per_yard: property.price_per_yard,
         route_data: JSON.stringify(property.route_data),
      })
      .then(property =>  res.json(property))
@@ -71,19 +72,20 @@ app.post('/api/editproperty', (req, res) => {
     .returning('*')
     .where('key', property.key)
     .update({
-        address: property.address,
-        cust_name: property.cust_name,
-        cust_phone: property.cust_phone,
-        surface_type: property.surface_type,
-        is_new: property.is_new,
-        notes: property.notes,
-        seasonal: property.seasonal,
-        price: property.price,
-        temp: property.temp,
-        contract_type: property.contract_type,
-        value: property.value,
-        inactive: property.inactive,
-        price_per_yard: property.price_per_yard,
+        ...property,
+        // address: property.address,
+        // cust_name: property.cust_name,
+        // cust_phone: property.cust_phone,
+        // surface_type: property.surface_type,
+        // is_new: property.is_new,
+        // notes: property.notes,
+        // seasonal: property.seasonal,
+        // price: property.price,
+        // temp: property.temp,
+        // contract_type: property.contract_type,
+        // value: property.value,
+        // inactive: property.inactive,
+        // price_per_yard: property.price_per_yard,
         route_data: JSON.stringify(property.route_data), 
     })
     .then(details => res.json(details))
@@ -339,10 +341,7 @@ app.post('/api/newdriver', (req, res) => {
     const driver = req.body
     db('drivers')    
     .returning('*')
-    .insert({
-        name: driver.name,
-        percentage: driver.percentage
-     })
+    .insert({...driver})
      .then(driver =>  res.json(driver))
      .catch(err => res.json("error: " + err))
 })
@@ -352,10 +351,7 @@ app.post('/api/editdriver', (req, res) => {
     db('drivers')    
     .returning('*')
     .where('key', driver.key)
-    .update({
-        name: driver.name,
-        percentage: driver.percentage
-     })
+    .update({...driver})
      .then(driver =>  res.json(driver))
      .catch(err => res.json("error: " + err))
 })
