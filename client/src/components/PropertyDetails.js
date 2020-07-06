@@ -100,8 +100,8 @@ class PropertyDetails extends Component {
                             <Form.Label>Work Type</Form.Label>
                             <DropdownButton title={this.state.work_type} onSelect={this.setWorkType}>
                                 <Dropdown.Item key="sanding" eventKey="sanding">sanding</Dropdown.Item>
-                                <Dropdown.Item key="snow removal" eventKey="snow removal">snow removal</Dropdown.Item> 4
-                                <Dropdown.Item key="other" eventKey="other">snow removal</Dropdown.Item> 
+                                <Dropdown.Item key="snow removal" eventKey="snow removal">snow removal</Dropdown.Item>
+                                <Dropdown.Item key="other" eventKey="other">other</Dropdown.Item> 
                             </DropdownButton> 
                             {
                                 this.state.work_type === 'sanding' ?
