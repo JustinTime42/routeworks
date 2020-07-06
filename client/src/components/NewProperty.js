@@ -12,7 +12,7 @@ const mapStateToProps = state => {
     }
 }
 
-const contractTypes = ["Select", "Per Occurrence", "Monthly", "Seasonal", "5030", "Sweeping", "Will Call", "Asphalt", "Normand Sales"]
+const contractTypes = ["Select", "Per Occurrence", "Monthly", "Seasonal", "5030"]
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -153,6 +153,8 @@ class NewProperty extends Component {
                                     <Form.Group as={Row}>                                        
                                         <Form.Label>Price</Form.Label>
                                         <Form.Control name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
+                                        <Form.Label>Sweeping Price</Form.Label>
+                                        <Form.Control name="sweep_price" type="number" placeholder={this.state.activeProperty.sweep_price || "sweep_price"} onChange={this.onChange}/>
                                         <Form.Label>Sanding Price Per Yard</Form.Label>
                                         <Form.Control name="price_per_yard" type="number" placeholder={this.state.activeProperty.price_per_yard || "price per yard"} onChange={this.onChange}/>
                                         <Form.Label>Value</Form.Label>
