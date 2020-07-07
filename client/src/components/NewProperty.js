@@ -50,7 +50,7 @@ class NewProperty extends Component {
 
         if (value === "on") {           
             this.setState(prevState => (
-                {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty.temp}}               
+                {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty[name]}}               
             ))
         }
         else {
