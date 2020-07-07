@@ -12,7 +12,7 @@ const mapStateToProps = state => {
     }
 }
 
-const contractTypes = ["Select", "Per Occurrence", "Monthly", "Seasonal", "5030"]
+const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030"]
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -36,7 +36,7 @@ class NewProperty extends Component {
             console.log("component updates")            
           this.setState(
               { activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" },
-              console.log(this.props.activeProperty) )
+              console.log(this.props.activeProperty))
         }
       }
 
