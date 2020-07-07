@@ -23,12 +23,12 @@ const PropertyCard = (props) => {
     const rightStyle = {
         float: "right", 
         textAlign: "center",
-        width: "70px",               
+        width: "90px",               
     }
 
     const statusStyle = {
         padding: "10px",
-        border: "2px, solid, black",
+        //border: "2px, solid, black",
         borderRadius: "10px",
         backgroundColor: status === "Waiting" ? `rgba(255,200,0,0.9)` : 
             status === "Skipped" ? `rgba(255,0,0,0.7)` :
@@ -36,12 +36,8 @@ const PropertyCard = (props) => {
     }
 
     const seasonalStyle = {
-        display: "inline",
-        float: "left",
-        padding: "5px",
-        border: "1px, solid, #CCE5FF",
-        borderRadius: "5px",
-        backgroundColor: props.address ? props.address.contract_type === 'seasonal' ? "#375A7F" : `rgba(0,0,0,0.0)` : `rgba(0,0,0,0.0)`
+        borderLeft: props.address ? props.address.contract_type === 'seasonal' || props.address.contract_type === 'monthly' ? "10px solid #375A7F" : "none" : "none"
+   
     }
 
     const editStyle = {
@@ -50,10 +46,9 @@ const PropertyCard = (props) => {
 
     return(
         <div id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
-            <div style={rightStyle}>
-                <div style={seasonalStyle}></div>
+            <div style={rightStyle}>                
                 {props.address ? 
-                    <p style={statusStyle}>{status}</p> : <p style={statusStyle}></p>             
+                    <p style={{...statusStyle, ...seasonalStyle}}>{status}</p> : <p style={statusStyle}></p>             
                 } 
                 {props.admin === true ? 
                     <p style={editStyle}><Button variant="secondary" onClick={() => props.editClick(props.address)}>Edit </Button></p>  : <p></p>               

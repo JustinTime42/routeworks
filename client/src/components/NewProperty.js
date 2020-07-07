@@ -12,7 +12,7 @@ const mapStateToProps = state => {
     }
 }
 
-const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030"]
+const contractTypes = ["per occurrence", "monthly", "seasonal", "5030"]
 
 const mapDispatchToProps = (dispatch) => {
     return {
