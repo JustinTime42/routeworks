@@ -365,6 +365,42 @@ app.post('/api/deletedriver', (req, res) => {
     .catch(err => res.json(err))
 })
 
+// get full list of tags
+app.get('/api/tags', (req, res) => {
+    db.select('*')
+    .from('tags')
+    .then(data => res.json(data))
+    .catch(err => res.json(err))
+})
+
+// create a new tag
+app.post('/api/newTag', (req, res) => {
+    db('tags')
+    .returning('*')
+    .insert(req.body)
+    .then(newTag => res.json(newTag))
+    .catch(err => res.json(err))
+})
+// delete a tag
+app.delete('/api/tags/:tagName', (req, res) => {
+    db('tags')
+    returning('*')
+    .where('tag_name', req.params.tagName)
+    .del()
+    .then(tag => res.json(tag))
+    .catch(err => res.json(err))
+})
+
+//get properties who match any of the tags passed in
+app.post('/api/customertags/', (req, res) => {
+    db('properties')
+    .where('tags', 'like', `%${req.body.tagName}%`)
+})
+
+//new tag
+//delete tag
+//select by tag (wherein)
+
 app.get('/api/getroute/:routeName', (req, res) => {
     const { routeName } = req.params
     db.raw(`select * from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
