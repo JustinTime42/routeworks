@@ -366,7 +366,7 @@ app.post('/api/deletedriver', (req, res) => {
 })
 
 // get full list of tags
-app.get('/api/tags', (req, res) => {
+app.get('/api/alltags', (req, res) => {
     db.select('*')
     .from('tags')
     .then(data => res.json(data))
@@ -392,17 +392,24 @@ app.delete('/api/tags/:tagName', (req, res) => {
 })
 
 //get properties who match any of the tags passed in
-app.post('/api/customertags/', (req, res) => {
-    db('properties')
-    .select('*')
-    .where('tags', 'like', `%${req.body.tagName}%`)
-    .then(customers => res.json(customers))
-    .catch(err => res.json(err))
+app.get('/api/filterbytags/', (req, res) => {
+    const tags = JSON.parse(req.query.tags)
+    let response = 
+    {
+        customers: [],        
+        err: []
+    }
+    let promises = []
+    tags.forEach(tag => {
+        promises.push(
+            db('properties')
+            .where('tags', 'like', `%${tag}%`)
+            .then(customers => response.customers.push(customers))
+            .catch(err => error.push(err))
+        )        
+    })  
+    Promise.all(promises).then(() => res.json(response)) 
 })
-
-//new tag
-//delete tag
-//select by tag (wherein)
 
 app.get('/api/getroute/:routeName', (req, res) => {
     const { routeName } = req.params
