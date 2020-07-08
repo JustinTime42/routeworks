@@ -394,7 +394,10 @@ app.delete('/api/tags/:tagName', (req, res) => {
 //get properties who match any of the tags passed in
 app.post('/api/customertags/', (req, res) => {
     db('properties')
+    .select('*')
     .where('tags', 'like', `%${req.body.tagName}%`)
+    .then(customers => res.json(customers))
+    .catch(err => res.json(err))
 })
 
 //new tag
