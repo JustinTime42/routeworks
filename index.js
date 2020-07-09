@@ -377,7 +377,7 @@ app.get('/api/alltags', (req, res) => {
 app.post('/api/newtag', (req, res) => {
     db('tags')
     .returning('*')
-    .insert({tag_name: req.query.tag_name})
+    .insert({tag_name: req.body.tag_name})
     .then(newTag => res.json(newTag))
     .catch(err => res.json(err))
 })
