@@ -27,20 +27,54 @@ class NewProperty extends Component {
         this.state = {
             activeProperty: {...this.props.activeProperty},
             api: this.props.activeProperty ? "editproperty" : "newproperty",
-            deleteAlert: false
+            deleteAlert: false,
+            allTags: []
         }
+    }
+
+    getTags = () => {
+        fetch(`${process.env.REACT_APP_API_URL}/alltags`)
+        .then(res => res.json())
+        .then(tags => {
+            console.log(tags)
+            this.setState({allTags: tags}, console.log(this.state.allTags))
+        })
+        .catch(err => console.log(err))
     }
 
     componentDidUpdate(prevProps) {
         if(prevProps.activeProperty !== this.props.activeProperty){
-            console.log("component updates")            
-          this.setState(
-              { activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" },
-              console.log(this.props.activeProperty))
+            console.log("component updates")    
+            this.getTags()        
+            this.setState(
+                { activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" },
+                console.log(this.props.activeProperty))
         }
       }
 
+    tagChange = (event) => {
+        let {target: {name, value} } = event
+        console.log(name, value)
+        let tagsArray = this.state.activeProperty.tags.split(',') 
+        console.log('tagsArray', tagsArray)
+        if (tagsArray.includes(name)) {
+            tagsArray.splice(tagsArray.indexOf(name), 1)
+            console.log('need to remove')
+        } else {
+            tagsArray.push(name)
+            console.log(tagsArray, 'need to add')
+        }
+        let tags = tagsArray.join()
+        console.log(tags)
+        this.setState(prevState => (
+            {activeProperty: {...prevState.activeProperty, tags: tags}}
+        ), console.log(this.state.activeProperty) )
+        
+
+    }
+
     onChange = (event) => {    
+        console.log(this.state.allTags)
         let { target: { name, value } } = event
         let numberValues = ['price', 'value', 'price_per_yard']
 
@@ -50,7 +84,7 @@ class NewProperty extends Component {
 
         if (value === "on") {           
             this.setState(prevState => (
-                {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty[name]}}               
+                {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty[name]}}             
             ))
         }
         else {
@@ -162,6 +196,8 @@ class NewProperty extends Component {
                                     </Form.Group>
                                 </Col>
                                 <Col>
+                                    
+                                    
                                     <Form.Label>Surface Type</Form.Label>
                                     <Form.Control name="surface_type" as="select" value={this.state.activeProperty.surface_type || "select"} onChange={this.onChange}>
                                         <option value="select">Select</option>
@@ -175,27 +211,51 @@ class NewProperty extends Component {
                                             contractTypes.map(type => <option key={type} value={type}>{type}</option>)
                                         }
                                     </Form.Control>
-                                    <Form.Check
-                                        name="is_new"
-                                        type="checkbox"
-                                        label="New Property?"
-                                        checked = {!!this.state.activeProperty.is_new}
-                                        onChange={this.onChange}
-                                    />   
-                                    <Form.Check 
-                                        name="inactive"
-                                        type="checkbox"
-                                        label="Inactive?"
-                                        checked = {!!this.state.activeProperty.inactive}
-                                        onChange={this.onChange}
-                                    />
-                                    <Form.Check
-                                        name="temp"
-                                        type="checkbox"
-                                        label="Temporary?"
-                                        checked = {!!this.state.activeProperty.temp}
-                                        onChange={this.onChange}
-                                    />
+                                    <Row>
+                                        <Col>
+                                            <Form.Check
+                                                name="is_new"
+                                                type="checkbox"
+                                                label="New?"
+                                                checked = {!!this.state.activeProperty.is_new}
+                                                onChange={this.onChange}
+                                            />   
+                                            <Form.Check 
+                                                name="inactive"
+                                                type="checkbox"
+                                                label="Inactive?"
+                                                checked = {!!this.state.activeProperty.inactive}
+                                                onChange={this.onChange}
+                                            />
+                                            <Form.Check
+                                                name="temp"
+                                                type="checkbox"
+                                                label="Temporary?"
+                                                checked = {!!this.state.activeProperty.temp}
+                                                onChange={this.onChange}
+                                            />
+                                        </Col>
+                                        <Col>
+                                            <Form.Label>Tags</Form.Label>  
+                                            <div  style={{'height':'80px', 'overflow':'auto'}}>
+                                            {
+                                                this.state.allTags.map(tag => {
+                                                    return(                                                        
+                                                        <Form.Check 
+                                                            key={tag.tag_name}                                                           
+                                                            name={tag.tag_name}
+                                                            type="checkbox"
+                                                            label={tag.tag_name}
+                                                            checked = {this.state.activeProperty.tags.includes(tag.tag_name)}
+                                                            onChange={this.tagChange}
+                                                        />                                                     
+                                                    )                                                
+                                                })
+                                            }
+                                            </div>
+                                        </Col>
+                                    </Row>                                  
+                                    
                                 </Col>
                             </Row>
                             <Form.Group>
