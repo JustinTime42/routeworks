@@ -238,7 +238,7 @@ class NewProperty extends Component {
                                         <Col>
                                             <Form.Label>Tags</Form.Label>  
                                             <div  style={{'height':'80px', 'overflow':'auto'}}>
-                                            {
+                                            {/* {
                                                 this.state.allTags.map(tag => {
                                                     return(                                                        
                                                         <Form.Check 
@@ -251,7 +251,7 @@ class NewProperty extends Component {
                                                         />                                                     
                                                     )                                                
                                                 })
-                                            }
+                                            } */}
                                             </div>
                                         </Col>
                                     </Row>                                  
