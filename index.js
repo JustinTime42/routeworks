@@ -377,10 +377,11 @@ app.get('/api/alltags', (req, res) => {
 app.post('/api/newtag', (req, res) => {
     db('tags')
     .returning('*')
-    .insert(req.body)
+    .insert({tag_name: req.query.tag_name})
     .then(newTag => res.json(newTag))
     .catch(err => res.json(err))
 })
+
 // delete a tag
 app.delete('/api/tags/:tagName', (req, res) => {
     db('tags')
