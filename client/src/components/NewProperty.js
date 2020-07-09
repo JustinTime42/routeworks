@@ -44,7 +44,7 @@ class NewProperty extends Component {
 
     componentDidUpdate(prevProps) {
         if(prevProps.activeProperty !== this.props.activeProperty){
-            console.log("component updates")    
+            console.log("component updates")
             this.getTags()        
             this.setState(
                 { activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" },
@@ -55,7 +55,7 @@ class NewProperty extends Component {
     tagChange = (event) => {
         let {target: {name, value} } = event
         console.log(name, value)
-        let tagsArray = this.state.activeProperty.tags?.split(',') 
+        let tagsArray = this.state.activeProperty.tags ? this.state.activeProperty.tags?.split(',') : [] 
         console.log('tagsArray', tagsArray)
         if (tagsArray.includes(name)) {
             tagsArray.splice(tagsArray.indexOf(name), 1)
@@ -73,11 +73,9 @@ class NewProperty extends Component {
 
     }
 
-    onChange = (event) => {    
-        console.log(this.state.allTags)
+    onChange = (event) => {
         let { target: { name, value } } = event
-        let numberValues = ['price', 'value', 'price_per_yard']
-
+        let numberValues = ['price', 'value', 'price_per_yard', 'sweep_price']
         if (numberValues.includes(name)){
             value = Number(value)
         }
@@ -188,7 +186,7 @@ class NewProperty extends Component {
                                         <Form.Label>Price</Form.Label>
                                         <Form.Control name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
                                         <Form.Label>Sweeping Price</Form.Label>
-                                        <Form.Control name="sweep_price" type="number" placeholder={this.state.activeProperty.sweep_price || "sweep_price"} onChange={this.onChange}/>
+                                        <Form.Control name="sweep_price" type="number" placeholder={this.state.activeProperty.sweep_price || "sweeping price"} onChange={this.onChange}/>
                                         <Form.Label>Sanding Price Per Yard</Form.Label>
                                         <Form.Control name="price_per_yard" type="number" placeholder={this.state.activeProperty.price_per_yard || "price per yard"} onChange={this.onChange}/>
                                         <Form.Label>Value</Form.Label>
@@ -246,7 +244,7 @@ class NewProperty extends Component {
                                                             name={tag.tag_name}
                                                             type="checkbox"
                                                             label={tag.tag_name}
-                                                            checked = {this.state.activeProperty.tags?.includes(tag.tag_name)}
+                                                            checked = {this.state.activeProperty.tags?.includes(tag.tag_name) || false}
                                                             onChange={this.tagChange}
                                                         />                                                     
                                                     )                                                
