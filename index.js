@@ -375,6 +375,7 @@ app.get('/api/alltags', (req, res) => {
 
 // create a new tag
 app.post('/api/newtag', (req, res) => {
+    console.log(req.body)
     db('tags')
     .returning('*')
     .insert({tag_name: req.body.tag_name})
