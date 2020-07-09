@@ -238,7 +238,7 @@ class NewProperty extends Component {
                                         <Col>
                                             <Form.Label>Tags</Form.Label>  
                                             <div  style={{'height':'80px', 'overflow':'auto'}}>
-                                            {/* {
+                                            {
                                                 this.state.allTags.map(tag => {
                                                     return(                                                        
                                                         <Form.Check 
@@ -246,12 +246,12 @@ class NewProperty extends Component {
                                                             name={tag.tag_name}
                                                             type="checkbox"
                                                             label={tag.tag_name}
-                                                            checked = {this.state.activeProperty.tags.includes(tag.tag_name)}
+                                                            checked = {this.state.activeProperty.tags?.includes(tag.tag_name)}
                                                             onChange={this.tagChange}
                                                         />                                                     
                                                     )                                                
                                                 })
-                                            } */}
+                                            }
                                             </div>
                                         </Col>
                                     </Row>                                  
