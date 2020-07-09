@@ -55,7 +55,7 @@ class NewProperty extends Component {
     tagChange = (event) => {
         let {target: {name, value} } = event
         console.log(name, value)
-        let tagsArray = this.state.activeProperty.tags.split(',') 
+        let tagsArray = this.state.activeProperty.tags?.split(',') 
         console.log('tagsArray', tagsArray)
         if (tagsArray.includes(name)) {
             tagsArray.splice(tagsArray.indexOf(name), 1)
