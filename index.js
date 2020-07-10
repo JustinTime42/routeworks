@@ -369,7 +369,7 @@ app.post('/api/deletedriver', (req, res) => {
 app.get('/api/alltags', (req, res) => {
     db.select('*')
     .from('tags')
-    .then(data => res.json(tags.map(tag => Object.values(tag)[0])))
+    .then(data => res.json(data.map(tag => Object.values(tag)[0])))
     .catch(err => res.json(err))
 })
 
