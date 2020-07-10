@@ -384,10 +384,10 @@ app.post('/api/newtag', (req, res) => {
 })
 
 // delete a tag
-app.delete('/api/tags/:tagName', (req, res) => {
+app.delete('/api/deltag', (req, res) => {
     db('tags')
     returning('*')
-    .where('tag_name', req.params.tagName)
+    .where('tag_name', req.body.tag_name)
     .del()
     .then(tag => res.json(tag))
     .catch(err => res.json(err))
