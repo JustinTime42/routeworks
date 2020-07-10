@@ -379,7 +379,7 @@ app.post('/api/newtag', (req, res) => {
     db('tags')
     .returning('*')
     .insert({tag_name: req.body.tag_name})
-    .then(newTag => res.json(newTag))
+    .then(newTag => res.json(newTag[0].tag_name))
     .catch(err => res.json(err))
 })
 
