@@ -62,7 +62,7 @@ app.post('/api/deleteproperty', (req, res) => {
     .returning('*')
     .where('key', req.body.key)
     .del()
-    .then(property => res.json(property))
+    .then(property => res.json(property[0]))
     .catch(err => res.json(err))
 })
 
