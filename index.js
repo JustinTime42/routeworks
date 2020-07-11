@@ -37,31 +37,12 @@ app.post('/api/addroute', (req, res) => {
     }) 
 })
 
-//deprecated: route_name, route_position, status are now stored and retrieved in route_data jsonb field.
-//TODO: remove old columns in tables and update these endpoints accordingly
+//TODO: remove old route columns in tables now that route_data is fully implemented
 app.post('/api/newproperty', (req, res) => {
     const property = req.body
     db('properties')    
     .returning('*')
-    .insert({
-        ...property,
-        // address: property.address,
-        // cust_name: property.cust_name,
-        // cust_phone: property.cust_phone,
-        // surface_type: property.surface_type,
-        // is_new: property.is_new,
-        // notes: property.notes,
-        // seasonal: property.seasonal,
-        route_name: "unassigned",  
-        route_position: null,
-        // price: property.price,
-        // temp: property.temp,
-        // contract_type: property.contract_type,
-        // value: property.value,
-        // inactive: property.inactive,
-        // price_per_yard: property.price_per_yard,
-        route_data: JSON.stringify(property.route_data),
-     })
+    .insert({...property, route_data: JSON.stringify(property.route_data)})
      .then(property =>  res.json(property))
      .catch(err => res.json("error: " + err))
 })
@@ -71,24 +52,8 @@ app.post('/api/editproperty', (req, res) => {
     db('properties')
     .returning('*')
     .where('key', property.key)
-    .update({
-        ...property,
-        // address: property.address,
-        // cust_name: property.cust_name,
-        // cust_phone: property.cust_phone,
-        // surface_type: property.surface_type,
-        // is_new: property.is_new,
-        // notes: property.notes,
-        // seasonal: property.seasonal,
-        // price: property.price,
-        // temp: property.temp,
-        // contract_type: property.contract_type,
-        // value: property.value,
-        // inactive: property.inactive,
-        // price_per_yard: property.price_per_yard,
-        route_data: JSON.stringify(property.route_data), 
-    })
-    .then(details => res.json(details))
+    .update({...property, route_data: JSON.stringify(property.route_data)})
+    .then(details => res.json(details[0]))
     .catch(err => res.json("error: " + err))
 })
 
