@@ -58,8 +58,9 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
 }
 
 export const filterRouteProperties = (allAddresses, routeName) => (dispatch) => {
-    const routeProperties = allAddresses.filter(address => address.route_name === routeName).sort((a, b) => (a.route_position > b.route_position) ? 1 : -1)
     dispatch({ type: GET_ROUTE_PENDING})
+    const routeProperties = allAddresses.filter(address => address.route_data.some(route => route.route_name === routeName )) 
+        .sort((a, b) => a.route_data.find(item => item.route_name === routeName).route_position > b.route_data.find(item => item.route_name === routeName).route_position ? 1 : -1); 
     dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties})
 }
 
@@ -81,7 +82,7 @@ export const saveNewProperty = (property, allAddresses) => (dispatch) => {
     .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error }))
 }
 
-export const deleteProperty = (property, allAddresses) => (dispatch) => {
+export const deleteProperty = (property, allAddresses, routeName = null) => (dispatch) => {
     dispatch({ type: UPDATE_ADDRESSES_PENDING})
     fetch(`${process.env.REACT_APP_API_URL}/deleteproperty`, {
         method: 'POST', 
@@ -91,10 +92,12 @@ export const deleteProperty = (property, allAddresses) => (dispatch) => {
         body: JSON.stringify(property)
     })
     .then(res => res.json())
-    .then(res => {
-        console.log(res)
-        allAddresses.splice(allAddresses.indexOf(property), 1)
+    .then(deleted => {
+        allAddresses.splice(allAddresses.findIndex(item => item.key === deleted.key), 1)
         dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
+        if (routeName) {
+            dispatch(filterRouteProperties(allAddresses, routeName))
+        }
     })
     .catch(err => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: err}))
 }
@@ -102,10 +105,23 @@ export const deleteProperty = (property, allAddresses) => (dispatch) => {
 export const editProperty = (property, allAddresses) => (dispatch) => {
     console.log(property)
     dispatch({ type: UPDATE_ADDRESSES_PENDING})
-    let index = allAddresses.findIndex(item => item.key === property.key)
-    allAddresses[index] = property
-    dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
-    console.log("new property in address store: ", allAddresses[index])
+    fetch(`${process.env.REACT_APP_API_URL}/editproperty`, {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(property)
+    })
+    .then(res => res.json())
+    .then(editted => {
+        console.log(editted)
+        let index = allAddresses.findIndex(item => item.key === editted.key)
+        allAddresses[index] = editted
+        dispatch({ type: SET_ACTIVE_PROPERTY, payload: editted})
+        dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
+        console.log("new property in address store: ", allAddresses[index])
+    })
+    .catch(err => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: err}))
 }
 
 //currently not in use. refactor routeEditor.onSave to use

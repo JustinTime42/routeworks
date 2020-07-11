@@ -5,7 +5,7 @@ import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRou
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "../components/PropertyCard"
-import NewProperty from "../components/NewProperty"
+import NewProperty from "../components/CustomerEditor"
 import '../styles/driver.css'
 
 const mapStateToProps = state => {
@@ -28,7 +28,7 @@ const mapDispatchToProps = (dispatch) => {
         onGetRouteProperties: (route) => dispatch(getRouteProperties(route)),
         onSaveNewProperty: (property, allAddresses) => dispatch(saveNewProperty(property, allAddresses)),
         onEditProperty: (property, allAddresses) => dispatch(editProperty(property, allAddresses)),
-        onDeleteProperty: (property, allAddresses) => dispatch(deleteProperty(property, allAddresses)),
+        onDeleteProperty: (property, allAddresses, routeName) => dispatch(deleteProperty(property, allAddresses, routeName)),
         onFilterRouteProperties: (addresses, route) => dispatch(filterRouteProperties(addresses, route))
     }
 }
@@ -99,7 +99,8 @@ class RouteEditor extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
+        if(this.props.isRoutePending !== prevProps.isRoutePending || this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
+            console.log("route editor updating")
             this.setState((prevState, prevProps) => {
                 return {
                     selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
@@ -137,6 +138,7 @@ class RouteEditor extends Component {
             }
         )
         .then(res => {
+            //this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.onGetAllAddresses()
             this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
             console.log(res)
@@ -187,7 +189,7 @@ class RouteEditor extends Component {
                 source,
                 destination
             )
-            
+            console.log("new list", newList.droppable2)
             newList.droppable2.forEach((item, i) => {
                 let route_data = {
                     route_name: this.props.activeRoute,
@@ -203,7 +205,7 @@ class RouteEditor extends Component {
                 // save changes to redux and state
                 // needs rework. Maybe make a way to send the new property lists at once instead
                 // of dispatching an action per item in the list
-                this.props.onEditProperty(item, this.props.addresses)
+                
                 
                 // this is currently needed to keep the recently dragged item, but is stupid. plz change.
                 this.setState((prevState, prevProps) => {
@@ -212,7 +214,7 @@ class RouteEditor extends Component {
                         items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
                         filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
                     }
-                }, () => console.log(this.state))                                                                                              
+                })                                                                                              
             })
            
             if (destination.droppableId === "droppable") {
@@ -269,7 +271,11 @@ class RouteEditor extends Component {
     }
 
     onDelete = () => {
-        this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses)
+        if (this.props.activeProperty.route_data.find(route => route.route_name === this.props.activeRoute)) {
+            this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses, this.props.activeRoute)
+        } else {
+            this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses)
+        }      
         this.props.onSetActiveProperty(null)
     }
 

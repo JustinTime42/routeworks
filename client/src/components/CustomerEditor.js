@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import { Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { requestAllAddresses, getRouteProperties } from '../actions'
-
+import axios from "axios"
 import '../styles/driver.css'
+
 
 const mapStateToProps = state => {
     return {         
@@ -28,62 +29,74 @@ class NewProperty extends Component {
             activeProperty: {...this.props.activeProperty},
             api: this.props.activeProperty ? "editproperty" : "newproperty",
             deleteAlert: false,
-            allTags: []
+            allTags: [],
+            newTagName: '',
         }
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps.activeProperty !== this.props.activeProperty){
+            console.log("component updates")
+            this.setState(
+                { activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" },
+                console.log(this.props.activeProperty))
+        }
+        if(prevProps.show !== this.props.show) {
+            if (this.props.show) {this.getTags()}
+        }
+      }
 
     getTags = () => {
         fetch(`${process.env.REACT_APP_API_URL}/alltags`)
         .then(res => res.json())
         .then(tags => {
-            console.log(tags)
-            this.setState({allTags: tags}, console.log(this.state.allTags))
-        })
+            this.setState({allTags: tags})
+        }) 
         .catch(err => console.log(err))
     }
 
-    componentDidUpdate(prevProps) {
-        if(prevProps.activeProperty !== this.props.activeProperty){
-            console.log("component updates")
-            this.getTags()        
-            this.setState(
-                { activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" },
-                console.log(this.props.activeProperty))
-        }
-      }
-
     tagChange = (event) => {
         let {target: {name, value} } = event
-        console.log(name, value)
-        let tagsArray = this.state.activeProperty.tags ? this.state.activeProperty.tags?.split(',') : [] 
-        console.log('tagsArray', tagsArray)
+        let tagsArray = this.state.activeProperty.tags ? this.state.activeProperty.tags?.split(',') : []
         if (tagsArray.includes(name)) {
             tagsArray.splice(tagsArray.indexOf(name), 1)
-            console.log('need to remove')
         } else {
             tagsArray.push(name)
-            console.log(tagsArray, 'need to add')
         }
         let tags = tagsArray.join()
-        console.log(tags)
-        this.setState(prevState => (
-            {activeProperty: {...prevState.activeProperty, tags: tags}}
-        ), console.log(this.state.activeProperty) )
-        
-
+        this.setState(prevState => ({activeProperty: {...prevState.activeProperty, tags: tags}}))  
     }
 
+    saveNewTag = () => {     
+        axios.post(`${process.env.REACT_APP_API_URL}/newtag`, { tag_name: this.state.newTagName})
+        .then(tag => this.setState(prevState => ({allTags: [...prevState.allTags, tag.data]}))) 
+        .catch(err => console.log(err))
+    }
+
+    deleteTag = (tag) => {
+        axios.post(`${process.env.REACT_APP_API_URL}/deltag`, { tag_name: tag})
+        .then(tag => {
+            this.setState(prevState =>{
+                let newArray = [...prevState.allTags.splice(prevState.allTags.indexOf(tag.data[0].tag_name), 1)]
+                return(newArray)           
+            })
+        })
+        .catch(err => console.log(err))
+    }
+    
     onChange = (event) => {
         let { target: { name, value } } = event
+        console.log(name, value)
         let numberValues = ['price', 'value', 'price_per_yard', 'sweep_price']
         if (numberValues.includes(name)){
             value = Number(value)
         }
-
         if (value === "on") {           
             this.setState(prevState => (
                 {activeProperty: {...prevState.activeProperty, [name]: !prevState.activeProperty[name]}}             
             ))
+        } else if (name === 'newTagName') {
+            this.setState({newTagName: value})
         }
         else {
             this.setState(prevState => (
@@ -99,7 +112,7 @@ class NewProperty extends Component {
     render() {
         return (
             <Modal className="scrollable" show={this.props.show} onHide={this.props.close} size='lg'>
-                    <Modal.Header>Property Editor</Modal.Header>
+                    <Modal.Header>Customer Editor</Modal.Header>
                     <Modal.Body>
                         <Form>                            
                             <Form.Group as={Row}>
@@ -179,83 +192,126 @@ class NewProperty extends Component {
                                 </Col>   
                                 </Row>
                             </Col>
-                            </Row>                 
-                            <Row>
-                                <Col>
-                                    <Form.Group as={Row}>                                        
-                                        <Form.Label>Price</Form.Label>
-                                        <Form.Control name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
-                                        <Form.Label>Sweeping Price</Form.Label>
-                                        <Form.Control name="sweep_price" type="number" placeholder={this.state.activeProperty.sweep_price || "sweeping price"} onChange={this.onChange}/>
-                                        <Form.Label>Sanding Price Per Yard</Form.Label>
-                                        <Form.Control name="price_per_yard" type="number" placeholder={this.state.activeProperty.price_per_yard || "price per yard"} onChange={this.onChange}/>
-                                        <Form.Label>Value</Form.Label>
-                                        <Form.Control name="value" type="number" placeholder={this.state.activeProperty.value || "value"} onChange={this.onChange}/>
-                                    </Form.Group>
-                                </Col>
-                                <Col>
-                                    
-                                    
-                                    <Form.Label>Surface Type</Form.Label>
-                                    <Form.Control name="surface_type" as="select" value={this.state.activeProperty.surface_type || "select"} onChange={this.onChange}>
-                                        <option value="select">Select</option>
-                                        <option value="paved">Paved</option>
-                                        <option value="gravel">Gravel</option>
-                                        <option value="partial">Partial</option>
-                                    </Form.Control>
-                                    <Form.Label>Contract Type</Form.Label>
-                                    <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
-                                        {
-                                            contractTypes.map(type => <option key={type} value={type}>{type}</option>)
-                                        }
-                                    </Form.Control>
-                                    <Row>
-                                        <Col>
-                                            <Form.Check
-                                                name="is_new"
-                                                type="checkbox"
-                                                label="New?"
-                                                checked = {!!this.state.activeProperty.is_new}
-                                                onChange={this.onChange}
-                                            />   
-                                            <Form.Check 
-                                                name="inactive"
-                                                type="checkbox"
-                                                label="Inactive?"
-                                                checked = {!!this.state.activeProperty.inactive}
-                                                onChange={this.onChange}
-                                            />
-                                            <Form.Check
-                                                name="temp"
-                                                type="checkbox"
-                                                label="Temporary?"
-                                                checked = {!!this.state.activeProperty.temp}
-                                                onChange={this.onChange}
-                                            />
-                                        </Col>
-                                        <Col>
-                                            <Form.Label>Tags</Form.Label>  
-                                            <div  style={{'height':'80px', 'overflow':'auto'}}>
-                                            {
-                                                this.state.allTags.map(tag => {
-                                                    return(                                                        
-                                                        <Form.Check 
-                                                            key={tag.tag_name}                                                           
-                                                            name={tag.tag_name}
-                                                            type="checkbox"
-                                                            label={tag.tag_name}
-                                                            checked = {this.state.activeProperty.tags?.includes(tag.tag_name) || false}
-                                                            onChange={this.tagChange}
-                                                        />                                                     
-                                                    )                                                
-                                                })
-                                            }
-                                            </div>
-                                        </Col>
-                                    </Row>                                  
-                                    
-                                </Col>
                             </Row>
+                            <Form.Row> 
+                            <Col> 
+                            <Form.Label size='sm'>Prices</Form.Label>
+                                <Form.Group>
+                                    <Form.Row>  
+                                        <Col xs={8}>
+                                            <Form.Label size='sm'>Price</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control size='sm' name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
+                                        </Col>
+                                    </Form.Row>                                    
+                                </Form.Group>
+                                <Form.Group>
+                                <Form.Row>
+                                    <Col xs={8}>
+                                        <Form.Label size='sm'>Sweeping Price</Form.Label>
+                                    </Col>                                    
+                                    <Col>
+                                        <Form.Control size='sm' name="sweep_price" type="number" placeholder={this.state.activeProperty.sweep_price || "sweeping price"} onChange={this.onChange}/>
+                                    </Col>
+                                </Form.Row>
+                                </Form.Group>
+                                <Form.Group>
+                                <Form.Row>
+                                    <Col xs={8}>
+                                        <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
+                                    </Col>
+                                    <Col>
+                                        <Form.Control size='sm' name="price_per_yard" type="number" placeholder={this.state.activeProperty.price_per_yard || "price per yard"} onChange={this.onChange}/>
+                                    </Col>
+                                </Form.Row>
+                                </Form.Group>
+                                <Form.Group>
+                                <Form.Row>
+                                    <Col xs={8}>
+                                    <Form.Label size='sm'>Value</Form.Label>
+                                    </Col>
+                                    <Col>
+                                        <Form.Control size='sm' name="value" type="number" placeholder={this.state.activeProperty.value || "value"} onChange={this.onChange}/>
+                                    </Col>
+                                </Form.Row>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <Form.Label size='sm'>Surface Type</Form.Label>
+                                        <Form.Control size='sm' name="surface_type" as="select" value={this.state.activeProperty.surface_type || "select"} onChange={this.onChange}>
+                                            <option value="select">Select</option>
+                                            <option value="paved">Paved</option>
+                                            <option value="gravel">Gravel</option>
+                                            <option value="partial">Partial</option>
+                                        </Form.Control>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Contract Type</Form.Label>
+                                        <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
+                                            {
+                                                contractTypes.map(type => <option key={type} value={type}>{type}</option>)
+                                            }
+                                        </Form.Control>
+                                </Form.Group>
+                                <Form.Check
+                                    name="is_new"
+                                    type="checkbox"
+                                    label="New?"
+                                    checked = {!!this.state.activeProperty.is_new}
+                                    onChange={this.onChange}
+                                />   
+                                <Form.Check 
+                                    name="inactive"
+                                    type="checkbox"
+                                    label="Inactive?"
+                                    checked = {!!this.state.activeProperty.inactive}
+                                    onChange={this.onChange}
+                                />
+                                <Form.Check
+                                    name="temp"
+                                    type="checkbox"
+                                    label="Temporary?"
+                                    checked = {!!this.state.activeProperty.temp}
+                                    onChange={this.onChange}
+                                />
+                            </Col>
+                            <Col>
+                                <Form.Label>Tags</Form.Label> 
+                                <Form.Row style={{marginBottom: '1em'}}>
+                                    <Col>
+                                        <Button size='sm' variant='primary' onClick={this.saveNewTag}>add tag</Button>
+                                    </Col>
+                                    <Col>
+                                        <Form.Control name="newTagName" type="text" placeholder={this.state.newTagName} onChange={this.onChange}/>
+                                    </Col>
+                                </Form.Row>
+                                {                                    
+                                    this.state.allTags.map((tag, i) => {
+                                        return(       
+                                            <Form.Row key={i}>
+                                                <Col xs={7}>
+                                                    <Form.Check                                                          
+                                                        name={tag}
+                                                        type="checkbox"
+                                                        label={tag}
+                                                        checked = {this.state.activeProperty.tags?.includes(tag) || false}
+                                                        onChange={this.tagChange}
+                                                    />  
+                                                </Col>
+                                                <Col style={{textAlign: "right"}}>
+                                                    <Button style={{marginLeft: "1em"}} size='sm' variant='primary' onClick={() => this.deleteTag(tag)}>delete</Button>
+
+                                                </Col>
+                                                
+                                            </Form.Row>                                                 
+                                                                                               
+                                        )                               
+                                    })
+                                }
+                            </Col>
+                            </Form.Row>
                             <Form.Group>
                                 <Form.Label>Notes</Form.Label>
                                     <Form.Control name="notes" as="textarea" rows="3" placeholder={this.state.activeProperty.notes || "notes"} onChange={this.onChange}/>
@@ -263,7 +319,7 @@ class NewProperty extends Component {
                         </Form> 
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button disabled={!this.state.activeProperty.address} variant="danger" onClick={() => this.setShow(true)}>{this.state.deleteAlert ? "Cancel" : "DELETE PROPERTY"}</Button>
+                        <Button variant="danger" onClick={() => this.setShow(true)}>{this.state.deleteAlert ? "Cancel" : "DELETE PROPERTY"}</Button>
                         <Button variant="primary" onClick={() => this.props.onSave(this.state.activeProperty)}>Save Changes</Button>
                         <Button variant="secondary" onClick={this.props.close}>Close</Button>
                     </Modal.Footer>
