@@ -5,7 +5,6 @@ import { requestAllAddresses, getRouteProperties } from '../actions'
 import axios from "axios"
 import '../styles/driver.css'
 
-
 const mapStateToProps = state => {
     return {         
         activeProperty: state.setActiveProperty.activeProperty,
@@ -45,6 +44,12 @@ class NewProperty extends Component {
             if (this.props.show) {this.getTags()}
         }
       }
+
+    componentDidMount() {
+        if(this.props.show) {
+        this.getTags()
+        }        
+    }
 
     getTags = () => {
         fetch(`${process.env.REACT_APP_API_URL}/alltags`)
