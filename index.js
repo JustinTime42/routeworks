@@ -295,7 +295,7 @@ app.get('/api/properties', (req, res) => {
 })
 
 app.get('/api/contactinfo', (req, res) => {
-    const tags = JSON.parse(req.query.tags)
+    const tags = JSON.parse(req.query.tags).split(',')
     let promises = []
     let response = {
         data: [],
