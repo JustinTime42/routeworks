@@ -294,6 +294,25 @@ app.get('/api/properties', (req, res) => {
     })
 })
 
+app.get('/api/contactinfo', (req, res) => {
+    const tags = JSON.parse(req.query.tags)
+    let promises = []
+    let response = {
+        data: [],
+        err: []
+    }     
+    tags.forEach(tag => {
+        promises.push(
+            db.select('cust_name', 'address', 'cust_email', 'tags')
+            .from('properties')
+            .where('tags', 'like', `%${tag}%`)
+            .then(data => response.data.push(data))
+            .catch(err => response.err.push(err))
+        )
+    })
+    Promise.all(promises).then(() => res.json(response))
+})
+
 app.get('/api/drivers', (req, res) => {
     db.select('*')
     .from('drivers')
