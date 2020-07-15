@@ -50,7 +50,8 @@ const CustomerContact = (props) => {
     const headers = [
         { label: "Customer Name", key: "cust_name" },
         { label: "Service Address", key: "address" },
-        { label: "Customer Email", key: "cust_email" }
+        { label: "Customer Email", key: "cust_email" },
+        { label: "Tags", key: "tags" }
     ]
 
     return (
