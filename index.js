@@ -295,12 +295,15 @@ app.get('/api/properties', (req, res) => {
 })
 
 app.get('/api/contactinfo', (req, res) => {
-    //this is throwing an error. figure out why
+    let tags = req.query.tags
     let promises = []
     let response = {
         data: [],
         err: []
-    }     
+    }
+    if(typeof(tags) === 'string') {
+        tags = [tags]
+    }
     req.query.tags.forEach(tag => {
         promises.push(
             db.select('cust_name', 'address', 'cust_email', 'tags')
