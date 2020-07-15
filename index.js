@@ -296,14 +296,12 @@ app.get('/api/properties', (req, res) => {
 
 app.get('/api/contactinfo', (req, res) => {
     //this is throwing an error. figure out why
-    console.log(req.query.tags)
-    const tags = JSON.parse(req.query.tags).split(',')
     let promises = []
     let response = {
         data: [],
         err: []
     }     
-    tags.forEach(tag => {
+    req.query.tags.forEach(tag => {
         promises.push(
             db.select('cust_name', 'address', 'cust_email', 'tags')
             .from('properties')
