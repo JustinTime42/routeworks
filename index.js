@@ -295,6 +295,8 @@ app.get('/api/properties', (req, res) => {
 })
 
 app.get('/api/contactinfo', (req, res) => {
+    //this is throwing an error. figure out why
+    console.log(req.query.tags)
     const tags = JSON.parse(req.query.tags).split(',')
     let promises = []
     let response = {
