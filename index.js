@@ -304,7 +304,7 @@ app.get('/api/contactinfo', (req, res) => {
     if(typeof(tags) === 'string') {
         tags = [tags]
     }
-    req.query.tags.forEach(tag => {
+    tags.forEach(tag => {
         promises.push(
             db.select('cust_name', 'address', 'cust_email', 'tags')
             .from('properties')
