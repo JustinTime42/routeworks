@@ -271,7 +271,7 @@ app.post('/api/setstatus', (req, res) => {
             cust_name: property.cust_name,
             property_key: property.key,
             price: property.price,
-            driver_earning: req.body.driver.percentage * .01 * property.price,
+            driver_earning: req.body.driver.percentage * .01 * property.value,
             description: req.body.work_type,
             invoice_number: `APP${property.key}${new Date().getMonth()}${new Date().getFullYear()}`,
             reference: property.address,
