@@ -54,6 +54,8 @@ class PropertyDetails extends Component {
         let property = {...this.props.property}
         if (this.state.work_type === 'sanding') {
             property.price = property.price_per_yard * this.state.yards
+        } else if (this.state.work_type === 'sweeping') {
+            property.price = property.sweep_price
         } else if ((property.contract_type === 'seasonal' || property.contract_type === 'monthly') && (this.state.work_type === 'snow removal')) {            
             property.price = 0  
         }
@@ -101,7 +103,8 @@ class PropertyDetails extends Component {
                             <DropdownButton title={this.state.work_type} onSelect={this.setWorkType}>
                                 <Dropdown.Item key="sanding" eventKey="sanding">sanding</Dropdown.Item>
                                 <Dropdown.Item key="snow removal" eventKey="snow removal">snow removal</Dropdown.Item>
-                                <Dropdown.Item key="other" eventKey="other">other</Dropdown.Item> 
+                                <Dropdown.Item key="sweeping" eventKey="sweeping">sweeping</Dropdown.Item> 
+                                <Dropdown.Item key="other" eventKey="other">other</Dropdown.Item>
                             </DropdownButton> 
                             {
                                 this.state.work_type === 'sanding' ?
