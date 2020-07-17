@@ -100,7 +100,6 @@ class RouteEditor extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if(this.props.isRoutePending !== prevProps.isRoutePending || this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
-            console.log("route editor updating")
             this.setState((prevState, prevProps) => {
                 return {
                     selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
@@ -189,7 +188,6 @@ class RouteEditor extends Component {
                 source,
                 destination
             )
-            console.log("new list", newList.droppable2)
             newList.droppable2.forEach((item, i) => {
                 let route_data = {
                     route_name: this.props.activeRoute,
@@ -229,7 +227,7 @@ class RouteEditor extends Component {
                         items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
                         filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
                     }
-                }, () => console.log(this.state))
+                })
             }
         }        
     }
@@ -282,9 +280,7 @@ class RouteEditor extends Component {
     onPropertySave = (newDetails) => {
         if (!newDetails.key) {
             this.props.onSaveNewProperty(newDetails, this.props.addresses)
-            console.log("added new property: ", newDetails)
         } else {
-            console.log("updated property: ", newDetails)
             this.props.onEditProperty(newDetails, this.props.addresses)
         }
         this.setState((prevState, prevProps) => {
