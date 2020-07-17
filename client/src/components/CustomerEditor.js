@@ -325,7 +325,7 @@ class NewProperty extends Component {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="danger" onClick={() => this.setShow(true)}>{this.state.deleteAlert ? "Cancel" : "DELETE PROPERTY"}</Button>
-                        <Button variant="primary" onClick={() => this.props.onSave(this.state.activeProperty)}>Save Changes</Button>
+                        <Button variant="primary" onClick={() => this.props.onSave(this.state.activeProperty)}>Save Customer</Button>
                         <Button variant="secondary" onClick={this.props.close}>Close</Button>
                     </Modal.Footer>
                     <Alert show={this.state.deleteAlert} variant="danger">

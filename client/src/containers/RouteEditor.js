@@ -297,7 +297,7 @@ class RouteEditor extends Component {
         <h1></h1> :(
             <>
             <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
-                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Changes</Button>
+                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Route</Button>
                 <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onInitRoute}>Initialize Route</Button>
                 <input 
                     type="search" placeholder="Search" value={this.state.searchField}
