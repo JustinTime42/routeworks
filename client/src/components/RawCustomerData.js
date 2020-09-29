@@ -1,10 +1,15 @@
-const RawCustomerData = () => {
+import React, { useState } from 'react'
+import {Modal, Button} from 'react-bootstrap'
+import axios from 'axios'
+import { CSVLink } from 'react-csv'
+
+RawCustomerData = () => {
     const [showDownloadLink, setShowDownloadLink] = useState(false)
     const [customers, setCustomers] = useState([])
     
     const onDownload = () => {
         axios.get(`${process.env.REACT_APP_API_URL}/properties`)
-        .then(results => {
+        .then(results => {  
             let customerArray = []
             results.data.data.forEach(item => {
                 customerArray.push.apply(customerArray, item)                
