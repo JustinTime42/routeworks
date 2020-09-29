@@ -3,7 +3,7 @@ import {Modal, Button} from 'react-bootstrap'
 import axios from 'axios'
 import { CSVLink } from 'react-csv'
 
-RawCustomerData = () => {
+const RawCustomerData = (props) => {
     const [showDownloadLink, setShowDownloadLink] = useState(false)
     const [customers, setCustomers] = useState([])
     
