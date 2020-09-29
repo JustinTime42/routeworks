@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {Modal, Button} from 'react-bootstrap'
 import axios from 'axios'
 import { CSVLink } from 'react-csv'
@@ -7,6 +7,9 @@ const RawCustomerData = (props) => {
     const [showDownloadLink, setShowDownloadLink] = useState(false)
     const [customers, setCustomers] = useState([])
     
+    useEffect(() => {
+        console.log(customers)
+    })
     const onDownload = () => {
         axios.get(`${process.env.REACT_APP_API_URL}/properties`)
         .then(results => {  

@@ -45,7 +45,7 @@ class EditRouteButton extends Component {
     showLogs = () => this.setState({showLogsMenu: true})
     showContacts = () => this.setState({showContactsMenu: true})
 
-    onClose = () => this.setState({showLogsMenu: false, showDownload: false, showContactsMenu: false})
+    onClose = () => this.setState({showLogsMenu: false, showDownload: false, showContactsMenu: false, showRawTableModal: false})
     
     render() {
         return (
