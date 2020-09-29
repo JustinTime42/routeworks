@@ -14,10 +14,10 @@ const RawCustomerData = (props) => {
         axios.get(`${process.env.REACT_APP_API_URL}/properties`)
         .then(results => {  
             console.log(results.data)
-            let customerArray = []
-            results.data.forEach(item => {
-                customerArray.push(...customerArray)                
-            })
+            let customerArray = results.data
+            // results.data.forEach(item => {
+            //     customerArray.push(...customerArray)                
+            // })
             setCustomers(customerArray)
             setShowDownloadLink(true)
         })
