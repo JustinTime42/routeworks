@@ -10,6 +10,7 @@ const RawCustomerData = (props) => {
     const onDownload = () => {
         axios.get(`${process.env.REACT_APP_API_URL}/properties`)
         .then(results => {  
+            console.log(results)
             let customerArray = []
             results.data.data.forEach(item => {
                 customerArray.push.apply(customerArray, item)                
