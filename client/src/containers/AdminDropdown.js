@@ -6,7 +6,8 @@ import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
 import {showRouteEditor} from "../actions"
 import ServiceLogs from "../components/ServiceLogs"
-import CustomerContact from '../components/CustomerContact';
+import CustomerContact from '../components/CustomerContact'
+import RawCustomerData from '../components/RawCustomerData'
 
 const mapStateToProps = state => {
     return {
@@ -25,7 +26,8 @@ class EditRouteButton extends Component {
         super(props)
         this.state = {
             showLogsMenu: false,
-            showContactsMenu: false
+            showContactsMenu: false,
+            showRawTableModal: false,
         }
     }
 
@@ -34,10 +36,12 @@ class EditRouteButton extends Component {
             case "editor": return this.props.showEditor ? this.props.onShowEditor(false) : this.props.onShowEditor(true)
             case "logs": return this.showLogs()
             case "contact": return this.showContacts()
+            case "rawTable": return this.showRawTableModal()
             default: return
         }
     }
 
+    showRawTableModal = () => this.setState({showRawTableModal: true})
     showLogs = () => this.setState({showLogsMenu: true})
     showContacts = () => this.setState({showContactsMenu: true})
 
@@ -62,9 +66,13 @@ class EditRouteButton extends Component {
                             <Dropdown.Item key="contact" eventKey="contact">
                                 Customer Contact 
                             </Dropdown.Item>
+                            <Dropdown.Item key="rawTable" eventKey="rawTable">
+                                All Customer Data
+                            </Dropdown.Item>
                         </DropdownButton>
                         <ServiceLogs show={this.state.showLogsMenu} onClose={this.onClose} /> 
-                        <CustomerContact show={this.state.showContactsMenu} onClose={this.onClose} />                        
+                        <CustomerContact show={this.state.showContactsMenu} onClose={this.onClose} />  
+                        <RawCustomerData show={this.state.showRawTableModal} onClose={this.onClose} />                      
                         </>             
                     )}
                     no={() => <p></p>}               
