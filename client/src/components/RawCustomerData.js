@@ -16,7 +16,7 @@ const RawCustomerData = (props) => {
             console.log(results.data)
             let customerArray = []
             results.data.forEach(item => {
-                customerArray.push.apply(customerArray, item)                
+                customerArray.push(...customerArray)                
             })
             setCustomers(customerArray)
             setShowDownloadLink(true)
