@@ -36,8 +36,7 @@ const PropertyCard = (props) => {
     }
 
     const seasonalStyle = {
-        borderLeft: props.address ? props.address.contract_type === 'Seasonal' || props.address.contract_type === 'monthly' ? "10px solid #375A7F" : "none" : "none"
-   
+        border: props.address ? props.address.contract_type === 'Seasonal' || props.address.contract_type === 'monthly' ? "5px solid #375A7F" : "none" : "none"   
     }
 
     const editStyle = {
