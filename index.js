@@ -326,6 +326,7 @@ app.get('/api/drivers', (req, res) => {
 
 app.post('/api/newdriver', (req, res) => {
     const driver = req.body
+    console.log(driver)
     db('drivers')    
     .returning('*')
     .insert({...driver})
