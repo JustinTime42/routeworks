@@ -54,7 +54,7 @@ class DriverName extends Component {
         }
     }
     onNameChange = (event) => this.setState({name: event.target.value}) 
-    onPercentageChange = (event) => this.setState({percentage: event.target.value})
+    onPercentageChange = (event) => this.setState({percentage: parseFloat(event.target.value)})
     handleClose = () => this.setState({show: false})
     handleShow = () => this.setState({show: true})
     setShowDelete = (show) => {
