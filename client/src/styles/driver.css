@@ -13,7 +13,7 @@
 }
 
 .rightSide {
-    position: absolute;
+    position: relative;
     grid-column-start: 2;
 }
 
