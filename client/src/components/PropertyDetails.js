@@ -56,7 +56,7 @@ class PropertyDetails extends Component {
             property.price = property.price_per_yard * this.state.yards
         } else if (this.state.work_type === 'sweeping') {
             property.price = property.sweep_price
-        } else if ((property.contract_type === 'seasonal' || property.contract_type === 'monthly') && (this.state.work_type === 'snow removal')) {            
+        } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'snow removal')) {            
             property.price = 0  
         }
         property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
