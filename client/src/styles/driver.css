@@ -15,6 +15,7 @@
 .rightSide {
     position: relative;
     grid-column-start: 2;
+    height: 100vh;
 }
 
 .scrollable::-webkit-scrollbar {
