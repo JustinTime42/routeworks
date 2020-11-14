@@ -29,7 +29,7 @@ const mapDispatchToProps = (dispatch) => {
         onSaveNewProperty: (property, allAddresses) => dispatch(saveNewProperty(property, allAddresses)),
         onEditProperty: (property, allAddresses) => dispatch(editProperty(property, allAddresses)),
         onDeleteProperty: (property, allAddresses, routeName) => dispatch(deleteProperty(property, allAddresses, routeName)),
-        onFilterRouteProperties: (addresses, route) => dispatch(filterRouteProperties(addresses, route))
+        //onFilterRouteProperties: (addresses, route) => dispatch(filterRouteProperties(addresses, route))
     }
 }
 
@@ -88,6 +88,7 @@ class RouteEditor extends Component {
             filteredItems: this.setUnselected(this.props.addresses, this.props.activeRoute),
             selected: this.setSelected(this.props.addresses, this.props.activeRoute),
             searchField: '',
+            routeSearchField: '',
             showModal: false,
             activeProperty: this.props.activeProperty,      
             modified: [],      
@@ -95,7 +96,7 @@ class RouteEditor extends Component {
     }
     
     componentDidMount() {
-        this.props.onGetAllAddresses()       
+        this.props.onGetAllAddresses()     
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -110,8 +111,20 @@ class RouteEditor extends Component {
             })
         } 
         if(this.state.searchField !== prevState.searchField) {
-            this.setState((prevState, prevProps) => ({filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses)}))
+            this.setState((prevState, prevProps) => {
+                return {
+                    filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses.filter(property => !property.route_data.some(route => route.route_name === this.props.activeRoute))),
+                }
+            }) 
         }
+        if(this.state.routeSearchField !== prevState.routeSearchField) {
+            this.setState((prevState, prevProps) => {
+                return {
+                    selected: this.onFilterProperties(prevState.routeSearchField, prevProps.addresses.filter(property => property.route_data.some(route => route.route_name === this.props.activeRoute)))
+                }
+            })
+        }
+
     }
 
     id2List = {
@@ -137,9 +150,9 @@ class RouteEditor extends Component {
             }
         )
         .then(res => {
-            //this.props.onGetRouteProperties(this.props.activeRoute)
+            this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.onGetAllAddresses()
-            this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
+            //this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
             console.log(res)
         })
         .catch(err => console.log(err)) 
@@ -236,23 +249,24 @@ class RouteEditor extends Component {
         this.props.onSetActiveProperty(property)
     }
 
-    onFilterProperties = (filter = '', addresses = []) => {          
+    onFilterProperties = (filter = '', addresses = []) => {
         let filteredItems = addresses.filter(property => {
-            if (property.route_data.some(route => route.route_name === this.props.activeRoute)) return false
-            else {
                 if (!filter) return true                          
                 else if (property.cust_name && property.cust_name.toLowerCase().includes(filter.toLowerCase())) return true
                 else if (property.address && property.address.toLowerCase().includes(filter.toLowerCase())) return true
-                else if (property.route_data.some(route => route.route_name.toLowerCase().includes(filter.toLowerCase()))) return true                
+                //else if (property.route_data.some(route => route.route_name.toLowerCase().includes(filter.toLowerCase()))) return true                
                 else if (property.cust_phone && property.cust_phone.toLowerCase().includes(filter.toLowerCase())) return true
-                else {return false}
-            }    
-        })  
+                else {return false}   
+        })
         return filteredItems              
     }
 
     onSearchChange = (event) => {
         this.setState({searchField: event.target.value})        
+    }
+
+    onRouteSearchChange = (event) => {
+        this.setState({routeSearchField: event.target.value})
     }
 
     onNewPropertyClick = () => {
@@ -298,6 +312,10 @@ class RouteEditor extends Component {
             <>
             <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
                 <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Route</Button>
+                <input 
+                    type="search" placeholder="Search" value={this.state.routeSearchField}
+                    onChange={this.onRouteSearchChange}
+                />
                 <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onInitRoute}>Initialize Route</Button>
                 <input 
                     type="search" placeholder="Search" value={this.state.searchField}
