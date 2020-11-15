@@ -116,7 +116,7 @@ class NewProperty extends Component {
 
     render() {
         return (
-            <Modal className="scrollable" show={this.props.show} onHide={this.props.close} size='lg'>
+            <Modal className="scrollable" style={{height:"100vh"}} show={this.props.show} onHide={this.props.close} size='lg'>
                     <Modal.Header>Customer Editor</Modal.Header>
                     <Modal.Body>
                         <Form>                            
@@ -124,6 +124,16 @@ class NewProperty extends Component {
                                 <Form.Label column sm={2}>Name</Form.Label>
                                 <Col sm={10}>
                                     <Form.Control name="cust_name" type="text" placeholder={this.state.activeProperty.cust_name || "name"} onChange={this.onChange}/>
+                                </Col>
+                            </Form.Group>
+                            <Form.Group as={Row}>
+                                <Form.Label column sm={2}>First Name</Form.Label>
+                                <Col sm={4}>
+                                    <Form.Control name="cust_fname" type="text" placeholder={this.state.activeProperty.cust_fname || "first name"} onChange={this.onChange}/>
+                                </Col>
+                                <Form.Label column sm={2}>Last Name</Form.Label>
+                                <Col sm={4}>
+                                    <Form.Control name="cust_lname" type="text" placeholder={this.state.activeProperty.cust_lname || "last name"} onChange={this.onChange}/>
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row}>
@@ -136,6 +146,21 @@ class NewProperty extends Component {
                                 <Form.Label column sm={2}>Email</Form.Label>
                                 <Col sm={10}>
                                     <Form.Control name="cust_email" type="text" placeholder={this.state.activeProperty.cust_email || "email"} onChange={this.onChange}/>
+                                </Col>
+                            </Form.Group>
+                            <Form.Group as={Row}>
+                                <Form.Label column sm={2}>Email 2</Form.Label>
+                                <Col sm={6}>
+                                    <Form.Control name="cust_email2" type="text" placeholder={this.state.activeProperty.cust_email2 || "email 2"} onChange={this.onChange}/>
+                                </Col>
+                                <Col sm={4}>
+                                    <Form.Check
+                                        name="include_email2"
+                                        type="checkbox"
+                                        label="Include Email2?"
+                                        checked = {!!this.state.activeProperty.include_email2}
+                                        onChange={this.onChange}
+                                    /> 
                                 </Col>
                             </Form.Group>
                             <Row>
@@ -208,6 +233,16 @@ class NewProperty extends Component {
                                         </Col>
                                         <Col>
                                             <Form.Control size='sm' name="price" type="number" placeholder={this.state.activeProperty.price || "price"} onChange={this.onChange}/>
+                                        </Col>
+                                    </Form.Row>                                    
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Row>  
+                                        <Col xs={8}>
+                                            <Form.Label size='sm'>Seasonal Price</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control size='sm' name="season_price" type="number" placeholder={this.state.activeProperty.season_price || "seasonal price"} onChange={this.onChange}/>
                                         </Col>
                                     </Form.Row>                                    
                                 </Form.Group>
@@ -305,10 +340,10 @@ class NewProperty extends Component {
                                                         onChange={this.tagChange}
                                                     />  
                                                 </Col>
-                                                <Col style={{textAlign: "right"}}>
+                                                {/* <Col style={{textAlign: "right"}}>
                                                     <Button style={{marginLeft: "1em"}} size='sm' variant='primary' onClick={() => this.deleteTag(tag)}>delete</Button>
 
-                                                </Col>
+                                                </Col> */}
                                                 
                                             </Form.Row>                                                 
                                                                                                
