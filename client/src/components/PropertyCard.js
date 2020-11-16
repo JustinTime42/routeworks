@@ -9,6 +9,7 @@ const PropertyCard = (props) => {
     const route_list = props.address.route_data.map(item => item.route_name + ", ")
 
     const cardBg = () => {
+        if (props.address?.key === props.activeProperty?.key) return `rgba(55,90,127,0.4)`
         if (props.address.inactive || props.address.temp) return `rgba(231,76,60,0.4)`
         else if ((props.address?.contract_type === 'Seasonal' || props.address?.contract_type === 'Monthly') && (status === "Waiting")) return `rgba(233,183,3,0.4)`
         else return null
