@@ -31,12 +31,14 @@ class PropertyDetails extends Component {
             disabled: false,
             work_type: 'snow removal',
             yards: 1,
+            done_label: "hidden",
+            newStatus: '',
         }
     }
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-          this.setState({noteField: '', yards: 1, work_type: 'Snow Removal'})
+          this.setState({noteField: '', yards: 1, work_type: 'Snow Removal', done_label: "hidden"})
         }
       }
 
@@ -75,6 +77,10 @@ class PropertyDetails extends Component {
         .then(res => {
             this.props.onGetRouteProperties(this.props.activeRoute) 
             console.log(res)
+            let confirmedStatus = res.data.properties[0][0].route_data.find(route => route.route_name === this.props.activeRoute).status
+            if ( confirmedStatus = newStatus) {
+                this.setState({done_label: "visible", newStatus:confirmedStatus})
+            } else alert(confirmedStatus)
             if (res.data.err.length > 0) alert(res.data.err)
             this.setState({disabled: false})
         })
@@ -128,9 +134,10 @@ class PropertyDetails extends Component {
                     <Form.Control name="noteField" as="textarea" rows="3" value={this.state.noteField} onChange={this.onTextChange}/>
                 </Form.Group>
                 </Card.Body>
-                <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "flex-end", justifyContent: "space-between"}}>
+                <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}}>
                     <Button variant="primary" size="lg" onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
                     <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
+                        <div style={{visibility: this.state.done_label, fontSize: "large"}}>{this.state.newStatus}!</div>
                     <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Done')}>Done</Button>
                     <Button variant="primary" size="lg" onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
                 </Card.Body>
