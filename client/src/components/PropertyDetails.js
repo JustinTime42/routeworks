@@ -36,7 +36,7 @@ class PropertyDetails extends Component {
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-          this.setState({noteField: '', yards: 1, work_type: 'snow removal'})
+          this.setState({noteField: '', yards: 1, work_type: 'Snow Removal'})
         }
       }
 
@@ -52,11 +52,11 @@ class PropertyDetails extends Component {
         
         this.setState({disabled: true})
         let property = {...this.props.property}
-        if (this.state.work_type === 'sanding') {
+        if (this.state.work_type === 'Sanding') {
             property.price = property.price_per_yard * this.state.yards
-        } else if (this.state.work_type === 'sweeping') {
+        } else if (this.state.work_type === 'Sweeping') {
             property.price = property.sweep_price
-        } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'snow removal')) {            
+        } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
             property.price = 0  
         }
         property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
@@ -101,13 +101,13 @@ class PropertyDetails extends Component {
                         <Col>
                             <Form.Label>Work Type</Form.Label>
                             <DropdownButton title={this.state.work_type} onSelect={this.setWorkType}>
-                                <Dropdown.Item key="sanding" eventKey="sanding">sanding</Dropdown.Item>
-                                <Dropdown.Item key="snow removal" eventKey="snow removal">snow removal</Dropdown.Item>
-                                <Dropdown.Item key="sweeping" eventKey="sweeping">sweeping</Dropdown.Item> 
-                                <Dropdown.Item key="other" eventKey="other">other</Dropdown.Item>
+                                <Dropdown.Item key="Sanding" eventKey="Sanding">sanding</Dropdown.Item>
+                                <Dropdown.Item key="Snow Removal" eventKey="Snow Removal">snow removal</Dropdown.Item>
+                                <Dropdown.Item key="Sweeping" eventKey="Sweeping">sweeping</Dropdown.Item> 
+                                <Dropdown.Item key="Other" eventKey="Other">other</Dropdown.Item>
                             </DropdownButton> 
                             {
-                                this.state.work_type === 'sanding' ?
+                                this.state.work_type === 'Sanding' ?
                                 <Form.Group>
                                     <Form.Label>Number of Yards</Form.Label>
                                     <Form.Control name="yards" as="textarea" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
