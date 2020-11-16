@@ -9,14 +9,14 @@ const PropertyCard = (props) => {
     const route_list = props.address.route_data.map(item => item.route_name + ", ")
 
     const cardBg = () => {
-        if (props.address.inactive === true) return `rgba(231,76,60,0.7)`  
-        else if (props.address.temp) return `rgba(235,185,5,0.7)`
-        else if (props.activeProperty && props.activeProperty.key === props.address.key) return '#4E8098'
+        if (props.address.inactive || props.address.temp) return `rgba(231,76,60,0.4)`
+        else if ((props.address?.contract_type === 'Seasonal' || props.address?.contract_type === 'Monthly') && (status === "Waiting")) return `rgba(233,183,3,0.4)`
         else return null
     }
     const cardStyle = {
         margin: '3px',
         padding: '3px',
+        borderRadius: "10px",
         width: props.width,
         backgroundColor: cardBg(), 
     }
@@ -28,16 +28,10 @@ const PropertyCard = (props) => {
 
     const statusStyle = {
         padding: "10px",
-        //border: "2px, solid, black",
         borderRadius: "10px",
         backgroundColor: status === "Waiting" ? `rgba(255,200,0,0.9)` : 
             status === "Skipped" ? `rgba(255,0,0,0.7)` :
             status === "Done" ? `rgba(0,255,0,0.7)` : null
-    }
-
-    const seasonalStyle = {
-        border: props.address ? props.address.contract_type === 'Seasonal' || props.address.contract_type === 'Monthly' ? "5px solid #375A7F" : "none" : "none",   
-        boxShadow: props.address ? props.address.contract_type === 'Seasonal' || props.address.contract_type === 'Monthly' ? "5px, 10px, 15px, rgba(255,200,0,0.9)" : "none" : "none",   
     }
 
     const editStyle = {
@@ -48,7 +42,9 @@ const PropertyCard = (props) => {
         <div id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>                
                 {props.address ? 
-                    <p style={{...statusStyle, ...seasonalStyle}}>{status}</p> : <p style={statusStyle}></p>             
+                    <p style={{...statusStyle}}>
+                        {status}
+                    </p> : <p style={statusStyle}></p>             
                 } 
                 {props.admin === true ? 
                     <p style={editStyle}><Button variant="secondary" onClick={() => props.editClick(props.address)}>Edit </Button></p>  : <p></p>               
