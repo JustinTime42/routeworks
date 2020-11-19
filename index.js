@@ -353,6 +353,32 @@ app.post('/api/deletedriver', (req, res) => {
     .catch(err => res.json(err))
 })
 
+app.get('/api/tractors', (req, res) => {
+    db.select('*')
+    .from('tractors')
+    .then(data => {
+        res.json(data)
+    })
+})
+
+app.post('/api/newtractor', (req, res) => {
+    const tractor = req.body
+    db('tractors')    
+    .returning('*')
+    .insert({tractor_name: tractor.tractor_name})
+    .then(tractor =>  res.json(tractor))
+    .catch(err => res.json("error: " + err))
+})
+
+app.post('/api/deletetractor', (req, res) => {
+    db('tractors')
+    .returning('*')
+    .where('tractor_name', req.body.tractor_name)
+    .del()
+    .then(tractor => res.json(tractor))
+    .catch(err => res.json(err))
+})
+
 // get full list of tags
 app.get('/api/alltags', (req, res) => {
     db.select('*')
