@@ -20,6 +20,9 @@ import {
     GET_DRIVERS_PENDING,
     GET_DRIVERS_SUCCESS,
     GET_DRIVERS_FAILED,
+    GET_TRACTORS_PENDING,
+    GET_TRACTORS_SUCCESS,
+    GET_TRACTORS_FAILED,
 } from './constants.js'
 
 export const setActiveRoute = (routeName) => {
@@ -57,7 +60,7 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
     .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
 }
 
-export const filterRouteProperties = (allAddresses, routeName) => (dispatch) => {
+export const filterRouteProperties = (allAddresses, routeName, filter = '') => (dispatch) => {
     dispatch({ type: GET_ROUTE_PENDING})
     const routeProperties = allAddresses.filter(address => address.route_data.some(route => route.route_name === routeName )) 
         .sort((a, b) => a.route_data.find(item => item.route_name === routeName).route_position > b.route_data.find(item => item.route_name === routeName).route_position ? 1 : -1); 
@@ -157,6 +160,49 @@ export const setTractorName = (tractorName) => {
         type: SET_TRACTOR_NAME,
         payload: tractorName
     }
+}
+
+export const getTractors = () => (dispatch) => {
+    dispatch({ type: GET_TRACTORS_PENDING })
+    fetch(`${process.env.REACT_APP_API_URL}/tractors`)
+    .then(response => response.json())
+    .then(data => dispatch({ type: GET_TRACTORS_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
+}
+
+export const addTractor = (tractor, allTractors) => (dispatch) => {
+    dispatch({ type: GET_TRACTORS_PENDING})
+    fetch(`${process.env.REACT_APP_API_URL}/newtractor`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },   
+        body: JSON.stringify(tractor)
+    })
+    .then(response => response.json())
+    .then(res => {
+        console.log(res)
+        allTractors.push(res[0])
+        dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
+    })
+    .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
+}
+
+export const deleteTractor = (tractor, allTractors) => (dispatch) => {
+    dispatch({ type: GET_TRACTORS_PENDING})
+    fetch(`${process.env.REACT_APP_API_URL}/deleteTractor`, {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(tractor)
+    })
+    .then(res => res.json())
+    .then(deleted => {
+        allTractors.splice(allTractors.findIndex(item => item === deleted), 1)
+        dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
+    })
+    .catch(err => dispatch({ type: GET_TRACTORS_FAILED, payload: err}))
 }
 
 export const requestAllAddresses = () => (dispatch) => {

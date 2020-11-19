@@ -25,6 +25,9 @@ import { SET_ACTIVE_ROUTE,
     GET_DRIVERS_PENDING,
     GET_DRIVERS_SUCCESS,
     GET_DRIVERS_FAILED,
+    GET_TRACTORS_PENDING,
+    GET_TRACTORS_SUCCESS,
+    GET_TRACTORS_FAILED,
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -117,6 +120,24 @@ export const setTractorName = (state = initialStateTractor, action={}) => {
         case SET_TRACTOR_NAME:
             return {...state, tractorName: action.payload}
         default: 
+            return state
+    }
+}
+
+const initialStateTractors = {
+    isPending: false,
+    allTractors: [],
+    error: ''    
+}
+export const getTractors = (state = initialStateTractors, action={}) => {
+    switch(action.type) {
+        case GET_TRACTORS_PENDING: 
+            return {...state, isPending: true}
+        case GET_TRACTORS_SUCCESS:
+            return {...state, allTractors: action.payload, isPending: false}
+        case GET_TRACTORS_FAILED:
+            return {...state, error: action.payload, isPending: false}
+        default:
             return state
     }
 }
