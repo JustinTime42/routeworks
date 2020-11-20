@@ -362,6 +362,7 @@ app.get('/api/tractors', (req, res) => {
 })
 
 app.post('/api/newtractor', (req, res) => {
+    console.log(req.body)
     const tractor = req.body
     db('tractors')    
     .returning('*')
