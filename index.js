@@ -366,7 +366,7 @@ app.post('/api/newtractor', (req, res) => {
     const tractor = req.body
     db('tractors')    
     .returning('*')
-    .insert({tractor_name: tractor})
+    .insert({...tractor})
     .then(tractor =>  res.json(tractor))
     .catch(err => res.json("error: " + err))
 })
