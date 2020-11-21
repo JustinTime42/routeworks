@@ -166,22 +166,26 @@ export const getTractors = () => (dispatch) => {
     dispatch({ type: GET_TRACTORS_PENDING })
     fetch(`${process.env.REACT_APP_API_URL}/tractors`)
     .then(response => response.json())
-    .then(data => dispatch({ type: GET_TRACTORS_SUCCESS, payload: data }))
+    .then(data => {
+        console.log("tractors", data)
+        dispatch({ type: GET_TRACTORS_SUCCESS, payload: data })
+    }) 
     .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
 }
 
 export const addTractor = (tractor, allTractors) => (dispatch) => {
     dispatch({ type: GET_TRACTORS_PENDING})
+    console.log("all tractors:", allTractors)
     fetch(`${process.env.REACT_APP_API_URL}/newtractor`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },   
-        body: JSON.stringify(tractor)
+        body: JSON.stringify({"tractor_name": tractor})
     })
     .then(response => response.json())
     .then(res => {
-        console.log(res)
+        console.log("response", res)
         allTractors.push(res[0])
         dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
     })
@@ -189,17 +193,19 @@ export const addTractor = (tractor, allTractors) => (dispatch) => {
 }
 
 export const deleteTractor = (tractor, allTractors) => (dispatch) => {
+    console.log("tractor to delete:", tractor)
+    console.log("allTractors:", allTractors)
     dispatch({ type: GET_TRACTORS_PENDING})
     fetch(`${process.env.REACT_APP_API_URL}/deleteTractor`, {
         method: 'POST', 
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(tractor)
+        body: JSON.stringify({"tractor_name": tractor})
     })
     .then(res => res.json())
     .then(deleted => {
-        allTractors.splice(allTractors.findIndex(item => item === deleted), 1)
+        allTractors.splice(allTractors.findIndex(item => item.tractor_name === deleted), 1)
         dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
     })
     .catch(err => dispatch({ type: GET_TRACTORS_FAILED, payload: err}))

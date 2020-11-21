@@ -71,7 +71,6 @@ class PropertyDetails extends Component {
                 noteField: this.state.noteField,
                 tractor: this.props.tractor,
                 work_type: this.state.work_type,
-
             }
         )
         .then(res => {
