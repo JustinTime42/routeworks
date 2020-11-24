@@ -51,8 +51,6 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
     fetch(`${process.env.REACT_APP_API_URL}/getroute/${activeRoute}`)
     .then(response => response.json())
     .then(data => {
-        console.log("route properties:")
-        console.log(data)
         const routeProperties = data.filter(item => !item.inactive)
             .sort((a, b) => a.route_data.find(item => item.route_name === activeRoute).route_position > b.route_data.find(item => item.route_name === activeRoute).route_position ? 1 : -1) 
         dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })

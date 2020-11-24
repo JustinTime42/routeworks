@@ -143,6 +143,24 @@ class RouteEditor extends Component {
     }
     
     onSave = () => {
+        let selected = {...this.state.selected}
+        //get route. for each property ( for each item in route_data => if status = "none", replace with status from fetched route?)
+        // *sigh* this is  dumb and ugly...
+        fetch(`${process.env.REACT_APP_API_URL}/getroute/${this.props.activeRoute}`)
+        .then(res => res.json())
+        .then(DBCustomers => {
+            selected.forEach(localCust => localCust.route_data.forEach(localCustRoute => {
+                if (localCustRoute.status === "none") {
+                    let DBCust = DBCustomers[DBCustomers.findIndex(DBCust => DBCust.key === localCust.key)] //finds the corresponding fetched customer
+                    let syncedCustStatus = DBCust.route_data[DBCust.route_data.findIndex(DBCustRoute => DBCustRoute.route_name === localCustRoute.route_name)].status //finds status of that customer
+                    localCustRoute.status = syncedCustStatus
+                    console.log("found 'none' status in: ", DBCust.cust_name)
+                    console.log("status now set to:", syncedCustStatus)
+                }
+            }))
+            this.setState({selected: selected})
+        })
+
         axios.post(`${process.env.REACT_APP_API_URL}/saveroute`, 
             {
                 route: this.props.activeRoute,
@@ -206,7 +224,7 @@ class RouteEditor extends Component {
                 let route_data = {
                     route_name: this.props.activeRoute,
                     route_position: i,
-                    status: "Waiting"
+                    status: "none"
                 }
                 if (item.route_data.some(item => item.route_name === this.props.activeRoute)) {
                     item.route_data.find(route => route.route_name === this.props.activeRoute).route_position = i
