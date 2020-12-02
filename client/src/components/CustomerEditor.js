@@ -290,7 +290,7 @@ class NewProperty extends Component {
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Contract Type</Form.Label>
-                                        <Form.Control name="contract_type" as="select" defaultValue="Per Occurrence" onChange={this.onChange}>
+                                        <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
                                             {
                                                 contractTypes.map(type => <option key={type} value={type}>{type}</option>)
                                             }
