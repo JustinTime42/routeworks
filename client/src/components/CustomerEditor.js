@@ -47,7 +47,8 @@ class NewProperty extends Component {
 
     componentDidMount() {
         if(this.props.show) {
-        this.getTags()
+            this.getTags()
+            
         }        
     }
 
@@ -106,7 +107,7 @@ class NewProperty extends Component {
         else {
             this.setState(prevState => (
                 { activeProperty: {...prevState.activeProperty, [name]: value}}
-            ))  
+            ), console.log(this.state.activeProperty))  
         }
     }
 
@@ -289,7 +290,7 @@ class NewProperty extends Component {
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Contract Type</Form.Label>
-                                        <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
+                                        <Form.Control name="contract_type" as="select" defaultValue="Per Occurrence" onChange={this.onChange}>
                                             {
                                                 contractTypes.map(type => <option key={type} value={type}>{type}</option>)
                                             }
