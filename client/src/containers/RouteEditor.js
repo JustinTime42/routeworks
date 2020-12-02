@@ -146,23 +146,23 @@ class RouteEditor extends Component {
 
         //get route. for each property ( for each item in route_data => if status = "none", replace with status from fetched route?)
         // *sigh* this is  dumb and ugly...
-        fetch(`${process.env.REACT_APP_API_URL}/properties`)
-        .then(res => res.json())
-        .then(DBCustomers => {
-            this.setState(prevState => 
-                ({selected: prevState.selected.map(localCust => localCust.route_data.map(localCustRoute => {
-                    if (localCustRoute.status === "none") {
-                        //this is kinda backwards... it won't be able to find the local customer from the DBCust because he isn't there yet. that's the whole point of dragging him over... 
-                        //might need to fetch all customers for DBCustomers
-                        let DBCust = DBCustomers[DBCustomers.findIndex(DBCust => DBCust.key === localCust.key)] //finds the corresponding fetched customer
-                        let syncedCustStatus = DBCust.route_data[DBCust.route_data.findIndex(DBCustRoute => DBCustRoute.route_name === localCustRoute.route_name)].status //finds status of that customer
-                        localCustRoute.status = syncedCustStatus
-                        console.log("found 'none' status in: ", DBCust.cust_name)
-                        console.log("status now set to:", syncedCustStatus)
-                    } 
-                }))}), console.log("selected:", this.state.selected)
-            )
-        })
+        // fetch(`${process.env.REACT_APP_API_URL}/properties`)
+        // .then(res => res.json())
+        // .then(DBCustomers => {
+        //     this.setState(prevState => 
+        //         ({selected: prevState.selected.map(localCust => localCust.route_data.map(localCustRoute => {
+        //             if (localCustRoute.status === "none") {
+        //                 //this is kinda backwards... it won't be able to find the local customer from the DBCust because he isn't there yet. that's the whole point of dragging him over... 
+        //                 //might need to fetch all customers for DBCustomers
+        //                 let DBCust = DBCustomers[DBCustomers.findIndex(DBCust => DBCust.key === localCust.key)] //finds the corresponding fetched customer
+        //                 let syncedCustStatus = DBCust.route_data[DBCust.route_data.findIndex(DBCustRoute => DBCustRoute.route_name === localCustRoute.route_name)].status //finds status of that customer
+        //                 localCustRoute.status = syncedCustStatus
+        //                 console.log("found 'none' status in: ", DBCust.cust_name)
+        //                 console.log("status now set to:", syncedCustStatus)
+        //             } 
+        //         }))}), console.log("selected:", this.state.selected)
+        //     )
+        // })
 
         axios.post(`${process.env.REACT_APP_API_URL}/saveroute`, 
             {
