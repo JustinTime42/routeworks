@@ -38,7 +38,7 @@ class PropertyDetails extends Component {
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-          this.setState({noteField: '', yards: 1, work_type: 'Snow Removal', done_label: "hidden"})
+          this.setState({noteField: '', yards: 1, work_type: 'Snow Removal', done_label: "hidden", disabled: false})
         }
       }
 
@@ -81,7 +81,7 @@ class PropertyDetails extends Component {
                 this.setState({done_label: "visible", newStatus:confirmedStatus})
             } else alert(confirmedStatus)
             if (res.data.err.length > 0) alert(res.data.err)
-            this.setState({disabled: false})
+            
         })
         .catch(err => alert(err)) 
     }

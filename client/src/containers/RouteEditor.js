@@ -144,7 +144,7 @@ class RouteEditor extends Component {
     
     onSave = () => {
 
-        //get route. for each property ( for each item in route_data => if status = "none", replace with status from fetched route?)
+        // get route. for each property ( for each item in route_data => if status = "none", replace with status from fetched route?)
         // *sigh* this is  dumb and ugly...
         // fetch(`${process.env.REACT_APP_API_URL}/properties`)
         // .then(res => res.json())
