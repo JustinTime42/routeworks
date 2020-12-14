@@ -25,6 +25,7 @@ const ServiceLogs = (props) => {
                 { label: "Address", key: "address" },
                 { label: "Price", key: "price"},
                 { label: "Driver Earning", key: "driver_earning"}
+                { label: "Property Value", key: "value"}
             ]
         } else {
             headers = [
@@ -43,6 +44,8 @@ const ServiceLogs = (props) => {
                 { label: "UnitAmount", key: "price" },
                 { label: "AccountCode", key: "accountCode" },
                 { label: "TaxType", key: "taxType" },
+                { label: "Date", key: "date" },
+                { label: "Time", key: "time" },
             ]  
         }
         return headers        
@@ -62,6 +65,8 @@ const ServiceLogs = (props) => {
                     entry.accountCode = 4000
                     entry.taxType = 'Tax Exempt (0%)'
                     entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
+                    item.date = new Date(item.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+                    item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                 })
             } else {
                 logs.forEach((item => { 

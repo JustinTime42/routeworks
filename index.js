@@ -460,8 +460,11 @@ app.get('/api/getlogs/', (req,res) => {
         
     } else {
         db.whereBetween('service_log.timestamp', [options.start, options.end])
-        .select('*')
+        .select('service_log.key', 'service_log.address', 'service_log.route_name', 'service_log.status', 'service_log.timestamp', 'service_log.notes', 
+        'service_log.user_name', 'service_log.tractor', 'service_log.cust_name', 'service_log.property_key', 'service_log.price', 'service_log.driver_earning', 
+        'service_log.invoice_number', 'service_log.reference', 'service_log.item_code', 'service_log.description', 'properties.value')
         .from('service_log')
+        .join('properties', {'properties.key': 'service_log.property_key'})
         .orderBy('timestamp')
         .then(data => res.json(data))
     }
