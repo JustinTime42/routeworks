@@ -24,8 +24,8 @@ const ServiceLogs = (props) => {
                 { label: "Tractor", key: "tractor" },
                 { label: "Address", key: "address" },
                 { label: "Price", key: "price"},
-                { label: "Driver Earning", key: "driver_earning"}
-                { label: "Property Value", key: "value"}
+                { label: "Driver Earning", key: "driver_earning"},
+                { label: "Property Value", key: "value"},
             ]
         } else {
             headers = [
