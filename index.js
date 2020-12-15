@@ -273,7 +273,7 @@ app.post('/api/setstatus', (req, res) => {
             price: property.price,
             driver_earning: req.body.driver.percentage * .01 * property.value,
             description: req.body.work_type,
-            invoice_number: `APP${property.key}${new Date().getMonth()}${new Date().getFullYear()}`,
+            invoice_number: `A${property.key}${new Date().getMonth()}${new Date().getFullYear().substring(2)}`,
             reference: property.address,
         })
         .then(property => response.serviceLog.push(property))
@@ -444,8 +444,8 @@ app.get('/api/getlogs/', (req,res) => {
     if (options.type === 'xero') {
         const getFields =
         [
-            'properties.cust_name', 'properties.cust_email', 'properties.address', 'properties.city', 
-            'properties.state', 'properties.zip', 'service_log.invoice_number', 'service_log.reference', 
+            'properties.cust_name', 'properties.cust_email', 'properties.bill_address', 'properties.bill_city', 
+            'properties.bill_state', 'properties.bill_zip', 'service_log.invoice_number', 'service_log.reference', 
             'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp' 
         ]        
 
