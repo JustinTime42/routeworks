@@ -50,8 +50,13 @@ const ServiceLogs = (props) => {
         }
         return headers        
     }  
+    const onClose = () => {
+        setShowDownloadLink(false)
+        props.onClose()
+    }
 
     const onDownload = () => {
+        setShowDownloadLink(false)
         const startDateTz = startDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
         const endDateTz = endDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
         fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${startDateTz}&end=${endDateTz}`)
@@ -119,7 +124,7 @@ const ServiceLogs = (props) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={onDownload}>Create File</Button>
-                <Button variant="secondary" onClick={props.onClose}>Close</Button>
+                <Button variant="secondary" onClick={onClose}>Close</Button>
             </Modal.Footer>
         </Modal>
     )
