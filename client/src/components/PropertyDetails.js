@@ -30,7 +30,7 @@ class PropertyDetails extends Component {
             noteField: '',
             disabled: false,
             work_type: 'snow removal',
-            yards: 1,
+            yards: '0',
             done_label: "hidden",
             newStatus: '',
         }
@@ -38,7 +38,7 @@ class PropertyDetails extends Component {
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-          this.setState({noteField: '', yards: 1, work_type: 'Snow Removal', done_label: "hidden", disabled: false})
+          this.setState({noteField: '', yards: '0', work_type: 'Snow Removal', done_label: "hidden", disabled: false})
         }
       }
 
@@ -55,7 +55,8 @@ class PropertyDetails extends Component {
         this.setState({disabled: true})
         let property = {...this.props.property}
         if (this.state.work_type === 'Sanding') {
-            property.price = property.price_per_yard * this.state.yards
+            property.sand_contract === "Per Yard" ? property.price = property.price_per_yard * this.state.yards : property.price = property.price_per_yard
+            
         } else if (this.state.work_type === 'Sweeping') {
             property.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
@@ -112,10 +113,10 @@ class PropertyDetails extends Component {
                                 <Dropdown.Item key="Other" eventKey="Other">other</Dropdown.Item>
                             </DropdownButton> 
                             {
-                                this.state.work_type === 'Sanding' ?
+                                this.state.work_type === 'Sanding' && property.sand_contract === "Per Yard" ?
                                 <Form.Group>
                                     <Form.Label>Number of Yards</Form.Label>
-                                    <Form.Control name="yards" as="textarea" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
+                                    <Form.Control name="yards" as="input" type="number" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
                                 </Form.Group> : null
                             }                            
                         </Col>
@@ -137,7 +138,7 @@ class PropertyDetails extends Component {
                     <Button variant="primary" size="lg" onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
                     <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
                         <div style={{visibility: this.state.done_label, fontSize: "large"}}>{this.state.newStatus}!</div>
-                    <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Done')}>Done</Button>
+                    <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
                     <Button variant="primary" size="lg" onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
                 </Card.Body>
             </Card> : null

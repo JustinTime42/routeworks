@@ -13,6 +13,7 @@ const mapStateToProps = state => {
 }
 
 const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt"]
+const sandContractTypes = ["Per Visit", "Per Yard"]
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -293,6 +294,14 @@ class NewProperty extends Component {
                                         <Form.Control name="contract_type" as="select" value={this.state.activeProperty.contract_type || "select"} onChange={this.onChange}>
                                             {
                                                 contractTypes.map(type => <option key={type} value={type}>{type}</option>)
+                                            }
+                                        </Form.Control>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Sanding Contract</Form.Label>
+                                        <Form.Control name="sand_contract" as="select" value={this.state.activeProperty.sand_contract || "select"} onChange={this.onChange}>
+                                            {
+                                                sandContractTypes.map(type => <option key={type} value={type}>{type}</option>)
                                             }
                                         </Form.Control>
                                 </Form.Group>

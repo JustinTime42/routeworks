@@ -62,7 +62,7 @@ const grid = 2;
 
 const getItemStyle = (isDragging, draggableStyle) => ({
     // some basic styles to make the items look a bit nicer
-    userSelect: 'none',
+    userSelect: 'Waiting',
     padding: grid * 2,
     margin: `0 0 ${grid}px 0`,
 
@@ -227,7 +227,7 @@ class RouteEditor extends Component {
                 let route_data = {
                     route_name: this.props.activeRoute,
                     route_position: i,
-                    status: "none"
+                    status: "Waiting"
                 }
                 if (item.route_data.some(item => item.route_name === this.props.activeRoute)) {
                     item.route_data.find(route => route.route_name === this.props.activeRoute).route_position = i
