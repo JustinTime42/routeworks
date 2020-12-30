@@ -1,10 +1,4 @@
-var http = require('http');
 const express = require('express');
-const app = express();
-
-var server = http.createServer(app);
-var io = require('socket.io').listen(server);
-
 var cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser')
@@ -20,7 +14,7 @@ const db = knex({
     }    
 })
 
-
+const app = express();
 app.use(cors())
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
 app.use(bodyParser.json({limit: '50mb'}));
