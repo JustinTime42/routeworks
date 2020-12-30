@@ -9,15 +9,12 @@ import "../App.css"
 
 function App() { 
 
-  
     const socket = io()
     socket.on('connect', () => {
       socket.emit('connect', "hello, i'm here");
       socket.on('welcome-msg', data => console.log(data))
     });
 
-  
-  
     return (
         <div className="App">
           <Auth>
