@@ -3,6 +3,7 @@ import { Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { requestAllAddresses, getRouteProperties } from '../actions'
 import axios from "axios"
+import socketIOClient from "socket.io-client";
 import '../styles/driver.css'
 
 const mapStateToProps = state => {
