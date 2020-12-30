@@ -30,9 +30,10 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 io.on('connection', socket => {
     console.log("new user")
-    socket.emit('welcome', "welcome")
+    socket.emit('welcome-msg', "welcome")
+    socket.on('connect', data => console.log(data))
 })
- 
+
 app.get('/api/routelist', (req, res) => {
     db.select('*').from('routes')
     .then(data => {
@@ -520,4 +521,4 @@ app.get('/api/getlogs/:property', (req, res) => {
    res.sendFile(path.join(__dirname+'/client/build/index.html'));
  });
 
-app.listen(process.env.PORT || 5000);
+server.listen(process.env.PORT || 5000);
