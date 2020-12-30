@@ -4,7 +4,6 @@ import HomePage from "../containers/Home"
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import CallbackPage from "../auth/Callback";
 import Auth from "../auth/Auth";
-import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import "../App.css"
 
