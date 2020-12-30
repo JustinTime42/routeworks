@@ -29,9 +29,10 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 io.on('connection', socket => {
-    console.log("new user"))
+    console.log("new user")
     socket.emit('welcome', "welcome")
-} 
+})
+ 
 app.get('/api/routelist', (req, res) => {
     db.select('*').from('routes')
     .then(data => {
