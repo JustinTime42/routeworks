@@ -9,8 +9,6 @@ import "../App.css"
 
 function App() { 
 
-  const [response, setResponse] = useState("");
-
   
     const socket = io()
     socket.on('connect', () => {
