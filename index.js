@@ -11,6 +11,7 @@ const bodyParser = require('body-parser')
 const knex = require('knex')
 const pg = require('pg');
 const { ESRCH } = require('constants');
+const { Socket } = require('dgram');
 
 const db = knex({
     client: 'pg',
@@ -27,6 +28,10 @@ app.use(bodyParser.json({limit: '50mb'}));
 //Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
+io.on('connection', socket => {
+    console.log("new user"))
+    socket.emit('welcome', "welcome")
+} 
 app.get('/api/routelist', (req, res) => {
     db.select('*').from('routes')
     .then(data => {
@@ -43,7 +48,6 @@ app.post('/api/addroute', (req, res) => {
     }) 
 })
 
-//TODO: remove old route columns in tables now that route_data is fully implemented
 app.post('/api/newproperty', (req, res) => {
     const property = req.body
     db('properties')    
