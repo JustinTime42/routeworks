@@ -25,7 +25,7 @@ import {
     GET_TRACTORS_FAILED,
 } from './constants.js'
 import { io } from "socket.io-client";
-const socket = io()
+const socket = io('https://snowline-route-manager.herokuapp.com/')
 
 export const setActiveRoute = (routeName) => {
     return {
@@ -178,7 +178,8 @@ export const addTractor = (tractor, allTractors) => (dispatch) => {
     console.log("all tractors:", allTractors)
     socket.emit('new-tractor', {"tractor_name": tractor});
     socket.on('tractor-added', newTractor => {
-        allTractors.push(newTractor)
+        console.log(newTractor)
+        allTractors.push(newTractor[0])
         dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
     } )
 
