@@ -39,7 +39,6 @@ io.on('connection', socket => {
             .insert({...tractor})
             .then(newTractor =>  socket.emit('tractor-added', newTractor))
             .catch(err => socket.emit('err', err))
-        })
     })
 })
 
