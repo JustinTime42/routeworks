@@ -178,7 +178,7 @@ export const addTractor = (tractor, allTractors) => (dispatch) => {
     console.log("all tractors:", allTractors)
     socket.emit('new-tractor', {"tractor_name": tractor});
     socket.on('tractor-added', newTractor => {
-        allTractors.push(newTractor.tractor_name)
+        allTractors.push(newTractor)
         dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
     } )
 

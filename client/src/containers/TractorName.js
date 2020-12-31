@@ -49,7 +49,6 @@ class TractorName extends Component {
     onSaveNew = () => {
         this.props.onAddTractor(this.state.tractor_name, this.props.allTractors)
         this.setState({tractor_name: ""})
-        this.props.onGetTractors()
     } 
     onDelete = (tractor, allTractors) => {
         this.props.onDeleteTractor(tractor, allTractors)
