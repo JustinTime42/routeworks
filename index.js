@@ -30,8 +30,8 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 io.on('connection', socket => {
     console.log("new user")
-    socket.emit('welcome-msg', "welcome")
-    socket.on('connect', data => console.log(data))
+    socket.emit('welcome-msg', "welcome, new user")
+    socket.on('hi', data => console.log(data))
 })
 
 app.get('/api/routelist', (req, res) => {
