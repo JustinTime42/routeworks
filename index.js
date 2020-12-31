@@ -36,12 +36,12 @@ io.on('connection', socket => {
     console.log("new user")
     socket.emit('welcome-msg', "welcome, new user")
     socket.on('hi', data => console.log(data))
-    socket.on('new-tractor', tractor => {
+    socket.on('new-tractor', (tractor, res) => {
             console.log(tractor)
             db('tractors')    
             .returning('*')
             .insert({...tractor})
-            .then(newTractor =>  socket.emit('tractor-added', newTractor))
+            .then(newTractor => res(newTractor))
             .catch(err => socket.emit('err', err))
     })
 })
@@ -83,15 +83,15 @@ io.on('connection', (socket) => {
     });
   });
 */
-app.post('/api/newtractor', (req, res) => {
-    console.log(req.body)
-    const tractor = req.body
-    db('tractors')    
-    .returning('*')
-    .insert({...tractor})
-    .then(tractor =>  res.json(tractor))
-    .catch(err => res.json("error: " + err))
-})
+// app.post('/api/newtractor', (req, res) => {
+//     console.log(req.body)
+//     const tractor = req.body
+//     db('tractors')    
+//     .returning('*')
+//     .insert({...tractor})
+//     .then(tractor =>  res.json(tractor))
+//     .catch(err => res.json("error: " + err))
+// })
 
 app.post('/api/deletetractor', (req, res) => {
     db('tractors')
