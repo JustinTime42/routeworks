@@ -36,12 +36,12 @@ io.on('connection', socket => {
     console.log("new user")
     socket.emit('welcome-msg', "welcome, new user")
     socket.on('hi', data => console.log(data))
-    socket.on('new-tractor', (tractor, res) => {
+    socket.on('add-tractor', (tractor, res) => {
             console.log(tractor)
             db('tractors')    
             .returning('*')
             .insert({...tractor})
-            .then(newTractor => res(newTractor))
+            .then(newTractor => socket.emit('newTractor', newTractor))
             .catch(err => socket.emit('err', err))
     })
 })
