@@ -3,12 +3,12 @@ const express = require('express');
 const app = express();
 
 var server = http.createServer(app);
-const socketIo = require("socket.io")(server, {
+const socketIo = require("socket.io");
+const io = socketIo(server, {
     cors: {
       origin: '*',
     }
-  });
-const io = socketIo(server);
+  });;
 var cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser')
