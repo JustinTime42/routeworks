@@ -24,6 +24,8 @@ import {
     GET_TRACTORS_SUCCESS,
     GET_TRACTORS_FAILED,
 } from './constants.js'
+import { io } from "socket.io-client";
+const socket = io()
 
 export const setActiveRoute = (routeName) => {
     return {
@@ -174,20 +176,26 @@ export const getTractors = () => (dispatch) => {
 export const addTractor = (tractor, allTractors) => (dispatch) => {
     dispatch({ type: GET_TRACTORS_PENDING})
     console.log("all tractors:", allTractors)
-    fetch(`${process.env.REACT_APP_API_URL}/newtractor`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },   
-        body: JSON.stringify({"tractor_name": tractor})
-    })
-    .then(response => response.json())
-    .then(res => {
-        console.log("response", res)
-        allTractors.push(res[0])
+    socket.emit('new-tractor', {"tractor_name": tractor});
+    socket.on('tractor-added', newTractor => {
+        allTractors.push(newTractor)
         dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
-    })
-    .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
+    } )
+
+    // fetch(`${process.env.REACT_APP_API_URL}/newtractor`, {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },   
+    //     body: JSON.stringify({"tractor_name": tractor})
+    // })
+    // .then(response => response.json())
+    // .then(res => {
+    //     console.log("response", res)
+    //     allTractors.push(res[0])
+        
+    // })
+    // .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
 }
 
 export const deleteTractor = (tractor, allTractors) => (dispatch) => {

@@ -32,6 +32,71 @@ io.on('connection', socket => {
     console.log("new user")
     socket.emit('welcome-msg', "welcome, new user")
     socket.on('hi', data => console.log(data))
+    socket.on('new-tractor', tractor => {
+            console.log(tractor)
+            db('tractors')    
+            .returning('*')
+            .insert({...tractor})
+            .then(newTractor =>  socket.emit('tractor-added', newTractor))
+            .catch(err => socket.emit('err', err))
+        })
+    })
+})
+
+/*
+The following endpoints (newtractor and deletetractor) are currently implemented as post endpoints. 
+convert them to sockets, then implement that change on the front end. Push to demo app and see how that works. 
+Use lessons learned to start converting other assets. Save the important and high stakes ones like property and route details for after
+familiarity with the technology has been achieved. 
+Here is some sample code.Notice how everything is encased in the main io.on() function. with a socket.on function for each 'endpoint...?' 
+
+io.on('connection', (socket) => {
+  let addedUser = false;
+
+  // when the client emits 'new message', this listens and executes
+  socket.on('new message', (data) => {
+    // we tell the client to execute 'new message'
+    socket.broadcast.emit('new message', {
+      username: socket.username,
+      message: data
+    });
+  });
+
+  // when the client emits 'add user', this listens and executes
+  socket.on('add user', (username) => {
+    if (addedUser) return;
+
+    // we store the username in the socket session for this client
+    socket.username = username;
+    ++numUsers;
+    addedUser = true;
+    socket.emit('login', {
+      numUsers: numUsers
+    });
+    // echo globally (all clients) that a person has connected
+    socket.broadcast.emit('user joined', {
+      username: socket.username,
+      numUsers: numUsers
+    });
+  });
+*/
+app.post('/api/newtractor', (req, res) => {
+    console.log(req.body)
+    const tractor = req.body
+    db('tractors')    
+    .returning('*')
+    .insert({...tractor})
+    .then(tractor =>  res.json(tractor))
+    .catch(err => res.json("error: " + err))
+})
+
+app.post('/api/deletetractor', (req, res) => {
+    db('tractors')
+    .returning('*')
+    .where('tractor_name', req.body.tractor_name)
+    .del()
+    .then(tractor => res.json(tractor))
+    .catch(err => res.json(err))
 })
 
 app.get('/api/routelist', (req, res) => {
@@ -377,25 +442,6 @@ app.get('/api/tractors', (req, res) => {
     .then(data => {
         res.json(data)
     })
-})
-
-app.post('/api/newtractor', (req, res) => {
-    console.log(req.body)
-    const tractor = req.body
-    db('tractors')    
-    .returning('*')
-    .insert({...tractor})
-    .then(tractor =>  res.json(tractor))
-    .catch(err => res.json("error: " + err))
-})
-
-app.post('/api/deletetractor', (req, res) => {
-    db('tractors')
-    .returning('*')
-    .where('tractor_name', req.body.tractor_name)
-    .del()
-    .then(tractor => res.json(tractor))
-    .catch(err => res.json(err))
 })
 
 // get full list of tags
