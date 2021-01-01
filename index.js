@@ -180,12 +180,10 @@ app.post('/api/saveroute', (req, res) => {
         Look into keeping property status though?
     */
     const add = req.body.selected
-    const remove = req.body.unselected
     const route = req.body.route
     let response = 
         {
             add: [],
-            remove: [],
             err: []
         }
     let promises = []
@@ -220,39 +218,39 @@ app.post('/api/saveroute', (req, res) => {
             .catch(err => response.err.push(err))
         )       
     })
-    remove.forEach((item, i) => {
-        promises.push(
-            db('properties')
-            .returning('address')
-            .where({
-                key: item.key,
-            })
-            .update({
-                ...item, 
-                route_name: item.route_name === route ? "unassigned" : item.route_name,
-                route_position: item.route_name === route ? null : item.route_position,
-                status: item.route_name === route ? null : item.status,
-                // address: item.address,
-                // cust_name: item.cust_name,
-                // cust_phone: item.cust_phone,
-                // surface_type: item.surface_type,
-                // is_new: item.is_new,
-                // notes: item.notes,
-                // seasonal: item.seasonal,
-                // price: item.price,
-                // value: item.value,
-                // temp: item.temp,
-                // contract_type: item.contract_type,
-                // price_per_yard: item.price_per_yard,
-                // inactive: item.inactive,
-                route_data: JSON.stringify(item.route_data),
-            })
-            .then(address => {
-                response.remove.push(address)
-            })  
-            .catch(err => response.err.push(err)) 
-        )
-    })    
+    // remove.forEach((item, i) => {
+    //     promises.push(
+    //         db('properties')
+    //         .returning('address')
+    //         .where({
+    //             key: item.key,
+    //         })
+    //         .update({
+    //             ...item, 
+    //             route_name: item.route_name === route ? "unassigned" : item.route_name,
+    //             route_position: item.route_name === route ? null : item.route_position,
+    //             status: item.route_name === route ? null : item.status,
+    //             // address: item.address,
+    //             // cust_name: item.cust_name,
+    //             // cust_phone: item.cust_phone,
+    //             // surface_type: item.surface_type,
+    //             // is_new: item.is_new,
+    //             // notes: item.notes,
+    //             // seasonal: item.seasonal,
+    //             // price: item.price,
+    //             // value: item.value,
+    //             // temp: item.temp,
+    //             // contract_type: item.contract_type,
+    //             // price_per_yard: item.price_per_yard,
+    //             // inactive: item.inactive,
+    //             route_data: JSON.stringify(item.route_data),
+    //         })
+    //         .then(address => {
+    //             response.remove.push(address)
+    //         })  
+    //         .catch(err => response.err.push(err)) 
+    //     )
+    // })    
     Promise.all(promises).then(() => res.json(response))
 })
 
