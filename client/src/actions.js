@@ -156,6 +156,7 @@ export const setActiveDriver = (driver) => {
 }
 
 export const setTractorName = (tractorName) => {
+    console.log(tractorName)
     return {
         type: SET_TRACTOR_NAME,
         payload: tractorName
@@ -173,15 +174,21 @@ export const getTractors = () => (dispatch) => {
     .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
 }
 
-export const addTractor = (tractor, allTractors) => (dispatch) => {
+export const getNewTractor = (newTractor, allTractors) => (dispatch) => {
     dispatch({ type: GET_TRACTORS_PENDING})
     console.log("all tractors:", allTractors)
-    socket.emit('new-tractor', {"tractor_name": tractor});
-    socket.on('tractor-added', newTractor => {
+        allTractors.push(newTractor)
+        dispatch({ type: GET_TRACTORS_SUCCESS, payload: [...allTractors, newTractor]})
+    };
+
+export const sendNewTractor = (tractor) => (dispatch) => {
+    dispatch({ type: GET_TRACTORS_PENDING})
+    socket.emit('add-tractor', {"tractor_name": tractor}, newTractor => {
         console.log(newTractor)
-        allTractors.push(newTractor[0])
-        dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
-    } )
+        // allTractors.push(newTractor[0])
+        // dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
+    });
+ 
 
     // fetch(`${process.env.REACT_APP_API_URL}/newtractor`, {
     //     method: 'POST',

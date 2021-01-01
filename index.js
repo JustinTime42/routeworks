@@ -195,7 +195,7 @@ app.post('/api/saveroute', (req, res) => {
             .returning('*')
             .where('key', item.key)
             .update({
-                ...item, 
+                // ...item, 
                 // route_name: route, 
                 // route_position: i,
                 // status: item.status || "Waiting",

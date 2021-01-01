@@ -142,7 +142,7 @@ class RouteEditor extends Component {
         return addresses.filter(item => !item.route_data.some(item => item.route_name === route))
     }
     
-    onSave = () => {
+    onSave = (customers) => {
 
         // get route. for each property ( for each item in route_data => if status = "none", replace with status from fetched route?)
         // *sigh* this is  dumb and ugly...
@@ -164,11 +164,17 @@ class RouteEditor extends Component {
         //     )
         // })
 
+        //this will strip selected down to the needed data
+        let selected = customers.map(item => {
+            return (
+                {key: item.key, route_data: item.route_data}
+            )
+        })
+        //next, I need to add the dragged item to it, if it doesn't exist already... ?
         axios.post(`${process.env.REACT_APP_API_URL}/saveroute`, 
             {
                 route: this.props.activeRoute,
-                selected: this.state.selected,
-                unselected: this.state.items
+                selected: selected,
             }
         )
         .then(res => {
@@ -187,7 +193,7 @@ class RouteEditor extends Component {
             return {
                 selected: selected
             }
-        }, this.onSave())
+        }, this.onSave(this.state.selected))
     }
     
     getList = id => this.state[this.id2List[id]];
@@ -213,9 +219,12 @@ class RouteEditor extends Component {
                 orderedItems.forEach((item, i) => {
                     item.route_data.find(route => route.route_name === this.props.activeRoute).route_position = i
                 })
-                state = { selected: orderedItems };
+                //state = { selected: orderedItems };
             }
-            this.setState(state);
+            this.onSave(orderedItems)
+            // I could put a call to saveRoute here... with just selected saveroute(selected)
+           // this.setState(state); should need this anymore
+            
         } else {
             const newList = move(
                 this.getList(source.droppableId),
@@ -223,47 +232,53 @@ class RouteEditor extends Component {
                 source,
                 destination
             )
-            newList.droppable2.forEach((item, i) => {
+
+            let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))
+
+            // here we are removing from route... 
+            // here we will remove the route from droppedCard and submit selected and droppedCard,
+            if (destination.droppableId === "droppable") {                
+                droppedCard.route_data.splice(droppedCard.route_data.findIndex(route => route.route_name === this.props.activeRoute), 1)
+                this.onSave({droppedCard, ...newList.droppable2})
+                //  this.props.onEditProperty(droppedCard, this.props.addresses) <-- No, put this in onsave. keep edit property for non-route stuff
+
+                // this is currently needed to keep the recently dragged item, but is stupid. plz change.
+                // this.setState((prevState, prevProps) => {
+                //     return {
+                //         selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
+                //         items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
+                //         filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
+                //     }
+                // })
+            } else {
+                // here we are adding a property to the route. so send only selected to onSave()
                 let route_data = {
                     route_name: this.props.activeRoute,
                     route_position: i,
-                    status: "Waiting"
+                    status: "Waiting" // only set status for the droppedCard
                 }
-                if (item.route_data.some(item => item.route_name === this.props.activeRoute)) {
-                    item.route_data.find(route => route.route_name === this.props.activeRoute).route_position = i
-                } else {
-                    item.route_data.push(route_data)
-                }
-
-                // save changes to redux and state
-                // needs rework. Maybe make a way to send the new property lists at once instead
-                // of dispatching an action per item in the list
-                
-                
-                // this is currently needed to keep the recently dragged item, but is stupid. plz change.
-                this.setState((prevState, prevProps) => {
-                    return {
-                        selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
-                        items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
-                        filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
-                    }
-                })                                                                                              
-            })
-           
-            if (destination.droppableId === "droppable") {
-                let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))
-                droppedCard.route_data.splice(droppedCard.route_data.findIndex(route => route.route_name === this.props.activeRoute), 1)
-                this.props.onEditProperty(droppedCard, this.props.addresses)
-
-                // this is currently needed to keep the recently dragged item, but is stupid. plz change.
-                this.setState((prevState, prevProps) => {
-                    return {
-                        selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
-                        items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
-                        filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
+                newList.droppable2.forEach((item, i) => {
+                    if (item.key === droppedCard.key) {
+                        item.route_data.push(route_data)
+                    } else {
+                        item.route_data.find(route => route.route_name === this.props.activeRoute).route_position = i
                     }
                 })
-            }
+                this.onSave(newList.droppable2)
+    
+            } 
+                // save changes to redux and state
+                // needs rework. Maybe make a way to send the new property lists at once instead
+                // of dispatching an action per item in the list                
+                
+                // this is currently needed to keep the recently dragged item, but is stupid. plz change.
+                this.setState((prevState, prevProps) => {
+                    return {
+                        selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
+                        items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
+                        filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
+                    }
+                }) 
         }        
     }
 

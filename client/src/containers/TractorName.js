@@ -1,94 +1,108 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from "react-redux";
 import { Dropdown, DropdownButton, Button, FormControl, Row, Col } from "react-bootstrap"
 import DropdownItem from 'react-bootstrap/DropdownItem'
-import { connect } from 'react-redux'
-import { setTractorName, getTractors, addTractor, deleteTractor } from '../actions'
+import { setTractorName, getTractors, getNewTractor, deleteTractor } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
+import { io } from 'socket.io-client';
+const socket = io('https://snowline-route-manager.herokuapp.com/')
 
-const mapStateToProps = state => {
-    return {
-        tractorName: state.setTractorName.tractorName,
-        allTractors: state.getTractors.allTractors,
-    }
-}
 
-const mapDispatchToProps = (dispatch) => {
-    return {    
-        onSetTractorName: (event) => dispatch(setTractorName(event)),
-        onGetTractors: () => dispatch(getTractors()),
-        onAddTractor: (tractor, allTractors) => dispatch(addTractor(tractor, allTractors)),
-        onDeleteTractor: (tractor, allTractors) => dispatch(deleteTractor(tractor, allTractors)),
-    }
-}
+// const mapDispatchToProps = (dispatch) => {
+//     return {    
+//         onSetTractorName: (event) => dispatch(setTractorName(event)),
+//         onGetTractors: () => dispatch(getTractors()),
+//         onAddTractor: (tractor, allTractors) => dispatch(addTractor(tractor, allTractors)),
+//         onDeleteTractor: (tractor, allTractors) => dispatch(deleteTractor(tractor, allTractors)),
+//     }
+// }
 
-class TractorName extends Component {
-    constructor(){
-        super()
-        this.state = {
-            showEdit: false,
-            tractor_name: "",
-        }
-    }
+const TractorName = () => {
+    const [showEdit, setShowEdit] = useState(false)
+    const [tractor_name, editTractorName] = useState("")
+    const tractorName = useSelector(state => state.setTractorName.tractorName)
+    const allTractors = useSelector(state => state.getTractors.allTractors)
+    const dispatch = useDispatch()
 
-    componentDidMount() {
-        this.props.onGetTractors()
-    }
+    useEffect(() => {
+        dispatch(getTractors())
+    }, [])
 
-    componentDidUpdate(prevProps) {
-        if(this.props.allTractors !== prevProps.allTractors) {
-            //this.props.onGetTractors()
-        } 
-    }
+    useEffect(() => {
+        console.log("updating tractor list")
+        socket.on('newTractor', newTractor => {
+            console.log("new tractor: ", newTractor)
+            // allTractors.push(newTractor[0])
+            // dispatch({ type: 'GET_TRACTORS_SUCCESS', payload: allTractors})
+            dispatch(getNewTractor(newTractor[0], allTractors))
+        })
+    })
 
-    toggleEdit = () => {
-        this.setState(prevState => ({showEdit: !prevState.showEdit}))
-    }
+    //this has gotten pretty messy, but I've changed to functional component with hooks
+    //and I'm trying to use socket.io for updates. Right now it replicates the 
+    // new property by the number of key presses + 3.... k...
 
-    onChangeText = (event) => this.setState({tractor_name: event.target.value})
-    onSaveNew = () => {
-        this.props.onAddTractor(this.state.tractor_name, this.props.allTractors)
-        this.setState({tractor_name: ""})
+    // componentDidMount() {
+    //     this.props.onGetTractors()
+    // }
+
+    // componentDidUpdate(prevProps) {
+    //     if(this.props.allTractors !== prevProps.allTractors) {
+    //         //this.props.onGetTractors()
+    //     } 
+    // }
+
+    const toggleEdit = () => setShowEdit(!showEdit)
+    const onChangeText = (event) => editTractorName(event.target.value)
+
+    const onSaveNew = () => {
+        socket.emit('add-tractor', {"tractor_name": tractor_name})
+        setTractorName("")
+        //dispatch(getTractors())
     } 
-    onDelete = (tractor, allTractors) => {
-        this.props.onDeleteTractor(tractor, allTractors)
-        this.setState({tractor_name: ""})
-        this.props.onGetTractors()
-        this.props.onSetTractorName('')
+    const onDelete = (tractor, allTractors) => {
+        dispatch(deleteTractor(tractor, allTractors))
+        setTractorName("")
+        dispatch(getTractors())
+        dispatch(setTractorName(''))
     }
 
-    render() {
-        return (
-            <DropdownButton title={this.props.tractorName || "Select Tractor"} onSelect={this.props.onSetTractorName} > 
-                <AuthConsumer>
-                {({ user }) => (
-                    <Can
-                        role={user.role}
-                        perform="admin:visit"
-                        yes={() => (
-                            <div><Button variant="primary" size="sm" onClick={this.toggleEdit}>{this.state.showEdit ? "Close" : "Edit"}</Button></div>                    
-                        )}
-                        no={() => null}               
-                    />                            
-                )}
-            </AuthConsumer> 
-            {
-                this.props.allTractors.map((tractor, i) => {
-                    return (
-                        <div key={i} style={{display: "flex"}}>
-                            <Dropdown.Item eventKey={tractor.tractor_name}>{tractor.tractor_name}</Dropdown.Item>  
-                            <Button style={{visibility: this.state.showEdit ? "initial" : "hidden", }} onClick={() => this.onDelete(tractor.tractor_name, this.props.allTractors)}>delete</Button>
-                        </div>
-                    )
-                })
-            }   
-            <div style={{visibility: this.state.showEdit ? "initial" : "hidden", display: "flex"}}>
-                <FormControl size="sm" type="text" onChange={this.onChangeText} placeholder="new tractor" value={this.state.tractor_name} />
-                <Button size="sm" onClick={this.onSaveNew}>Save</Button>                
-            </div>             
-            </DropdownButton>
-        )
+    const onSetTractorName = (tractorName) => {
+        dispatch(setTractorName(tractorName))
     }
+
+    return (
+        <DropdownButton title={tractorName || "Select Tractor"} onSelect={onSetTractorName} > 
+            <AuthConsumer>
+            {({ user }) => (
+                <Can
+                    role={user.role}
+                    perform="admin:visit"
+                    yes={() => (
+                        <div><Button variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button></div>                    
+                    )}
+                    no={() => null}               
+                />                            
+            )}
+        </AuthConsumer> 
+        {
+            allTractors.map((tractor, i) => {
+                return (
+                    <div key={i} style={{display: "flex"}}>
+                        <Dropdown.Item eventKey={tractor.tractor_name}>{tractor.tractor_name}</Dropdown.Item>  
+                        <Button style={{visibility: showEdit ? "initial" : "hidden", }} onClick={() => onDelete(tractor.tractor_name, allTractors)}>delete</Button>
+                    </div>
+                )
+            })
+        }   
+        <div style={{visibility: showEdit ? "initial" : "hidden", display: "flex"}}>
+            <FormControl size="sm" type="text" onChange={onChangeText} placeholder="new tractor" value={tractor_name} />
+            <Button size="sm" onClick={onSaveNew}>Save</Button>                
+        </div>             
+        </DropdownButton>
+    )
+    
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TractorName)
+export default TractorName
