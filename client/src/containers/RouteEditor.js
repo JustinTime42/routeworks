@@ -232,14 +232,16 @@ class RouteEditor extends Component {
                 source,
                 destination
             )
-
-            let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))
+                console.log(newList)
+            
 
             // here we are removing from route... 
             // here we will remove the route from droppedCard and submit selected and droppedCard,
-            if (destination.droppableId === "droppable") {                
+            if (destination.droppableId === "droppable") {  
+                let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))              
                 droppedCard.route_data.splice(droppedCard.route_data.findIndex(route => route.route_name === this.props.activeRoute), 1)
-                this.onSave({droppedCard, ...newList.droppable2})
+                newList.droppable2.push(droppedCard)
+                this.onSave(newList.droppable2)
                 //  this.props.onEditProperty(droppedCard, this.props.addresses) <-- No, put this in onsave. keep edit property for non-route stuff
 
                 // this is currently needed to keep the recently dragged item, but is stupid. plz change.
@@ -252,7 +254,7 @@ class RouteEditor extends Component {
                 // })
             } else {
                 // here we are adding a property to the route. so send only selected to onSave()
-
+                let droppedCard = newList.droppable2.find(item => item.key === parseInt(result.draggableId))  
                 newList.droppable2.forEach((item, i) => {
                     let route_data = {
                         route_name: this.props.activeRoute,
