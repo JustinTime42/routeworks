@@ -252,12 +252,13 @@ class RouteEditor extends Component {
                 // })
             } else {
                 // here we are adding a property to the route. so send only selected to onSave()
-                let route_data = {
-                    route_name: this.props.activeRoute,
-                    route_position: i,
-                    status: "Waiting" // only set status for the droppedCard
-                }
+
                 newList.droppable2.forEach((item, i) => {
+                    let route_data = {
+                        route_name: this.props.activeRoute,
+                        route_position: i,
+                        status: "Waiting" // only set status for the droppedCard
+                    }
                     if (item.key === droppedCard.key) {
                         item.route_data.push(route_data)
                     } else {
