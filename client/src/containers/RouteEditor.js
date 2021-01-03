@@ -240,7 +240,7 @@ class RouteEditor extends Component {
             if (destination.droppableId === "droppable") {  
                 let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))              
                 droppedCard.route_data.splice(droppedCard.route_data.findIndex(route => route.route_name === this.props.activeRoute), 1)
-                //newList.droppable2.push(droppedCard)
+                newList.droppable2.push(droppedCard)
                 this.onSave(newList.droppable2, droppedCard) //Now we'll send the dropped card separately, so we can handle route data differently
                 //  this.props.onEditProperty(droppedCard, this.props.addresses) <-- No, put this in onsave. keep edit property for non-route stuff
 
