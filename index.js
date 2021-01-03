@@ -547,7 +547,7 @@ app.get('/api/getlogs/:property', (req, res) => {
     db.where('service_log.property_key', property)
     .select('timestamp', 'property_key', 'address', 'cust_name', 'status', 'notes', 'description', 'user_name' )
     .from('service_log')
-    .orderBy('timestamp').limit(5)
+    .orderBy('timestamp', 'desc').limit(5)
     .then(data => res.json(data))
 })
 
