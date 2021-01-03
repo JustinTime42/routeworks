@@ -544,7 +544,7 @@ xero select properties.cust_name, properties.email, properties.bill_address, pro
 
 app.get('/api/getlogs/:property', (req, res) => {
     const { property } = req.params
-    db.where('service_log.property_key', property.key)
+    db.where('service_log.property_key', property)
     .select('timestamp', 'property_key', 'address', 'cust_name', 'status', 'notes', 'description', 'user_name' )
     .from('service_log')
     .orderBy('timestamp').limit(5)
