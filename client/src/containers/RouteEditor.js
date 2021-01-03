@@ -142,7 +142,7 @@ class RouteEditor extends Component {
         return addresses.filter(item => !item.route_data.some(item => item.route_name === route))
     }
     
-    onSave = (customers) => {
+    onSave = (customers, droppedCard) => {
 
         // get route. for each property ( for each item in route_data => if status = "none", replace with status from fetched route?)
         // *sigh* this is  dumb and ugly...
@@ -175,6 +175,7 @@ class RouteEditor extends Component {
             {
                 route: this.props.activeRoute,
                 selected: selected,
+                droppedCard: droppedCard,
             }
         )
         .then(res => {
@@ -232,7 +233,6 @@ class RouteEditor extends Component {
                 source,
                 destination
             )
-                console.log(newList)
             
 
             // here we are removing from route... 
@@ -240,8 +240,8 @@ class RouteEditor extends Component {
             if (destination.droppableId === "droppable") {  
                 let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))              
                 droppedCard.route_data.splice(droppedCard.route_data.findIndex(route => route.route_name === this.props.activeRoute), 1)
-                newList.droppable2.push(droppedCard)
-                this.onSave(newList.droppable2)
+                //newList.droppable2.push(droppedCard)
+                this.onSave(newList.droppable2, droppedCard) //Now we'll send the dropped card separately, so we can handle route data differently
                 //  this.props.onEditProperty(droppedCard, this.props.addresses) <-- No, put this in onsave. keep edit property for non-route stuff
 
                 // this is currently needed to keep the recently dragged item, but is stupid. plz change.
@@ -267,7 +267,7 @@ class RouteEditor extends Component {
                         item.route_data.find(route => route.route_name === this.props.activeRoute).route_position = i
                     }
                 })
-                this.onSave(newList.droppable2)
+                this.onSave(newList.droppable2, droppedCard)
     
             } 
                 // save changes to redux and state
@@ -357,7 +357,7 @@ class RouteEditor extends Component {
         <h1></h1> :(
             <>
             <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
-                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onSave}>Save Route</Button>
+                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.props.onGetAllAddresses}>Refresh Data</Button>
                 {/* <input 
                     type="search" placeholder="Search" value={this.state.routeSearchField}
                     onChange={this.onRouteSearchChange}
