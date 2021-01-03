@@ -40,13 +40,33 @@ const PropertyCard = (props) => {
         verticalAlign: "bottom"
     }
 
+    const getLogs = () => {
+        fetch(`${process.env.REACT_APP_API_URL}/getlogs/${props.address.key}`)
+        .then(response => response.json())
+        .then(data => {
+            let logs = []
+
+            data.forEach(item => {                
+                item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
+                logs.push([item.timestamp, item.address, item.cust_name, item.status, item.notes, item.description, item.user_name])
+            })
+            alert(JSON.stringify(logs))
+        }) 
+        .catch(error => alert(error))
+    }
+
     return(
         <div id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>                
                 {props.address ? 
+                    <>
                     <p style={{...statusStyle}}>
                         {status}
-                    </p> : <p style={statusStyle}></p>             
+                        
+                    </p> 
+                    
+                    </>
+                    : <p style={statusStyle}></p>
                 } 
                 {props.admin === true ? 
                     <p style={editStyle}><Button variant="secondary" onClick={() => props.editClick(props.address)}>Edit </Button></p>  : <p></p>               
@@ -55,6 +75,7 @@ const PropertyCard = (props) => {
             <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
             {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </h5>                             
+            <Button onClick={getLogs} style={{float: "right"}}>Logs</Button>
             <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
             {props.admin ? <p>route: {route_list}</p> : <div></div>}
         </div>

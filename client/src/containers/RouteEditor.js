@@ -109,6 +109,15 @@ class RouteEditor extends Component {
                     activeProperty: prevProps.activeProperty
                 }
             })
+            if (this.state.activeProperty) {
+                let currentPosition = this.props.routeProperties?.findIndex(i => i.key === this.props.activeProperty.key)
+                if ((currentPosition - 1) > 0) {                              
+                    document.getElementById(`card${currentPosition - 1}`).scrollIntoView(true)
+                } else {
+                    document.getElementById(`card${currentPosition}`).scrollIntoView(true)
+                }
+            }
+
         } 
         if(this.state.searchField !== prevState.searchField) {
             this.setState((prevState, prevProps) => ({filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses)}))
