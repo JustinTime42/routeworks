@@ -180,7 +180,7 @@ app.post('/api/saveroute', (req, res) => {
         Look into keeping property status though?
     */
     const add = req.body.selected
-    const route = req.body.route
+    const droppedCard = req.body.droppedCard
     let response = 
         {
             add: [],
@@ -192,24 +192,8 @@ app.post('/api/saveroute', (req, res) => {
             db('properties')
             .returning('*')
             .where('key', item.key)
+            // .andWhere('key', '<>', droppedCard.key)?
             .update({
-                // ...item, 
-                // route_name: route, 
-                // route_position: i,
-                // status: item.status || "Waiting",
-                // address: item.address,
-                // cust_name: item.cust_name,
-                // cust_phone: item.cust_phone,
-                // surface_type: item.surface_type,
-                // is_new: item.is_new,
-                // notes: item.notes,
-                // seasonal: item.seasonal,
-                // price: item.price,
-                // value: item.value,
-                // temp: item.temp,
-                // inactive: item.inactive,
-                // contract_type: item.contract_type,
-                // price_per_yard: item.price_per_yard,
                 route_data: JSON.stringify(item.route_data),
             })
             .then(address => {
@@ -561,8 +545,9 @@ xero select properties.cust_name, properties.email, properties.bill_address, pro
 app.get('/api/getlogs/:property', (req, res) => {
     const { property } = req.params
     db.where('service_log.property_key', property.key)
-    .select('*')
+    .select('timestamp', 'property_key', 'address', 'cust_name', 'status', 'notes', 'description', 'user_name' )
     .from('service_log')
+    .orderBy('timestamp').limit(5)
     .then(data => res.json(data))
 })
 
