@@ -53,7 +53,7 @@ class DisplayRoute extends Component {
                 console.log(nextPosition)
             if (nextPosition >= 0 && nextPosition < this.props.routeProperties.length) {
                 this.props.onSetActiveProperty(this.props.routeProperties[nextPosition])
-                if ((nextPosition - 1) > 0) {                              
+                if ((nextPosition - 1) > 0) {
                     document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
                 } else {
                     document.getElementById(`card${nextPosition}`).scrollIntoView(true)
