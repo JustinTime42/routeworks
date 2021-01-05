@@ -110,7 +110,7 @@ class RouteEditor extends Component {
                 }
             }, () => {
                 if(this.props.activeProperty?.route_data?.find(route => route.route_name === this.props.activeRoute)) {
-                    let currentPosition = this.props.activeProperty.route_data.find(route => route.route_name === this.props.activeRoute).route_position
+                    let currentPosition = this.props.activeProperty.route_data.find(route => route.route_name === this.props.activeRoute).route_position - 1
                     console.log("currentposition", currentPosition)  
                     if (document.getElementById(`card${currentPosition}`)) {
                         document.getElementById(`card${currentPosition}`).scrollIntoView(true)
