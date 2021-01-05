@@ -498,7 +498,7 @@ app.get('/api/getlogs/', (req,res) => {
         [
             'properties.cust_name', 'properties.cust_email', 'properties.bill_address', 'properties.bill_city', 
             'properties.bill_state', 'properties.bill_zip', 'service_log.invoice_number', 'service_log.reference', 
-            'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp' 
+            'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type' 
         ]        
 
         db('service_log')
@@ -514,7 +514,7 @@ app.get('/api/getlogs/', (req,res) => {
         db.whereBetween('service_log.timestamp', [options.start, options.end])
         .select('service_log.key', 'service_log.address', 'service_log.route_name', 'service_log.status', 'service_log.timestamp', 'service_log.notes', 
         'service_log.user_name', 'service_log.tractor', 'service_log.cust_name', 'service_log.property_key', 'service_log.price', 'service_log.driver_earning', 
-        'service_log.invoice_number', 'service_log.reference', 'service_log.item_code', 'service_log.description', 'properties.value')
+        'service_log.invoice_number', 'service_log.reference', 'service_log.item_code', 'service_log.description', 'properties.value', 'properties.contract_type')
         .from('service_log')
         .join('properties', {'properties.key': 'service_log.property_key'})
         .orderBy('timestamp')
