@@ -311,7 +311,7 @@ app.post('/api/saveroute', (req, res) => {
 app.post('/api/setstatus', (req, res) => {
     let property = req.body.property
     let promises = []
-    let yards = (req.body.yards !== 0) ? `: ${req.body.yards} yds` : '' 
+    let yards = (req.body.yards !== 0) ? ": " + req.body.yards + " yds" : "" 
     let response = {
         properties: [],
         serviceLog: [],
@@ -498,7 +498,7 @@ app.get('/api/getlogs/', (req,res) => {
         [
             'properties.cust_name', 'properties.cust_email', 'properties.bill_address', 'properties.bill_city', 
             'properties.bill_state', 'properties.bill_zip', 'service_log.invoice_number', 'service_log.reference', 
-            'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type' 
+            'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type', 'service_log.notes' 
         ]        
 
         db('service_log')

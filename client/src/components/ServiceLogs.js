@@ -48,6 +48,7 @@ const ServiceLogs = (props) => {
                 { label: "Date", key: "date" },
                 { label: "Time", key: "time" },
                 { label: "Contract Type", key: "contract_type"},
+                { label: "Notes", key: "notes" },
             ]  
         }
         return headers        
