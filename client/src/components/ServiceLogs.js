@@ -19,6 +19,7 @@ const ServiceLogs = (props) => {
                 { label: "status", key: "status" },
                 { label: "Date", key: "date" },
                 { label: "Time", key: "time" },
+                { label: "Description", key: "description" },
                 { label: "Notes", key: "notes" },
                 { label: "Driver", key: "user_name" },
                 { label: "Tractor", key: "tractor" },
