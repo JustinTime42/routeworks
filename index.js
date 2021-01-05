@@ -311,6 +311,7 @@ app.post('/api/saveroute', (req, res) => {
 app.post('/api/setstatus', (req, res) => {
     let property = req.body.property
     let promises = []
+    let yards = (req.body.yards !== 0) ? `: ${req.body.yards} yds` : '' 
     let response = {
         properties: [],
         serviceLog: [],
@@ -342,7 +343,7 @@ app.post('/api/setstatus', (req, res) => {
             property_key: property.key,
             price: property.price,
             driver_earning: req.body.driver.percentage * .01 * property.value,
-            description: req.body.work_type,
+            description: req.body.work_type + req.body.yards,
             invoice_number: `A${property.key}${new Date().getMonth()}${new Date().getFullYear()}`,
             reference: property.address,
         })

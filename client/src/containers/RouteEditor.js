@@ -108,6 +108,14 @@ class RouteEditor extends Component {
                     filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
                     activeProperty: prevProps.activeProperty
                 }
+            }, () => {
+                if(this.props.activeProperty?.route_data?.find(route => route.route_name === this.props.activeRoute)) {
+                    let currentPosition = this.props.activeProperty.route_data.find(route => route.route_name === this.props.activeRoute).route_position
+                    console.log("currentposition", currentPosition)  
+                    if (document.getElementById(`card${currentPosition}`)) {
+                        document.getElementById(`card${currentPosition}`).scrollIntoView(true)
+                    }                    
+                }   
             })
         } 
         if(this.state.searchField !== prevState.searchField) {
@@ -184,11 +192,12 @@ class RouteEditor extends Component {
             this.props.onGetAllAddresses()
             this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
             console.log(res)
-            if(this.props.activeProperty) {
-                let currentPosition = this.props.addresses.find(i => i.key === this.props.activeProperty.key).key
+           // if(this.props.activeProperty) {
+               
                 // id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`}
                // document.getElementById(`card${currentPosition}`).scrollIntoView(true)
-            }
+          //  }
+            
         })
         .catch(err => console.log(err)) 
     }
@@ -355,6 +364,11 @@ class RouteEditor extends Component {
             filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),                          
             selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
             }
+        }, () => {
+
+            
+            this.setState({showModal: false})
+            // item.route_data.find(route => route.route_name === this.props.activeRoute).route_position
         })
     }
     

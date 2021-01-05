@@ -56,7 +56,7 @@ class PropertyDetails extends Component {
         let property = {...this.props.property}
         if (this.state.work_type === 'Sanding') {
             property.sand_contract === "Per Yard" ? property.price = property.price_per_yard * this.state.yards : property.price = property.price_per_yard
-            
+            // this.setState(prevState => ({work_type: prevState.work_type + " " + this.state.yards}))
         } else if (this.state.work_type === 'Sweeping') {
             property.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
@@ -72,6 +72,7 @@ class PropertyDetails extends Component {
                 noteField: this.state.noteField,
                 tractor: this.props.tractor,
                 work_type: this.state.work_type,
+                yards: this.state.yards,
             }
         )
         .then(res => {
