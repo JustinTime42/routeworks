@@ -346,6 +346,7 @@ app.post('/api/setstatus', (req, res) => {
             description: req.body.work_type + yards,
             invoice_number: `A${property.key}${new Date().getMonth()}${new Date().getFullYear()}`,
             reference: property.address,
+            work_type: req.body.work_type,
         })
         .then(property => response.serviceLog.push(property))
         .catch(err => {
