@@ -506,7 +506,7 @@ app.get('/api/getlogs/', (req,res) => {
         .select(getFields)
         .whereBetween('service_log.timestamp', [options.start, options.end])
         .whereNotIn('properties.contract_type', ['Monthly', 'Seasonal'])
-        .orWhere('properties.work_type', '<>', 'Snow Removal')  
+        .orWhere('service_log.work_type', '<>', 'Snow Removal')  
         .andWhere('service_log.status', 'Done')
         .then(data => res.json(data))
         .catch(err => res.json(err))        
