@@ -499,7 +499,7 @@ app.get('/api/getlogs/', (req,res) => {
             'properties.cust_name', 'properties.cust_email', 'properties.bill_address', 'properties.bill_city', 
             'properties.bill_state', 'properties.bill_zip', 'service_log.invoice_number', 'service_log.reference', 
             'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type', 'service_log.notes', 'service_log.work_type', 
-        ]        
+        ]       
 
         db('service_log')
         .join('properties', 'service_log.property_key', '=', 'properties.key')
@@ -509,8 +509,7 @@ app.get('/api/getlogs/', (req,res) => {
         .orWhere('properties.work_type', '<>', 'Snow Removal')  
         .andWhere('service_log.status', 'Done')
         .then(data => res.json(data))
-        .catch(err => res.json(err))
-        
+        .catch(err => res.json(err))        
     } else {
         db.whereBetween('service_log.timestamp', [options.start, options.end])
         .select('service_log.key', 'service_log.address', 'service_log.route_name', 'service_log.status', 'service_log.timestamp', 'service_log.notes', 
