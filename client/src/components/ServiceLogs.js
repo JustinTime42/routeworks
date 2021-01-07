@@ -68,6 +68,7 @@ const ServiceLogs = (props) => {
         fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${startDateTz}&end=${endDateTz}`)
         .then(response => response.json())
         .then(logs => {
+            console.log(logs)
             if (logType === 'xero') {
                 logs.forEach(entry => {
                     entry.invoiceDate = invoiceDate
