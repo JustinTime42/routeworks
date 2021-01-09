@@ -52,6 +52,13 @@ const ServiceLogs = (props) => {
                 { label: "Contract Type", key: "contract_type"},
                 { label: "Notes", key: "notes" },
                 { label: "Work Type", key: "work_type"},
+                { label: "Service Address", key: "address"},
+                { label: "Route Name", key: "route_name"},
+                { label: "Status", key: "status"},
+                { label: "Driver Name", key: "user_name"},
+                { label: "Tractor", key: "tractor"},
+                { label: "Driver Earning", key: "driver_earning"},
+                { label: "Property Value", key: "value"},
             ]  
         }
         return headers        

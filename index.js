@@ -499,16 +499,17 @@ app.get('/api/getlogs/', (req,res) => {
         [
             'properties.cust_name', 'properties.cust_email', 'properties.bill_address', 'properties.bill_city', 
             'properties.bill_state', 'properties.bill_zip', 'service_log.invoice_number', 'service_log.reference', 
-            'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type', 'service_log.notes', 'service_log.work_type', 
+            'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type', 
+            'service_log.notes', 'service_log.work_type', 'service_log.address', 'service_log.route_name', 'service_log.status',
+            'service_log.user_name', 'service_log.tractor', 'service_log.driver_earning', 'properties.value',
         ]       
-
         db('service_log')
         .join('properties', 'service_log.property_key', '=', 'properties.key')
         .select(getFields)
         .whereBetween('service_log.timestamp', [options.start, options.end])
-        .whereNotIn('properties.contract_type', ['Monthly', 'Seasonal'])
-        .orWhere('service_log.work_type', '<>', 'Snow Removal')  
-        .andWhere('service_log.status', 'Done')
+        // .whereNotIn('properties.contract_type', ['Monthly', 'Seasonal'])
+        // .orWhere('service_log.work_type', '<>', 'Snow Removal')  
+        // .andWhere('service_log.status', 'Done')
         .then(data => res.json(data))
         .catch(err => res.json(err))        
     } else {
