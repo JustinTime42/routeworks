@@ -91,15 +91,28 @@ class RouteEditor extends Component {
             routeSearchField: '',
             showModal: false,
             activeProperty: this.props.activeProperty,      
-            modified: [],      
+            modified: [],  
+            scrollYPosition: 0    
         }
     }
+
+    // getSnapshotBeforeUpdate(prevProps, prevState) {
+    //     console.log(prevProps)
+    //     if (prevState.activeProperty) {
+    //        const routeScroll = document.getElementById(`${prevProps.activeProperty.key}routecard`)?.getBoundingClientRect().top
+    //        console.log('routescroll', routeScroll)
+    //         return {scrollToMessage: routeScroll}
+    //     } else return null
+
+
+        
+    // }
     
     componentDidMount() {
-        this.props.onGetAllAddresses()     
+        this.props.onGetAllAddresses()
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps, prevState, snapshot) {        
         if(this.props.isRoutePending !== prevProps.isRoutePending || this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
             this.setState((prevState, prevProps) => {
                 return {
@@ -125,6 +138,11 @@ class RouteEditor extends Component {
             //         filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses.filter(property => !property.route_data.some(route => route.route_name === this.props.activeRoute))),
             //     }
             // }) 
+        }
+        if (snapshot && prevProps.activeProperty) {
+            //document.getElementById(`${prevProps.activeProperty.key}routecard`).scrollTo(0, snapshot.scrollToMessage)
+            console.log(snapshot.scrollToMessage)
+            // I think I'm scrolling or getting sroll position from the wrong element. maybe its a parent or child...
         }
 
  
@@ -395,6 +413,7 @@ class RouteEditor extends Component {
                     {(provided, snapshot) => (
                         <div
                             className="leftSide, scrollable"
+                            id="droppable2scroll"
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}>
                             {this.state.selected.map((item, index) => (
@@ -404,6 +423,7 @@ class RouteEditor extends Component {
                                     index={index}>
                                     {(provided, snapshot) => (
                                         <div
+                                            id={`${item.key}routecard`}
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
