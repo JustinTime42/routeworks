@@ -16,9 +16,9 @@ const PropertyCard = (props) => {
     }
     const cardStyle = {
         margin: '3px',
-        padding: '3px',
+        padding: '7px',
         borderRadius: "10px",
-        border: props.address?.key === props.activeProperty?.key ? "3px solid rgb(55,90,127)" : "none",
+        border: props.address?.key === props.activeProperty?.key ? "7px solid rgb(55,90,127)" : "none",
         width: props.width,
         backgroundColor: cardBg(), 
     }
