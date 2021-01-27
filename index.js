@@ -328,7 +328,7 @@ app.post('/api/saveroute', (req, res) => {
 app.post('/api/setstatus', (req, res) => {
     let { property, route, yards, status } = req.body
     let promises = []
-    let yards = (yards !== 0) ? ": " + yards + " yds" : "" 
+    yards = (yards !== 0) ? ": " + yards + " yds" : "" 
     let response = {
         route_data: [],
         serviceLog: [],
