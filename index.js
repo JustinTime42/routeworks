@@ -32,21 +32,21 @@ app.use(bodyParser.json({limit: '50mb'}));
 //Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-io.on('connection', socket => {
-    console.log("new user")
-    socket.emit('welcome-msg', "welcome, new user")
-    socket.on('hi', data => console.log(data))
-    socket.on('add-tractor', (tractor, res) => {
-            db('tractors')    
-            .returning('*')
-            .insert({...tractor})
-            .then(newTractor => {
-                console.log(newTractor)
-                socket.emit('newTractor', newTractor)
-            }) 
-            .catch(err => socket.emit('err', err))
-    })
-})
+// io.on('connection', socket => {
+//     console.log("new user")
+//     socket.emit('welcome-msg', "welcome, new user")
+//     socket.on('hi', data => console.log(data))
+//     socket.on('add-tractor', (tractor, res) => {
+//             db('tractors')    
+//             .returning('*')
+//             .insert({...tractor})
+//             .then(newTractor => {
+//                 console.log(newTractor)
+//                 socket.emit('newTractor', newTractor)
+//             }) 
+//             .catch(err => socket.emit('err', err))
+//     })
+// })
 
 /*
 The following endpoints (newtractor and deletetractor) are currently implemented as post endpoints. 
@@ -117,16 +117,45 @@ app.post('/api/addroute', (req, res) => {
     .insert({route_name: req.body.route_name})
     .then(routeName => {
         res.json(routeName)
-    }) 
+    })
+})
+
+app.post('/api/delroute', (req, res) => {
+    let response = {
+        del: [],
+        err: []
+    }    
+    let promises = []
+    let { route_name } = req.body
+
+    promises.push(
+        db('routes')
+        .returning('*')
+        .where('route_name', route_name)
+        .del()
+        .then(route => {
+            response.del.push(route)
+        }) 
+        .catch(err => response.err.push(err))
+    )
+    promises.push(
+        db('route_data')
+        .returning('*')
+        .where('route_name', route_name)
+        .del()
+        .then(route => response.del.push(route))
+        .catch(err => response.err.push(err))
+    )
 })
 
 app.post('/api/newproperty', (req, res) => {
     const property = req.body
     db('properties')    
     .returning('*')
-    .insert({...property, route_data: JSON.stringify(property.route_data)})
-     .then(property =>  res.json(property))
-     .catch(err => res.json("error: " + err))
+    // .insert({...property, route_data: JSON.stringify(property.route_data)})
+    .insert({...property})
+    .then(property =>  res.json(property))
+    .catch(err => res.json("error: " + err))
 })
 
 app.post('/api/editproperty', (req, res) => {
@@ -134,7 +163,7 @@ app.post('/api/editproperty', (req, res) => {
     db('properties')
     .returning('*')
     .where('key', property.key)
-    .update({...property, route_data: JSON.stringify(property.route_data)})
+    .update({...property})
     .then(details => res.json(details[0]))
     .catch(err => res.json("error: " + err))
 })
@@ -148,6 +177,7 @@ app.post('/api/deleteproperty', (req, res) => {
     .catch(err => res.json(err))
 })
 
+//this will have to be fixed for new route_data table
 app.post('/api/initroute', (req, res) => {
     const route = req.body.route
     let response = {
@@ -173,68 +203,55 @@ app.post('/api/initroute', (req, res) => {
 })
 
 app.post('/api/saveroute', (req, res) => {
-    /*
-        Right now, we are sending/recieving massive amounts of unneeded data and it's causing performance and data reliability issues. 
-        Change this to receive a simple array of property.key and property.route_data pairs. 
-        update properties where key matches the array and update route_data. 
-        Look into keeping property status though?
-    */
-    const add = req.body.selected
-    const droppedCard = req.body.droppedCard
+
+    const { selected, droppedCard, route, whereTo } = req.body
     let response = 
         {
-            add: [],
-            err: []
+            selected: [],
+            err: [],
+            removed: {},
         }
     let promises = []
-    add.forEach((item, i) => {
+
+    if (whereTo === "off") {
         promises.push(
-            db('properties')
+            db('route_data')
             .returning('*')
-            .where('key', item.key)
-            // .andWhere('key', '<>', droppedCard.key)?
+            .where({
+                property_key: droppedCard.key,
+                route_name: route,
+            })
+            .del()
+            .then(customer => response.removed = customer)
+            .catch(err => response.err.push(err))
+
+        )
+    } else if (whereTo === "on") {
+        promises.push(
+            db('route_data')
+            .returning('*')
+            .insert({...droppedCard, route_name: route})
+        )
+    }
+
+    selected.forEach((item, i) => {
+        promises.push(
+            db('route_data')
+            .returning('*')
+            .where({
+                property_key: item.key,
+                route_name: route,
+            })
             .update({
-                route_data: JSON.stringify(item.route_data),
+                route_position: item.route_position,
             })
             .then(address => {
-                response.add.push(address)
+                response.selected.push(address)
             }) 
             .catch(err => response.err.push(err))
         )       
     })
-    // remove.forEach((item, i) => {
-    //     promises.push(
-    //         db('properties')
-    //         .returning('address')
-    //         .where({
-    //             key: item.key,
-    //         })
-    //         .update({
-    //             ...item, 
-    //             route_name: item.route_name === route ? "unassigned" : item.route_name,
-    //             route_position: item.route_name === route ? null : item.route_position,
-    //             status: item.route_name === route ? null : item.status,
-    //             // address: item.address,
-    //             // cust_name: item.cust_name,
-    //             // cust_phone: item.cust_phone,
-    //             // surface_type: item.surface_type,
-    //             // is_new: item.is_new,
-    //             // notes: item.notes,
-    //             // seasonal: item.seasonal,
-    //             // price: item.price,
-    //             // value: item.value,
-    //             // temp: item.temp,
-    //             // contract_type: item.contract_type,
-    //             // price_per_yard: item.price_per_yard,
-    //             // inactive: item.inactive,
-    //             route_data: JSON.stringify(item.route_data),
-    //         })
-    //         .then(address => {
-    //             response.remove.push(address)
-    //         })  
-    //         .catch(err => response.err.push(err)) 
-    //     )
-    // })    
+    
     Promise.all(promises).then(() => res.json(response))
 })
 
@@ -309,21 +326,24 @@ app.post('/api/saveroute', (req, res) => {
 // })
 
 app.post('/api/setstatus', (req, res) => {
-    let property = req.body.property
+    let { property, route, yards, status } = req.body
     let promises = []
-    let yards = (req.body.yards !== 0) ? ": " + req.body.yards + " yds" : "" 
+    let yards = (yards !== 0) ? ": " + yards + " yds" : "" 
     let response = {
-        properties: [],
+        route_data: [],
         serviceLog: [],
         err: []
     }
 
     promises.push(
-        db('properties')
+        db('route_data')
         .returning('*')
-        .where('key', req.body.property.key)
-        .update({route_data: JSON.stringify(property.route_data)})
-        .then(property => response.properties.push(property))
+        .where({
+            property_key: property.property_key,
+            route_name: route,
+        })
+        .update({status: status})
+        .then(property => response.route_data.push(property))
         .catch(err => {
             response.err.push(err)
         })
@@ -334,7 +354,7 @@ app.post('/api/setstatus', (req, res) => {
         .returning('*')
         .insert({
             address: property.address,
-            status: req.body.status,
+            status: status,
             notes: req.body.noteField,
             user_name: req.body.driver.name,
             route_name: req.body.route,
@@ -483,9 +503,13 @@ app.get('/api/filterbytags/', (req, res) => {
 
 app.get('/api/getroute/:routeName', (req, res) => {
     const { routeName } = req.params
-    db.raw(`select * from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
+   // db.raw(`select * from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
+    db('route_data')
+    .join('properties', 'route_data.property_key', '=', 'properties.key')
+    .select('*')
+    .where('route_data.route_name', routeName)
     .then(data => {
-        res.json(data.rows)
+        res.json(data)
     })
     .catch(err => res.json(err))
 })
