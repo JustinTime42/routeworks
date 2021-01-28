@@ -167,7 +167,7 @@ class RouteEditor extends Component {
     }
 
     setUnselected = (addresses, route) => {
-        return addresses.filter(item => !item.route_data.some(item => item.route_name === route))
+        return addresses.filter(item => item.route_name !== route)
     }
     
     onSave = (customers, droppedCard = null, whereTo = 'same') => {
