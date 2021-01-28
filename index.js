@@ -32,21 +32,21 @@ app.use(bodyParser.json({limit: '50mb'}));
 //Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-// io.on('connection', socket => {
-//     console.log("new user")
-//     socket.emit('welcome-msg', "welcome, new user")
-//     socket.on('hi', data => console.log(data))
-//     socket.on('add-tractor', (tractor, res) => {
-//             db('tractors')    
-//             .returning('*')
-//             .insert({...tractor})
-//             .then(newTractor => {
-//                 console.log(newTractor)
-//                 socket.emit('newTractor', newTractor)
-//             }) 
-//             .catch(err => socket.emit('err', err))
-//     })
-// })
+io.on('connection', socket => {
+    console.log("new user")
+    //socket.emit('welcome-msg', "welcome, new user")
+    //socket.on('hi', data => console.log(data))
+    socket.on('add-tractor', (tractor, res) => {
+            db('tractors')    
+            .returning('*')
+            .insert({...tractor})
+            .then(newTractor => {
+                console.log(newTractor)
+                socket.emit('newTractor', newTractor)
+            }) 
+            .catch(err => socket.emit('err', err))
+    })
+})
 
 /*
 The following endpoints (newtractor and deletetractor) are currently implemented as post endpoints. 

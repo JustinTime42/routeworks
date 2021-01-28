@@ -202,7 +202,7 @@ class RouteEditor extends Component {
             {
                 route: this.props.activeRoute,
                 selected: selected,
-                droppedCard: {key: droppedCard.key, route_position: droppedCard.route_position},
+                droppedCard: droppedCard !== null ? {key: droppedCard.key, route_position: droppedCard.route_position} : null,
                 whereTo: whereTo
             }
         )
