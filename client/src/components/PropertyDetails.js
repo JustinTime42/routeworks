@@ -51,7 +51,7 @@ class PropertyDetails extends Component {
     }
 
     getLogs = () => {
-        fetch(`${process.env.REACT_APP_API_URL}/getlogs/${props.property.key}`)
+        fetch(`${process.env.REACT_APP_API_URL}/getlogs/${this.props.property.key}`)
         .then(response => response.json())
         .then(data => {
             let logs = []
@@ -111,7 +111,7 @@ class PropertyDetails extends Component {
                 <Row>
                     <Col>
                         <Card.Title>{property ? property.address ? property.address : null : null}</Card.Title>
-                        <Button onClick={getLogs} style={{float: "right"}}>Logs</Button>
+                        <Button onClick={this.getLogs} style={{float: "right"}}>Logs</Button>
                     </Col>
                     <Col><Card.Title style={{textAlign: "right"}}>{property ? property.surface_type ? <p>Surface:<br></br>{property.surface_type.toUpperCase()}</p> : null : null }</Card.Title></Col>
                 </Row>
