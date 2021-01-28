@@ -54,7 +54,7 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
     .then(response => response.json())
     .then(data => {
         const routeProperties = data.filter(item => !item.inactive)
-            .sort((a, b) => a.route_data.find(item => item.route_name === activeRoute).route_position > b.route_data.find(item => item.route_name === activeRoute).route_position ? 1 : -1) 
+            .sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
         dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })
     })
     .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
@@ -63,7 +63,7 @@ export const getRouteProperties = (activeRoute) => (dispatch) => {
 export const filterRouteProperties = (allAddresses, routeName, filter = '') => (dispatch) => {
     dispatch({ type: GET_ROUTE_PENDING})
     const routeProperties = allAddresses.filter(address => address.route_data.some(route => route.route_name === routeName )) 
-        .sort((a, b) => a.route_data.find(item => item.route_name === routeName).route_position > b.route_data.find(item => item.route_name === routeName).route_position ? 1 : -1); 
+        .sort((a, b) => a.route_position > b.route_position ? 1 : -1); 
     dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties})
 }
 

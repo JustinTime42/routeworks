@@ -39,10 +39,10 @@ class DisplayRoute extends Component {
         }
       }
 
-    parseRouteData = (customer, route, field) => {
-        return customer.route_data.some(item => item.route_name === route) ?
-            customer.route_data.find(item => item.route_name === route)[field] : null
-    }
+    // parseRouteData = (customer, route, field) => {
+    //     return customer.route_data.some(item => item.route_name === route) ?
+    //         customer.route_data.find(item => item.route_name === route)[field] : null
+    // }
 
     changeActiveProperty = (property = this.props.activeProperty, direction = '') => {
         console.log(property, direction)

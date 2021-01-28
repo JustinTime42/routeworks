@@ -50,6 +50,21 @@ class PropertyDetails extends Component {
         this.setState({work_type: event})
     }
 
+    getLogs = () => {
+        fetch(`${process.env.REACT_APP_API_URL}/getlogs/${props.property.key}`)
+        .then(response => response.json())
+        .then(data => {
+            let logs = []
+
+            data.forEach(item => {                
+                item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
+                logs.push([item.timestamp, item.address, item.cust_name, item.status, item.notes, item.description, item.user_name])
+            })
+            alert(JSON.stringify(logs))
+        }) 
+        .catch(error => alert(error))
+    }
+
     onStatusChange = (newStatus) => {
         
         this.setState({disabled: true})
@@ -62,7 +77,7 @@ class PropertyDetails extends Component {
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
             property.price = 0  
         }
-        property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
+        //property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
         axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
             {
                 property: property,
@@ -78,7 +93,7 @@ class PropertyDetails extends Component {
         .then(res => {
             this.props.onGetRouteProperties(this.props.activeRoute) 
             console.log(res)
-            let confirmedStatus = res.data.properties[0][0].route_data.find(route => route.route_name === this.props.activeRoute).status
+            let confirmedStatus = res.data.route_data.status
             if ( confirmedStatus = newStatus) {
                 this.setState({done_label: "visible", newStatus:confirmedStatus})
             } else alert(confirmedStatus)
@@ -96,6 +111,7 @@ class PropertyDetails extends Component {
                 <Row>
                     <Col>
                         <Card.Title>{property ? property.address ? property.address : null : null}</Card.Title>
+                        <Button onClick={getLogs} style={{float: "right"}}>Logs</Button>
                     </Col>
                     <Col><Card.Title style={{textAlign: "right"}}>{property ? property.surface_type ? <p>Surface:<br></br>{property.surface_type.toUpperCase()}</p> : null : null }</Card.Title></Col>
                 </Row>

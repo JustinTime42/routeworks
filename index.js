@@ -330,7 +330,7 @@ app.post('/api/setstatus', (req, res) => {
     let promises = []
     yards = (yards !== 0) ? ": " + yards + " yds" : "" 
     let response = {
-        route_data: [],
+        route_data: {},
         serviceLog: [],
         err: []
     }
@@ -343,7 +343,7 @@ app.post('/api/setstatus', (req, res) => {
             route_name: route,
         })
         .update({status: status})
-        .then(property => response.route_data.push(property))
+        .then(entry => response.route_data = entry)
         .catch(err => {
             response.err.push(err)
         })
