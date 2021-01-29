@@ -225,7 +225,7 @@ class RouteEditor extends Component {
     onInitRoute = () => {        
         this.setState((prevState, prevProps) => {
             let selected = prevState.selected 
-            selected.forEach(customer => customer.route_data.find(route => route.route_name === prevProps.activeRoute).status = "Waiting")           
+            selected.forEach(customer => customer.status = "Waiting")           
             return {
                 selected: selected
             }
@@ -323,7 +323,7 @@ class RouteEditor extends Component {
 
     onFilterProperties = (filter = '', addresses = []) => {
         let filteredItems = addresses.filter(property => {
-            if (property.route_data.some(route => route.route_name === this.props.activeRoute)) return false
+            if (property.route_name === this.props.activeRoute) return false
             else {
                 if (!filter) return true                          
                 else if (property.cust_name && property.cust_name.toLowerCase().includes(filter.toLowerCase())) return true
