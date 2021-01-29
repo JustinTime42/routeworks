@@ -380,7 +380,7 @@ app.post('/api/setstatus', (req, res) => {
 
 app.get('/api/properties', (req, res) => {
     db('properties')
-    .leftJoin('route_data', 'properties.key', '=', 'route_data.property_key')
+    .rightJoin('route_data', 'properties.key', '=', 'route_data.property_key')
     .select('*')
     .then(data => {
         res.json(data)
