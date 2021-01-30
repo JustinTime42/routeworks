@@ -380,12 +380,16 @@ app.post('/api/setstatus', (req, res) => {
 
 app.get('/api/properties', (req, res) => {
     db.select('*')
+    // for now, send all property data. Also request route data everywhere that property data is requested. 
+    // eventually, trim this to be just key, cust_name, and address and make another endpoint for all the details
+    // that will be queried when a customer is clicked on. 
+    // 
     .from('properties')
-    .leftJoin('route_data', 'properties.key', 'route_data.property_key')
     .then(data => {
         res.json(data)
     })
 })
+
 
 app.get('/api/contactinfo', (req, res) => {
     let tags = req.query.tags
@@ -500,6 +504,13 @@ app.get('/api/filterbytags/', (req, res) => {
         )        
     })  
     Promise.all(promises).then(() => res.json(response)) 
+})
+
+app.get('/api/routedata', (req, res) => {
+    db('route_data')
+    .select('*')
+    .then(data => res.json(data))
+    .catch(err => res.json(err))
 })
 
 app.get('/api/getroute/:routeName', (req, res) => {
