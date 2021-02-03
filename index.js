@@ -386,7 +386,7 @@ app.get('/api/properties', (req, res) => {
     //     
     db.select('*')
     .from('properties')
-    .then(res => res.json(res))
+    .then(data => res.json(data))
     .catch(err => res.json(err)) 
 })
 
