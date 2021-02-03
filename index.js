@@ -16,6 +16,7 @@ const knex = require('knex')
 const pg = require('pg');
 const { ESRCH } = require('constants');
 const { Socket } = require('dgram');
+const { promises } = require('fs');
 
 const db = knex({
     client: 'pg',
@@ -242,7 +243,7 @@ app.post('/api/saveroute', (req, res) => {
                 property_key: item.key,
                 route_name: route,
             })
-            .update({
+            .update({   
                 route_position: item.route_position,
             })
             .then(address => {
@@ -379,17 +380,30 @@ app.post('/api/setstatus', (req, res) => {
 })
 
 app.get('/api/properties', (req, res) => {
-    db.select('*')
     // for now, send all property data. Also request route data everywhere that property data is requested. 
     // eventually, trim this to be just key, cust_name, and address and make another endpoint for all the details
     // that will be queried when a customer is clicked on. 
     // 
-    .from('properties')
-    .then(data => {
-        res.json(data)
-    })
+    let promise = []
+    let response = {
+        properties: [],
+        routeData: [],
+        err: [],
+    }
+    promises.push(
+        db.select('*')
+        .from('properties')
+        .then(properties => response.data = properties)
+        .catch(err => response.err.push(err))
+    )
+    promises.push(
+        db.select('*')
+        .from('route_data')
+        .then(routeData => response.routeData = routeData)
+        .catch(err => response.err.push(err))
+    )
+    Promise.all(promises).then(() => res.json(response))
 })
-
 
 app.get('/api/contactinfo', (req, res) => {
     let tags = req.query.tags
