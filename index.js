@@ -340,7 +340,7 @@ app.post('/api/setstatus', (req, res) => {
         db('route_data')
         .returning('*')
         .where({
-            property_key: property.property_key,
+            property_key: property.key,
             route_name: route,
         })
         .update({status: status})
@@ -350,6 +350,7 @@ app.post('/api/setstatus', (req, res) => {
         })
     )
 
+    //todo: remove extraneous data from this table. simply save property key, and join for the other data.
     promises.push(
         db('service_log')
         .returning('*')
