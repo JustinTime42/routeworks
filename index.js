@@ -219,7 +219,7 @@ app.post('/api/saveroute', (req, res) => {
             db('route_data')
             .returning('*')
             .where({
-                property_key: droppedCard.key,
+                property_key: droppedCard.property_key,
                 route_name: route,
             })
             .del()
