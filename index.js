@@ -197,7 +197,7 @@ app.post('/api/initroute', (req, res) => {
                 status: item.status,
             })
             .then(address => {
-                response.selected.push(address)
+                response.success.push(address)
             }) 
             .catch(err => {
                 console.log(err)
@@ -370,7 +370,6 @@ app.post('/api/setstatus', (req, res) => {
         })
     )
 
-    //todo: remove extraneous data from this table. simply save property key, and join for the other data.
     promises.push(
         db('service_log')
         .returning('*')
