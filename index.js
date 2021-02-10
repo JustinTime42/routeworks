@@ -178,7 +178,6 @@ app.post('/api/deleteproperty', (req, res) => {
     .catch(err => res.json(err))
 })
 
-//this will have to be fixed for new route_data table
 app.post('/api/initroute', (req, res) => {
     const route = req.body.route
     let response = {
@@ -188,17 +187,22 @@ app.post('/api/initroute', (req, res) => {
     let promises = []
     route.forEach(item => {
         promises.push(
-            db('properties')
+            db('route_data')
             .returning('*')
-            .where('key', item.key)
-            .update({
-                route_data: JSON.stringify(property.route_data),
+            .where({
+                property_key: item.key,
+                route_name: route,
             })
-            .then(item => {
-                response.success.push(item)            
+            .update({   
+                status: item.status,
+            })
+            .then(address => {
+                response.selected.push(address)
             }) 
-            .catch(err => response.err.push(err))
-        )        
+            .catch(err => {
+                response.err.push(err)
+            })
+        )          
     })
     Promise.all(promises).then(() => res.json(response))    
 })
@@ -251,7 +255,7 @@ app.post('/api/saveroute', (req, res) => {
                 route_name: route,
             })
             .update({   
-                route_position: item.route_position,
+                route_position: item.routePosition,
             })
             .then(address => {
                 response.selected.push(address)
