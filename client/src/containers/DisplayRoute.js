@@ -67,7 +67,7 @@ class DisplayRoute extends Component {
         this.props.routeData.forEach(routeEntry => {
             if (routeEntry.route_name === this.props.activeRoute) {
                 let customer = this.props.addresses.find(property => property.key === routeEntry.property_key)
-                routeProperties.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.route_position, status: routeEntry.status })
+                routeProperties.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.routePosition, status: routeEntry.status })
             }
         })
         console.log('reoute properties: ', routeProperties)

@@ -3,8 +3,8 @@ import { Button } from 'react-bootstrap'
 
 const PropertyCard = (props) => {
 
-    const status = props.address.routeName === props.route ?
-        props.address.status : null
+    const status = props.address.status //.routeName === props.route ?
+        //props.address.status : null
     
     // const route_list = props.address.route_data.map(item => item.route_name + ", ")
 

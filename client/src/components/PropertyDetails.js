@@ -91,6 +91,7 @@ class PropertyDetails extends Component {
                 yards: this.state.yards,
             }
         )
+
         .then(res => {
             //this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.getRouteData() 
@@ -99,8 +100,7 @@ class PropertyDetails extends Component {
             if ( confirmedStatus = newStatus) {
                 this.setState({done_label: "visible", newStatus:confirmedStatus})
             } else alert(confirmedStatus)
-            if (res.data.err.length > 0) alert(res.data.err)
-            
+            if (res.data.err.length > 0) alert(res.data.err)            
         })
         .catch(err => alert(err)) 
     }

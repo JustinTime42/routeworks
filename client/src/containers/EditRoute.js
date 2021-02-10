@@ -127,7 +127,7 @@ class EditRoute extends Component {
                 }
             }, () => {
                 if(this.props.activeProperty?.route_name === this.props.activeRoute) {
-                    let currentPosition = this.props.activeProperty.route_position - 1
+                    let currentPosition = this.props.activeProperty.routePosition - 1
                     console.log("currentposition", currentPosition)  
                     if (document.getElementById(`card${currentPosition}`)) {
                         document.getElementById(`card${currentPosition}`).scrollIntoView(true)
@@ -174,7 +174,7 @@ class EditRoute extends Component {
             if (routeEntry.route_name === route) {
                 let i = customers.findIndex(customer => customer.key === routeEntry.property_key)
                 let customer = customers[i]                
-                selected.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.route_position, status: routeEntry.status})
+                selected.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.routePosition, status: routeEntry.status})
                 customers[i].routeName = route
             }
         })
@@ -196,10 +196,6 @@ class EditRoute extends Component {
         // // return addresses.filter(item => item.route_name === route)
         // //     .sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
     }
-
-    // setUnselected = (addresses, route) => {
-    //     return addresses.filter(item => item.routeName !== route)
-    // }
     
     onSave = (customers, droppedCard = null, whereTo = 'same') => {
         // get route. for each property ( for each item in route_data => if status = "none", replace with status from fetched route?)
@@ -225,7 +221,7 @@ class EditRoute extends Component {
         //this will strip selected down to the needed data
         let selected = customers.map(item => {
             return (
-                {key: item.key, route_position: item.route_position}
+                {key: item.key, route_position: item.routePosition}
             )
         })
         //next, I need to add the dragged item to it, if it doesn't exist already... ?
@@ -233,7 +229,7 @@ class EditRoute extends Component {
             {
                 route: this.props.activeRoute,
                 selected: selected,
-                droppedCard: {property_key: droppedCard?.key, route_position: droppedCard?.route_position, status: droppedCard?.status},
+                droppedCard: {property_key: droppedCard?.key, route_position: droppedCard?.routePosition, status: droppedCard?.status},
                 whereTo: whereTo
             }
         )
@@ -242,7 +238,7 @@ class EditRoute extends Component {
             this.props.onGetAllAddresses()
             // this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
             this.props.getRouteData()
-            console.log(res)
+            console.log(res.data)
            // if(this.props.activeProperty) {
                
                 // id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`}
@@ -254,14 +250,20 @@ class EditRoute extends Component {
     }
 
     //this will still need to be brought up to route_data management v3
-    onInitRoute = () => {        
-        this.setState((prevState, prevProps) => {
-            let selected = prevState.selected 
-            selected.forEach(customer => customer.status = "Waiting")           
-            return {
-                selected: selected
-            }
-        }, this.onSave(this.state.selected))
+    onInitRoute = () => {    
+        let selected = this.state.selected
+        selected.forEach(customer => customer.status = "Waiting")
+        console.log("selected ", selected)
+        this.onSave(selected)
+
+        // console.log("selected", this.state.selected)    
+        // this.setState((prevState, prevProps) => {
+        //     let selected = prevState.selected 
+        //     selected.forEach(customer => customer.status = "Waiting")           
+        //     return {
+        //         selected: selected
+        //     }
+        // }, this.onSave(this.state.selected))
     }
     
     getList = id => this.state[this.id2List[id]];
@@ -296,7 +298,7 @@ class EditRoute extends Component {
                 destination
             )
 
-            newList.droppable2.forEach((item, i) => item.route_position = i)
+            newList.droppable2.forEach((item, i) => item.routePosition = i)
             
             // here we are removing from route... 
             // here we will remove the route from droppedCard and submit selected and droppedCard,
@@ -304,7 +306,7 @@ class EditRoute extends Component {
                 let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))              
                 //droppedCard.route_data.splice(droppedCard.route_data.findIndex(route => route.route_name === this.props.activeRoute), 1)
                 // newList.droppable2.push(droppedCard)
-               
+               console.log(newList.droppable2)
                 this.onSave(newList.droppable2, droppedCard, 'off') //Now we'll send the dropped card separately, so we can handle route data differently
                 //  this.props.onEditProperty(droppedCard, this.props.addresses) <-- No, put this in onsave. keep edit property for non-route stuff
 
