@@ -200,6 +200,7 @@ app.post('/api/initroute', (req, res) => {
                 response.selected.push(address)
             }) 
             .catch(err => {
+                console.log(err)
                 response.err.push(err)
             })
         )          
