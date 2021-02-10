@@ -179,13 +179,13 @@ app.post('/api/deleteproperty', (req, res) => {
 })
 
 app.post('/api/initroute', (req, res) => {
-    const route = req.body.route
+    const { route, customers} = req.body
     let response = {
         success: [],
         err: []
     } 
     let promises = []
-    route.forEach(item => {
+    customers.forEach(item => {
         promises.push(
             db('route_data')
             .returning('*')

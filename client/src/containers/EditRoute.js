@@ -174,7 +174,7 @@ class EditRoute extends Component {
             if (routeEntry.route_name === route) {
                 let i = customers.findIndex(customer => customer.key === routeEntry.property_key)
                 let customer = customers[i]                
-                selected.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.routePosition, status: routeEntry.status})
+                selected.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.route_position, status: routeEntry.status})
                 customers[i].routeName = route
             }
         })
@@ -251,10 +251,15 @@ class EditRoute extends Component {
 
     //this will still need to be brought up to route_data management v3
     onInitRoute = () => {    
-        let selected = this.state.selected
+        let selected = [...this.state.selected]
         selected.forEach(customer => customer.status = "Waiting")
         console.log("selected ", selected)
-        this.onSave(selected)
+        axios.post(`${process.env.REACT_APP_API_URL}/initroute`,
+            {
+                route: this.props.setActiveRoute,
+                customers: selected      
+            }
+        )
 
         // console.log("selected", this.state.selected)    
         // this.setState((prevState, prevProps) => {
