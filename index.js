@@ -224,7 +224,10 @@ app.post('/api/saveroute', (req, res) => {
             })
             .del()
             .then(customer => response.removed = customer)
-            .catch(err => response.err.push(err))
+            .catch(err => {
+                console.log("route data off", err)
+                response.err.push(err)
+            })
 
         )
     } else if (whereTo === "on") {
@@ -232,6 +235,10 @@ app.post('/api/saveroute', (req, res) => {
             db('route_data')
             .returning('*')
             .insert({...droppedCard, route_name: route})
+            .catch(err => {
+                console.log("route data on", err)
+                response.err.push(err)
+            })
         )
     }
 
@@ -249,11 +256,17 @@ app.post('/api/saveroute', (req, res) => {
             .then(address => {
                 response.selected.push(address)
             }) 
-            .catch(err => response.err.push(err))
+            .catch(err => {
+                console.log("route data reorder", err)
+                response.err.push(err)
+            })
         )       
     })
     
-    Promise.all(promises).then(() => res.json(response))
+    Promise.all(promises).then(() => {
+        console.log(response)
+        res.json(response)
+    })
 })
 
 //The following are temporary functions for importing old data. 
