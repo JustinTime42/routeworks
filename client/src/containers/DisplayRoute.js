@@ -67,11 +67,11 @@ class DisplayRoute extends Component {
         this.props.routeData.forEach(routeEntry => {
             if (routeEntry.route_name === this.props.activeRoute) {
                 let customer = this.props.addresses.find(property => property.key === routeEntry.property_key)
-                routeProperties.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.route_position, status: routeEntry.status })
+                routeProperties.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status })
             }
         })
         console.log('reoute properties: ', routeProperties)
-        return routeProperties.filter(item => !item.inactive).sort((a, b) => a.routePosition > b.routePosition ? 1 : -1) 
+        return routeProperties.filter(item => !item.inactive).sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
     }
 
     changeActiveProperty = (property = this.props.activeProperty, direction = '') => {

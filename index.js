@@ -256,7 +256,7 @@ app.post('/api/saveroute', (req, res) => {
                 route_name: route,
             })
             .update({   
-                route_position: item.routePosition,
+                route_position: item.route_position,
             })
             .then(address => {
                 response.selected.push(address)

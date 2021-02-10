@@ -127,7 +127,7 @@ class EditRoute extends Component {
                 }
             }, () => {
                 if(this.props.activeProperty?.route_name === this.props.activeRoute) {
-                    let currentPosition = this.props.activeProperty.routePosition - 1
+                    let currentPosition = this.props.activeProperty.route_position - 1
                     console.log("currentposition", currentPosition)  
                     if (document.getElementById(`card${currentPosition}`)) {
                         document.getElementById(`card${currentPosition}`).scrollIntoView(true)
@@ -174,11 +174,11 @@ class EditRoute extends Component {
             if (routeEntry.route_name === route) {
                 let i = customers.findIndex(customer => customer.key === routeEntry.property_key)
                 let customer = customers[i]                
-                selected.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.route_position, status: routeEntry.status})
+                selected.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status})
                 customers[i].routeName = route
             }
         })
-        let sortedSelect = selected.sort((a, b) => a.routePosition > b.routePosition ? 1 : -1) 
+        let sortedSelect = selected.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
         let unselected = customers.filter(customer => customer.routeName !== route)
         this.setState({selected: sortedSelect, filteredItems: unselected})
         // let routeProperties = []
@@ -187,12 +187,12 @@ class EditRoute extends Component {
         // this.props.routeData.forEach(routeEntry => {
         //     if (routeEntry.route_name === this.props.activeRoute) {
         //         let customer = this.props.addresses.find(property => property.key === routeEntry.property_key)
-        //         routeProperties.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.route_position, status: routeEntry.status })
+        //         routeProperties.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status })
         //     }
         // })
         // //routeProperties.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
         // console.log('reoute properties: ', routeProperties)
-        // return routeProperties.sort((a, b) => a.routePosition > b.routePosition ? 1 : -1) 
+        // return routeProperties.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
         // // return addresses.filter(item => item.route_name === route)
         // //     .sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
     }
@@ -221,15 +221,16 @@ class EditRoute extends Component {
         //this will strip selected down to the needed data
         let selected = customers.map(item => {
             return (
-                {key: item.key, route_position: item.routePosition}
+                {key: item.key, route_position: item.route_position}
             )
         })
+        console.log("selected", selected)
         //next, I need to add the dragged item to it, if it doesn't exist already... ?
         axios.post(`${process.env.REACT_APP_API_URL}/saveroute`, 
             {
                 route: this.props.activeRoute,
                 selected: selected,
-                droppedCard: {property_key: droppedCard?.key, route_position: droppedCard?.routePosition, status: droppedCard?.status},
+                droppedCard: {property_key: droppedCard?.key, route_position: droppedCard?.route_position, status: droppedCard?.status},
                 whereTo: whereTo
             }
         )
@@ -238,6 +239,7 @@ class EditRoute extends Component {
             this.props.onGetAllAddresses()
             // this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
             this.props.getRouteData()
+            this.setSelected()
             console.log(res.data)
            // if(this.props.activeProperty) {
                
@@ -256,10 +258,16 @@ class EditRoute extends Component {
         console.log("selected ", selected)
         axios.post(`${process.env.REACT_APP_API_URL}/initroute`,
             {
-                route: this.props.setActiveRoute,
+                route: this.props.activeRoute,
                 customers: selected      
             }
         )
+        .then(res => {
+            this.props.onGetAllAddresses()
+            this.props.getRouteData()
+            console.log(res.data)
+        })
+        
 
         // console.log("selected", this.state.selected)    
         // this.setState((prevState, prevProps) => {
@@ -303,7 +311,7 @@ class EditRoute extends Component {
                 destination
             )
 
-            newList.droppable2.forEach((item, i) => item.routePosition = i)
+            newList.droppable2.forEach((item, i) => item.route_position = i)
             
             // here we are removing from route... 
             // here we will remove the route from droppedCard and submit selected and droppedCard,
