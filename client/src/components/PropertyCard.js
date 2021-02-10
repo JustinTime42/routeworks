@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap'
 
 const PropertyCard = (props) => {
 
-    const status = props.address.route_name === props.route ?
+    const status = props.address.routeName === props.route ?
         props.address.status : null
     
     // const route_list = props.address.route_data.map(item => item.route_name + ", ")
@@ -61,7 +61,8 @@ const PropertyCard = (props) => {
             {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </h5>                             
             
-            <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
+            <p style={{color: "rgba(255, 255, 255, 0.7)", marginBottom: "2em"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
+            
             {/* {props.admin ? <p>route: {route_list}</p> : <div></div>} */}
         </div>
     )

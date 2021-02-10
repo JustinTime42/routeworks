@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from "react-redux"
 import { Card, Col, Row, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap'
 import axios from 'axios'
-import { getRouteProperties } from "../actions"
+import { getRouteProperties, getRouteData } from "../actions"
 
 import '../styles/driver.css'
 import DropdownItem from 'react-bootstrap/DropdownItem'
@@ -14,12 +14,14 @@ const mapStateToProps = state => {
         tractor: state.setTractorName.tractorName,
         activeRoute: state.setActiveRoute.activeRoute,
         routePending: state.getRouteProperties.isPending,
+        // routeData: state.getRouteData.routeData,
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onGetRouteProperties: (route) => dispatch(getRouteProperties(route))        
+        getRouteData: () => dispatch(getRouteData()),
+        //onGetRouteProperties: (route) => dispatch(getRouteProperties(route))        
     }
 }
 
@@ -66,7 +68,6 @@ class PropertyDetails extends Component {
     }
 
     onStatusChange = (newStatus) => {
-        
         this.setState({disabled: true})
         let property = {...this.props.property}
         if (this.state.work_type === 'Sanding') {
@@ -91,7 +92,8 @@ class PropertyDetails extends Component {
             }
         )
         .then(res => {
-            this.props.onGetRouteProperties(this.props.activeRoute) 
+            //this.props.onGetRouteProperties(this.props.activeRoute)
+            this.props.getRouteData() 
             console.log(res)
             let confirmedStatus = res.data.route_data.status
             if ( confirmedStatus = newStatus) {

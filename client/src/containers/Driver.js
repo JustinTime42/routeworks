@@ -3,11 +3,11 @@ import {connect } from "react-redux"
 import RouteSelector from "./RouteSelector"
 import DriverName from "./DriverSelector"
 import DisplayRoute from "./DisplayRoute"
-import RouteEditor from "./RouteEditor"
+import EditRoute from "./EditRoute"
 import EditRouteButton from "./AdminDropdown"
 import Spinner from "../components/Spinner"
 import BlackoutButton from "../components/BlackoutButton"
-import { showRouteEditor, getRouteProperties } from "../actions"
+import { showRouteEditor, getRouteProperties, getRouteData, requestAllAddresses } from "../actions"
 import TractorName from "./TractorName"
 import FullScreen from "../components/FullScreen"
 import { Alert } from "react-bootstrap"
@@ -23,23 +23,31 @@ const mapStateToProps = state => {
         tractorName: state.setTractorName.tractorName,
         routesPending: state.requestRoutes.isPending,
         activeRoute: state.setActiveRoute.activeRoute,
+        routeData: state.getRouteData.routeData,
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         onShowEditor: () => dispatch(showRouteEditor(true)),
-        getRouteProperties: (route) => dispatch(getRouteProperties(route))
+        //getRouteProperties: (route) => dispatch(getRouteProperties(route)),
+        onGetAllAddresses: () => dispatch(requestAllAddresses()),
+        getRouteData: () => dispatch(getRouteData()),
     }
 }
 
 class Driver extends Component {
 
-    componentDidUpdate(prevProps) {
-        if(prevProps.showRouteEditor !== this.props.showRouteEditor && this.props.showRouteEditor === false){
-            this.props.getRouteProperties(this.props.activeRoute)
-        }        
+    componentDidMount() {
+        this.props.onGetAllAddresses()
+        this.props.getRouteData()
     }
+
+    // componentDidUpdate(prevProps) {
+    //     if(prevProps.showRouteEditor !== this.props.showRouteEditor && this.props.showRouteEditor === false){
+    //         this.props.getRouteProperties(this.props.activeRoute)
+    //     }        
+    // }
 
     render() {
         return (
@@ -56,11 +64,10 @@ class Driver extends Component {
                     <BlackoutButton /> 
                 </div>
                 { 
-                this.props.showRouteEditor ? <RouteEditor /> : 
+                this.props.showRouteEditor ? <EditRoute /> : 
                 this.props.tractorName && (this.props.driverName.key !== '') ? <DisplayRoute /> :
                 <Alert variant="warning">Please enter driver and tractor name to begin.</Alert>                              
-                }    
-             
+                }             
             </div>            
         )
     }    

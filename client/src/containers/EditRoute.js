@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { connect } from "react-redux"
-import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRoute, setActiveProperty, saveNewProperty, editProperty, deleteProperty } from "../actions"
+import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRoute, setActiveProperty, saveNewProperty, editProperty, deleteProperty, getRouteData } from "../actions"
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "../components/PropertyCard"
@@ -13,10 +13,11 @@ const mapStateToProps = state => {
         activeProperty: state.setActiveProperty.activeProperty,
         activeRoute: state.setActiveRoute.activeRoute,
         addresses: state.requestAllAddresses.addresses,
-        routeProperties: state.getRouteProperties.addresses,
-        isRoutePending: state.getRouteProperties.isPending,
+        //routeProperties: state.getRouteProperties.addresses,
+        // isRoutePending: state.getRouteProperties.isPending,
         isAllPending: state.requestAllAddresses.isPending,
         error: state.requestAllAddresses.error,
+        routeData: state.getRouteData.routeData,
     }
 } 
 
@@ -25,11 +26,12 @@ const mapDispatchToProps = (dispatch) => {
         onSaveRoute: (route) => dispatch(saveRoute(route)),
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
         onSetActiveProperty: (property) => dispatch(setActiveProperty(property)),
-        onGetRouteProperties: (route) => dispatch(getRouteProperties(route)),
+      //  onGetRouteProperties: (route) => dispatch(getRouteProperties(route)),
         onSaveNewProperty: (property, allAddresses) => dispatch(saveNewProperty(property, allAddresses)),
         onEditProperty: (property, allAddresses) => dispatch(editProperty(property, allAddresses)),
         onDeleteProperty: (property, allAddresses, routeName) => dispatch(deleteProperty(property, allAddresses, routeName)),
-        onFilterRouteProperties: (addresses, route) => dispatch(filterRouteProperties(addresses, route))
+        onFilterRouteProperties: (addresses, route) => dispatch(filterRouteProperties(addresses, route)),
+        getRouteData: () => dispatch(getRouteData()),
     }
 }
 
@@ -80,13 +82,13 @@ const getListStyle = isDraggingOver => ({
     width: "90%"
 });
 
-class RouteEditor extends Component {
+class EditRoute extends Component {
     constructor(props){
         super(props)
         this.state = { 
-            items: this.setUnselected(this.props.addresses, this.props.activeRoute),
-            filteredItems: this.setUnselected(this.props.addresses, this.props.activeRoute),
-            selected: this.setSelected(this.props.addresses, this.props.activeRoute),
+            items: [], //this.setUnselected(this.props.addresses, this.props.activeRoute),
+            filteredItems: [], //this.setUnselected(this.props.addresses, this.props.activeRoute),
+            selected: [], //this.setSelected(this.props.addresses, this.props.activeRoute),
             searchField: '',
             routeSearchField: '',
             showModal: false,
@@ -112,13 +114,15 @@ class RouteEditor extends Component {
         this.props.onGetAllAddresses()
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {        
+    componentDidUpdate(prevProps, prevState, snapshot) {    
+        // PROBLEM, setselected only pushes to selected, it doesn't actually modify the addresses to add routeName, that's why they route addresses are showing up in both lists... 
         if(this.props.isRoutePending !== prevProps.isRoutePending || this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
+            this.setSelected()
             this.setState((prevState, prevProps) => {
                 return {
-                    selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
-                    items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
-                    filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
+                    // selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
+                    // items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
+                    // filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
                     activeProperty: prevProps.activeProperty
                 }
             }, () => {
@@ -161,14 +165,41 @@ class RouteEditor extends Component {
         droppable2: 'selected'
     }
 
-    setSelected = (addresses, route) => {
-        return addresses.filter(item => item.route_name === route)
-            .sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
+    setSelected = () => {
+        
+        let selected = []
+        let customers = [...this.props.addresses]
+        let route = this.props.activeRoute
+        this.props.routeData.forEach(routeEntry => {
+            if (routeEntry.route_name === route) {
+                let i = customers.findIndex(customer => customer.key === routeEntry.property_key)
+                let customer = customers[i]                
+                selected.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.route_position, status: routeEntry.status})
+                customers[i].routeName = route
+            }
+        })
+        let sortedSelect = selected.sort((a, b) => a.routePosition > b.routePosition ? 1 : -1) 
+        let unselected = customers.filter(customer => customer.routeName !== route)
+        this.setState({selected: sortedSelect, filteredItems: unselected})
+        // let routeProperties = []
+        // // look through all routeData. for each entry where route_name === this.props.activeRoute, 
+        // // add that to the routeproperties, sort by route_position. return that. 
+        // this.props.routeData.forEach(routeEntry => {
+        //     if (routeEntry.route_name === this.props.activeRoute) {
+        //         let customer = this.props.addresses.find(property => property.key === routeEntry.property_key)
+        //         routeProperties.push({...customer, routeName: routeEntry.route_name, routePosition:routeEntry.route_position, status: routeEntry.status })
+        //     }
+        // })
+        // //routeProperties.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
+        // console.log('reoute properties: ', routeProperties)
+        // return routeProperties.sort((a, b) => a.routePosition > b.routePosition ? 1 : -1) 
+        // // return addresses.filter(item => item.route_name === route)
+        // //     .sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
     }
 
-    setUnselected = (addresses, route) => {
-        return addresses.filter(item => item.route_name !== route)
-    }
+    // setUnselected = (addresses, route) => {
+    //     return addresses.filter(item => item.routeName !== route)
+    // }
     
     onSave = (customers, droppedCard = null, whereTo = 'same') => {
         // get route. for each property ( for each item in route_data => if status = "none", replace with status from fetched route?)
@@ -202,14 +233,15 @@ class RouteEditor extends Component {
             {
                 route: this.props.activeRoute,
                 selected: selected,
-                droppedCard: droppedCard !== null ? {key: droppedCard.key, route_position: droppedCard.route_position} : null,
+                droppedCard: {property_key: droppedCard?.key, route_position: droppedCard?.route_position, status: droppedCard?.status},
                 whereTo: whereTo
             }
         )
         .then(res => {
-            this.props.onGetRouteProperties(this.props.activeRoute)
+            //this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.onGetAllAddresses()
-            this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
+            // this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
+            this.props.getRouteData()
             console.log(res)
            // if(this.props.activeProperty) {
                
@@ -307,13 +339,14 @@ class RouteEditor extends Component {
                 // of dispatching an action per item in the list                
                 
                 // this is currently needed to keep the recently dragged item, but is stupid. plz change.
-                this.setState((prevState, prevProps) => {
-                    return {
-                        selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
-                        items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
-                        filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
-                    }
-                }) 
+                this.setSelected()
+                // this.setState((prevState, prevProps) => {
+                //     return {
+                //         selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
+                //         items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
+                //         filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
+                //     }
+                // }) 
         }        
     }
 
@@ -321,20 +354,20 @@ class RouteEditor extends Component {
         this.props.onSetActiveProperty(property)
     }
 
-    onFilterProperties = (filter = '', addresses = []) => {
-        let filteredItems = addresses.filter(property => {
-            if (property.route_name === this.props.activeRoute) return false
-            else {
-                if (!filter) return true                          
-                else if (property.cust_name && property.cust_name.toLowerCase().includes(filter.toLowerCase())) return true
-                else if (property.address && property.address.toLowerCase().includes(filter.toLowerCase())) return true
-                //else if (property.route_data.some(route => route.route_name.toLowerCase().includes(filter.toLowerCase()))) return true                
-                else if (property.cust_phone && property.cust_phone.toLowerCase().includes(filter.toLowerCase())) return true
-                else {return false}  
-            } 
-        })
-        return filteredItems              
-    }
+    // onFilterProperties = (filter = '', addresses = []) => {
+    //     let filteredItems = addresses.filter(property => {
+    //         if (property.routeName) return false
+    //         else {
+    //             if (!filter) return true                          
+    //             else if (property.cust_name?.toLowerCase().includes(filter.toLowerCase())) return true
+    //             else if (property.address?.toLowerCase().includes(filter.toLowerCase())) return true
+    //             //else if (property.route_data.some(route => route.route_name.toLowerCase().includes(filter.toLowerCase()))) return true                
+    //            // else if (property.cust_phone && property.cust_phone.toLowerCase().includes(filter.toLowerCase())) return true
+    //             else {return false}  
+    //         } 
+    //     })
+    //     return filteredItems              
+    // }
 
     onSearchChange = (event) => {
         this.setState({searchField: event.target.value})        
@@ -497,4 +530,4 @@ class RouteEditor extends Component {
     }
 }   
 
-export default connect(mapStateToProps, mapDispatchToProps)(RouteEditor)
+export default connect(mapStateToProps, mapDispatchToProps)(EditRoute)

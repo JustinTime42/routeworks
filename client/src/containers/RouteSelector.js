@@ -12,10 +12,12 @@ const mapStateToProps = state => {
         routes: state.requestRoutes.routes,
         isPending: state.requestRoutes.isPending,
         error: state.requestRoutes.error,
-        routeAddresses: state.getRouteProperties.addresses,
+        //routeAddresses: state.getRouteProperties.addresses,
         routeIsPending: state.getRouteProperties.isPending,
         routeError: state.getRouteProperties.error,
-        showRouteEditor: state.showRouteEditor.showEditor
+        showRouteEditor: state.showRouteEditor.showEditor,
+        // routeData: state.getRouteData.routeData,
+        // addresses: state.requestAllAddresses.addresses,
     }
 }
 
@@ -26,13 +28,15 @@ const mapDispatchToProps = (dispatch) => {
                 return
             } else {
                 dispatch(setActiveRoute(event))
-                dispatch(getRouteProperties(event))
+                //dispatch(getRouteProperties(this.props.addresses, this.props.routeData, event))
                 dispatch(setActiveProperty(null))
             }
         },
         onRequestRoutes: () => dispatch(requestRoutes()),
-        onGetRouteProperties: (event) => dispatch(getRouteProperties(event)),
+        //onGetRouteProperties: (addresses, routeData, route) => dispatch(getRouteProperties(addresses, routeData, route)),        
         onShowEditor: (show) => dispatch(showRouteEditor(show)),
+        // onGetAllAddresses: () => dispatch(requestAllAddresses()),
+        // getRouteData: () => dispatch(getRouteData()),
     }
 }
 

@@ -28,6 +28,9 @@ import { SET_ACTIVE_ROUTE,
     GET_TRACTORS_PENDING,
     GET_TRACTORS_SUCCESS,
     GET_TRACTORS_FAILED,
+    ROUTE_DATA_PENDING,
+    ROUTE_DATA_SUCCESS,
+    ROUTE_DATA_FAILED,
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -155,6 +158,25 @@ export const requestAllAddresses = (state = initialStateAllAddresses, action={})
         case UPDATE_ADDRESSES_SUCCESS:
             return {...state, addresses: action.payload, isPending: false}
         case UPDATE_ADDRESSES_FAILED:
+            return {...state, error: action.payload, isPending: false}
+        default:
+            return state
+    }
+}
+
+export const initialStateRouteData = {
+    routeData: [],
+    isPending: false,
+    error:''
+}
+
+export const getRouteData = (state = initialStateRouteData, action={}) => {
+    switch(action.type) {
+        case ROUTE_DATA_PENDING:
+            return {...state, isPending: true}
+        case ROUTE_DATA_SUCCESS:
+            return {...state, routeData: action.payload, isPending: false}
+        case ROUTE_DATA_FAILED:
             return {...state, error: action.payload, isPending: false}
         default:
             return state

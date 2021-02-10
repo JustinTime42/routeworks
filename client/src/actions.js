@@ -23,6 +23,10 @@ import {
     GET_TRACTORS_PENDING,
     GET_TRACTORS_SUCCESS,
     GET_TRACTORS_FAILED,
+    ROUTE_DATA_PENDING,
+    ROUTE_DATA_SUCCESS,
+    ROUTE_DATA_FAILED,
+
 } from './constants.js'
 import { io } from "socket.io-client";
 const socket = io('https://snowline-route-manager.herokuapp.com/')
@@ -48,18 +52,39 @@ export const requestRoutes = () => (dispatch) => {
     .catch(error => dispatch({ type: REQUEST_ROUTES_FAILED, payload: error }))
 }
 
-export const getRouteProperties = (activeRoute) => (dispatch) => {
-    dispatch({ type: GET_ROUTE_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/getroute/${activeRoute}`)
+export const getRouteData = () => (dispatch) => {
+    dispatch({ type: ROUTE_DATA_PENDING })
+    fetch(`${process.env.REACT_APP_API_URL}/routedata`)
     .then(response => response.json())
-    .then(data => {
-        const routeProperties = data.filter(item => !item.inactive)
-            .sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
-        dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })
-    })
-    .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
+    .then(data => dispatch({ type: ROUTE_DATA_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: ROUTE_DATA_FAILED, payload: error }))
 }
 
+// actually let's not use that for now...
+export const getRouteProperties = (addresses, routeData, activeRoute) => (dispatch) => {
+    let routeProperties = []
+    dispatch({ type: GET_ROUTE_PENDING})
+    routeData.forEach(routeEntry => {
+        if (routeEntry.route_name === activeRoute) {
+            let customer = addresses.find(property => property.key === routeEntry.property_key)
+            routeProperties.push({...customer, route_position: routeEntry.route_position})
+        }
+    })
+    routeProperties.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
+    dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })    
+    
+    // dispatch({ type: GET_ROUTE_PENDING})
+    // fetch(`${process.env.REACT_APP_API_URL}/getroute/${activeRoute}`)
+    // .then(response => response.json())
+    // .then(data => {
+    //     const routeProperties = data.filter(item => !item.inactive)
+    //         .sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
+    //     dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })
+    // })
+    // .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
+}
+
+//currently unused
 export const filterRouteProperties = (allAddresses, routeName, filter = '') => (dispatch) => {
     dispatch({ type: GET_ROUTE_PENDING})
     const routeProperties = allAddresses.filter(address => address.route_data.some(route => route.route_name === routeName )) 
