@@ -561,7 +561,7 @@ app.get('/api/getlogs/', (req,res) => {
         db('service_log')
         .join('properties', 'service_log.property_key', '=', 'properties.key')
         .select(getFields)
-        .whereBetween('service_log.timestamp', [options.start.toISOString(), options.end.toISOString()])
+        .whereBetween('service_log.timestamp', [options.start, options.end])
         // .whereNotIn('properties.contract_type', ['Monthly', 'Seasonal'])
         // .orWhere('service_log.work_type', '<>', 'Snow Removal')  
         // .andWhere('service_log.status', 'Done')
