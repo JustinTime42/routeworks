@@ -208,27 +208,25 @@ export const getNewTractor = (newTractor, allTractors) => (dispatch) => {
 
 export const sendNewTractor = (tractor) => (dispatch) => {
     dispatch({ type: GET_TRACTORS_PENDING})
-    socket.emit('add-tractor', {"tractor_name": tractor}, newTractor => {
-        console.log(newTractor)
-        // allTractors.push(newTractor[0])
-        // dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
-    });
- 
+    // socket.emit('add-tractor', {"tractor_name": tractor}, newTractor => {
+    //     console.log(newTractor)
+    //     allTractors.push(newTractor[0])
+    //     dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
+    // });
 
-    // fetch(`${process.env.REACT_APP_API_URL}/newtractor`, {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },   
-    //     body: JSON.stringify({"tractor_name": tractor})
-    // })
-    // .then(response => response.json())
-    // .then(res => {
-    //     console.log("response", res)
-    //     allTractors.push(res[0])
-        
-    // })
-    // .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
+    fetch(`${process.env.REACT_APP_API_URL}/newtractor`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },   
+        body: JSON.stringify({"tractor_name": tractor})
+    })
+    .then(response => response.json())
+    .then(res => {
+        console.log("response", res)
+       // allTractors.push(res[0])
+    })
+    .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
 }
 
 export const deleteTractor = (tractor, allTractors) => (dispatch) => {

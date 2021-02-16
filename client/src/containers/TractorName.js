@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { Dropdown, DropdownButton, Button, FormControl, Row, Col } from "react-bootstrap"
 import DropdownItem from 'react-bootstrap/DropdownItem'
-import { setTractorName, getTractors, getNewTractor, deleteTractor } from '../actions'
+import { setTractorName, getTractors, getNewTractor, deleteTractor, sendNewTractor } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
 import { io } from 'socket.io-client';
@@ -33,8 +33,8 @@ const TractorName = () => {
         console.log("updating tractor list")
         socket.on('newTractor', newTractor => {
             console.log("new tractor: ", newTractor)
-            // allTractors.push(newTractor[0])
-            // dispatch({ type: 'GET_TRACTORS_SUCCESS', payload: allTractors})
+            allTractors.push(newTractor[0])
+            dispatch({ type: 'GET_TRACTORS_SUCCESS', payload: allTractors})
             dispatch(getNewTractor(newTractor[0], allTractors))
         })
     })
@@ -52,10 +52,11 @@ const TractorName = () => {
     const toggleEdit = () => setShowEdit(!showEdit)
     const onChangeText = (event) => editTractorName(event.target.value)
 
-    const onSaveNew = () => {
-        socket.emit('add-tractor', {"tractor_name": tractor_name})
+    const onSaveNew = () => {        
+        //socket.emit('add-tractor', {"tractor_name": tractor_name})
+        dispatch(sendNewTractor(tractor_name))
         setTractorName("")
-        //dispatch(getTractors())
+        dispatch(getTractors())
     } 
     const onDelete = (tractor, allTractors) => {
         dispatch(deleteTractor(tractor, allTractors))

@@ -27,14 +27,10 @@ const SearchBar = () => {
         position: "absolute", 
         height: "200px",
         overflow: "scroll",
-        zIndex: "99"
+        zIndex: "99",
+        visibility: (matches.length > 0) ? "visible" : "hidden"
     }
-
-    const itemStyle = {
-        
-    }
-
-    // I think this will make setMatches updates when and only when searchValue changes....?
+   
     useEffect(() => {
         if (searchValue.length > 1 ) {
             setMatches(allCustomers.filter(customer => customer.cust_name?.toLowerCase().includes(searchValue.toLowerCase())))
