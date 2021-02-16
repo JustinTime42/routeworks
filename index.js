@@ -35,8 +35,8 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 io.on('connection', socket => {
     console.log("new user")
-    //socket.emit('welcome-msg', "welcome, new user")
-    //socket.on('hi', data => console.log(data))
+    socket.emit('welcome-msg', "welcome, new user")
+    socket.on('hi', data => console.log(data))
     socket.on('add-tractor', (tractor, res) => {
             db('tractors')    
             .returning('*')
