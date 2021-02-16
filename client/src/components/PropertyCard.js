@@ -43,15 +43,15 @@ const PropertyCard = (props) => {
     return(
         <div id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>                
-                {props.address ? 
-                    <>
+                {(typeof(props.address.route_position) === "number") ? 
+                    
                     <p style={{...statusStyle}}>
                         {status}
                         
                     </p> 
                     
-                    </>
-                    : <p style={statusStyle}></p>
+                    
+                    : <p></p>
                 } 
                 {props.admin === true ? 
                     <p style={editStyle}><Button variant="secondary" onClick={() => props.editClick(props.address)}>Edit </Button></p>  : <p></p>               

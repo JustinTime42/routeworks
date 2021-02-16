@@ -39,10 +39,6 @@ const TractorName = () => {
         })
     })
 
-    //this has gotten pretty messy, but I've changed to functional component with hooks
-    //and I'm trying to use socket.io for updates. Right now it replicates the 
-    // new property by the number of key presses + 3.... k...
-
     // componentDidMount() {
     //     this.props.onGetTractors()
     // }

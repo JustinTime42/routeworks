@@ -70,9 +70,10 @@ const ServiceLogs = (props) => {
 
     const onDownload = () => {
         setShowDownloadLink(false)
-        const startDateTz = startDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
-        const endDateTz = endDate.toLocaleString("en-US", {timeZone: "America/Anchorage"})
-        fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${startDateTz}&end=${endDateTz}`)
+        const offset = new Date().getTimezoneOffset() * 60000
+        const start = new Date(new Date(startDate).getTime() + offset).toISOString()
+        let end = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
+        fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${start}&end=${end}`)
         .then(response => response.json())
         .then(logs => {
             console.log(logs)

@@ -10,6 +10,7 @@ import BlackoutButton from "../components/BlackoutButton"
 import { showRouteEditor, getRouteProperties, getRouteData, requestAllAddresses } from "../actions"
 import TractorName from "./TractorName"
 import FullScreen from "../components/FullScreen"
+import SearchBar from "../components/SearchBar"
 import { Alert } from "react-bootstrap"
 
 import '../styles/driver.css'
@@ -59,6 +60,7 @@ class Driver extends Component {
                     <RouteSelector />
                     <DriverName />
                     <TractorName />
+                    <SearchBar />
                     <EditRouteButton /> 
                     <FullScreen />
                     <BlackoutButton /> 
