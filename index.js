@@ -299,6 +299,7 @@ app.post('/api/fixroutes', (req, res) => {
                 })
             }   
         })
+        console.log(results)
         res.json(results)
     })
     
