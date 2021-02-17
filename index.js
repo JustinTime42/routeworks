@@ -110,6 +110,7 @@ app.get('/api/routelist', (req, res) => {
     .then(data => {
         res.json(data)
     })  
+    .catch(err => res.json(err))
 });
 
 app.post('/api/addroute', (req, res) => {
@@ -159,6 +160,14 @@ app.post('/api/newproperty', (req, res) => {
     .insert({...property})
     .then(property =>  res.json(property))
     .catch(err => res.json("error: " + err))
+})
+
+app.get('/api/custdetail', (req, res) => {
+    db.select('*').from('properties')
+    .where('key', req.body.key)
+    .then(data => {
+        res.json(data)
+    })  
 })
 
 app.post('/api/editproperty', (req, res) => {
