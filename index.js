@@ -285,10 +285,8 @@ app.post('/api/saveroute', (req, res) => {
     })
 })
 
-//The following are temporary functions for importing old data. 
+//The following are temporary functions for importing/migrating old data. 
 //Keep for now
-
-
 
 app.post('/api/fixroutes', (req, res) => {
     let { routeName } = req.body
@@ -299,6 +297,7 @@ app.post('/api/fixroutes', (req, res) => {
     let results = []
 
     db.select('key', 'route_data').from('properties')
+    //select key, route_data from properties
     // this returns array of objects like so [key: 2000, route_data: [{"status": "Done", "route_name:" "Maui", "route_position": 5},{...}]]
     .then(custList => {
         custList.forEach(cust => {
@@ -310,6 +309,7 @@ app.post('/api/fixroutes', (req, res) => {
         })
         console.log(results)
         res.json(results)
+        // db('route_data').insert(results) once I verify that results is correct, I think I just do this... 
     })
     
 

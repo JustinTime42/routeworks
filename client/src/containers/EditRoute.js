@@ -242,8 +242,8 @@ class EditRoute extends Component {
                     item.route_position = i
                 })
                 //state = { selected: orderedItems };
-            }
-            this.onSave(orderedItems)
+                this.onSave(orderedItems)
+            }            
             
         } else {
             const newList = move(

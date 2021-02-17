@@ -38,18 +38,41 @@ export const setActiveRoute = (routeName) => {
     }      
 }
 
-export const setActiveProperty = (property) => {
-    return {
-        type: SET_ACTIVE_PROPERTY,
-        payload: property
+export const setActiveProperty = (property) => (dispatch) => {
+    if (!property) {
+        dispatch({type: SET_ACTIVE_PROPERTY, payload: property })
+    } else {
+        console.log(property)
+        dispatch({ type: SET_ACTIVE_PROPERTY, payload: property })
+        fetch(`${process.env.REACT_APP_API_URL}/custdetail/${property.key}`)
+        .then(res => res.json())
+        .then(details => {
+            let temp = {...property, ...details[0]}
+            console.log(temp)
+            dispatch({type: SET_ACTIVE_PROPERTY, payload: temp })
+        })
+        .catch(error => console.log(error))
     }
 }
+
 export const requestRoutes = () => (dispatch) => {
     dispatch({ type: REQUEST_ROUTES_PENDING })
     fetch(`${process.env.REACT_APP_API_URL}/routelist`)
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_ROUTES_SUCCESS, payload: data }))
     .catch(error => dispatch({ type: REQUEST_ROUTES_FAILED, payload: error }))
+}
+
+export const deleteRoute = (route) => (dispatch) => {
+    console.log(route)
+    dispatch({ type: REQUEST_ROUTES_PENDING })
+    fetch(`${process.env.REACT_APP_API_URL}/delroute`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },           
+        body: JSON.stringify(route)
+    })
 }
 
 export const getRouteData = () => (dispatch) => {
@@ -206,7 +229,7 @@ export const getNewTractor = (newTractor, allTractors) => (dispatch) => {
         dispatch({ type: GET_TRACTORS_SUCCESS, payload: [...allTractors, newTractor]})
     };
 
-export const sendNewTractor = (tractor) => (dispatch) => {
+export const sendNewTractor = (tractor, allTractors) => (dispatch) => {
     dispatch({ type: GET_TRACTORS_PENDING})
     // socket.emit('add-tractor', {"tractor_name": tractor}, newTractor => {
     //     console.log(newTractor)
@@ -224,7 +247,9 @@ export const sendNewTractor = (tractor) => (dispatch) => {
     .then(response => response.json())
     .then(res => {
         console.log("response", res)
-       // allTractors.push(res[0])
+        allTractors.push(res[0])
+        console.log(allTractors)
+        dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
     })
     .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
 }

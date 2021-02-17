@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from "react-redux"
 import { Card, Col, Row, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap'
 import axios from 'axios'
-import { getRouteProperties, getRouteData } from "../actions"
+import { getRouteProperties, getRouteData, requestAllAddresses } from "../actions"
 
 import '../styles/driver.css'
 import DropdownItem from 'react-bootstrap/DropdownItem'
@@ -21,6 +21,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getRouteData: () => dispatch(getRouteData()),
+        getAllAddresses: () => dispatch(requestAllAddresses())
         //onGetRouteProperties: (route) => dispatch(getRouteProperties(route))        
     }
 }
@@ -91,7 +92,6 @@ class PropertyDetails extends Component {
                 yards: this.state.yards,
             }
         )
-
         .then(res => {
             //this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.getRouteData() 
@@ -154,11 +154,11 @@ class PropertyDetails extends Component {
                 </Form.Group>
                 </Card.Body>
                 <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}}>
-                    <Button variant="primary" size="lg" onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
+                    <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
                     <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
                         <div style={{visibility: this.state.done_label, fontSize: "large"}}>{this.state.newStatus}!</div>
                     <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
-                    <Button variant="primary" size="lg" onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
+                    <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
                 </Card.Body>
             </Card> : null
         )    

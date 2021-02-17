@@ -30,15 +30,12 @@ class DisplayRoute extends Component {
         super(props)
         this.state = { 
             routeProperties: this.getRouteProperties(),
-            activeProperty: {}
+            activeProperty: this.props.activeProperty  
         }
     }
 
     componentDidUpdate(prevProps) {
         if(prevProps !== this.props){
-            // I'll need to update route_data and rerun getrouteproperties here to make sure updates to the
-            // route via the editor or other drivers gets updated as these guys work through the property. 
-            // maybe try to use sockets for that...
           this.setState({
             activeProperty: this.props.activeProperty,
             routeProperties: this.getRouteProperties(),

@@ -29,15 +29,15 @@ const TractorName = () => {
         dispatch(getTractors())
     }, [])
 
-    useEffect(() => {
-        console.log("updating tractor list")
-        socket.on('newTractor', newTractor => {
-            console.log("new tractor: ", newTractor)
-            allTractors.push(newTractor[0])
-            dispatch({ type: 'GET_TRACTORS_SUCCESS', payload: allTractors})
-            dispatch(getNewTractor(newTractor[0], allTractors))
-        })
-    })
+    // useEffect(() => {
+    //     console.log("updating tractor list")
+    //     socket.on('newTractor', newTractor => {
+    //         console.log("new tractor: ", newTractor)
+    //         allTractors.push(newTractor[0])
+    //         dispatch({ type: 'GET_TRACTORS_SUCCESS', payload: allTractors})
+    //         dispatch(getNewTractor(newTractor[0], allTractors))
+    //     })
+    // })
 
     // componentDidMount() {
     //     this.props.onGetTractors()
@@ -54,9 +54,9 @@ const TractorName = () => {
 
     const onSaveNew = () => {        
         //socket.emit('add-tractor', {"tractor_name": tractor_name})
-        dispatch(sendNewTractor(tractor_name))
+        dispatch(sendNewTractor(tractor_name, allTractors))
         setTractorName("")
-        dispatch(getTractors())
+        //dispatch(getTractors())
     } 
     const onDelete = (tractor, allTractors) => {
         dispatch(deleteTractor(tractor, allTractors))
