@@ -309,7 +309,7 @@ app.get('/api/fixroutes', (req, res) => {
         })
         console.log("results: ", results)
         res.json(results)
-        // db('route_data').insert(results) once I verify that results is correct, I think I just do this...
+        db('route_data').insert(results) // once I verify that results is correct, I think I just do this...
         // this should only need to run once now right? 
     })
     
