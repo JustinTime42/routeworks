@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { Dropdown, DropdownButton, Button, FormControl, Row, Col } from "react-bootstrap"
-import DropdownItem from 'react-bootstrap/DropdownItem'
-import { setTractorName, getTractors, getNewTractor, deleteTractor, sendNewTractor } from '../actions'
+import { Dropdown, DropdownButton, Button, FormControl } from "react-bootstrap"
+import { setTractorName, getTractors, deleteTractor, sendNewTractor } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
 //import { io } from 'socket.io-client';

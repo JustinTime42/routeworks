@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Form, FormControl, ListGroup } from 'react-bootstrap'
+import { FormControl, ListGroup } from 'react-bootstrap'
 import { setActiveProperty } from '../actions'
 
 const SearchBar = () => {
