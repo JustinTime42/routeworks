@@ -285,7 +285,7 @@ app.post('/api/saveroute', (req, res) => {
     })
 })
 
-//The following are temporary functions for importing/migrating old data. 
+/* The following are temporary functions for importing/migrating old data. 
 //Keep for now
 
 app.get('/api/fixroutes', (req, res) => {
@@ -297,8 +297,6 @@ app.get('/api/fixroutes', (req, res) => {
     let results = []
 
     db.select('key', 'route_data').from('properties')
-    //select key, route_data from properties
-    // this returns array of objects like so [key: 2000, route_data: [{"status": "Done", "route_name:" "Maui", "route_position": 5},{...}]]
     .then(custList => {
         custList.forEach(cust => {
             if (cust.route_data.length > 0) {
@@ -312,29 +310,11 @@ app.get('/api/fixroutes', (req, res) => {
         .catch(err => {
             console.log(err)
             res.json(err)
-        }) // once I verify that results is correct, I think I just do this...
-        // this should only need to run once now right? 
+        })
     })
-    
-
 })
 
-    // I'm gonna hit this endpoint with each route. /fixroute with body: route_name: routeName
-    // When this happens, it'll run this query 
-    // db.raw(`select key, route_data from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
-    // to select property_key and route_data from properties on that route. 
-    // Then, we'll have an array of objects. Need to take that array, and find the element whose route_name matches routeName. 
-    // insert into route_data property_key, route_name, route_position, status
 
-    
-    //db.raw(`select * from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
-
-
-/*
-
-
-*/
- // 
 
 // app.post('/api/propertykey', (req, res) => {
 //     let response = {
@@ -402,6 +382,8 @@ app.get('/api/fixroutes', (req, res) => {
 //         res.json(response)
 //     })
 // })
+
+*/
 
 app.post('/api/setstatus', (req, res) => {
     let { property, route, yards, status } = req.body
