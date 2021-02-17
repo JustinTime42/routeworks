@@ -288,7 +288,7 @@ app.post('/api/saveroute', (req, res) => {
 //The following are temporary functions for importing/migrating old data. 
 //Keep for now
 
-app.post('/api/fixroutes', (req, res) => {
+app.get('/api/fixroutes', (req, res) => {
     let { routeName } = req.body
     let response = {
         res: [],
@@ -307,9 +307,10 @@ app.post('/api/fixroutes', (req, res) => {
                 })
             }   
         })
-        console.log(results)
+        console.log("results: ", results)
         res.json(results)
-        // db('route_data').insert(results) once I verify that results is correct, I think I just do this... 
+        // db('route_data').insert(results) once I verify that results is correct, I think I just do this...
+        // this should only need to run once now right? 
     })
     
 
