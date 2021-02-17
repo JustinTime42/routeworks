@@ -119,6 +119,7 @@ app.post('/api/addroute', (req, res) => {
     .then(routeName => {
         res.json(routeName)
     })
+    .catch(err => res.json("error: " + err))
 })
 
 app.post('/api/delroute', (req, res) => {
@@ -277,6 +278,49 @@ app.post('/api/saveroute', (req, res) => {
 
 //The following are temporary functions for importing old data. 
 //Keep for now
+
+
+
+app.post('/api/fixroutes', (req, res) => {
+    let { routeName } = req.body
+    let response = {
+        res: [],
+        err: []
+    }
+    let results = []
+
+    db.select('key', 'route_data').from('properties')
+    // this returns array of objects like so [key: 2000, route_data: [{"status": "Done", "route_name:" "Maui", "route_position": 5},{...}]]
+    .then(custList => {
+        custList.forEach(cust => {
+            if (cust.route_data.length > 0) {
+                cust.route_data.forEach(routeEntry => {                
+                    results.push({property_key: cust.key, ...routeEntry})
+                })
+            }   
+        })
+        res.json(results)
+    })
+    
+
+})
+
+    // I'm gonna hit this endpoint with each route. /fixroute with body: route_name: routeName
+    // When this happens, it'll run this query 
+    // db.raw(`select key, route_data from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
+    // to select property_key and route_data from properties on that route. 
+    // Then, we'll have an array of objects. Need to take that array, and find the element whose route_name matches routeName. 
+    // insert into route_data property_key, route_name, route_position, status
+
+    
+    //db.raw(`select * from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
+
+
+/*
+
+
+*/
+ // 
 
 // app.post('/api/propertykey', (req, res) => {
 //     let response = {
@@ -566,6 +610,7 @@ app.get('/api/getlogs/', (req,res) => {
         // .whereNotIn('properties.contract_type', ['Monthly', 'Seasonal'])
         // .orWhere('service_log.work_type', '<>', 'Snow Removal')  
         // .andWhere('service_log.status', 'Done')
+        .orderBy('service_log.timestamp')
         .then(data => res.json(data))
         .catch(err => res.json(err))        
     } else {
