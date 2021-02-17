@@ -162,9 +162,9 @@ app.post('/api/newproperty', (req, res) => {
     .catch(err => res.json("error: " + err))
 })
 
-app.get('/api/custdetail', (req, res) => {
+app.get('/api/custdetail/:key', (req, res) => {
     db.select('*').from('properties')
-    .where('key', req.body.key)
+    .where('key', req.params.key)
     .then(data => {
         res.json(data)
     })  
