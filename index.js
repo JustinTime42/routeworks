@@ -308,7 +308,7 @@ app.get('/api/fixroutes', (req, res) => {
             }   
         })
         db('route_data').returning('*').insert(results)
-        .then(data => res.json(data)
+        .then(data => res.json(data))
         .catch(err => {
             console.log(err)
             res.json(err)
