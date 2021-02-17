@@ -28,8 +28,8 @@ import {
     ROUTE_DATA_FAILED,
 
 } from './constants.js'
-import { io } from "socket.io-client";
-const socket = io('https://snowline-route-manager.herokuapp.com/')
+// import { io } from "socket.io-client";
+// const socket = io('https://snowline-route-manager.herokuapp.com/')
 
 export const setActiveRoute = (routeName) => {
     return {

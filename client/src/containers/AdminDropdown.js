@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Dropdown, DropdownButton, Modal, Form, Row, Col } from 'react-bootstrap'
-import { CSVLink } from "react-csv";
+import { Dropdown, DropdownButton } from 'react-bootstrap'
 import Can from '../auth/Can'
 import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
@@ -44,7 +43,6 @@ class EditRouteButton extends Component {
     showRawTableModal = () => this.setState({showRawTableModal: true})
     showLogs = () => this.setState({showLogsMenu: true})
     showContacts = () => this.setState({showContactsMenu: true})
-
     onClose = () => this.setState({showLogsMenu: false, showDownload: false, showContactsMenu: false, showRawTableModal: false})
     
     render() {

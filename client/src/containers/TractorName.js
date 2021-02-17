@@ -5,18 +5,8 @@ import DropdownItem from 'react-bootstrap/DropdownItem'
 import { setTractorName, getTractors, getNewTractor, deleteTractor, sendNewTractor } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
-import { io } from 'socket.io-client';
-const socket = io('https://snowline-route-manager.herokuapp.com/')
-
-
-// const mapDispatchToProps = (dispatch) => {
-//     return {    
-//         onSetTractorName: (event) => dispatch(setTractorName(event)),
-//         onGetTractors: () => dispatch(getTractors()),
-//         onAddTractor: (tractor, allTractors) => dispatch(addTractor(tractor, allTractors)),
-//         onDeleteTractor: (tractor, allTractors) => dispatch(deleteTractor(tractor, allTractors)),
-//     }
-// }
+//import { io } from 'socket.io-client';
+//const socket = io('https://snowline-route-manager.herokuapp.com/')
 
 const TractorName = () => {
     const [showEdit, setShowEdit] = useState(false)
@@ -39,16 +29,6 @@ const TractorName = () => {
     //     })
     // })
 
-    // componentDidMount() {
-    //     this.props.onGetTractors()
-    // }
-
-    // componentDidUpdate(prevProps) {
-    //     if(this.props.allTractors !== prevProps.allTractors) {
-    //         //this.props.onGetTractors()
-    //     } 
-    // }
-
     const toggleEdit = () => setShowEdit(!showEdit)
     const onChangeText = (event) => editTractorName(event.target.value)
 
@@ -56,7 +36,6 @@ const TractorName = () => {
         //socket.emit('add-tractor', {"tractor_name": tractor_name})
         dispatch(sendNewTractor(tractor_name, allTractors))
         setTractorName("")
-        //dispatch(getTractors())
     } 
     const onDelete = (tractor, allTractors) => {
         dispatch(deleteTractor(tractor, allTractors))
@@ -98,8 +77,7 @@ const TractorName = () => {
             <Button size="sm" onClick={onSaveNew}>Save</Button>                
         </div>             
         </DropdownButton>
-    )
-    
+    )    
 }
 
 export default TractorName

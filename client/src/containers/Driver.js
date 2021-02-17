@@ -7,7 +7,7 @@ import EditRoute from "./EditRoute"
 import EditRouteButton from "./AdminDropdown"
 import Spinner from "../components/Spinner"
 import BlackoutButton from "../components/BlackoutButton"
-import { showRouteEditor, getRouteProperties, getRouteData, requestAllAddresses } from "../actions"
+import { showRouteEditor, getRouteData, requestAllAddresses } from "../actions"
 import TractorName from "./TractorName"
 import FullScreen from "../components/FullScreen"
 import SearchBar from "../components/SearchBar"
@@ -31,7 +31,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onShowEditor: () => dispatch(showRouteEditor(true)),
-        //getRouteProperties: (route) => dispatch(getRouteProperties(route)),
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
         getRouteData: () => dispatch(getRouteData()),
     }
@@ -43,12 +42,6 @@ class Driver extends Component {
         this.props.onGetAllAddresses()
         this.props.getRouteData()
     }
-
-    // componentDidUpdate(prevProps) {
-    //     if(prevProps.showRouteEditor !== this.props.showRouteEditor && this.props.showRouteEditor === false){
-    //         this.props.getRouteProperties(this.props.activeRoute)
-    //     }        
-    // }
 
     render() {
         return (

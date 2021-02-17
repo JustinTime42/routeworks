@@ -3,7 +3,7 @@ import { Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { requestAllAddresses, getRouteProperties } from '../actions'
 import axios from "axios"
-import socketIOClient from "socket.io-client";
+// import socketIOClient from "socket.io-client";
 import '../styles/driver.css'
 
 const mapStateToProps = state => {
@@ -351,13 +351,7 @@ class NewProperty extends Component {
                                                         onChange={this.tagChange}
                                                     />  
                                                 </Col>
-                                                {/* <Col style={{textAlign: "right"}}>
-                                                    <Button style={{marginLeft: "1em"}} size='sm' variant='primary' onClick={() => this.deleteTag(tag)}>delete</Button>
-
-                                                </Col> */}
-                                                
-                                            </Form.Row>                                                 
-                                                                                               
+                                            </Form.Row>                                       
                                         )                               
                                     })
                                 }

@@ -142,9 +142,7 @@ const ServiceLogs = (props) => {
                 <Button variant="secondary" onClick={onClose}>Close</Button>
             </Modal.Footer>
         </Modal>
-    )
-    
+    )    
 }
-
 
 export default ServiceLogs

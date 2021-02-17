@@ -3,10 +3,7 @@ import { Button } from 'react-bootstrap'
 
 const PropertyCard = (props) => {
 
-    const status = props.address.status //.routeName === props.route ?
-        //props.address.status : null
-    
-    // const route_list = props.address.route_data.map(item => item.route_name + ", ")
+    const status = props.address.status
 
     const cardBg = () => {        
         if (props.address.inactive) return `rgba(255,0,0,0.5)`
@@ -43,14 +40,10 @@ const PropertyCard = (props) => {
     return(
         <div id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>                
-                {(typeof(props.address.route_position) === "number") ? 
-                    
+                {(typeof(props.address.route_position) === "number") ?                     
                     <p style={{...statusStyle}}>
-                        {status}
-                        
-                    </p> 
-                    
-                    
+                        {status}                        
+                    </p>         
                     : <p></p>
                 } 
                 {props.admin === true ? 
@@ -59,11 +52,8 @@ const PropertyCard = (props) => {
             </div>
             <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
             {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
-            </h5>                             
-            
+            </h5> 
             <p style={{color: "rgba(255, 255, 255, 0.7)", marginBottom: "2em"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
-            
-            {/* {props.admin ? <p>route: {route_list}</p> : <div></div>} */}
         </div>
     )
 }   

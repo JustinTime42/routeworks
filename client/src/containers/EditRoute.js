@@ -25,7 +25,6 @@ const mapDispatchToProps = (dispatch) => {
         onSaveRoute: (route) => dispatch(saveRoute(route)),
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
         onSetActiveProperty: (property) => dispatch(setActiveProperty(property)),
-      //  onGetRouteProperties: (route) => dispatch(getRouteProperties(route)),
         onSaveNewProperty: (property, allAddresses) => dispatch(saveNewProperty(property, allAddresses)),
         onEditProperty: (property, allAddresses) => dispatch(editProperty(property, allAddresses)),
         onDeleteProperty: (property, allAddresses, routeName) => dispatch(deleteProperty(property, allAddresses, routeName)),
@@ -49,13 +48,10 @@ const move = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source);
     const destClone = Array.from(destination);
     const [removed] = sourceClone.splice(droppableSource.index, 1);
-
     destClone.splice(droppableDestination.index, 0, removed);
-
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
     result[droppableDestination.droppableId] = destClone;
-
     return result;
 };
 
@@ -85,9 +81,9 @@ class EditRoute extends Component {
     constructor(props){
         super(props)
         this.state = { 
-            items: [], //this.setUnselected(this.props.addresses, this.props.activeRoute),
-            filteredItems: [], //this.setUnselected(this.props.addresses, this.props.activeRoute),
-            selected: [], //this.setSelected(this.props.addresses, this.props.activeRoute),
+            items: [],
+            filteredItems: [],
+            selected: [],
             searchField: '',
             routeSearchField: '',
             showModal: false,
@@ -114,14 +110,10 @@ class EditRoute extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {    
-        // PROBLEM, setselected only pushes to selected, it doesn't actually modify the addresses to add routeName, that's why they route addresses are showing up in both lists... 
         if(this.props.isRoutePending !== prevProps.isRoutePending || this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
             this.setSelected()
             this.setState((prevState, prevProps) => {
                 return {
-                    // selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
-                    // items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
-                    // filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),
                     activeProperty: prevProps.activeProperty
                 }
             }, () => {
@@ -136,20 +128,13 @@ class EditRoute extends Component {
         } 
         if(this.state.searchField !== prevState.searchField) {
             this.setState((prevState, prevProps) => ({filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses)}))
-            // this.setState((prevState, prevProps) => {
-            //     return {
-            //         filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses.filter(property => !property.route_data.some(route => route.route_name === this.props.activeRoute))),
-            //     }
-            // }) 
+
         }
         if (snapshot && prevProps.activeProperty) {
             //document.getElementById(`${prevProps.activeProperty.key}routecard`).scrollTo(0, snapshot.scrollToMessage)
             console.log(snapshot.scrollToMessage)
             // I think I'm scrolling or getting sroll position from the wrong element. maybe its a parent or child...
         }
-
- 
-
     }
 
     id2List = {
@@ -157,8 +142,7 @@ class EditRoute extends Component {
         droppable2: 'selected'
     }
 
-    setSelected = () => {
-        
+    setSelected = () => {        
         let selected = []
         let customers = [...this.props.addresses]
         let route = this.props.activeRoute
@@ -172,12 +156,10 @@ class EditRoute extends Component {
         })
         let sortedSelect = selected.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
         let unselected = customers.filter(customer => customer.routeName !== route)
-        this.setState({selected: sortedSelect, filteredItems: unselected})
-  
+        this.setState({selected: sortedSelect, filteredItems: unselected})  
     }
     
     onSave = (customers, droppedCard = null, whereTo = 'same') => {
-
         let selected = customers.map(item => {
             return (
                 {key: item.key, route_position: item.route_position}
@@ -193,9 +175,7 @@ class EditRoute extends Component {
             }
         )
         .then(res => {
-            //this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.onGetAllAddresses()
-            // this.props.onFilterRouteProperties(this.props.addresses, this.props.activeRoute)
             this.props.getRouteData()
             this.setSelected()
             console.log(res.data)            
@@ -218,7 +198,6 @@ class EditRoute extends Component {
             this.props.getRouteData()
             console.log(res.data)
         })
-
     }
     
     getList = id => this.state[this.id2List[id]];
@@ -241,7 +220,6 @@ class EditRoute extends Component {
                 orderedItems.forEach((item, i) => {
                     item.route_position = i
                 })
-                //state = { selected: orderedItems };
                 this.onSave(orderedItems)
             }            
             
@@ -254,9 +232,6 @@ class EditRoute extends Component {
             )
 
             newList.droppable2.forEach((item, i) => item.route_position = i)
-            
-            // here we are removing from route... 
-            // here we will remove the route from droppedCard and submit selected and droppedCard,
             if (destination.droppableId === "droppable") {
                 let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))              
                console.log(newList.droppable2)
@@ -274,23 +249,6 @@ class EditRoute extends Component {
     handlePropertyClick = (property) => {
         this.props.onSetActiveProperty(property)
     }
-
-
-
-    // onFilterProperties = (filter = '', addresses = []) => {
-    //     let filteredItems = addresses.filter(property => {
-    //         if (property.routeName) return false
-    //         else {
-    //             if (!filter) return true                          
-    //             else if (property.cust_name?.toLowerCase().includes(filter.toLowerCase())) return true
-    //             else if (property.address?.toLowerCase().includes(filter.toLowerCase())) return true
-    //             //else if (property.route_data.some(route => route.route_name.toLowerCase().includes(filter.toLowerCase()))) return true                
-    //            // else if (property.cust_phone && property.cust_phone.toLowerCase().includes(filter.toLowerCase())) return true
-    //             else {return false}  
-    //         } 
-    //     })
-    //     return filteredItems              
-    // }
 
     onSearchChange = (event) => {
         this.setState({searchField: event.target.value})        
@@ -334,18 +292,6 @@ class EditRoute extends Component {
         }
         this.setState({showModal: false})
         this.setSelected()
-        
-        // this.setState((prevState, prevProps) => {
-        //     return {
-        //     items: this.setUnselected(prevProps.addresses, prevProps.activeRoute),
-        //     filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses),                          
-        //     selected: this.setSelected(prevProps.addresses, prevProps.activeRoute),
-        //     }
-        // }, () => {
-
-            
-        //     this.setState({showModal: false})
-        // })
     }
 
     refreshData = () => {
@@ -359,16 +305,7 @@ class EditRoute extends Component {
             <>
             <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
                 <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.refreshData}>Refresh Data</Button>
-                {/* <input 
-                    type="search" placeholder="Search" value={this.state.routeSearchField}
-                    onChange={this.onRouteSearchChange}
-                /> */}
                 <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onInitRoute}>Initialize Route</Button>
-                {/* <input 
-                    type="search" placeholder="Search" value={this.state.searchField}
-                    onChange={this.onSearchChange}
-                /> */}
-                
                 <Button variant="primary" size="sm" onClick={this.onNewPropertyClick}>New</Button>
             </div>
             <div className="adminGridContainer">

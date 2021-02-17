@@ -8,8 +8,6 @@ import '../styles/driver.css'
 
 const mapStateToProps = state => {
     return {
-        //routeProperties: state.getRouteProperties.addresses,
-        // showRouteEditor: state.showRouteEditor.showRoute,
         activeProperty: state.setActiveProperty.activeProperty,
         activeRoute: state.setActiveRoute.activeRoute,
         driver: state.setActiveDriver.name,
@@ -21,7 +19,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onSetActiveProperty: (property) => dispatch(setActiveProperty(property)),
-       // onGetRouteProperties: (addresses, routeData, route) => dispatch(getRouteProperties(addresses, routeData, route))        
     }
 }
 
@@ -42,22 +39,6 @@ class DisplayRoute extends Component {
         })
       }
     }
-    // parseRouteData = (customer, route, field) => {
-    //     return customer.route_data.some(item => item.route_name === route) ?
-    //         customer.route_data.find(item => item.route_name === route)[field] : null
-    // }
-
-
-    // let routeProperties = []
-    // dispatch({ type: GET_ROUTE_PENDING})
-    // routeData.forEach(routeEntry => {
-    //     if (routeEntry.route_name === activeRoute) {
-    //         let customer = addresses.find(property => property.key === routeEntry.property_key)
-    //         routeProperties.push({...customer, route_position: routeEntry.route_position})
-    //     }
-    // })
-    // routeProperties.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
-
 
     getRouteProperties = () => {
         let routeProperties = []
@@ -91,8 +72,7 @@ class DisplayRoute extends Component {
         }
     }
 
-    render(){
-        
+    render(){        
         return(
             <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
                 <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>

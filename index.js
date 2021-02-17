@@ -3,19 +3,19 @@ const express = require('express');
 const app = express();
 
 var server = http.createServer(app);
-const socketIo = require("socket.io");
-const io = socketIo(server, {
-    cors: {
-      origin: '*',
-    }
-  });;
+// const socketIo = require("socket.io");
+// const io = socketIo(server, {
+//     cors: {
+//       origin: '*',
+//     }
+//   });;
 var cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser')
 const knex = require('knex')
 const pg = require('pg');
 const { ESRCH } = require('constants');
-const { Socket } = require('dgram');
+// const { Socket } = require('dgram');
 const { promises } = require('fs');
 
 const db = knex({
@@ -156,7 +156,6 @@ app.post('/api/newproperty', (req, res) => {
     const property = req.body
     db('properties')    
     .returning('*')
-    // .insert({...property, route_data: JSON.stringify(property.route_data)})
     .insert({...property})
     .then(property =>  res.json(property))
     .catch(err => res.json("error: " + err))
@@ -382,7 +381,6 @@ app.get('/api/fixroutes', (req, res) => {
 //         res.json(response)
 //     })
 // })
-
 */
 
 app.post('/api/setstatus', (req, res) => {
@@ -536,7 +534,7 @@ app.post('/api/newtag', (req, res) => {
     .catch(err => res.json(err))
 })
 
-// delete a tag
+// delete a tag Not currently in use
 app.post('/api/deltag', (req, res) => {
     db('tags')
     .returning('*')
@@ -575,7 +573,6 @@ app.get('/api/routedata', (req, res) => {
 
 app.get('/api/getroute/:routeName', (req, res) => {
     const { routeName } = req.params
-   // db.raw(`select * from properties where route_data @> '[{"route_name":"${routeName}"}]';`)
     db('route_data')
     .join('properties', 'route_data.property_key', '=', 'properties.key')
     .select('*')
@@ -588,8 +585,7 @@ app.get('/api/getroute/:routeName', (req, res) => {
 
 app.get('/api/getlogs/', (req,res) => {
 
-    const options = req.query
- 
+    const options = req.query 
     if (options.type === 'xero') {
         const getFields =
         [
@@ -619,27 +615,6 @@ app.get('/api/getlogs/', (req,res) => {
         .orderBy('timestamp')
         .then(data => res.json(data))
     }
-    
-
-
-   
-  
-/*
-invoice date and due date will be input by front end through date field in log options. 
-Xero Billing
-Monthly: 
- select '50' from customers where contract_type='monthly' //this will create a line item per customer with their monthly rate
- select xeroFields replace price with $50  from customers where contract_type='5030'
- select xeroFields from service_log where contract_type = 'per occurrance' or '5030'
- select xeroFields from service_log where contract_type = 'month' or 'seasonal' and work_type = 'sanding'
- 
-
-TODO once book keeper provides fields, complete xero option and enable dropdown on client.
-xero select properties.cust_name, properties.email, properties.bill_address, properties.bill_address2, 
- properties.bill_city, properties.bill_state, properties.bill_zip, service_log.invoice_number, 
- service_log.invoice_date, service_log.due_date, service_log.description, service_log.
-*/
-
 })
 
 app.get('/api/getlogs/:property', (req, res) => {

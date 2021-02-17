@@ -2,27 +2,23 @@ import React, { Component } from 'react'
 import { connect } from "react-redux"
 import { Card, Col, Row, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap'
 import axios from 'axios'
-import { getRouteProperties, getRouteData, requestAllAddresses } from "../actions"
+import { getRouteData, requestAllAddresses } from "../actions"
 
 import '../styles/driver.css'
-import DropdownItem from 'react-bootstrap/DropdownItem'
 
 const mapStateToProps = state => {
     return {
-        //property: state.setActiveProperty.activeProperty,
         driver: state.setActiveDriver.driver,
         tractor: state.setTractorName.tractorName,
         activeRoute: state.setActiveRoute.activeRoute,
         routePending: state.getRouteProperties.isPending,
-        // routeData: state.getRouteData.routeData,
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         getRouteData: () => dispatch(getRouteData()),
-        getAllAddresses: () => dispatch(requestAllAddresses())
-        //onGetRouteProperties: (route) => dispatch(getRouteProperties(route))        
+        getAllAddresses: () => dispatch(requestAllAddresses())      
     }
 }
 
@@ -73,13 +69,11 @@ class PropertyDetails extends Component {
         let property = {...this.props.property}
         if (this.state.work_type === 'Sanding') {
             property.sand_contract === "Per Yard" ? property.price = property.price_per_yard * this.state.yards : property.price = property.price_per_yard
-            // this.setState(prevState => ({work_type: prevState.work_type + " " + this.state.yards}))
         } else if (this.state.work_type === 'Sweeping') {
             property.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
             property.price = 0  
         }
-        //property.route_data.find(route => route.route_name === this.props.activeRoute).status = newStatus
         axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
             {
                 property: property,
@@ -93,7 +87,6 @@ class PropertyDetails extends Component {
             }
         )
         .then(res => {
-            //this.props.onGetRouteProperties(this.props.activeRoute)
             this.props.getRouteData() 
             console.log(res)
             let confirmedStatus = res.data.route_data.status
