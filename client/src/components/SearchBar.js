@@ -16,6 +16,7 @@ const SearchBar = () => {
         console.log("select customer", customer)
         // Find out if the customer is on current route
         let isOnRoute = routeData.find(entry => (entry.property_key === customer.key) && (entry.route_name === activeRoute))
+        console.log("isonroute", isOnRoute)
         let cardId = isOnRoute ? isOnRoute.route_position : customer.key
         console.log(cardId)
         let found = document.getElementById(`card${cardId}`)
