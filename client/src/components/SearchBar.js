@@ -9,12 +9,13 @@ const SearchBar = () => {
     const [matches, setMatches] = useState([])
     const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
     const routeData = useSelector(state => state.getRouteData.routeData)
+    const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const dispatch = useDispatch()
 
     const selectCustomer = (customer) => {
         console.log("select customer", customer)
         // Find out if the customer is on current route
-        let isOnRoute = routeData.find(entry => entry.property_key === customer.key)
+        let isOnRoute = routeData.find(entry => (entry.property_key === customer.key) && (entry.route_name === activeRoute))
         let cardId = isOnRoute ? isOnRoute.route_position : customer.key
         console.log(cardId)
         let found = document.getElementById(`card${cardId}`)
