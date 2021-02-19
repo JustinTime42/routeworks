@@ -27,11 +27,15 @@ const SearchBar = () => {
 
     const listStyle = {
         position: "absolute", 
-        height: "200px",
+       // height: "200px",
         overflow: "scroll",
         zIndex: "99",
         visibility: (matches.length > 0) ? "visible" : "hidden"
     }
+
+    // const itemStyle = {
+    //     height: "40px"
+    // }
    
     useEffect(() => {
         if (searchValue.length > 1 ) {
