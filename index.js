@@ -180,12 +180,29 @@ app.post('/api/editproperty', (req, res) => {
 })
 
 app.post('/api/deleteproperty', (req, res) => {
-    db('properties')
-    .returning('*')
-    .where('key', req.body.key)
-    .del()
-    .then(property => res.json(property[0]))
-    .catch(err => res.json(err))
+    let response = {
+        route_data:[],
+        properties:{},
+        err: []
+    }
+    let promises = []
+    promises.push(
+        db('properties')
+        .returning('*')
+        .where('key', req.body.key)
+        .del()
+        .then(property => response.properties = property[0])
+        .catch(err => res.json(err))
+    )
+    promises.push(
+        db('route_data')
+        .returning('*')
+        .where('property_key', req.body.key)
+        .del()
+        .then(routeEntries => response.route_data = routeEntries)
+    )
+    Promise.all(promises).then(() => res.json(response))
+
 })
 
 app.post('/api/initroute', (req, res) => {
