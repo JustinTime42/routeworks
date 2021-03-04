@@ -13,12 +13,10 @@ const SearchBar = () => {
     const dispatch = useDispatch()
 
     const selectCustomer = (customer) => {
-        console.log("select customer", customer)
         // Find out if the customer is on current route
         let isOnRoute = routeData.find(entry => (entry.property_key === customer.key) && (entry.route_name === activeRoute))
         console.log("isonroute", isOnRoute)
         let cardId = isOnRoute ? isOnRoute.route_position : customer.key
-        console.log(cardId)
         let found = document.getElementById(`card${cardId}`)
         if (found) found.scrollIntoView(true)
         dispatch(setActiveProperty(customer))
@@ -33,28 +31,37 @@ const SearchBar = () => {
         visibility: (matches.length > 0) ? "visible" : "hidden"
     }
 
-    // const itemStyle = {
-    //     height: "40px"
-    // }
+    const itemStyle = {
+        whiteSpace: "nowrap",
+    }
    
     useEffect(() => {
+        onSetMatches()
+    }, [searchValue])
+
+    const onSetMatches = () => {
         if (searchValue.length > 1 ) {
-            setMatches(allCustomers.filter(customer => customer.cust_name?.toLowerCase().includes(searchValue.toLowerCase())))
+            setMatches(allCustomers.filter(customer => {
+                if(customer.cust_name?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                customer.address?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                customer.cust_phone?.includes(searchValue)) return true
+            }))
         } else {
             setMatches([])
         }
-    }, [searchValue])
+    }
 
     const changeSearchValue = (event) => setSearchValue(event.target.value)
 
+
     return (
         <div style={{position: "relative"}}>
-            <FormControl size="sm" type="text" onChange={changeSearchValue} placeholder="search" value={searchValue} />
+            <FormControl size="sm" type="text" onClick={onSetMatches} onChange={changeSearchValue} placeholder="search" value={searchValue} />
             <ListGroup style={listStyle} as="ul">
             {
                 matches.map(customer => (
-                        <ListGroup.Item key={customer.key} action onClick={() => selectCustomer(customer)}>
-                        {customer.cust_name}
+                        <ListGroup.Item style={itemStyle} key={customer.key} action onClick={() => selectCustomer(customer)}>
+                        {customer.cust_name} | {customer.address} | {customer.cust_phone}
                         </ListGroup.Item> 
                     )
                 )
