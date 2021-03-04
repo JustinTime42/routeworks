@@ -48,7 +48,7 @@ const TractorName = () => {
     }
 
     return (
-        <DropdownButton title={tractorName || "Select Tractor"} onSelect={onSetTractorName} > 
+        <DropdownButton size="sm" title={tractorName || "Select Tractor"} onSelect={onSetTractorName} > 
             <AuthConsumer>
             {({ user }) => (
                 <Can

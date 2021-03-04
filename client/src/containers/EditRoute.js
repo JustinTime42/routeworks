@@ -300,7 +300,7 @@ class EditRoute extends Component {
         <h1></h1> :(
             <>
             <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
-                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.refreshData}>Refresh Data</Button>
+                {/* <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.refreshData}>Refresh Data</Button> */}
                 <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.onInitRoute}>Initialize Route</Button>
                 <Button variant="primary" size="sm" onClick={this.onNewPropertyClick}>New</Button>
             </div>

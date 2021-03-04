@@ -48,7 +48,7 @@ const RouteSelector = () => {
 
     return isPending ? <p>Loading</p> :
         (           
-        <DropdownButton title={activeRoute || "Select Route"} onSelect={event => dispatch(setActiveRoute(event))} >      
+        <DropdownButton size="sm" title={activeRoute || "Select Route"} onSelect={event => dispatch(setActiveRoute(event))} >      
                 <AuthConsumer>
                 {({ user }) => (
                     <Can

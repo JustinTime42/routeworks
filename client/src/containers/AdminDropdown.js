@@ -54,7 +54,7 @@ class EditRouteButton extends Component {
                     perform="admin:visit"
                     yes={() => (
                         <>                        
-                        <DropdownButton title="Admin" onSelect={this.onSelect}>        
+                        <DropdownButton size="sm" title="Admin" onSelect={this.onSelect}>        
                             <Dropdown.Item key="editor" eventKey="editor">                                
                                 {this.props.showEditor ? "Show Route" : "Show Editor"}                               
                             </Dropdown.Item>

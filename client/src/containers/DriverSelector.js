@@ -93,7 +93,7 @@ class DriverName extends Component {
     render() {
         return (              
             <div style={{display: "flex"}}>
-                <DropdownButton title={this.props.activeDriver.name || "Select Driver"} onSelect={this.onSetActiveDriver} >  
+                <DropdownButton size="sm" title={this.props.activeDriver.name || "Select Driver"} onSelect={this.onSetActiveDriver} >  
                 <AuthConsumer>
                     {({ user }) => (
                         <Can

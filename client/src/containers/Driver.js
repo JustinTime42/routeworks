@@ -11,7 +11,7 @@ import { showRouteEditor, getRouteData, requestAllAddresses } from "../actions"
 import TractorName from "./TractorName"
 import FullScreen from "../components/FullScreen"
 import SearchBar from "../components/SearchBar"
-import { Alert } from "react-bootstrap"
+import { Alert, Button } from "react-bootstrap"
 
 import '../styles/driver.css'
 
@@ -43,20 +43,26 @@ class Driver extends Component {
         this.props.getRouteData()
     }
 
+    refreshData = () => {
+        this.props.onGetAllAddresses()
+        this.props.getRouteData()
+    }
+
     render() {
         return (
             <div style={{margin: "1em"}}>
                 {
                 (this.props.isAllPending || this.props.isRoutePending || this.props.routesPending) ? <Spinner /> : null
                 } 
-                <div style={{display: "flex", flexWrap: "wrap", justifyContent: "space-around", margin: "5px"}}>    
+                <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px"}}>    
                     <RouteSelector />
                     <DriverName />
                     <TractorName />
                     <SearchBar />
                     <EditRouteButton /> 
-                    <FullScreen />
-                    <BlackoutButton /> 
+                    <Button variant="primary" size="sm" onClick={this.refreshData}>Refresh Data</Button>
+                    {/* <FullScreen />
+                    <BlackoutButton />  */}
                 </div>
                 { 
                 this.props.showRouteEditor ? <EditRoute /> : 
