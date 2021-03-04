@@ -48,7 +48,7 @@ class DisplayRoute extends Component {
                 routeProperties.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status })
             }
         })
-        console.log('reoute properties: ', routeProperties)
+        console.log('route properties: ', routeProperties)
         return routeProperties.filter(item => !item.inactive).sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
     }
 

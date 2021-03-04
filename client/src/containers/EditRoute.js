@@ -88,22 +88,14 @@ class EditRoute extends Component {
             routeSearchField: '',
             showModal: false,
             activeProperty: this.props.activeProperty,      
-            modified: [],  
-            scrollYPosition: 0    
+            modified: [],   
+            scrollPosition: 0,
         }
     }
 
-    // getSnapshotBeforeUpdate(prevProps, prevState) {
-    //     console.log(prevProps)
-    //     if (prevState.activeProperty) {
-    //        const routeScroll = document.getElementById(`${prevProps.activeProperty.key}routecard`)?.getBoundingClientRect().top
-    //        console.log('routescroll', routeScroll)
-    //         return {scrollToMessage: routeScroll}
-    //     } else return null
-
-
-        
-    // }
+    getSnapshotBeforeUpdate(prevProps, prevState) {        
+        return prevState.scrollPosition       
+     }
     
     componentDidMount() {
         this.props.onGetAllAddresses()
@@ -117,7 +109,7 @@ class EditRoute extends Component {
                     activeProperty: prevProps.activeProperty
                 }
             }, () => {
-                if(this.props.activeProperty?.route_name === this.props.activeRoute) {
+                if(this.props.activeProperty?.routeName === this.props.activeRoute) {
                     let currentPosition = this.props.activeProperty.route_position - 1
                     console.log("currentposition", currentPosition)  
                     if (document.getElementById(`card${currentPosition}`)) {
@@ -130,10 +122,8 @@ class EditRoute extends Component {
             this.setState((prevState, prevProps) => ({filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses)}))
 
         }
-        if (snapshot && prevProps.activeProperty) {
-            //document.getElementById(`${prevProps.activeProperty.key}routecard`).scrollTo(0, snapshot.scrollToMessage)
-            console.log(snapshot.scrollToMessage)
-            // I think I'm scrolling or getting sroll position from the wrong element. maybe its a parent or child...
+        if (snapshot && document.getElementById('droppable2scroll')) {
+            document.getElementById('droppable2scroll').scrollTop = snapshot
         }
     }
 
@@ -142,7 +132,8 @@ class EditRoute extends Component {
         droppable2: 'selected'
     }
 
-    setSelected = () => {        
+    setSelected = () => {     
+        console.log("running setSelected()")   
         let selected = []
         let customers = [...this.props.addresses]
         let route = this.props.activeRoute
@@ -150,16 +141,18 @@ class EditRoute extends Component {
             if (routeEntry.route_name === route) {
                 let i = customers.findIndex(customer => customer.key === routeEntry.property_key)
                 let customer = customers[i]                
-                selected.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status})
+                selected.push({...customer, routeName: routeEntry.route_name, route_position: routeEntry.route_position, status: routeEntry.status})
                 customers[i].routeName = route
             }
         })
         let sortedSelect = selected.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
+        console.log(sortedSelect)
         let unselected = customers.filter(customer => customer.routeName !== route)
         this.setState({selected: sortedSelect, filteredItems: unselected})  
     }
     
     onSave = (customers, droppedCard = null, whereTo = 'same') => {
+        this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
         let selected = customers.map(item => {
             return (
                 {key: item.key, route_position: item.route_position}
@@ -175,12 +168,12 @@ class EditRoute extends Component {
             }
         )
         .then(res => {
-            this.props.onGetAllAddresses()
+           // this.props.onGetAllAddresses()           
             this.props.getRouteData()
             this.setSelected()
-            console.log(res.data)            
+            console.log(res.data)                      
         })
-        .catch(err => console.log(err)) 
+        .catch(err => alert(err)) 
     }
 
     onInitRoute = () => {    
@@ -204,6 +197,7 @@ class EditRoute extends Component {
 
     onDragEnd = result => {
         const { source, destination } = result
+        this.props.onSetActiveProperty(this.props.addresses.find(property => property.key === parseInt(result.draggableId)))
         
         if (!destination) {
             return;
@@ -259,11 +253,13 @@ class EditRoute extends Component {
     }
 
     onNewPropertyClick = () => {
+        this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
         this.props.onSetActiveProperty(null)
         this.setState((prevState) => ({showModal: !prevState.showModal}))       
     }
 
     onEditPropertyClick = (property) => {
+        this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
         this.setState((prevState) => ({showModal: !prevState.showModal, activeProperty: property}))
     }
 
@@ -273,9 +269,9 @@ class EditRoute extends Component {
 
     onDelete = () => {
         if (this.props.activeProperty.route_name === this.props.activeRoute) {
-            this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses, this.props.activeRoute)
+            this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses, this.props.routeData, this.props.activeRoute)
         } else {
-            this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses)
+            this.props.onDeleteProperty(this.props.activeProperty, this.props.addresses, this.props.routeData)
         }      
         this.props.onSetActiveProperty(null)
     }

@@ -48,7 +48,6 @@ export const setActiveProperty = (property) => (dispatch) => {
         .then(res => res.json())
         .then(details => {
             let temp = {...property, ...details[0]}
-            console.log(temp)
             dispatch({type: SET_ACTIVE_PROPERTY, payload: temp })
         })
         .catch(error => console.log(error))
@@ -133,7 +132,7 @@ export const saveNewProperty = (property, allAddresses) => (dispatch) => {
     .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error }))
 }
 
-export const deleteProperty = (property, allAddresses, routeName = null) => (dispatch) => {
+export const deleteProperty = (property, allAddresses, routeData, routeName = null) => (dispatch) => {
     dispatch({ type: UPDATE_ADDRESSES_PENDING})
     fetch(`${process.env.REACT_APP_API_URL}/deleteproperty`, {
         method: 'POST', 
@@ -145,6 +144,9 @@ export const deleteProperty = (property, allAddresses, routeName = null) => (dis
     .then(res => res.json())
     .then(deleted => {
         allAddresses.splice(allAddresses.findIndex(item => item.key === deleted.key), 1)
+        let newRouteData = routeData.filter(entry => entry.property_key !== property.key)
+        console.log(newRouteData)
+        dispatch({ type: ROUTE_DATA_SUCCESS, payload: newRouteData })
         dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
         if (routeName) {
             dispatch(filterRouteProperties(allAddresses, routeName))

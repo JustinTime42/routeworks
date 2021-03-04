@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios"
-import { Dropdown, DropdownButton, Button, FormControl } from "react-bootstrap"
+import { Dropdown, DropdownButton, Button, FormControl, Alert } from "react-bootstrap"
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
 import { setActiveRoute, requestRoutes, getRouteData } from "../actions"
@@ -13,6 +13,7 @@ const editStyle = {
 const RouteSelector = () => {
     const [showEdit, setShowEdit] = useState(false)
     const [routeName, setRouteName] = useState("")
+    const [deleteAlert, setDeleteAlert] = useState(false)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
     const isPending = useSelector(state => state.requestRoutes.isPending)
@@ -65,7 +66,15 @@ const RouteSelector = () => {
                     return (
                         <div key={i} style={{display: "flex"}}>
                             <Dropdown.Item key={route.route_name} eventKey={route.route_name}>{route.route_name}</Dropdown.Item>
-                            <Button style={{visibility: showEdit ? "initial" : "hidden", }} onClick={() => onDelete(route.route_name)}>delete</Button>
+                            <Button style={{visibility: showEdit ? "initial" : "hidden", }} onClick={() => setDeleteAlert(!deleteAlert)}>{(deleteAlert && (route.route_name === activeRoute)) ? "Cancel" : "Delete"}</Button>
+                            <Alert show={deleteAlert && (route.route_name === activeRoute)} variant="danger">
+                            <Alert.Heading>Delete Route?</Alert.Heading>
+                                <div className="d-flex justify-content-end">
+                                <Button onClick={() => onDelete(route.route_name)} variant="outline-success">
+                                    Delete Route
+                                </Button>
+                                </div>
+                            </Alert>
                         </div> 
                     )
                 })
