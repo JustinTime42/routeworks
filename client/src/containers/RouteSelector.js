@@ -47,7 +47,6 @@ const RouteSelector = () => {
     }   
 
     const showConfirm = (route_name) => {
-        dispatch(setActiveRoute(route_name))
         setDeleteAlert(route_name)
     }
 
