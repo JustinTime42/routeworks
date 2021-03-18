@@ -50,6 +50,11 @@ const RouteSelector = () => {
         setDeleteAlert(route_name)
     }
 
+    const handleEditClick = () => {
+        setShowEdit(!showEdit)
+        setDeleteAlert('')
+    }
+
     return isPending ? <p>Loading</p> :
         (           
         <DropdownButton size="sm" title={activeRoute || "Select Route"} onSelect={event => dispatch(setActiveRoute(event))} >      
@@ -59,7 +64,7 @@ const RouteSelector = () => {
                         role={user.role}
                         perform="admin:visit"
                         yes={() => (
-                            <div><Button variant="primary" size="sm" onClick={() => setShowEdit(!showEdit)}>{showEdit ? "Close" : "Edit"}</Button></div>           
+                            <div><Button variant="primary" size="sm" onClick={handleEditClick}>{showEdit ? "Close" : "Edit"}</Button></div>           
                         )}
                         no={() => null}
                     />
@@ -78,7 +83,7 @@ const RouteSelector = () => {
                             <Alert show={deleteAlert === route.route_name} variant="danger">
                             <Alert.Heading>Delete {route.route_name}</Alert.Heading>
                                 <div className="d-flex justify-content-end">
-                                    <Button onClick={() => setDeleteAlert(false)}>Cancel</Button>
+                                    <Button onClick={() => setDeleteAlert('')}>Cancel</Button>
                                     <Button onClick={() => onDelete(route.route_name)} variant="outline-success">Delete Route</Button>
                                 </div>
                             </Alert>
