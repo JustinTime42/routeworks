@@ -13,7 +13,7 @@ const editStyle = {
 const RouteSelector = () => {
     const [showEdit, setShowEdit] = useState(false)
     const [routeName, setRouteName] = useState("")
-    const [deleteAlert, setDeleteAlert] = useState(false)
+    const [deleteAlert, setDeleteAlert] = useState('')
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
     const isPending = useSelector(state => state.requestRoutes.isPending)
@@ -46,6 +46,11 @@ const RouteSelector = () => {
         .catch(err => console.log)        
     }   
 
+    const showConfirm = (route_name) => {
+        dispatch(setActiveRoute(route_name))
+        setDeleteAlert(route_name)
+    }
+
     return isPending ? <p>Loading</p> :
         (           
         <DropdownButton size="sm" title={activeRoute || "Select Route"} onSelect={event => dispatch(setActiveRoute(event))} >      
@@ -55,24 +60,27 @@ const RouteSelector = () => {
                         role={user.role}
                         perform="admin:visit"
                         yes={() => (
-                            <div><Button variant="primary" size="sm" onClick={() => setShowEdit(!showEdit)}>{showEdit ? "Close" : "Edit"}</Button></div>                     
+                            <div><Button variant="primary" size="sm" onClick={() => setShowEdit(!showEdit)}>{showEdit ? "Close" : "Edit"}</Button></div>           
                         )}
-                        no={() => null}               
-                    />                            
+                        no={() => null}
+                    />
                 )}
                 </AuthConsumer>  
             {
                 routes.map((route, i) => {
                     return (
                         <div key={i} style={{display: "flex"}}>
-                            <Dropdown.Item key={route.route_name} eventKey={route.route_name}>{route.route_name}</Dropdown.Item>
-                            <Button style={{visibility: showEdit ? "initial" : "hidden", }} onClick={() => setDeleteAlert(!deleteAlert)}>{(deleteAlert && (route.route_name === activeRoute)) ? "Cancel" : "Delete"}</Button>
-                            <Alert show={deleteAlert && (route.route_name === activeRoute)} variant="danger">
-                            <Alert.Heading>Delete Route?</Alert.Heading>
+                            <Dropdown.Item eventKey={route.route_name}>{route.route_name}</Dropdown.Item>
+                            <Button 
+                                style={{visibility: (showEdit && (deleteAlert !== route.route_name)) ? "initial" : "hidden"}} 
+                                onClick={() => showConfirm(route.route_name)}>
+                                Delete
+                            </Button>
+                            <Alert show={deleteAlert === route.route_name} variant="danger">
+                            <Alert.Heading>Delete {route.route_name}</Alert.Heading>
                                 <div className="d-flex justify-content-end">
-                                <Button onClick={() => onDelete(route.route_name)} variant="outline-success">
-                                    Delete Route
-                                </Button>
+                                    <Button onClick={() => setDeleteAlert(false)}>Cancel</Button>
+                                    <Button onClick={() => onDelete(route.route_name)} variant="outline-success">Delete Route</Button>
                                 </div>
                             </Alert>
                         </div> 

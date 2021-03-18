@@ -39,8 +39,7 @@ const mapDispatchToProps = (dispatch) => {
 class Driver extends Component {
 
     componentDidMount() {
-        this.props.onGetAllAddresses()
-        this.props.getRouteData()
+        this.refreshData()
     }
 
     refreshData = () => {
