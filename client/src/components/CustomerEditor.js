@@ -42,7 +42,7 @@ class NewProperty extends Component {
         if(prevProps.activeProperty !== this.props.activeProperty){
             console.log("component updates")
             this.setState(
-                { activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty" },
+                { activeProperty: {...this.props.activeProperty}, api: this.props.activeProperty ? "editproperty" : "newproperty", sameAddress: false },
                 console.log(this.props.activeProperty))
         }
         if(prevProps.show !== this.props.show) {
