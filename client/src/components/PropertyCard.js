@@ -47,7 +47,7 @@ const PropertyCard = (props) => {
                     : <p></p>
                 } 
                 {props.admin === true ? 
-                    <p style={editStyle}><Button variant="secondary" onClick={() => props.editClick(props.address)}>Edit </Button></p>  : <p></p>               
+                    <p style={editStyle}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : <p></p>               
                 }
             </div>
             <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  

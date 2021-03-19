@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from "react-redux"
-import { Card, Col, Row, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap'
+import { Tabs, Tab, Card, Col, Row, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap'
 import axios from 'axios'
 import { getRouteData, requestAllAddresses } from "../actions"
+import CustLogs from './customer_panels/CustLogs'
 
 import '../styles/driver.css'
 
@@ -49,21 +50,6 @@ class PropertyDetails extends Component {
         this.setState({work_type: event})
     }
 
-    getLogs = () => {
-        fetch(`${process.env.REACT_APP_API_URL}/getlogs/${this.props.property.key}`)
-        .then(response => response.json())
-        .then(data => {
-            let logs = []
-
-            data.forEach(item => {                
-                item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
-                logs.push([item.timestamp, item.address, item.cust_name, item.status, item.notes, item.description, item.user_name])
-            })
-            alert(JSON.stringify(logs))
-        }) 
-        .catch(error => alert(error))
-    }
-
     onStatusChange = (newStatus) => {
         this.setState({disabled: true})
         let property = {...this.props.property}
@@ -102,58 +88,66 @@ class PropertyDetails extends Component {
         const property = this.props.property
         return (
             property ?
-            <Card style={{padding: "1em", height: "600px"}}>
-                <Row>
-                    <Col>
-                        <Card.Title>{property ? property.address ? property.address : null : null}</Card.Title>
-                        <Button onClick={this.getLogs} style={{float: "right"}}>Logs</Button>
-                    </Col>
-                    <Col><Card.Title style={{textAlign: "right"}}>{property ? property.surface_type ? <p>Surface:<br></br>{property.surface_type.toUpperCase()}</p> : null : null }</Card.Title></Col>
-                </Row>
-                <Card.Body>
-                    <Row>
-                        <Col>
-                            <Card.Title>{property ? property.cust_name ? property.cust_name : null : null}{this.props.address? this.props.address.is_new ? " (NEW)" : null : null}</Card.Title>
-                            <Card.Subtitle>{this.props.property ? this.props.property.cust_phone ? this.props.property.cust_phone : null : null}</Card.Subtitle>
-                        </Col>
-                        <Col>
-                            <Form.Label>Work Type</Form.Label>
-                            <DropdownButton title={this.state.work_type} onSelect={this.setWorkType}>
-                                <Dropdown.Item key="Sanding" eventKey="Sanding">sanding</Dropdown.Item>
-                                <Dropdown.Item key="Snow Removal" eventKey="Snow Removal">snow removal</Dropdown.Item>
-                                <Dropdown.Item key="Sweeping" eventKey="Sweeping">sweeping</Dropdown.Item> 
-                                <Dropdown.Item key="Other" eventKey="Other">other</Dropdown.Item>
-                            </DropdownButton> 
-                            {
-                                this.state.work_type === 'Sanding' && property.sand_contract === "Per Yard" ?
-                                <Form.Group>
-                                    <Form.Label>Number of Yards</Form.Label>
-                                    <Form.Control name="yards" as="input" type="number" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
-                                </Form.Group> : null
-                            }                            
-                        </Col>
-                    </Row>
-                </Card.Body>        
-                <Card.Body>
-                    <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
-                    <Card.Title>{property ? property.seasonal ? "SEASONAL" : null : null}</Card.Title>
-                    <Card.Title>{property ? !!property.temp ? "TEMPORARY" : null : null}</Card.Title>
-                </Card.Body>        
-                {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Title className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Title></Card.Body> : null : null }
-                <Card.Body>
-                <Form.Group>
-                    <Form.Label>Driver Notes</Form.Label>
-                    <Form.Control name="noteField" as="textarea" rows="3" value={this.state.noteField} onChange={this.onTextChange}/>
-                </Form.Group>
-                </Card.Body>
-                <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}}>
-                    <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
-                    <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
-                        <div style={{visibility: this.state.done_label, fontSize: "large"}}>{this.state.newStatus}!</div>
-                    <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
-                    <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
-                </Card.Body>
-            </Card> : null
+            <Tabs defaultActiveKey='job'>
+                <Tab eventKey='job' title='Job'>
+                    <Card style={{padding: "1em", height: "600px"}}>
+                        <Row>
+                            <Col>
+                                <Card.Title>{property ? property.address ? property.address : null : null}</Card.Title>
+                            </Col>
+                            <Col><Card.Title style={{textAlign: "right"}}>{property ? property.surface_type ? <p>Surface:<br></br>{property.surface_type.toUpperCase()}</p> : null : null }</Card.Title></Col>
+                        </Row>
+                        <Card.Body>
+                            <Row>
+                                <Col>
+                                    <Card.Title>{property ? property.cust_name ? property.cust_name : null : null}{this.props.address? this.props.address.is_new ? " (NEW)" : null : null}</Card.Title>
+                                    <Card.Subtitle>{this.props.property ? this.props.property.cust_phone ? this.props.property.cust_phone : null : null}</Card.Subtitle>
+                                </Col>
+                                <Col>
+                                    <Form.Label>Work Type</Form.Label>
+                                    <DropdownButton title={this.state.work_type} onSelect={this.setWorkType}>
+                                        <Dropdown.Item key="Sanding" eventKey="Sanding">sanding</Dropdown.Item>
+                                        <Dropdown.Item key="Snow Removal" eventKey="Snow Removal">snow removal</Dropdown.Item>
+                                        <Dropdown.Item key="Sweeping" eventKey="Sweeping">sweeping</Dropdown.Item> 
+                                        <Dropdown.Item key="Other" eventKey="Other">other</Dropdown.Item>
+                                    </DropdownButton> 
+                                    {
+                                        this.state.work_type === 'Sanding' && property.sand_contract === "Per Yard" ?
+                                        <Form.Group>
+                                            <Form.Label>Number of Yards</Form.Label>
+                                            <Form.Control name="yards" as="input" type="number" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
+                                        </Form.Group> : null
+                                    }                            
+                                </Col>
+                            </Row>
+                        </Card.Body>        
+                        <Card.Body>
+                            <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
+                            <Card.Title>{property ? property.seasonal ? "SEASONAL" : null : null}</Card.Title>
+                            <Card.Title>{property ? !!property.temp ? "TEMPORARY" : null : null}</Card.Title>
+                        </Card.Body>        
+                        {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Title className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Title></Card.Body> : null : null }
+                        <Card.Body>
+                        <Form.Group>
+                            <Form.Label>Driver Notes</Form.Label>
+                            <Form.Control name="noteField" as="textarea" rows="3" value={this.state.noteField} onChange={this.onTextChange}/>
+                        </Form.Group>
+                        </Card.Body>
+                        <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}}>
+                            <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
+                            <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
+                                <div style={{visibility: this.state.done_label, fontSize: "large"}}>{this.state.newStatus}!</div>
+                            <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
+                            <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
+                        </Card.Body>
+                    </Card>
+                </Tab>
+                <Tab eventKey='logs' title='Logs'>
+                    {this.props.property ? <CustLogs style={{padding: "1em", height: "600px"}}/> : null }                    
+                </Tab>
+
+            </Tabs>
+             : null
         )    
     }
 }
