@@ -1,0 +1,86 @@
+import React, { useState, useEffect } from 'react'
+import { Alert, Button, DropdownButton, Dropdown, Form } from 'react-bootstrap'
+
+const SkipDetails = (props) => {
+
+    const [skipReason, setSkipReason] = useState('')
+    const [snowDepth, setSnowDepth] = useState('')
+    const [otherNotes, setOtherNotes] = useState('')
+    const snowDepthOptions = () => {
+        let options = []
+        for (let i = .25; i<=3.5; i+=.25) {
+            options.push(`${i} inches`)
+        }
+        
+        return options
+    } 
+
+    useEffect(() => {
+        resetOptions()
+    }, [props])
+
+    useEffect(() => {
+        setSnowDepth('')
+        setOtherNotes('')
+    }, [skipReason])
+
+    const resetOptions = () => {
+        setSkipReason('')
+        setSnowDepth('')
+        setOtherNotes('')
+    }
+
+    const cancelSkip = () => {
+        props.toggleShowSkip()
+        resetOptions()
+    }
+
+    const confirmSkip = () => {
+        console.log(`Skipped: ${skipReason} ${snowDepth} ${otherNotes}`)
+        props.onStatusChange('Skipped', `Skipped: ${skipReason} ${snowDepth} ${otherNotes}`)
+    }
+    
+    // create a payload to send back with skipdetails = {reason, inches?}, to append to notes
+    const isConfirmDisabled = () => {
+        if ((skipReason === 'Snow Depth') && (snowDepth)) return false
+        else if ((skipReason === 'Other Reason') && (otherNotes)) return false
+        else if (skipReason === 'Customer Request') return false
+        else return true
+    }
+
+    return (
+        <Alert show={props.show} variant="danger">
+        <Alert.Heading>Skip {props.customer.address}?</Alert.Heading>
+            <div className="d-flex justify-content-around align-items-center">
+                <Button size="lg" onClick={cancelSkip}>Cancel</Button>
+                <Button size="lg" disabled={isConfirmDisabled()} onClick={confirmSkip} variant="primary">Confirm</Button>
+                <DropdownButton style={{margin:"1em"}} size="lg" title={skipReason || "Select Reason"} onSelect={setSkipReason}>
+                    <Dropdown.Item key="Snow Depth" eventKey="Snow Depth">
+                        Not Enough Snow                        
+                    </Dropdown.Item>
+                    <Dropdown.Item key="Customer Request" eventKey="Customer Request">Customer Request</Dropdown.Item>
+                    <Dropdown.Item key="Other Reason" eventKey="Other Reason">
+                        Other
+                    </Dropdown.Item>
+                </DropdownButton>
+                {
+                    skipReason==='Snow Depth' ? 
+                    <DropdownButton style={{margin:"1em"}} size="lg"  title={snowDepth || "Depth"} onSelect={(event) => setSnowDepth(event)}>
+                    {
+                        snowDepthOptions().map(option => (
+                            <Dropdown.Item  key={option} eventKey={option}>{option}</Dropdown.Item>
+                        ))                           
+                    }                   
+                    </DropdownButton> : null 
+                }                            
+            </div>
+            {
+                skipReason==='Other Reason' ? 
+                <Form.Control style={{marginLeft:"1em"}} name="otherReason" as="input" type="text" rows="1" value={otherNotes} onChange={(event) => setOtherNotes(event.target.value)}></Form.Control>
+                : null                    
+            }    
+        </Alert>
+    )
+}
+
+export default SkipDetails

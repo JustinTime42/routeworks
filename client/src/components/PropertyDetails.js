@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from "react-redux"
-import { Tabs, Tab, Card, Col, Row, Button, Form, Dropdown, DropdownButton } from 'react-bootstrap'
+import { Tabs, Tab, Card, Col, Row, Button, Form, Dropdown, DropdownButton, Alert } from 'react-bootstrap'
 import axios from 'axios'
 import { getRouteData, requestAllAddresses } from "../actions"
 import CustLogs from './customer_panels/CustLogs'
+import SkipDetails from './customer_panels/SkipDetails'
 
 import '../styles/driver.css'
 
@@ -33,26 +34,30 @@ class PropertyDetails extends Component {
             yards: '0',
             done_label: "hidden",
             newStatus: '',
+            showSkipConfirmation: false,
         }
     }
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-          this.setState({noteField: '', yards: '0', work_type: 'Snow Removal', done_label: "hidden", disabled: false})
+          this.setState({noteField: '', yards: '0', work_type: 'Snow Removal', done_label: "hidden", disabled: false, showSkipConfirmation: false,})
         }
       }
 
-    onTextChange = (event) => {
-        this.setState({[event.target.name]: event.target.value})
+    onTextChange = (event) => (this.setState({[event.target.name]: event.target.value}))
+
+    setWorkType = (event) => (this.setState({work_type: event}))
+
+    toggleShowSkip = () => this.setState(prevState => ({showSkipConfirmation: !prevState.showSkipConfirmation}))
+
+    setSkipReason = (event) => {
+        this.setState({skipReason: event})
     }
 
-    setWorkType = (event) => {
-        this.setState({work_type: event})
-    }
-
-    onStatusChange = (newStatus) => {
+    onStatusChange = (newStatus, skipDetails='') => {
         this.setState({disabled: true})
         let property = {...this.props.property}
+       
         if (this.state.work_type === 'Sanding') {
             property.sand_contract === "Per Yard" ? property.price = property.price_per_yard * this.state.yards : property.price = property.price_per_yard
         } else if (this.state.work_type === 'Sweeping') {
@@ -66,7 +71,7 @@ class PropertyDetails extends Component {
                 status: newStatus,
                 driver: this.props.driver,
                 route: this.props.activeRoute,
-                noteField: this.state.noteField,
+                noteField: newStatus === 'Skipped' ? this.state.noteField + skipDetails : this.state.noteField,
                 tractor: this.props.tractor,
                 work_type: this.state.work_type,
                 yards: this.state.yards,
@@ -77,7 +82,7 @@ class PropertyDetails extends Component {
             console.log(res)
             let confirmedStatus = res.data.route_data.status
             if ( confirmedStatus = newStatus) {
-                this.setState({done_label: "visible", newStatus:confirmedStatus})
+                this.setState({done_label: "visible", newStatus:confirmedStatus, showSkipConfirmation: false})
             } else alert(confirmedStatus)
             if (res.data.err.length > 0) alert(res.data.err)            
         })
@@ -135,10 +140,18 @@ class PropertyDetails extends Component {
                         </Card.Body>
                         <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}}>
                             <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
-                            <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={() => this.onStatusChange('Skipped')}>Skip</Button>
+                            <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={this.toggleShowSkip}>Skip</Button>
                                 <div style={{visibility: this.state.done_label, fontSize: "large"}}>{this.state.newStatus}!</div>
                             <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
                             <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
+                        </Card.Body>
+                        <Card.Body>
+                            <SkipDetails 
+                                show={this.state.showSkipConfirmation}
+                                toggleShowSkip={this.toggleShowSkip}
+                                onStatusChange={this.onStatusChange}
+                                customer={property} 
+                            />                            
                         </Card.Body>
                     </Card>
                 </Tab>
