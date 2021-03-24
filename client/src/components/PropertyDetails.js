@@ -71,7 +71,7 @@ class PropertyDetails extends Component {
                 status: newStatus,
                 driver: this.props.driver,
                 route: this.props.activeRoute,
-                noteField: newStatus === 'Skipped' ? this.state.noteField + skipDetails : this.state.noteField,
+                noteField: newStatus === 'Skipped' ? this.state.noteField + ' ' + skipDetails : this.state.noteField,
                 tractor: this.props.tractor,
                 work_type: this.state.work_type,
                 yards: this.state.yards,

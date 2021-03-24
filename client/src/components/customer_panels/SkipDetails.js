@@ -10,8 +10,7 @@ const SkipDetails = (props) => {
         let options = []
         for (let i = .25; i<=3.5; i+=.25) {
             options.push(`${i} inches`)
-        }
-        
+        }        
         return options
     } 
 
@@ -36,11 +35,9 @@ const SkipDetails = (props) => {
     }
 
     const confirmSkip = () => {
-        console.log(`Skipped: ${skipReason} ${snowDepth} ${otherNotes}`)
         props.onStatusChange('Skipped', `Skipped: ${skipReason} ${snowDepth} ${otherNotes}`)
     }
-    
-    // create a payload to send back with skipdetails = {reason, inches?}, to append to notes
+
     const isConfirmDisabled = () => {
         if ((skipReason === 'Snow Depth') && (snowDepth)) return false
         else if ((skipReason === 'Other Reason') && (otherNotes)) return false
