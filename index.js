@@ -425,7 +425,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
     promises.push(
         db('service_log')
         .returning('*')
-        .where('key', logKey)
+        .where('key', parseInt(logKey))
         .del()
         .then(logEntry => response.service_log = logEntry)
         .catch(err => response.err.push(err))
