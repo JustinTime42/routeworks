@@ -403,7 +403,7 @@ app.get('/api/fixroutes', (req, res) => {
 app.delete('/api/undo/:logKey', (req,res) => {
     const { logKey } = req.params
     db('service_log')
-    where('key', logKey)
+    .where('key', logKey)
     .del()
     .then(property => res.json(property))
     .catch(err => res.json(err))
