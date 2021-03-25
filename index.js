@@ -402,11 +402,36 @@ app.get('/api/fixroutes', (req, res) => {
 
 app.delete('/api/undo/:logKey', (req,res) => {
     const { logKey } = req.params
-    db('service_log')
-    .where('key', logKey)
-    .del()
-    .then(property => res.json(property))
-    .catch(err => res.json(err))
+    let promises = []
+    let response = {
+        err: [],
+        service_log: {},
+        route_data: {}
+    }
+
+    promises.push(
+        db('route_data')
+        .returning('*')
+        .update('status', 'Waiting')
+        .where('key', (getKey) => {
+            getKey.select('key').from('route_data')
+            .join('service_log', 'route_data.route_name', '=', 'service_log.route_name' )
+            .where('route_data.property_key', '=', logKey)
+        })
+        .then(newStatus => response.route_data=newStatus)
+        .catch(err => response.err.push(err))
+    )
+
+    promises.push(
+        db('service_log')
+        .returning('*')
+        .where('key', logKey)
+        .del()
+        .then(logEntry => response.service_log = logEntry)
+        .catch(err => response.err.push(err))
+    )
+
+    Promise.all(promises).then(() => res.json(response))
 })
 
 app.post('/api/setstatus', (req, res) => {
