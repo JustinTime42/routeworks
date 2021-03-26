@@ -26,7 +26,7 @@ const CustLogs = () => {
 
     return (
         <>
-        <Button onClick={getLogs}>Refresh</Button>
+        <Button style={{float:"right", marginRight:"3px"}}onClick={getLogs}>Refresh</Button>
         <Table style={{height: "80vh", overflow: "scroll"}} striped bordered>            
             <thead>
                 <tr>
