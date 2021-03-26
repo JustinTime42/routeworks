@@ -49,11 +49,12 @@ const SkipDetails = (props) => {
         <Alert show={props.show} variant="danger">
         <Alert.Heading>Skip {props.customer.address}?</Alert.Heading>
             <div className="d-flex justify-content-around align-items-center">
-                <Button size="lg" onClick={cancelSkip}>Cancel</Button>
+                <Button size="lg" style={{marginRight:"3px"}} onClick={cancelSkip}>Cancel</Button>
                 <Button size="lg" disabled={isConfirmDisabled()} onClick={confirmSkip} variant="primary">Confirm</Button>
                 <DropdownButton style={{margin:"1em"}} size="lg" title={skipReason || "Select Reason"} onSelect={setSkipReason}>
                     <Dropdown.Item key="Snow Depth" eventKey="Snow Depth"><h5>Not Enough Snow</h5></Dropdown.Item>
                     <Dropdown.Item key="Customer Request" eventKey="Customer Request"><h5>Customer Request</h5></Dropdown.Item>
+                    <Dropdown.Item key="Already Cleared" eventKey="Already Cleared"><h5>Already Cleared</h5></Dropdown.Item>
                     <Dropdown.Item key="Other Reason" eventKey="Other Reason"><h5>Other</h5></Dropdown.Item>
                 </DropdownButton>
                 {
