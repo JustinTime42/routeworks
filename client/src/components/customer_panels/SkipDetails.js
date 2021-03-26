@@ -52,20 +52,16 @@ const SkipDetails = (props) => {
                 <Button size="lg" onClick={cancelSkip}>Cancel</Button>
                 <Button size="lg" disabled={isConfirmDisabled()} onClick={confirmSkip} variant="primary">Confirm</Button>
                 <DropdownButton style={{margin:"1em"}} size="lg" title={skipReason || "Select Reason"} onSelect={setSkipReason}>
-                    <Dropdown.Item key="Snow Depth" eventKey="Snow Depth">
-                        Not Enough Snow                        
-                    </Dropdown.Item>
-                    <Dropdown.Item key="Customer Request" eventKey="Customer Request">Customer Request</Dropdown.Item>
-                    <Dropdown.Item key="Other Reason" eventKey="Other Reason">
-                        Other
-                    </Dropdown.Item>
+                    <Dropdown.Item key="Snow Depth" eventKey="Snow Depth"><h5>Not Enough Snow</h5></Dropdown.Item>
+                    <Dropdown.Item key="Customer Request" eventKey="Customer Request"><h5>Customer Request</h5></Dropdown.Item>
+                    <Dropdown.Item key="Other Reason" eventKey="Other Reason"><h5>Other</h5></Dropdown.Item>
                 </DropdownButton>
                 {
                     skipReason==='Snow Depth' ? 
                     <DropdownButton style={{margin:"1em"}} size="lg"  title={snowDepth || "Depth"} onSelect={(event) => setSnowDepth(event)}>
                     {
                         snowDepthOptions().map(option => (
-                            <Dropdown.Item  key={option} eventKey={option}>{option}</Dropdown.Item>
+                            <Dropdown.Item key={option} eventKey={option}><h5>{option}</h5></Dropdown.Item>
                         ))                           
                     }                   
                     </DropdownButton> : null 

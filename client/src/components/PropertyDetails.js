@@ -24,23 +24,27 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
+const initialState = {
+    noteField: '',
+    disabled: false,
+    work_type: 'snow removal',
+    yards: '0',
+    done_label: "hidden",
+    newStatus: '',
+    showSkipConfirmation: false,
+    currentLogEntry: null,
+    showUndoConfirmation: false,
+}
+
 class PropertyDetails extends Component {
     constructor(props){
         super(props)
-        this.state = {
-            noteField: '',
-            disabled: false,
-            work_type: 'snow removal',
-            yards: '0',
-            done_label: "hidden",
-            newStatus: '',
-            showSkipConfirmation: false,
-        }
+        this.state = initialState
     }
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-          this.setState({noteField: '', yards: '0', work_type: 'Snow Removal', done_label: "hidden", disabled: false, showSkipConfirmation: false,})
+          this.setState(initialState)
         }
       }
 
@@ -52,6 +56,16 @@ class PropertyDetails extends Component {
 
     setSkipReason = (event) => {
         this.setState({skipReason: event})
+    }
+
+    undoStatus = () => {
+        this.onStatusChange('Waiting')
+        axios.delete(`${process.env.REACT_APP_API_URL}/undo/${this.state.currentLogEntry}`)
+        .then(res => {
+            console.log(res)
+            this.setState({showUndoConfirmation: false})
+        })
+        .catch(err => alert(err))
     }
 
     onStatusChange = (newStatus, skipDetails='') => {
@@ -79,10 +93,10 @@ class PropertyDetails extends Component {
         )
         .then(res => {
             this.props.getRouteData() 
-            console.log(res)
+            console.log(res.data.serviceLog[0][0].key)
             let confirmedStatus = res.data.route_data.status
             if ( confirmedStatus = newStatus) {
-                this.setState({done_label: "visible", newStatus:confirmedStatus, showSkipConfirmation: false})
+                this.setState({done_label: "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key}) 
             } else alert(confirmedStatus)
             if (res.data.err.length > 0) alert(res.data.err)            
         })
@@ -141,7 +155,9 @@ class PropertyDetails extends Component {
                         <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}}>
                             <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
                             <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={this.toggleShowSkip}>Skip</Button>
-                                <div style={{visibility: this.state.done_label, fontSize: "large"}}>{this.state.newStatus}!</div>
+                                <div style={{visibility: this.state.done_label, fontSize: "large"}}>                                    
+                                    <Button variant='warning' size='lg' onClick={() => this.setState({showUndoConfirmation: true})} >Undo {this.state.newStatus}</Button>
+                                </div>
                             <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
                             <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
                         </Card.Body>
@@ -151,7 +167,12 @@ class PropertyDetails extends Component {
                                 toggleShowSkip={this.toggleShowSkip}
                                 onStatusChange={this.onStatusChange}
                                 customer={property} 
-                            />                            
+                            />    
+                            <Alert show={this.state.showUndoConfirmation} variant="danger">
+                                <Alert.Heading>Undo {this.state.newStatus} and set as 'Waiting'?</Alert.Heading>
+                                <Button size='lg' onClick={() => this.setState({showUndoConfirmation: false})}>Cancel</Button>
+                                <Button size='lg' onClick={this.undoStatus}>Confirm</Button>
+                            </Alert>                        
                         </Card.Body>
                     </Card>
                 </Tab>
