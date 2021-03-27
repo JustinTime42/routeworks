@@ -414,7 +414,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
         .returning('*')
         .update('route_data.status', 'Waiting')
         .where('route_data.key', (getKey) => {
-            getKey.select('key').from('route_data')
+            getKey.select('route_data.key').from('route_data')
             .join('service_log', 'route_data.route_name', '=', 'service_log.route_name' )
             .where('route_data.property_key', '=', logKey)
         })
