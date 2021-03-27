@@ -41,7 +41,7 @@ const SkipDetails = (props) => {
     const isConfirmDisabled = () => {
         if ((skipReason === 'Snow Depth') && (snowDepth)) return false
         else if ((skipReason === 'Other Reason') && (otherNotes)) return false
-        else if (skipReason === 'Customer Request') return false
+        else if ((skipReason === 'Customer Request') || skipReason ==='Already Cleared') return false
         else return true
     }
 

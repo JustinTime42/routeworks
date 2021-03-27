@@ -59,7 +59,7 @@ class PropertyDetails extends Component {
     }
 
     undoStatus = () => {
-        this.onStatusChange('Waiting')
+       // this.onStatusChange('Waiting')
         axios.delete(`${process.env.REACT_APP_API_URL}/undo/${this.state.currentLogEntry}`)
         .then(res => {
             console.log(res)
@@ -155,9 +155,9 @@ class PropertyDetails extends Component {
                         <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}}>
                             <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
                             <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={this.toggleShowSkip}>Skip</Button>
-                                {/* <div style={{visibility: this.state.done_label, fontSize: "large"}}>                                    
+                                <div style={{visibility: this.state.done_label, fontSize: "large"}}>                                    
                                     <Button variant='warning' size='lg' onClick={() => this.setState({showUndoConfirmation: true})} >Undo {this.state.newStatus}</Button>
-                                </div> */}
+                                </div>
                             <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
                             <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
                         </Card.Body>

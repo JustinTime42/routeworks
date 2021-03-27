@@ -412,8 +412,8 @@ app.delete('/api/undo/:logKey', (req,res) => {
     promises.push(
         db('route_data')
         .returning('*')
-        .update('status', 'Waiting')
-        .where('key', (getKey) => {
+        .update('route_data.status', 'Waiting')
+        .where('route_data.key', (getKey) => {
             getKey.select('key').from('route_data')
             .join('service_log', 'route_data.route_name', '=', 'service_log.route_name' )
             .where('route_data.property_key', '=', logKey)
@@ -425,7 +425,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
     promises.push(
         db('service_log')
         .returning('*')
-        .where('key', parseInt(logKey))
+        .where('key', logKey)
         .del()
         .then(logEntry => response.service_log = logEntry)
         .catch(err => response.err.push(err))
