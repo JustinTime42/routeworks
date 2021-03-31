@@ -402,7 +402,6 @@ app.get('/api/fixroutes', (req, res) => {
 
 app.delete('/api/undo/:logKey', (req,res) => {
     const { logKey } = req.params
-    // let promises = []
     let response = {
         err: [],
         service_log: {},
@@ -421,7 +420,6 @@ app.delete('/api/undo/:logKey', (req,res) => {
             property_key: result[0].property_key,
         })
         .then(newStatus => {
-            console.log(newStatus)
             response.route_data = newStatus
             db('service_log')
             .returning('*')
@@ -430,7 +428,6 @@ app.delete('/api/undo/:logKey', (req,res) => {
             .then(logEntry => {
                 response.service_log = logEntry
                 response.route_data = newStatus
-                // console.log(`route name: ${routeName}, property key: ${propertyKey}`)
             })
             .catch(err => response.err.push(err))
             
@@ -439,40 +436,6 @@ app.delete('/api/undo/:logKey', (req,res) => {
         res.json(response)        
     })
     .catch(err => response.err.push(err))
-
-    // promises.push(
-    //     db('route_data')
-    //     .returning('*')
-    //     .update('status', 'Waiting')
-    //     .where({
-    //         route_name: routeName,
-    //         property_key: propertyKey,
-    //     })
-    //     .then(newStatus => {
-    //         console.log(newStatus)
-    //         response.route_data = newStatus
-    //         db('service_log')
-    //         .returning('*')
-    //         .where('key', logKey)
-    //         .del()
-    //         .then(logEntry => response.service_log = logEntry)
-    //         .catch(err => response.err.push(err))
-            
-    //     })
-    //     .catch(err => response.err.push(err))
-    // )
-    
-
-    // promises.push(
-    //     db('service_log')
-    //     .returning('*')
-    //     .where('key', logKey)
-    //     .del()
-    //     .then(logEntry => response.service_log = logEntry)
-    //     .catch(err => response.err.push(err))
-    // )
-
-    // Promise.all(promises).then(() => res.json(response))
 })
 
 app.post('/api/setstatus', (req, res) => {
