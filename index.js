@@ -402,31 +402,23 @@ app.get('/api/fixroutes', (req, res) => {
 
 app.delete('/api/undo/:logKey', (req,res) => {
     const { logKey } = req.params
-    let promises = []
+    // let promises = []
     let response = {
         err: [],
         service_log: {},
         route_data: {}
     }
-    let routeName = ''
-    let propertyKey = null
 
     db('service_log')
     .select('route_name', 'property_key')
     .where('key', logKey)
     .then(result => {
-        routeName = result[0].route_name
-        propertyKey = result[0].property_key
-        console.log(`route name: ${routeName}, property key: ${propertyKey}`)
-    })
-
-    promises.push(
         db('route_data')
         .returning('*')
         .update('status', 'Waiting')
         .where({
-            route_name: routeName,
-            property_key: propertyKey,
+            route_name: result[0].route_name,
+            property_key: result[0].property_key,
         })
         .then(newStatus => {
             console.log(newStatus)
@@ -435,12 +427,40 @@ app.delete('/api/undo/:logKey', (req,res) => {
             .returning('*')
             .where('key', logKey)
             .del()
-            .then(logEntry => response.service_log = logEntry)
+            .then(logEntry => {
+                response.service_log = logEntry
+                response.route_data = newStatus
+                // console.log(`route name: ${routeName}, property key: ${propertyKey}`)
+            })
             .catch(err => response.err.push(err))
             
         })
         .catch(err => response.err.push(err))
-    )
+
+        
+    })
+
+    // promises.push(
+    //     db('route_data')
+    //     .returning('*')
+    //     .update('status', 'Waiting')
+    //     .where({
+    //         route_name: routeName,
+    //         property_key: propertyKey,
+    //     })
+    //     .then(newStatus => {
+    //         console.log(newStatus)
+    //         response.route_data = newStatus
+    //         db('service_log')
+    //         .returning('*')
+    //         .where('key', logKey)
+    //         .del()
+    //         .then(logEntry => response.service_log = logEntry)
+    //         .catch(err => response.err.push(err))
+            
+    //     })
+    //     .catch(err => response.err.push(err))
+    // )
     
 
     // promises.push(
@@ -452,7 +472,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
     //     .catch(err => response.err.push(err))
     // )
 
-    Promise.all(promises).then(() => res.json(response))
+    // Promise.all(promises).then(() => res.json(response))
 })
 
 app.post('/api/setstatus', (req, res) => {
