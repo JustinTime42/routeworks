@@ -408,6 +408,16 @@ app.delete('/api/undo/:logKey', (req,res) => {
         service_log: {},
         route_data: {}
     }
+    let logEntry = {}
+
+    db('route_data')
+    .select('*')
+    .where('key', logKey)
+    .then(result => {
+        logEntry = result
+        console.log(logEntry)
+        console.log(logEntry.route_name)
+    })
 
     promises.push(
         db('route_data')
