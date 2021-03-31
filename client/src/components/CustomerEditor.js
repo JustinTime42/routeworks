@@ -6,16 +6,17 @@ import axios from "axios"
 // import socketIOClient from "socket.io-client";
 import '../styles/driver.css'
 
+const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt"]
+const sandContractTypes = ["Per Visit", "Per Yard"]
+const editorSize = {height:"90vh"}
+
 const mapStateToProps = state => {
     return {         
         activeProperty: state.setActiveProperty.activeProperty,
         activeRoute: state.setActiveRoute.activeRoute,
+        routeData: state.getRouteData.routeData,
     }
 }
-
-const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt"]
-const sandContractTypes = ["Per Visit", "Per Yard"]
-const editorSize = {height:"90vh"}
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -376,8 +377,22 @@ class NewProperty extends Component {
                                                 </Col>
                                             </Form.Row>                                       
                                         )                               
+                                    })                                    
+                                }
+                                <Form.Row>
+                                    <Form.Label>Routes Assigned:</Form.Label>
+                                {
+                                    this.props.routeData.map((entry, i) => {                                        
+                                        if (entry.property_key === this.state.activeProperty?.key) {
+                                            console.log(entry)
+                                            return (
+                                                <Form.Label key={i}>{entry.route_name}, </Form.Label>
+                                            )
+                                        } else return null
                                     })
                                 }
+                                </Form.Row>                             
+
                             </Col>
                             </Form.Row>
                             <Form.Group>
