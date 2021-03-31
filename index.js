@@ -408,37 +408,38 @@ app.delete('/api/undo/:logKey', (req,res) => {
         service_log: {},
         route_data: {}
     }
-    let logEntry = {}
+    let routeName = ''
+    let propertyKey = null
 
     db('service_log')
-    .select('*')
+    .select('route_name, property_key')
     .where('key', logKey)
     .then(result => {
-        logEntry = result
-        console.log(logEntry)
-        console.log(logEntry.route_name)
+        routeName = result[0].route_name
+        propertyKey = result[0].property_key
     })
 
     promises.push(
         db('route_data')
         .returning('*')
         .update('route_data.status', 'Waiting')
-        .where('route_data.key', (getKey) => {
-            getKey.select('route_data.key').from('route_data')
-            .join('service_log', 'route_data.route_name', '=', 'service_log.route_name' )
-            .where('route_data.property_key', '=', logKey)
+        .where({
+            route_name: routeName,
+            property_key: propertyKey,
         })
         .then(newStatus => {
+            response.route_data = newStatus
             db('service_log')
             .returning('*')
             .where('key', logKey)
             .del()
             .then(logEntry => response.service_log = logEntry)
             .catch(err => response.err.push(err))
-            response.route_data=newStatus
+            
         })
         .catch(err => response.err.push(err))
     )
+    
 
     // promises.push(
     //     db('service_log')
