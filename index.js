@@ -412,7 +412,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
     let propertyKey = null
 
     db('service_log')
-    .select('route_name, property_key')
+    .select('route_name', 'property_key')
     .where('key', logKey)
     .then(result => {
         routeName = result[0].route_name
