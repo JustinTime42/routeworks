@@ -426,7 +426,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
         .update('status', 'Waiting')
         .where({
             route_name: routeName,
-            property_key: parseInt(propertyKey),
+            property_key: propertyKey,
         })
         .then(newStatus => {
             console.log(newStatus)
