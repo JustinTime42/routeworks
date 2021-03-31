@@ -412,7 +412,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
 
     db('route_data')
     .select('*')
-    .where('key', logKey)
+    .where('key', parseInt(logKey))
     .then(result => {
         logEntry = result
         console.log(logEntry)
@@ -428,18 +428,26 @@ app.delete('/api/undo/:logKey', (req,res) => {
             .join('service_log', 'route_data.route_name', '=', 'service_log.route_name' )
             .where('route_data.property_key', '=', logKey)
         })
-        .then(newStatus => response.route_data=newStatus)
+        .then(newStatus => {
+            db('service_log')
+            .returning('*')
+            .where('key', logKey)
+            .del()
+            .then(logEntry => response.service_log = logEntry)
+            .catch(err => response.err.push(err))
+            response.route_data=newStatus
+        })
         .catch(err => response.err.push(err))
     )
 
-    promises.push(
-        db('service_log')
-        .returning('*')
-        .where('key', logKey)
-        .del()
-        .then(logEntry => response.service_log = logEntry)
-        .catch(err => response.err.push(err))
-    )
+    // promises.push(
+    //     db('service_log')
+    //     .returning('*')
+    //     .where('key', logKey)
+    //     .del()
+    //     .then(logEntry => response.service_log = logEntry)
+    //     .catch(err => response.err.push(err))
+    // )
 
     Promise.all(promises).then(() => res.json(response))
 })
