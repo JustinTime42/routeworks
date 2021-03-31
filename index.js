@@ -436,9 +436,9 @@ app.delete('/api/undo/:logKey', (req,res) => {
             
         })
         .catch(err => response.err.push(err))
-
-        
+        res.json(response)        
     })
+    .catch(err => response.err.push(err))
 
     // promises.push(
     //     db('route_data')
