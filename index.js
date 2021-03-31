@@ -417,12 +417,13 @@ app.delete('/api/undo/:logKey', (req,res) => {
     .then(result => {
         routeName = result[0].route_name
         propertyKey = result[0].property_key
+        console.log(`route name: ${routeName}, property key: ${propertyKey}`)
     })
 
     promises.push(
         db('route_data')
         .returning('*')
-        .update('route_data.status', 'Waiting')
+        .update('status', 'Waiting')
         .where({
             route_name: routeName,
             property_key: propertyKey,
