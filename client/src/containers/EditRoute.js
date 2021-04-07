@@ -200,7 +200,6 @@ class EditRoute extends Component {
     getList = id => this.state[this.id2List[id]];
 
     onDragEnd = result => {
-        console.log("result", result)
         const { source, destination } = result
         this.props.onSetActiveProperty(this.props.addresses.find(property => property.key === parseInt(result.draggableId.slice(1))))
         const newList = move(
@@ -233,20 +232,19 @@ class EditRoute extends Component {
             newList.droppable2.forEach((item, i) => item.route_position = i)
             if ((destination.droppableId === "droppable2")) { //If adding to route
                 let droppedCard = newList.droppable2.find(item => item.key === parseInt(result.draggableId.slice(1))) 
-                console.log(droppedCard)
                 if (this.state.selected.find(item => item.key === droppedCard.key)) { // if customer already on route
                     alert(`${droppedCard.cust_name} is already on ${this.props.activeRoute}`)
-                    document.getElementById(`${droppedCard.key}routecard`).scrollIntoView(true)
+                    let rect = document.getElementById(`${droppedCard.key}routecard`).getBoundingClientRect().top
+                    let scrollTop = document.getElementById('droppable2scroll').scrollTop 
+                    document.getElementById('droppable2scroll').scrollTop = rect + scrollTop - (window.innerHeight * .3)
                 } else {
-                    console.log("mewlist", newList)
                     droppedCard.status="Waiting"
                     this.setState({selected: newList.droppable2})
                     this.onSave(newList.droppable2, droppedCard, 'on') 
                 }
             }      
             else if (destination.droppableId === "droppable") {  
-                let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId.slice(1)))                            
-               console.log(newList.droppable2)
+                let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId.slice(1)))  
                this.setState({selected: newList.droppable2})
                 this.onSave(newList.droppable2, droppedCard, 'off') 
    
