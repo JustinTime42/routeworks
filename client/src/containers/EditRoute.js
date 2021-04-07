@@ -203,7 +203,13 @@ class EditRoute extends Component {
         console.log("result", result)
         const { source, destination } = result
         this.props.onSetActiveProperty(this.props.addresses.find(property => property.key === parseInt(result.draggableId.slice(1))))
-        
+        const newList = move(
+            this.getList(source.droppableId),
+            this.getList(destination.droppableId),
+            source,
+            destination
+        )
+
         if (!destination) {
             return;
         }
@@ -219,15 +225,11 @@ class EditRoute extends Component {
                 orderedItems.forEach((item, i) => {
                     item.route_position = i
                 })
+                this.setState({selected: orderedItems})
                 this.onSave(orderedItems)
             }   
         } else {   //if  moving from one list to another
-            const newList = move(
-                this.getList(source.droppableId),
-                this.getList(destination.droppableId),
-                source,
-                destination
-            )
+
             newList.droppable2.forEach((item, i) => item.route_position = i)
             if ((destination.droppableId === "droppable2")) { //If adding to route
                 let droppedCard = newList.droppable2.find(item => item.key === parseInt(result.draggableId.slice(1))) 
