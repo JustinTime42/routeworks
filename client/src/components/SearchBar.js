@@ -50,7 +50,8 @@ const SearchBar = () => {
             setMatches(filteredCustomers)
             dispatch(filterProperties(filteredCustomers))
         } else {
-            setMatches([])            
+            setMatches([])  
+            dispatch(filterProperties([]))          
         }
     }
 
