@@ -1,7 +1,10 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
 
 const PropertyCard = (props) => {
+
+    const routeData = useSelector(state => state.getRouteData.routeData)
 
     const status = props.address.status
 
@@ -37,6 +40,16 @@ const PropertyCard = (props) => {
         verticalAlign: "bottom"
     }
 
+    const RouteString = () => {
+        let routes = 'Routes Assigned: '
+        routeData.forEach((entry, i) => {                                        
+            if (entry.property_key === props.address?.key) {
+                routes += `${entry.route_name}, `                   
+            }            
+        })
+        return <p>{routes}</p>
+    }
+
     return(
         <div id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <div style={rightStyle}>                
@@ -50,10 +63,11 @@ const PropertyCard = (props) => {
                     <p style={editStyle}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : <p></p>               
                 }
             </div>
-            <h5 style={{textAlign: "left", width: "100%", fontWeight: "bold"}}>  
+            <h5 style={{textAlign: "left", fontWeight: "bold"}}>  
             {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </h5> 
-            <p style={{color: "rgba(255, 255, 255, 0.7)", marginBottom: "2em"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>            
+            <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p> 
+            <RouteString />              
         </div>
     )
 }   
