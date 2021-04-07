@@ -26,6 +26,7 @@ import {
     ROUTE_DATA_PENDING,
     ROUTE_DATA_SUCCESS,
     ROUTE_DATA_FAILED,
+    FILTER_PROPERTIES_SUCCESS,
 
 } from './constants.js'
 // import { io } from "socket.io-client";
@@ -44,13 +45,13 @@ export const setActiveProperty = (property) => (dispatch) => {
     } else {
         console.log(property)
         dispatch({ type: SET_ACTIVE_PROPERTY, payload: property })
-        fetch(`${process.env.REACT_APP_API_URL}/custdetail/${property.key}`)
-        .then(res => res.json())
-        .then(details => {
-            let temp = {...property, ...details[0]}
-            dispatch({type: SET_ACTIVE_PROPERTY, payload: temp })
-        })
-        .catch(error => console.log(error))
+        // fetch(`${process.env.REACT_APP_API_URL}/custdetail/${property.key}`)
+        // .then(res => res.json())
+        // .then(details => {
+        //     let temp = {...property, ...details[0]}
+        //     dispatch({type: SET_ACTIVE_PROPERTY, payload: temp })
+        // })
+        // .catch(error => console.log(error))
     }
 }
 
@@ -106,12 +107,19 @@ export const getRouteProperties = (addresses, routeData, activeRoute) => (dispat
     // .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
 }
 
-//currently unused
 export const filterRouteProperties = (allAddresses, routeName, filter = '') => (dispatch) => {
     dispatch({ type: GET_ROUTE_PENDING})
     const routeProperties = allAddresses.filter(address => address.route_data.some(route => route.route_name === routeName )) 
         .sort((a, b) => a.route_position > b.route_position ? 1 : -1); 
     dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties})
+}
+
+export const filterProperties = (matches) => {
+    return {
+        type: FILTER_PROPERTIES_SUCCESS,
+        payload: matches
+    }
+    
 }
 
 export const saveNewProperty = (property, allAddresses) => (dispatch) => {

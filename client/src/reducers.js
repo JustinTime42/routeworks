@@ -31,6 +31,7 @@ import { SET_ACTIVE_ROUTE,
     ROUTE_DATA_PENDING,
     ROUTE_DATA_SUCCESS,
     ROUTE_DATA_FAILED,
+    FILTER_PROPERTIES_SUCCESS,
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -198,6 +199,18 @@ export const getRouteProperties = (state = initialStateRouteProperties, action={
             return {...state, error: action.payload, isPending: false}
         default:
             return state
+    }
+}
+
+export const initialStateFilteredProperties = {
+    customers: [],
+}
+
+export const filterProperties = (state = initialStateFilteredProperties, action={}) => {
+    switch(action.type) {
+        case FILTER_PROPERTIES_SUCCESS: 
+            return {...state, customers: action.payload}
+        default: return state
     }
 }
 

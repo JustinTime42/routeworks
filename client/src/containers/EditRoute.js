@@ -5,7 +5,7 @@ import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRou
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "../components/PropertyCard"
-import NewProperty from "../components/CustomerEditor"
+import CustomerDetails from "../components/CustomerEditor"
 import '../styles/driver.css'
 
 const mapStateToProps = state => {
@@ -17,6 +17,7 @@ const mapStateToProps = state => {
         error: state.requestAllAddresses.error,
         routeData: state.getRouteData.routeData,
         isRoutePending: state.getRouteData.isPending,
+        filterProperties: state.filterProperties.customers,
     }
 } 
 
@@ -82,7 +83,7 @@ class EditRoute extends Component {
         super(props)
         this.state = { 
             items: [],
-            filteredItems: [],
+            filteredItems: this.props.filterProperties,
             selected: [],
             searchField: '',
             routeSearchField: '',
@@ -118,10 +119,13 @@ class EditRoute extends Component {
                 }   
             })
         } 
-        if(this.state.searchField !== prevState.searchField) {
-            this.setState((prevState, prevProps) => ({filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses)}))
-
+        if(this.props.filterProperties !== prevProps.filterProperties) {
+            this.setState({filteredItems: this.props.filterProperties})
         }
+        // if(this.state.searchField !== prevState.searchField) {
+        //     this.setState((prevState, prevProps) => ({filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses)}))
+
+        // }
         if (snapshot && document.getElementById('droppable2scroll')) {
             document.getElementById('droppable2scroll').scrollTop = snapshot
         }
@@ -147,8 +151,8 @@ class EditRoute extends Component {
         })
         let sortedSelect = selected.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
         console.log(sortedSelect)
-        let unselected = customers.filter(customer => customer.routeName !== route)
-        this.setState({selected: sortedSelect, filteredItems: unselected})  
+       //let unselected = customers.filter(customer => customer.routeName !== route)
+        this.setState({selected: sortedSelect })  
     }
     
     onSave = (customers, droppedCard = null, whereTo = 'same') => {
@@ -196,47 +200,55 @@ class EditRoute extends Component {
     getList = id => this.state[this.id2List[id]];
 
     onDragEnd = result => {
+        console.log("result", result)
         const { source, destination } = result
-        this.props.onSetActiveProperty(this.props.addresses.find(property => property.key === parseInt(result.draggableId)))
+        this.props.onSetActiveProperty(this.props.addresses.find(property => property.key === parseInt(result.draggableId.slice(1))))
         
         if (!destination) {
             return;
         }
 
+        //If only reordering
         if (source.droppableId === destination.droppableId) {
-            const orderedItems = reorder(
-                this.getList(source.droppableId),
-                source.index,
-                destination.index
-            )
             if (source.droppableId === 'droppable2') { 
-
+                const orderedItems = reorder(
+                    this.getList(source.droppableId),
+                    source.index,
+                    destination.index
+                )
                 orderedItems.forEach((item, i) => {
                     item.route_position = i
                 })
                 this.onSave(orderedItems)
-            }            
-            
-        } else {
+            }   
+        } else {   //if  moving from one list to another
             const newList = move(
                 this.getList(source.droppableId),
                 this.getList(destination.droppableId),
                 source,
                 destination
             )
-
             newList.droppable2.forEach((item, i) => item.route_position = i)
-            if (destination.droppableId === "droppable") {
-                let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId))              
+            if ((destination.droppableId === "droppable2")) { //If adding to route
+                let droppedCard = newList.droppable2.find(item => item.key === parseInt(result.draggableId.slice(1))) 
+                console.log(droppedCard)
+                if (this.state.selected.find(item => item.key === droppedCard.key)) { // if customer already on route
+                    alert(`${droppedCard.cust_name} is already on ${this.props.activeRoute}`)
+                    document.getElementById(`${droppedCard.key}routecard`).scrollIntoView(true)
+                } else {
+                    console.log("mewlist", newList)
+                    droppedCard.status="Waiting"
+                    this.setState({selected: newList.droppable2})
+                    this.onSave(newList.droppable2, droppedCard, 'on') 
+                }
+            }      
+            else if (destination.droppableId === "droppable") {  
+                let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId.slice(1)))                            
                console.log(newList.droppable2)
+               this.setState({selected: newList.droppable2})
                 this.onSave(newList.droppable2, droppedCard, 'off') 
-            } else {
-                // here we are adding a property to the route. so send only selected to onSave()
-                let droppedCard = newList.droppable2.find(item => item.key === parseInt(result.draggableId)) 
-                droppedCard.status="Waiting"
-                this.onSave(newList.droppable2, droppedCard, 'on')    
-            }    
-                this.setSelected()
+   
+               }   // this.setSelected()
         }        
     }
 
@@ -253,14 +265,14 @@ class EditRoute extends Component {
     }
 
     onNewPropertyClick = () => {
-        this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
+        //this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
         this.props.onSetActiveProperty(null)
         this.setState((prevState) => ({showModal: !prevState.showModal}))       
     }
 
     onDetailsPropertyClick = (property) => {
-        this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
-        this.setState((prevState) => ({showModal: !prevState.showModal, activeProperty: property}))
+        //this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
+        this.setState((prevState) => ({showModal: !prevState.showModal, activeProperty: property}), console.log(this.state.showModal))
     }
 
     onCloseClick = () => {
@@ -316,7 +328,7 @@ class EditRoute extends Component {
                             {this.state.selected.map((item, index) => (
                                 <Draggable
                                     key={item.key}
-                                    draggableId={item.key.toString()}
+                                    draggableId={`L${item.key.toString()}`}
                                     index={index}>
                                     {(provided, snapshot) => (
                                         <div
@@ -356,7 +368,7 @@ class EditRoute extends Component {
                             {this.state.filteredItems.map((item, index) => (
                                 <Draggable
                                     key={item.key}
-                                    draggableId={item.key.toString()}
+                                    draggableId={`R${item.key.toString()}`}
                                     index={index}>
                                     {(provided, snapshot) => (
                                         <div
@@ -386,7 +398,7 @@ class EditRoute extends Component {
                     )}
                 </Droppable>
             </DragDropContext>
-                <NewProperty 
+                <CustomerDetails 
                     activeProperty={this.props.activeProperty} 
                     onSave={this.onPropertySave}
                     show={this.state.showModal}
