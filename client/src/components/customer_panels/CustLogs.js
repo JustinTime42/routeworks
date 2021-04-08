@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Table, Button} from 'react-bootstrap'
 
-const CustLogs = () => {
+const CustLogs = (props) => {
     const [entries, setEntries] = useState([])
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
 
     useEffect(() => {
-        getLogs()
+        if(activeProperty?.key) getLogs()
     }, [activeProperty])
 
     const getLogs = () => {
@@ -26,8 +26,8 @@ const CustLogs = () => {
 
     return (
         <>
-        <Button style={{float:"right", marginRight:"3px"}}onClick={getLogs}>Refresh</Button>
-        <Table style={{height: "80vh", overflow: "scroll"}} striped bordered>            
+        <Button style={{float:"right", marginRight:"3px"}} onClick={getLogs}>Refresh</Button>
+        <Table style={{display: "block", height:props.height, overflow:"auto"}} striped bordered>            
             <thead>
                 <tr>
                     <th>Timestamp</th>
@@ -48,7 +48,7 @@ const CustLogs = () => {
                 ))
             }
             </tbody>
-        </Table>
+        </Table>      
         </>
     )
 

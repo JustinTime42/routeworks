@@ -267,12 +267,14 @@ class EditRoute extends Component {
     onNewPropertyClick = () => {
         //this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
         this.props.onSetActiveProperty(null)
-        this.setState((prevState) => ({showModal: !prevState.showModal}))       
+        console.log("showmodal", this.state.showModal)
+        this.setState((prevState) => ({showModal: true}), () => console.log("showmodal", this.state.showModal))       
     }
 
     onDetailsPropertyClick = (property) => {
         //this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
-        this.setState((prevState) => ({showModal: !prevState.showModal, activeProperty: property}), console.log(this.state.showModal))
+        //this.props.onSetActiveProperty(property)
+        this.setState({showModal: true, activeProperty: property}, () => console.log(this.state.showModal))
     }
 
     onCloseClick = () => {

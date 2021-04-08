@@ -60,7 +60,7 @@ const SearchBar = () => {
 
     return (
         <div style={{position: "relative"}}>
-            <FormControl size="sm" type="text" onClick={onSetMatches} onChange={changeSearchValue} placeholder="search" value={searchValue} />
+            <FormControl size="sm" type="search" onClick={onSetMatches} onChange={changeSearchValue} placeholder="search" value={searchValue} />
             <ListGroup  style={listStyle} as="ul">
             {
                 matches.map(customer => (

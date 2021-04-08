@@ -178,7 +178,7 @@ class PropertyDetails extends Component {
                     </Card>
                 </Tab>
                 <Tab eventKey='logs' title='Logs'>
-                    <CustLogs style={{padding: "1em", height: "600px"}}/>                  
+                    <CustLogs height="80vh"/>                  
                 </Tab>
 
             </Tabs>
