@@ -356,8 +356,7 @@ const CustomerDetails = props => {
                                     } else return null
                                 })
                             }
-                            </Form.Row>                             
-
+                            </Form.Row>  
                         </Col>
                         </Form.Row>
                         <Form.Group>

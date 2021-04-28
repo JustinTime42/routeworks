@@ -82,7 +82,7 @@ class PropertyDetails extends Component {
         }
         axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
             {
-                property: property,
+                property: property,    
                 status: newStatus,
                 driver: this.props.driver,
                 route: this.props.activeRoute,

@@ -92,7 +92,7 @@ class DisplayRoute extends Component {
                     }
                 </div>
                 <div className="rightSide">
-                    <PropertyDetails onStatusChange={this.onStatusChange} property={this.props.activeProperty} changeProperty={this.changeActiveProperty}/>
+                    <PropertyDetails property={this.props.activeProperty} changeProperty={this.changeActiveProperty}/>
                 </div> 
             </div>  
         )

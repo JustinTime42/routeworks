@@ -109,15 +109,15 @@ class EditRoute extends Component {
                 return {
                     activeProperty: prevProps.activeProperty
                 }
-            }, () => {
-                if(this.props.activeProperty?.routeName === this.props.activeRoute) {
-                    let currentPosition = this.props.activeProperty.route_position - 1
-                    console.log("currentposition", currentPosition)  
-                    if (document.getElementById(`card${currentPosition}`)) {
-                        document.getElementById(`card${currentPosition}`).scrollIntoView(true)
-                    }                    
-                }   
-            })
+            // }, () => {
+            //     if(this.props.activeProperty?.routeName === this.props.activeRoute) {
+            //         let currentPosition = this.props.activeProperty.route_position - 1
+            //         console.log("currentposition", currentPosition)  
+            //         if (document.getElementById(`card${currentPosition}`)) {
+            //             document.getElementById(`card${currentPosition}`).scrollIntoView(true)
+            //         }                    
+            //     }   
+             })
         } 
         if(this.props.filterProperties !== prevProps.filterProperties) {
             this.setState({filteredItems: this.props.filterProperties})
@@ -224,7 +224,7 @@ class EditRoute extends Component {
                 orderedItems.forEach((item, i) => {
                     item.route_position = i
                 })
-                this.setState({selected: orderedItems})
+                this.setState({selected: orderedItems, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
                 this.onSave(orderedItems)
             }   
         } else {   //if  moving from one list to another
@@ -239,13 +239,13 @@ class EditRoute extends Component {
                     document.getElementById('droppable2scroll').scrollTop = rect + scrollTop - (window.innerHeight * .3)
                 } else {
                     droppedCard.status="Waiting"
-                    this.setState({selected: newList.droppable2})
+                    this.setState({selected: newList.droppable2, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
                     this.onSave(newList.droppable2, droppedCard, 'on') 
                 }
             }      
             else if (destination.droppableId === "droppable") {  
                 let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId.slice(1)))  
-               this.setState({selected: newList.droppable2})
+               this.setState({selected: newList.droppable2, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
                 this.onSave(newList.droppable2, droppedCard, 'off') 
    
                }   // this.setSelected()
@@ -300,7 +300,7 @@ class EditRoute extends Component {
         } else {
             this.props.onEditProperty(details, this.props.addresses)
         }
-        this.setState({showModal: false})
+        this.setState({showModal: false, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
         this.setSelected()
     }
 
