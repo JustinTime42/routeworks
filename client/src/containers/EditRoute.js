@@ -213,7 +213,7 @@ class EditRoute extends Component {
             return;
         }
 
-        //If only reordering
+        //If only reordering route
         if (source.droppableId === destination.droppableId) {
             if (source.droppableId === 'droppable2') { 
                 const orderedItems = reorder(
@@ -228,32 +228,35 @@ class EditRoute extends Component {
                 this.onSave(orderedItems)
             }   
         } else {   //if  moving from one list to another
-
             newList.droppable2.forEach((item, i) => item.route_position = i)
             if ((destination.droppableId === "droppable2")) { //If adding to route
                 let droppedCard = newList.droppable2.find(item => item.key === parseInt(result.draggableId.slice(1))) 
-                if (this.state.selected.find(item => item.key === droppedCard.key)) { // if customer already on route
-                    alert(`${droppedCard.cust_name} is already on ${this.props.activeRoute}`)
+                if (this.state.selected.find(item => item.key === droppedCard.key)) { // if customer already on route 
                     let rect = document.getElementById(`${droppedCard.key}routecard`).getBoundingClientRect().top
                     let scrollTop = document.getElementById('droppable2scroll').scrollTop 
-                    document.getElementById('droppable2scroll').scrollTop = rect + scrollTop - (window.innerHeight * .3)
+                    document.getElementById('droppable2scroll').scrollTop = rect + scrollTop - (window.innerHeight * .3)                   
+                    alert(`${droppedCard.cust_name} is already on ${this.props.activeRoute}`)
+                    console.log(`${droppedCard.key}routecard`)
+                    document.getElementById(`${droppedCard.key}routecard`).scrollIntoView(true)
+
                 } else {
                     droppedCard.status="Waiting"
                     this.setState({selected: newList.droppable2, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
                     this.onSave(newList.droppable2, droppedCard, 'on') 
                 }
             }      
-            else if (destination.droppableId === "droppable") {  
+            else if (destination.droppableId === "droppable") {  // removing from route
                 let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId.slice(1)))  
                this.setState({selected: newList.droppable2, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
-                this.onSave(newList.droppable2, droppedCard, 'off') 
-   
-               }   // this.setSelected()
+                this.onSave(newList.droppable2, droppedCard, 'off')   
+               }
         }        
     }
 
     handlePropertyClick = (property) => {
-        this.props.onSetActiveProperty(property)
+        this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop}, () => {
+            this.props.onSetActiveProperty(property)
+        })        
     }
 
     onSearchChange = (event) => {
