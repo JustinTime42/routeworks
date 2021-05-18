@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch) => {
 const initialState = {
     noteField: '',
     disabled: false,
-    work_type: 'snow removal',
+    work_type: 'Snow Removal',
     yards: '0',
     done_label: "hidden",
     newStatus: '',
@@ -126,10 +126,10 @@ class PropertyDetails extends Component {
                                 <Col>
                                     <Form.Label>Work Type</Form.Label>
                                     <DropdownButton title={this.state.work_type} onSelect={this.setWorkType}>
-                                        <Dropdown.Item key="Sanding" eventKey="Sanding">sanding</Dropdown.Item>
-                                        <Dropdown.Item key="Snow Removal" eventKey="Snow Removal">snow removal</Dropdown.Item>
-                                        <Dropdown.Item key="Sweeping" eventKey="Sweeping">sweeping</Dropdown.Item> 
-                                        <Dropdown.Item key="Other" eventKey="Other">other</Dropdown.Item>
+                                        <Dropdown.Item key="Sanding" eventKey="Sanding">Sanding</Dropdown.Item>
+                                        <Dropdown.Item key="Snow Removal" eventKey="Snow Removal">Snow Removal</Dropdown.Item>
+                                        <Dropdown.Item key="Sweeping" eventKey="Sweeping">Sweeping</Dropdown.Item> 
+                                        <Dropdown.Item key="Other" eventKey="Other">Other</Dropdown.Item>
                                     </DropdownButton> 
                                     {
                                         this.state.work_type === 'Sanding' && property.sand_contract === "Per Yard" ?

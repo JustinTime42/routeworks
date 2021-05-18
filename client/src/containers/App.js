@@ -1,10 +1,10 @@
 import React from 'react'
-import Blackout from "../components/Blackout"
 import HomePage from "../containers/Home"
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import CallbackPage from "../auth/Callback";
-import Auth from "../auth/Auth";
-// import { io } from "socket.io-client";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom"
+import {SocketContext, socket} from '../socket'
+import CallbackPage from "../auth/Callback"
+import Auth from "../auth/Auth"
+// import { io } from "socket.io-client"
 import "../App.css"
 
 function App() { 
@@ -17,9 +17,9 @@ function App() {
     // socket.on('err', err => alert(err))
 
     return (
+      <SocketContext.Provider value={socket}>
         <div className="App">
           <Auth>
-            <Blackout />
             <Router>
                   <Switch>
                     <Route exact path="/" component={HomePage}/>
@@ -28,6 +28,7 @@ function App() {
                 </Router>     
           </Auth>      
         </div> 
+      </SocketContext.Provider>       
     )  
   }
 

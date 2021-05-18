@@ -233,8 +233,9 @@ class EditRoute extends Component {
                 let droppedCard = newList.droppable2.find(item => item.key === parseInt(result.draggableId.slice(1))) 
                 if (this.state.selected.find(item => item.key === droppedCard.key)) { // if customer already on route 
                     let rect = document.getElementById(`${droppedCard.key}routecard`).getBoundingClientRect().top
-                    let scrollTop = document.getElementById('droppable2scroll').scrollTop 
-                    document.getElementById('droppable2scroll').scrollTop = rect + scrollTop - (window.innerHeight * .3)                   
+                    let scrollTop = document.getElementById('droppable2scroll').scrollTop
+                    this.setState({scrollPosition: rect + scrollTop - (window.innerHeight * .3)}) 
+                   // document.getElementById('droppable2scroll').scrollTop = rect + scrollTop - (window.innerHeight * .3)                   
                     alert(`${droppedCard.cust_name} is already on ${this.props.activeRoute}`)
                     console.log(`${droppedCard.key}routecard`)
                     document.getElementById(`${droppedCard.key}routecard`).scrollIntoView(true)

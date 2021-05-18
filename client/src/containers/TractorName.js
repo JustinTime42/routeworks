@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { Dropdown, DropdownButton, Button, FormControl } from "react-bootstrap"
 import { setTractorName, getTractors, deleteTractor, sendNewTractor } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
-//import { io } from 'socket.io-client';
-//const socket = io('https://snowline-route-manager.herokuapp.com/')
+import {SocketContext, socket} from '../socket'
 
 const TractorName = () => {
     const [showEdit, setShowEdit] = useState(false)
@@ -13,6 +12,7 @@ const TractorName = () => {
     const tractorName = useSelector(state => state.setTractorName.tractorName)
     const allTractors = useSelector(state => state.getTractors.allTractors)
     const dispatch = useDispatch()
+    const socket = useContext(SocketContext);
 
     useEffect(() => {
         dispatch(getTractors())
