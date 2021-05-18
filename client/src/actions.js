@@ -118,8 +118,7 @@ export const filterProperties = (matches) => {
     return {
         type: FILTER_PROPERTIES_SUCCESS,
         payload: matches
-    }
-    
+    }    
 }
 
 export const saveNewProperty = (property, allAddresses) => (dispatch) => {

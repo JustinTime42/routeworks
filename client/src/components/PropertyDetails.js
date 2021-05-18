@@ -63,7 +63,7 @@ class PropertyDetails extends Component {
         axios.delete(`${process.env.REACT_APP_API_URL}/undo/${this.state.currentLogEntry}`)
         .then(res => {
             console.log(res)
-            this.setState({showUndoConfirmation: false, currentLogEntry: null, done_label: "hidden",})
+            this.setState({showUndoConfirmation: false, currentLogEntry: null, done_label: "hidden", disabled: false})
             this.props.getRouteData()
         })
         .catch(err => alert(err))
