@@ -48,6 +48,9 @@ class PropertyDetails extends Component {
         }
       }
 
+      //componentdidmount if property.contract_type === hourly, set setState disabled:true
+      
+
     onTextChange = (event) => (this.setState({[event.target.name]: event.target.value}))
 
     setWorkType = (event) => (this.setState({work_type: event}))

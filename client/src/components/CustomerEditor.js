@@ -5,8 +5,10 @@ import { requestAllAddresses, getRouteProperties, setActiveProperty } from '../a
 import axios from "axios"
 import CustLogs from './customer_panels/CustLogs'
 import '../styles/driver.css'
-
+import { serviceLevels } from "../globals.js"
 const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt"]
+
+
 const sandContractTypes = ["Per Visit", "Per Yard"]
 const editorSize = {height:"90vh"}
 
@@ -285,6 +287,14 @@ const CustomerDetails = props => {
                                     <Form.Control name="contract_type" as="select" value={activeProperty?.contract_type || ''} onChange={onChange}>
                                         {
                                             contractTypes.map(type => <option key={type} value={type}>{type}</option>)
+                                        }
+                                    </Form.Control>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Service Level</Form.Label>
+                                    <Form.Control name="service_level" as="select" value={activeProperty?.service_level || ''} onChange={onChange}>
+                                        {
+                                            serviceLevels.map((type, i) => <option key={type} value={i}>{type}</option>)
                                         }
                                     </Form.Control>
                             </Form.Group>

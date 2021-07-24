@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
+import { serviceLevels } from '../globals.js'
 
 const PropertyCard = (props) => {
 
@@ -11,9 +12,9 @@ const PropertyCard = (props) => {
     const cardBg = () => {        
         if (props.address.inactive) return `rgba(255,0,0,0.5)`
         else if (props.address.temp) return `rgba(255,110,0,0.5)`
-        else if ((props.address?.contract_type === 'Seasonal' || props.address?.contract_type === 'Monthly') && (status === "Waiting")) return `rgba(255,255,0,0.5)`
         else return null
     }
+
     const cardStyle = {
         margin: '3px',
         padding: '7px',
@@ -38,6 +39,27 @@ const PropertyCard = (props) => {
 
     const editStyle = {
         verticalAlign: "bottom"
+    }
+
+    const ServiceLevel = () => {
+        const dotStyle = {
+            height: '20px',
+            width: '20px',
+            borderRadius: '50%',
+            display: 'inline-block',
+            marginRight: '3px',
+        }
+        let visual = []
+        let level = props.address.service_level
+        let levelText = serviceLevels[props.address.service_level]
+        for (let i = 0; i < 4; i++) {
+            if (i <= level) {
+                visual.push(<span key={i} style={{...dotStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>{" "}</span>)
+            } else {
+                visual.push(<span key={i} style={{...dotStyle, backgroundColor:`rgba(0,0,0,0.7)`}}>{" "}</span>)
+            }
+        }
+        return <div style={{paddingTop:'-1em'}} >{visual} {levelText}</div>
     }
 
     const RouteString = () => {
@@ -67,6 +89,7 @@ const PropertyCard = (props) => {
             {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
             </h5> 
             <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p> 
+            <ServiceLevel />
             <RouteString />              
         </div>
     )
