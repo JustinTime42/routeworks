@@ -469,7 +469,7 @@ app.post('/api/setstatus', (req, res) => {
     promises.push(
         db('properties')
         .returning('*')
-        .where({property_key: property.key})
+        .where({key: property.key})
         .update({priority: property.priority})
         .then(entry => response.property = entry)
         .catch(err => {
