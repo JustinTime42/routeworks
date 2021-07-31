@@ -83,9 +83,6 @@ class PropertyDetails extends Component {
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
             property.price = 0  
         }
-        if (newStatus === 'Done') {
-            property.priority = false
-        }
         axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
             {
                 property: property,    
@@ -100,14 +97,21 @@ class PropertyDetails extends Component {
         )
         .then(res => {
             this.props.getRouteData() 
+            console.log(res.data)
             console.log(res.data.serviceLog[0][0].key)
             let confirmedStatus = res.data.route_data.status
             if ( confirmedStatus = newStatus) {
                 this.setState({done_label: "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key}) 
             } else alert(confirmedStatus)
-            if (res.data.err.length > 0) alert(res.data.err)            
+            if (res.data.err.length > 0) {
+                console.log("Confirm ERROR", res.data.err)
+                alert(res.data.err)
+            }             
         })
-        .catch(err => alert(err)) 
+        .catch(err => {
+            console.log("ERROR", err)
+            alert(err)
+        }) 
     }
 
     render() {

@@ -58,7 +58,7 @@ const PropertyCard = (props) => {
         let level = props.address.service_level
         let levelText = '' 
         if (props.address.priority) {
-            visual.push(<span style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>PRIORITY</span>)            
+            visual.push(<span key="1" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>PRIORITY</span>)            
         } else {
             levelText = serviceLevels[props.address.service_level]
             for (let i = 0; i < 4; i++) {

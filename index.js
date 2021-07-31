@@ -439,7 +439,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
 })
 
 app.post('/api/setstatus', (req, res) => {
-    let { property, route, yards, status } = req.body
+    let { property, route, yards, status, priority } = req.body
     let promises = []
     let month = new Date().getMonth() + 1
     let year = new Date().getFullYear().toString().substr(-2)
@@ -456,22 +456,13 @@ app.post('/api/setstatus', (req, res) => {
         .returning('*')
         .where({
             property_key: property.key,
-            route_name: route,
+            route_name: route,            
         })
-        .update({status: status})
+        .update({
+            status: status,
+            priority: status === 'Done' ? priority : route_data.priority,
+        })
         .then(entry => response.route_data = entry)
-        .catch(err => {
-            console.log(err)
-            response.err.push(err)
-        }) 
-    )
-
-    promises.push(
-        db('properties')
-        .returning('*')
-        .where({key: property.key})
-        .update({priority: property.priority})
-        .then(entry => response.property = entry)
         .catch(err => {
             console.log(err)
             response.err.push(err)
