@@ -464,6 +464,7 @@ app.post('/api/setstatus', (req, res) => {
         })
     )
 
+    //put an if statement here to prevent adding to service log if contract_type is hourly.
     promises.push(
         db('service_log')
         .returning('*')
@@ -566,6 +567,7 @@ app.post('/api/deletedriver', (req, res) => {
 app.get('/api/tractors', (req, res) => {
     db.select('*')
     .from('tractors')
+    .orderBy('tractor_name')
     .then(data => {
         res.json(data)
     })
