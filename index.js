@@ -461,8 +461,9 @@ app.post('/api/setstatus', (req, res) => {
         .update({status: status})
         .then(entry => response.route_data = entry)
         .catch(err => {
+            console.log(err)
             response.err.push(err)
-        })
+        }) 
     )
 
     promises.push(
@@ -471,7 +472,10 @@ app.post('/api/setstatus', (req, res) => {
         .where({property_key: property.key})
         .update({priority: property.priority})
         .then(entry => response.property = entry)
-        .catch(err => response.err.push(err))
+        .catch(err => {
+            console.log(err)
+            response.err.push(err)
+        }) 
     )
 
     //put an if statement here to prevent adding to service log if contract_type is hourly.
