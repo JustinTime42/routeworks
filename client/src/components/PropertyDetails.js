@@ -83,6 +83,9 @@ class PropertyDetails extends Component {
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
             property.price = 0  
         }
+        if (newStatus === 'Done') {
+            property.priority = false
+        }
         axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
             {
                 property: property,    

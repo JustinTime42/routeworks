@@ -327,6 +327,13 @@ const CustomerDetails = props => {
                                 checked = {!!activeProperty?.temp}
                                 onChange={onChange}
                             />
+                            <Form.Check
+                                name="priority"
+                                type="checkbox"
+                                label="Priority?"
+                                checked = {!!activeProperty?.priority}
+                                onChange={onChange}
+                            />
                         </Col>
                         <Col>
                             <Form.Label>Tags</Form.Label> 
