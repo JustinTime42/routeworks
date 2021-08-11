@@ -94,7 +94,7 @@ const PropertyCard = (props) => {
                 {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
                 </h5> 
                 <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>  
-                <RouteString />     
+                {props.admin ? <RouteString /> : null}                     
             </Col>
             <ServiceLevel />
             <Col lg={3}>
@@ -104,12 +104,8 @@ const PropertyCard = (props) => {
                     </p>         
                     : <p></p>
                 } 
-                {props.admin === true ? 
-                    <p style={editStyle}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : <p></p>               
-                }
-            </Col>
-
-                          
+                {props.admin ? <p style={editStyle}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : null } 
+            </Col>      
         </Row>
     )
 }   
