@@ -59,7 +59,7 @@ const PropertyCard = (props) => {
             visual.push(<div key="1" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>PRIORITY</div>)            
         } else if (props.address.service_level) {
             levelText = serviceLevels[props.address.service_level]
-            for (let i = 0; i < 4; i++) {
+            for (let i = 1; i < 5; i++) {
                 if (i <= level) {
                     visual.push(<div key={i} style={{...dotStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>{" "}</div>)
                 } else {
