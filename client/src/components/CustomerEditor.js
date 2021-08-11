@@ -6,7 +6,7 @@ import axios from "axios"
 import CustLogs from './customer_panels/CustLogs'
 import '../styles/driver.css'
 import { serviceLevels } from "../globals.js"
-const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt"]
+const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt", "Hourly"]
 
 
 const sandContractTypes = ["Per Visit", "Per Yard"]

@@ -34,7 +34,10 @@ const initialState = {
     showSkipConfirmation: false,
     currentLogEntry: null,
     showUndoConfirmation: false,
+    timeElapsed: 0,
 }
+
+const buttonRowStyle = {marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}
 
 class PropertyDetails extends Component {
     constructor(props){
@@ -44,7 +47,11 @@ class PropertyDetails extends Component {
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-          this.setState(initialState)
+            if (this.props.property.contract_type === "Hourly") {
+                this.setState({...initialState, disabled: true}, () => {
+                    setTimeout(() => alert("Remember to log hours!"), 500) //replace this alert with the modal for logging hours
+                } )                                                        // it should open immediately, you can always close it
+            } else this.setState(initialState)
         }
       }
 
@@ -100,6 +107,9 @@ class PropertyDetails extends Component {
             console.log(res.data)
             console.log(res.data.serviceLog[0][0].key)
             let confirmedStatus = res.data.route_data.status
+            // get confirmedPriorty = res.data.property.priority....?
+            // then insert priority into the aproperty within alladdresses... will need to make sure that updates the route properties
+            //  
             if ( confirmedStatus = newStatus) {
                 this.setState({done_label: "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key}) 
             } else alert(confirmedStatus)
@@ -119,41 +129,35 @@ class PropertyDetails extends Component {
         return (
             property ?
             <Tabs defaultActiveKey='job'>
-                <Tab eventKey='job' title='Job'>
-                    <Card style={{padding: "1em", height: "600px"}}>
+                <Tab style={{padding: "1em", height:'70vh', overflow:'hide'}} eventKey='job' title='Job'>
                         <Row>
-                            <Col>
-                                <Card.Title>{property ? property.address ? property.address : null : null}</Card.Title>
+                            <Col> 
+                           
+                                <h3>{property?.cust_name}</h3>
+                                <h4>{property?.address}</h4>
+                                <p>phone: {property?.cust_phone}</p>
                             </Col>
-                            <Col><Card.Title style={{textAlign: "right"}}>{property ? property.surface_type ? <p>Surface:<br></br>{property.surface_type.toUpperCase()}</p> : null : null }</Card.Title></Col>
-                        </Row>
-                        <Card.Body>
-                            <Row>
-                                <Col>
-                                    <Card.Title>{property ? property.cust_name ? property.cust_name : null : null}{this.props.address? this.props.address.is_new ? " (NEW)" : null : null}</Card.Title>
-                                    <Card.Subtitle>{this.props.property ? this.props.property.cust_phone ? this.props.property.cust_phone : null : null}</Card.Subtitle>
-                                </Col>
-                                <Col>
-                                    <Form.Label>Work Type</Form.Label>
-                                    <DropdownButton title={this.state.work_type} onSelect={this.setWorkType}>
-                                        <Dropdown.Item key="Sanding" eventKey="Sanding">Sanding</Dropdown.Item>
-                                        <Dropdown.Item key="Snow Removal" eventKey="Snow Removal">Snow Removal</Dropdown.Item>
-                                        <Dropdown.Item key="Sweeping" eventKey="Sweeping">Sweeping</Dropdown.Item> 
-                                        <Dropdown.Item key="Other" eventKey="Other">Other</Dropdown.Item>
-                                    </DropdownButton> 
-                                    {
-                                        this.state.work_type === 'Sanding' && property.sand_contract === "Per Yard" ?
-                                        <Form.Group>
-                                            <Form.Label>Number of Yards</Form.Label>
-                                            <Form.Control name="yards" as="input" type="number" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
-                                        </Form.Group> : null
-                                    }                            
-                                </Col>
-                            </Row>
-                        </Card.Body>        
+                            <Col>
+                                    <h4 style={{textAlign:"right"}}>Surface: {property?.surface_type?.toUpperCase()}</h4>
+                                        <h4 style={{textAlign:"right"}}>Work Type</h4>
+                                        <DropdownButton  style={{textAlign:"right"}} title={this.state.work_type} onSelect={this.setWorkType}>
+                                            <Dropdown.Item key="Sanding" eventKey="Sanding">Sanding</Dropdown.Item>
+                                            <Dropdown.Item key="Snow Removal" eventKey="Snow Removal">Snow Removal</Dropdown.Item>
+                                            <Dropdown.Item key="Sweeping" eventKey="Sweeping">Sweeping</Dropdown.Item> 
+                                            <Dropdown.Item key="Other" eventKey="Other">Other</Dropdown.Item>
+                                        </DropdownButton> 
+                                        {
+                                            this.state.work_type === 'Sanding' && property.sand_contract === "Per Yard" ?
+                                            <Form.Group>
+                                                <Form.Label>Number of Yards</Form.Label>
+                                                <Form.Control name="yards" as="input" type="number" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
+                                            </Form.Group> : null
+                                        } 
+                                                             
+                            </Col>
+                        </Row>                    
                         <Card.Body>
                             <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
-                            <Card.Title>{property ? property.seasonal ? "SEASONAL" : null : null}</Card.Title>
                             <Card.Title>{property ? !!property.temp ? "TEMPORARY" : null : null}</Card.Title>
                         </Card.Body>        
                         {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Title className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Title></Card.Body> : null : null }
@@ -163,7 +167,17 @@ class PropertyDetails extends Component {
                             <Form.Control name="noteField" as="textarea" rows="3" value={this.state.noteField} onChange={this.onTextChange}/>
                         </Form.Group>
                         </Card.Body>
-                        <Card.Body style={{marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}}>
+                        {
+                            //considering extracting this to its own component, it will need state and such for time tracking which is only used in this case. 
+                            property.contract_type === "Hourly" ? 
+                            <Row style={{...buttonRowStyle, width:"70%", marginRight:'auto', marginLeft:'auto'}}>
+                                        <h4>Log Time</h4>
+                                        <Button>Start</Button>
+                                        <Form.Label>{this.state.timeElapsed}</Form.Label>
+                                        <Button>Stop</Button>                                    
+                            </Row> : null 
+                        }     
+                        <Card.Body style={buttonRowStyle}>
                             <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
                             <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={this.toggleShowSkip}>Skip</Button>
                                 <div style={{visibility: this.state.done_label, fontSize: "large"}}>                                    
@@ -185,7 +199,6 @@ class PropertyDetails extends Component {
                                 <Button size='lg' onClick={this.undoStatus}>Confirm</Button>
                             </Alert>                        
                         </Card.Body>
-                    </Card>
                 </Tab>
                 <Tab eventKey='logs' title='Logs'>
                     <CustLogs height="80vh"/>                  

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from 'react-bootstrap'
+import { Button, Col, Row } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import { serviceLevels } from '../globals.js'
 
@@ -17,11 +17,12 @@ const PropertyCard = (props) => {
 
     const cardStyle = {
         margin: '3px',
-        padding: '7px',
+        padding: '3px',
         borderRadius: "10px",
         border: props.address?.key === props.activeProperty?.key ? "7px solid rgb(55,90,127)" : "none",
         width: props.width,
         backgroundColor: cardBg(), 
+        justifyContent:'space-between',
     }
     const rightStyle = {
         float: "right", 
@@ -30,7 +31,7 @@ const PropertyCard = (props) => {
     }
 
     const statusStyle = {
-        padding: "10px",
+        padding: "1px",
         borderRadius: "10px",
         backgroundColor: status === "Waiting" ? `rgba(255,200,0,0.9)` : 
             status === "Skipped" ? `rgba(255,0,0,0.7)` :
@@ -46,31 +47,34 @@ const PropertyCard = (props) => {
             height: '20px',
             width: '20px',
             borderRadius: '50%',
-            display: 'inline-block',
-            marginRight: '3px',
         }
         const priorityStyle = {
             height: '20px',
             borderRadius: '5px',
-            display: 'inline-block',
         }
         let visual = []
         let level = props.address.service_level
         let levelText = '' 
         if (props.address.priority) {
-            visual.push(<span key="1" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>PRIORITY</span>)            
-        } else {
+            visual.push(<div key="1" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>PRIORITY</div>)            
+        } else if (props.address.service_level) {
             levelText = serviceLevels[props.address.service_level]
             for (let i = 0; i < 4; i++) {
                 if (i <= level) {
-                    visual.push(<span key={i} style={{...dotStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>{" "}</span>)
+                    visual.push(<div key={i} style={{...dotStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>{" "}</div>)
                 } else {
-                    visual.push(<span key={i} style={{...dotStyle, backgroundColor:`rgba(0,0,0,0.7)`}}>{" "}</span>)
+                    visual.push(<div key={i} style={{...dotStyle, backgroundColor:`rgba(0,0,0,0.7)`}}>{" "}</div>)
                 }
             }
-
         }  
-        return <div style={{paddingTop:'-1em'}} >{visual} {levelText}</div>
+        return (
+            <>
+                <Col lg={1}>{levelText}</Col> 
+                <Col lg={1}>{visual}</Col>
+            </>
+        )            
+                          
+     
     }
 
     const RouteString = () => {
@@ -84,9 +88,17 @@ const PropertyCard = (props) => {
     }
 
     return(
-        <div id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
-            <div style={rightStyle}>                
-                {(typeof(props.address.route_position) === "number") ?                     
+        <Row id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
+            <Col lg={7}>
+                <h5 style={{textAlign: "left", fontWeight: "bold"}}>  
+                {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
+                </h5> 
+                <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>  
+                <RouteString />     
+            </Col>
+            <ServiceLevel />
+            <Col lg={3}>
+            {(typeof(props.address.route_position) === "number") ?                     
                     <p style={{...statusStyle}}>
                         {status}                        
                     </p>         
@@ -95,14 +107,10 @@ const PropertyCard = (props) => {
                 {props.admin === true ? 
                     <p style={editStyle}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : <p></p>               
                 }
-            </div>
-            <h5 style={{textAlign: "left", fontWeight: "bold"}}>  
-            {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
-            </h5> 
-            <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p> 
-            <ServiceLevel />
-            <RouteString />              
-        </div>
+            </Col>
+
+                          
+        </Row>
     )
 }   
 
