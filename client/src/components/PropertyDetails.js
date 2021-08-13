@@ -68,6 +68,8 @@ class PropertyDetails extends Component {
     setSkipReason = (event) => this.setState({skipReason: event})
 
     onCloseClick = () => this.setState((prevState) => ({showModal: !prevState.showModal}))
+
+    enableButtons = () => this.setState({disabled:false})
     
 
     undoStatus = () => {
@@ -180,7 +182,7 @@ class PropertyDetails extends Component {
                             </Form.Group>
                             </Card.Body>
                             {
-                                property.contract_type === "Hourly" ? <TimeTracker /> : null 
+                                property.contract_type === "Hourly" ? <TimeTracker enableButtons={this.enableButtons}/> : null 
                             }
                             <Card.Body className='buttonRowStyle'>
                                 <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>

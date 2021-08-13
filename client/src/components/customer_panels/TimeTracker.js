@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 let interval = 'test'
 
-const TimeTracker = props => {
+const TimeTracker = (props) => {
     const [timeElapsed, setTimeElapsed] = useState(0)
     const [isRunning, setIsRunning] = useState(false)
     
@@ -24,12 +24,23 @@ const TimeTracker = props => {
         return <Form.Label>{hours}:{minutes}:{seconds}</Form.Label>
     }
 
+    const onStopPress = () => {
+        setIsRunning(false)
+        props.enableButtons()
+
+
+        //enable buttons
+        //save time to server
+        
+
+    }
+
     return (
         <Row className='buttonRowStyle' style={{ width:"70%", marginRight:'auto', marginLeft:'auto'}}>
         <h4>Log Time</h4>
         <Button size='lg' onClick={()=>setIsRunning(true)}>Start</Button>
         <DisplayTime />
-        <Button size='lg' onClick={()=>setIsRunning(false)}>Stop</Button>                                    
+        <Button size='lg' onClick={onStopPress}>Stop</Button>                                    
     </Row>
 
     )
