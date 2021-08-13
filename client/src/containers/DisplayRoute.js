@@ -91,9 +91,7 @@ class DisplayRoute extends Component {
                         }) 
                     }
                 </div>
-                <div className="rightSide">
-                    <PropertyDetails property={this.props.activeProperty} changeProperty={this.changeActiveProperty}/>
-                </div> 
+                <PropertyDetails property={this.props.activeProperty} changeProperty={this.changeActiveProperty}/>
             </div>  
         )
     }

@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from "react-redux"
-import { Tabs, Tab, Card, Col, Row, Button, Form, Dropdown, DropdownButton, Alert } from 'react-bootstrap'
+import { Tabs, Tab, Card, Col, Row, Button, Form, Dropdown, DropdownButton, Alert, Modal } from 'react-bootstrap'
 import axios from 'axios'
 import { getRouteData, requestAllAddresses } from "../actions"
 import CustLogs from './customer_panels/CustLogs'
 import SkipDetails from './customer_panels/SkipDetails'
+import TimeTracker from './customer_panels/TimeTracker'
 
 import '../styles/driver.css'
 
@@ -35,9 +36,9 @@ const initialState = {
     currentLogEntry: null,
     showUndoConfirmation: false,
     timeElapsed: 0,
+    showModal: false,
 }
 
-const buttonRowStyle = {marginTop: "1em", verticalAlign: "bottom", display:"flex", alignItems: "center", justifyContent: "space-between"}
 
 class PropertyDetails extends Component {
     constructor(props){
@@ -48,7 +49,7 @@ class PropertyDetails extends Component {
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
             if (this.props.property.contract_type === "Hourly") {
-                this.setState({...initialState, disabled: true}, () => {
+                this.setState({...initialState, disabled: true, showModal: true}, () => {                    
                     setTimeout(() => alert("Remember to log hours!"), 500) //replace this alert with the modal for logging hours
                 } )                                                        // it should open immediately, you can always close it
             } else this.setState(initialState)
@@ -64,9 +65,10 @@ class PropertyDetails extends Component {
 
     toggleShowSkip = () => this.setState(prevState => ({showSkipConfirmation: !prevState.showSkipConfirmation}))
 
-    setSkipReason = (event) => {
-        this.setState({skipReason: event})
-    }
+    setSkipReason = (event) => this.setState({skipReason: event})
+
+    onCloseClick = () => this.setState((prevState) => ({showModal: !prevState.showModal}))
+    
 
     undoStatus = () => {
        // this.onStatusChange('Waiting')
@@ -111,33 +113,44 @@ class PropertyDetails extends Component {
             // then insert priority into the aproperty within alladdresses... will need to make sure that updates the route properties
             //  
             if ( confirmedStatus = newStatus) {
-                this.setState({done_label: "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key}) 
+                this.setState({done_label: "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key})
             } else alert(confirmedStatus)
             if (res.data.err.length > 0) {
                 console.log("Confirm ERROR", res.data.err)
                 alert(res.data.err)
-            }             
+            }
         })
         .catch(err => {
             console.log("ERROR", err)
             alert(err)
-        }) 
+        })
+    }
+
+    DetailsPanel = (props) => {
+        return (
+            props.property?.contract_type === "Hourly" ? 
+            <Modal show={this.state.showModal} onHide={this.onCloseClick} backdrop='static' size='lg'>
+                <Modal.Header closeButton></Modal.Header>
+                {props.children}
+            </Modal> :
+            <div className='rightside'> {props.children} </div>
+        )
     }
 
     render() {
         const property = this.props.property
         return (
-            property ?
-            <Tabs defaultActiveKey='job'>
-                <Tab style={{padding: "1em", height:'70vh', overflow:'hide'}} eventKey='job' title='Job'>
-                        <Row>
-                            <Col> 
-                           
-                                <h3>{property?.cust_name}</h3>
-                                <h4>{property?.address}</h4>
-                                <p>phone: {property?.cust_phone}</p>
-                            </Col>
-                            <Col>
+            this.props.property ? 
+                <this.DetailsPanel property={this.props.property}>
+                    <Tabs defaultActiveKey='job'>
+                        <Tab style={{padding: "1em", height:'75vh', overflow:'hide'}} eventKey='job' title='Job'>
+                            <Row>
+                                <Col>
+                                    <h3>{property?.cust_name}</h3>
+                                    <h4>{property?.address}</h4>
+                                    <p>phone: {property?.cust_phone}</p>
+                                </Col>
+                                <Col>
                                     <h4 style={{textAlign:"right"}}>Surface: {property?.surface_type?.toUpperCase()}</h4>
                                         <h4 style={{textAlign:"right"}}>Work Type</h4>
                                         <DropdownButton  style={{textAlign:"right"}} title={this.state.work_type} onSelect={this.setWorkType}>
@@ -152,60 +165,51 @@ class PropertyDetails extends Component {
                                                 <Form.Label>Number of Yards</Form.Label>
                                                 <Form.Control name="yards" as="input" type="number" rows="1" value={this.state.yards} onChange={this.onTextChange}/>
                                             </Form.Group> : null
-                                        } 
-                                                             
-                            </Col>
-                        </Row>                    
-                        <Card.Body>
-                            <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
-                            <Card.Title>{property ? !!property.temp ? "TEMPORARY" : null : null}</Card.Title>
-                        </Card.Body>        
-                        {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Title className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Title></Card.Body> : null : null }
-                        <Card.Body>
-                        <Form.Group>
-                            <Form.Label>Driver Notes</Form.Label>
-                            <Form.Control name="noteField" as="textarea" rows="3" value={this.state.noteField} onChange={this.onTextChange}/>
-                        </Form.Group>
-                        </Card.Body>
-                        {
-                            //considering extracting this to its own component, it will need state and such for time tracking which is only used in this case. 
-                            property.contract_type === "Hourly" ? 
-                            <Row style={{...buttonRowStyle, width:"70%", marginRight:'auto', marginLeft:'auto'}}>
-                                        <h4>Log Time</h4>
-                                        <Button>Start</Button>
-                                        <Form.Label>{this.state.timeElapsed}</Form.Label>
-                                        <Button>Stop</Button>                                    
-                            </Row> : null 
-                        }     
-                        <Card.Body style={buttonRowStyle}>
-                            <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
-                            <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={this.toggleShowSkip}>Skip</Button>
-                                <div style={{visibility: this.state.done_label, fontSize: "large"}}>                                    
-                                    <Button variant='warning' size='lg' onClick={() => this.setState({showUndoConfirmation: true})} >Undo {this.state.newStatus}</Button>
-                                </div>
-                            <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
-                            <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
-                        </Card.Body>
-                        <Card.Body>
-                            <SkipDetails 
-                                show={this.state.showSkipConfirmation}
-                                toggleShowSkip={this.toggleShowSkip}
-                                onStatusChange={this.onStatusChange}
-                                customer={property} 
-                            />    
-                            <Alert show={this.state.showUndoConfirmation} variant="danger">
-                                <Alert.Heading>Undo {this.state.newStatus} and set as 'Waiting'?</Alert.Heading>
-                                <Button size='lg' onClick={() => this.setState({showUndoConfirmation: false})}>Cancel</Button>
-                                <Button size='lg' onClick={this.undoStatus}>Confirm</Button>
-                            </Alert>                        
-                        </Card.Body>
-                </Tab>
-                <Tab eventKey='logs' title='Logs'>
-                    <CustLogs height="80vh"/>                  
-                </Tab>
-
-            </Tabs>
-             : null
+                                        }                   
+                                </Col>
+                            </Row>
+                            <Card.Body>
+                                <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
+                                <Card.Title>{property ? !!property.temp ? "TEMPORARY" : null : null}</Card.Title>
+                            </Card.Body>        
+                            {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Title className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Title></Card.Body> : null : null }
+                            <Card.Body>
+                            <Form.Group>
+                                <Form.Label>Driver Notes</Form.Label>
+                                <Form.Control name="noteField" as="textarea" rows="3" value={this.state.noteField} onChange={this.onTextChange}/>
+                            </Form.Group>
+                            </Card.Body>
+                            {
+                                property.contract_type === "Hourly" ? <TimeTracker /> : null 
+                            }
+                            <Card.Body className='buttonRowStyle'>
+                                <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
+                                <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={this.toggleShowSkip}>Skip</Button>
+                                    <div style={{visibility: this.state.done_label, fontSize: "large"}}>                                    
+                                        <Button variant='warning' size='lg' onClick={() => this.setState({showUndoConfirmation: true})} >Undo {this.state.newStatus}</Button>
+                                    </div>
+                                <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
+                                <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
+                            </Card.Body>
+                            <Card.Body>
+                                <SkipDetails
+                                    show={this.state.showSkipConfirmation}
+                                    toggleShowSkip={this.toggleShowSkip}
+                                    onStatusChange={this.onStatusChange}
+                                    customer={property} 
+                                />    
+                                <Alert show={this.state.showUndoConfirmation} variant="danger">
+                                    <Alert.Heading>Undo {this.state.newStatus} and set as 'Waiting'?</Alert.Heading>
+                                    <Button size='lg' onClick={() => this.setState({showUndoConfirmation: false})}>Cancel</Button>
+                                    <Button size='lg' onClick={this.undoStatus}>Confirm</Button>
+                                </Alert>                        
+                            </Card.Body>
+                        </Tab>
+                        <Tab eventKey='logs' title='Logs'>
+                            <CustLogs height="80vh"/>                  
+                        </Tab>
+                    </Tabs>
+                </this.DetailsPanel> : null
         )    
     }
 }
