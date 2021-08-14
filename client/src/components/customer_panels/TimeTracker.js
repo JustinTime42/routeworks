@@ -7,7 +7,7 @@ let interval
 const TimeTracker = props => {
     const [timeElapsed, setTimeElapsed] = useState(0)
     const [isRunning, setIsRunning] = useState(false)
-    const [startTime, setStartTime] = useState(0)
+    const [startTime, setStartTime] = useState()
     
     useEffect(() => {        
         if(isRunning && (timeElapsed === 0)){            
@@ -21,7 +21,7 @@ const TimeTracker = props => {
 
     const DisplayTime = () => {
         let hours = Math.floor(timeElapsed / 3600000).toString().padStart(2,'0')
-        let minutes = Math.floor(timeElapsed / 60000).toString().padStart(2,'0')
+        let minutes = (Math.floor(timeElapsed / 60000) % 60).toString().padStart(2,'0')
         let seconds = (Math.floor(timeElapsed / 1000) % 60).toString().padStart(2,'0')
         return <Form.Label>{hours}:{minutes}:{seconds}</Form.Label>
     }
@@ -36,12 +36,13 @@ const TimeTracker = props => {
         setTimeElapsed(0)
         setIsRunning(false)
         props.enableButtons()
-        //save time to server
+        //todo save time to server
     }
 
     return (
         <Row className='buttonRowStyle' style={{ width:"70%", marginRight:'auto', marginLeft:'auto'}}>
         <h4>Log Time</h4>
+        <Form.Label>{startTime ? (new Date(startTime)).toLocaleTimeString() : null}</Form.Label>
         <Button size='lg' onClick={onStartPress}>Start</Button>
         <DisplayTime />
         <Button size='lg' onClick={onStopPress}>Stop</Button>                                    
