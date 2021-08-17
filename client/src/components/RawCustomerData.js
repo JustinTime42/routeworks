@@ -11,9 +11,19 @@ const RawCustomerData = (props) => {
         console.log(customers)
     })
     const onDownload = () => {
+        //let data
         axios.get(`${process.env.REACT_APP_API_URL}/properties`)
-        .then(results => {  
-            console.log(results.data)
+        .then(results => {            
+            // data = results.data
+            results.data.forEach(entry => {                
+                if(entry.notes !== null) {
+                    entry.notes = entry.notes.replace('"', '""')
+                    if(entry.key === 211) {
+                        console.log(entry.notes)
+                    } 
+                } 
+            })
+            // console.log(data)
             let customerArray = results.data
             setCustomers(customerArray)
             setShowDownloadLink(true)
