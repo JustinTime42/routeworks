@@ -460,7 +460,8 @@ app.post('/api/setstatus', (req, res) => {
         })
         .update({
             status: status,
-            priority: status === 'Done' ? priority : route_data.priority,
+                        // priority: status === 'Done' ? priority : route_data.priority,
+
         })
         .then(entry => response.route_data = entry)
         .catch(err => {
