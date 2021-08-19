@@ -11,6 +11,7 @@ const SearchBar = () => {
     const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
     const routeData = useSelector(state => state.getRouteData.routeData)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
+    const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const dispatch = useDispatch()
 
     const selectCustomer = (customer) => {
@@ -38,7 +39,7 @@ const SearchBar = () => {
    
     useEffect(() => {
         onSetMatches()
-    }, [searchValue])
+    }, [searchValue, activeProperty])
 
     const onSetMatches = () => {
         if (searchValue.length > 1 ) {

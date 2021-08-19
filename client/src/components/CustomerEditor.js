@@ -17,7 +17,7 @@ const CustomerDetails = props => {
     //const [activeProperty, setActiveProperty] = useState(reduxProperty)
     const routeData = useSelector(state => state.getRouteData.routeData)
     const dispatch = useDispatch()
-    const [api, setApi] = useState([props.activeProperty ? "editproperty" : "newproperty"])
+    const [api, setApi] = useState([reduxProperty ? "editproperty" : "newproperty"])
     const [deleteAlert, setDeleteAlert] = useState(false)
     const [allTags, setAllTags] = useState([])
     const [newTagName, setNewTagName] = useState('')
