@@ -177,7 +177,7 @@ export const editProperty = (property, allAddresses) => (dispatch) => {
         console.log(editted)
         let index = allAddresses.findIndex(item => item.key === editted.key)
         allAddresses[index] = editted
-        dispatch({ type: SET_ACTIVE_PROPERTY, payload: editted})
+        dispatch({ type: SET_ACTIVE_PROPERTY, payload: allAddresses[index]})
         dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
         console.log("new property in address store: ", allAddresses[index])
     })
