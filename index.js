@@ -439,7 +439,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
 })
 
 app.post('/api/setstatus', (req, res) => {
-    let { property, route, yards, status, priority } = req.body
+    let { property, route, yards, startTime, endTime, status, priority, work_type, noteField, driver, tractor } = req.body
     let promises = []
     let month = new Date().getMonth() + 1
     let year = new Date().getFullYear().toString().substr(-2)
@@ -470,25 +470,26 @@ app.post('/api/setstatus', (req, res) => {
         }) 
     )
 
-    //put an if statement here to prevent adding to service log if contract_type is hourly.
     promises.push(
         db('service_log')
         .returning('*')
         .insert({
             address: property.address,
             status: status,
-            notes: req.body.noteField,
-            user_name: req.body.driver.name,
-            route_name: req.body.route,
-            tractor: req.body.tractor,
+            notes: noteField,
+            user_name: driver.name,
+            route_name: route,
+            tractor: tractor,
             cust_name: property.cust_name,
             property_key: property.key,
             price: property.price,
-            driver_earning: req.body.driver.percentage * .01 * property.value,
-            description: status === 'Skipped' ? '' : req.body.work_type + yards,
+            driver_earning: driver.percentage * .01 * property.value,
+            description: status === 'Skipped' ? '' : work_type + yards,
             invoice_number: `A${property.key}${year}${month}`,
             reference: property.address,
-            work_type: req.body.work_type,
+            work_type: work_type,
+            start_time: startTime,
+            end_time: endTime,
         })
         .then(property => response.serviceLog.push(property))
         .catch(err => {
