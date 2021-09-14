@@ -88,7 +88,7 @@ io.on('connection', (socket) => {
 */
 app.post('/api/newtractor', (req, res) => {
     console.log(req.body)
-    const tractor = req.body.tractor
+    const tractor = req.body
     db('tractors')    
     .returning('*')
     .insert({...tractor})
