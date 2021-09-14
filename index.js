@@ -97,6 +97,7 @@ app.post('/api/newtractor', (req, res) => {
 })
 
 app.post('/api/deletetractor', (req, res) => {
+    console.log(req.body)
     db('tractors')
     .returning('*')
     .where('name', req.body.name)
