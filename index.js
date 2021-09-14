@@ -99,7 +99,7 @@ app.post('/api/newtractor', (req, res) => {
 app.post('/api/deletetractor', (req, res) => {
     db('tractors')
     .returning('*')
-    .where('tractor_name', req.body.tractor_name)
+    .where('tractor_name', req.body.tractor.name)
     .del()
     .then(tractor => res.json(tractor))
     .catch(err => res.json(err))
@@ -574,7 +574,7 @@ app.post('/api/deletedriver', (req, res) => {
 app.get('/api/tractors', (req, res) => {
     db.select('*')
     .from('tractors')
-    .orderBy('tractor_name')
+    .orderBy('name')
     .then(data => {
         res.json(data)
     })
