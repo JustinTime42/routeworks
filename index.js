@@ -99,7 +99,7 @@ app.post('/api/newtractor', (req, res) => {
 app.post('/api/deletetractor', (req, res) => {
     db('tractors')
     .returning('*')
-    .where('tractor_name', req.body.tractor.name)
+    .where('name', req.body.name)
     .del()
     .then(tractor => res.json(tractor))
     .catch(err => res.json(err))
