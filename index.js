@@ -548,7 +548,7 @@ app.post('/api/newdriver', (req, res) => {
     console.log(driver)
     db('drivers')    
     .returning('*')
-    .insert({...driver})
+    .insert({name: driver.name, percentage: driver.percentage, hourly: driver.hourly})
      .then(driver =>  res.json(driver))
      .catch(err => res.json("error: " + err))
 })
