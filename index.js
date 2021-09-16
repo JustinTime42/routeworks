@@ -576,12 +576,27 @@ app.get('/api/tractors', (req, res) => {
     db.select('*')
     .from('tractors')
     .orderBy('name')
-    .then(data => {
-        res.json(data)
-    })
+    .then(data => res.json(data))
+    .catch(err => res.json(err))
 })
 
-// get full list of tags
+app.get('/api/tractortypes', (req, res) => {
+    db.select('*')
+    .from('vehicle_types')
+    .orderBy('type')
+    .then(data => res.json(data))
+    .catch(err => res.json(err))
+})
+
+app.post('/api/newvehicletype', (req, res) => {
+    const type = req.body
+    db('vehicle_types')
+    .returning('*')
+    .insert({type})
+    .then(newtype => res.json(newtype))
+    .catch(err => res.json("error: ", err))
+})
+
 app.get('/api/alltags', (req, res) => {
     db.select('*')
     .from('tags')
