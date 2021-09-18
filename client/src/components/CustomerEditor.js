@@ -56,11 +56,11 @@ const CustomerDetails = props => {
         .catch(err => console.log(err))
     }
 
-    const deleteTag = (tag) => {
-        axios.post(`${process.env.REACT_APP_API_URL}/deltag`, { tag_name: tag})
-        .then(tag => setAllTags([...allTags.splice(allTags.indexOf(tag.data[0].tag_name), 1)])) 
-        .catch(err => console.log(err))
-    }
+    // const deleteTag = (tag) => {
+    //     axios.post(`${process.env.REACT_APP_API_URL}/deltag`, { tag_name: tag})
+    //     .then(tag => setAllTags([...allTags.splice(allTags.indexOf(tag.data[0].tag_name), 1)])) 
+    //     .catch(err => console.log(err))
+    // }
     
     const onChange = (event) => {
         let { target: { name, value } } = event

@@ -64,7 +64,7 @@ const RouteSelector = () => {
                         role={user.role}
                         perform="admin:visit"
                         yes={() => (
-                            <div><Button variant="primary" size="sm" onClick={handleEditClick}>{showEdit ? "Close" : "Edit"}</Button></div>           
+                            <div><Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={handleEditClick}>{showEdit ? "Close" : "Edit"}</Button></div>           
                         )}
                         no={() => null}
                     />

@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import axios from "axios"
 import { connect } from 'react-redux'
-import { Dropdown, DropdownButton, Button, Modal, Alert } from 'react-bootstrap'
+import { Dropdown, DropdownButton, Button, Modal, Alert, Form } from 'react-bootstrap'
 import { setActiveDriver, getDrivers } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
@@ -26,9 +26,10 @@ class DriverName extends Component {
     constructor() {
         super()
         this.state = {
-            key: '',
+            key: null,
             name: '',
-            percentage: '',
+            percentage: 0,
+            hourly: 0,
             show: false,
             deleteAlert: false
         }
@@ -42,31 +43,38 @@ class DriverName extends Component {
         if(this.props.isPending !== prevProps.isPending || this.props.activeDriver !== prevProps.activeDriver) {
             console.log("update")
             console.log(!!this.props.activeDriver)
-            this.setState({...this.props.activeDriver})
+            this.setState({...this.props.activeDriver, deleteAlert: false})
         } 
     }
 
     onSetActiveDriver = (event) => {
         if (event === "New Driver") {
-            this.props.onSetActiveDriver({key: '', name: '', percentage: ''})
+            this.props.onSetActiveDriver({key: '', name: '', percentage: '', hourly: ''})
         } else {
             this.props.onSetActiveDriver(this.props.drivers.find(driver => driver.key === parseInt(event)))
         }
     }
-    onNameChange = (event) => this.setState({name: event.target.value}) 
-    onPercentageChange = (event) => this.setState({percentage: parseFloat(event.target.value)})
-    handleClose = () => this.setState({show: false})
-    handleShow = () => this.setState({show: true})
+    onChange = (event) => {
+        let {target: {name, value} } = event
+        if (name === "percentage" || name === "hourly") {
+            value = Number(value)
+        }
+        this.setState({[name]:value})
+    }
+    handleClose = () => this.setState({show: false, deleteAlert: false})
+    handleShow = () => this.setState({show: true})    
     setShowDelete = (show) => {
         this.setState(prevProps => ({deleteAlert: !prevProps.deleteAlert}))
     }
     saveDriver = () => {
+        console.log(this.state)
         const endpoint = this.state.key ? "editDriver" : "newDriver"        
-        axios.post(`${process.env.REACT_APP_API_URL}/${endpoint}`, { key: this.state.key, name: this.state.name, percentage: this.state.percentage })
+        axios.post(`${process.env.REACT_APP_API_URL}/${endpoint}`, { key: this.state.key, name: this.state.name, percentage: this.state.percentage, hourly: this.state.hourly })
         .then(res => {
-        console.log(res)
-        this.props.onGetDrivers()
-        this.setState({show: false})
+            console.log(res)
+            this.props.onGetDrivers()
+            this.props.onSetActiveDriver({key: '', name: '', percentage: '', hourly: ''})
+            this.setState({show: false})
         })
         .catch(err => console.log(err))        
     }
@@ -79,15 +87,12 @@ class DriverName extends Component {
         this.props.onSetActiveDriver({
             key: '',
             name: '',
-            percentage: ''
+            percentage: '',
+            hourly: ''
         })
         })
         .catch(err => console.log(err)) 
         this.setState({deleteAlert: false, show: false})   
-    }
-
-    onSaveDriverName = () => {
-        this.props.onSetDriverName(this.state.name)
     }
 
     render() {
@@ -107,28 +112,33 @@ class DriverName extends Component {
                     )}
                 </AuthConsumer>
                 {                    
-                    this.props.drivers.map((driver, i) => <Dropdown.Item key={driver.key} eventKey={driver.key}>
-                        {driver.name}
-                        <AuthConsumer>
-                            {({ user }) => (
-                                <Can
-                                    role={user.role}
-                                    perform="admin:visit"
-                                    yes={() => (
-                                        <Button variant="primary" size="sm" onClick={this.handleShow}>Edit</Button>                      
+                    this.props.drivers.map((driver, i) => {  
+                        return (
+                             <div key={i} style={{display: "flex"}}>
+                                <Dropdown.Item key={driver.key} eventKey={driver.key}>
+                                 {driver.name}
+                                 <AuthConsumer key={i}>
+                                    {({ user }) => (
+                                        <Can
+                                            role={user.role}
+                                            perform="admin:visit"
+                                            yes={() => (
+                                                <Button style={{float: "right"}} variant="primary" size="sm" onClick={this.handleShow}>Edit</Button>                      
+                                            )}
+                                            no={() => null}               
+                                        />                            
                                     )}
-                                    no={() => null}               
-                                />                            
-                            )}
-                        </AuthConsumer>
-                        </Dropdown.Item>)           
-                }
+                                </AuthConsumer>
+                                 </Dropdown.Item> 
+                             </div>
+                        )
+                    })           
+                    }
                 <Modal show={this.state.show} onHide={this.handleClose}>
                     <Modal.Body>
-                        <form>
-                            <input onChange={this.onNameChange} type="text" name="driverName" placeholder="Driver Name" value={this.state.name}></input>
-                            <input onChange={this.onPercentageChange} type="text" name="percentage" placeholder="percentage" value={this.state.percentage}></input>
-                        </form>
+                        <Form.Control size="sm" name="name" type="text" onChange={this.onChange} placeholder="Name" value={this.state.name} />
+                        <Form.Control size="sm" name="percentage" type="numeric" onChange={this.onChange} placeholder="Percentage" value={this.state.percentage} />
+                        <Form.Control size="sm" name="hourly" type="numeric" onChange={this.onChange} placeholder="Hourly" value={this.state.hourly} />
                     </Modal.Body>
                     <Modal.Footer>
                         <Button disabled={!this.state.key} variant="danger" onClick={() => this.setShowDelete(true)}>{this.state.deleteAlert ? "CANCEL" : "DELETE DRIVER"}</Button>

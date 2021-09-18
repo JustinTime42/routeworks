@@ -6,46 +6,42 @@ let interval
 
 const TimeTracker = props => {
     const [timeElapsed, setTimeElapsed] = useState(0)
-    const [isRunning, setIsRunning] = useState(false)
     const [startTime, setStartTime] = useState()
     
     useEffect(() => {        
-        if(isRunning && (timeElapsed === 0)){            
+        if(props.isRunning && (timeElapsed === 0)){            
             interval = setInterval(() => setTimeElapsed(Date.now() - startTime), 500)
-        } else if (isRunning) {
+        } else if (props.isRunning) {
             setTimeElapsed(Date.now() - startTime)
         }
-    },[isRunning])
-
-
+    },[props.isRunning])
 
     const DisplayTime = () => {
         let hours = Math.floor(timeElapsed / 3600000).toString().padStart(2,'0')
         let minutes = (Math.floor(timeElapsed / 60000) % 60).toString().padStart(2,'0')
         let seconds = (Math.floor(timeElapsed / 1000) % 60).toString().padStart(2,'0')
-        return <Form.Label>{hours}:{minutes}:{seconds}</Form.Label>
+        return <h3>{hours}:{minutes}:{seconds}</h3>
     }
 
     const onStartPress = () => {
+            setTimeElapsed(0)
             setStartTime(Date.now())
-            setIsRunning(true)
+            props.setIsRunning(true)
     }
 
     const onStopPress = () => {
         clearInterval(interval) 
-        setTimeElapsed(0)
-        setIsRunning(false)
-        props.enableButtons()
-        //todo save time to server
+        props.setIsRunning(false)
+        props.onStatusChange('Waiting', '', new Date(startTime).toISOString(), new Date(Date.now()).toISOString(), false)
     }
 
     return (
         <Row className='buttonRowStyle' style={{ width:"70%", marginRight:'auto', marginLeft:'auto'}}>
         <h4>Log Time</h4>
         <Form.Label>{startTime ? (new Date(startTime)).toLocaleTimeString() : null}</Form.Label>
-        <Button size='lg' onClick={onStartPress}>Start</Button>
+        <Button disabled={props.isRunning} size='lg' onClick={onStartPress}>Start</Button>
         <DisplayTime />
-        <Button size='lg' onClick={onStopPress}>Stop</Button>                                    
+        <Button disabled={!props.isRunning} size='lg' onClick={onStopPress}>Stop</Button>                                    
     </Row>
 
     )

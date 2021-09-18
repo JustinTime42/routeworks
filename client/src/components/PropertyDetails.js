@@ -12,7 +12,7 @@ import '../styles/driver.css'
 const mapStateToProps = state => {
     return {
         driver: state.setActiveDriver.driver,
-        tractor: state.setTractorName.tractorName,
+        tractor: state.setActiveTractor.activeTractor,
         activeRoute: state.setActiveRoute.activeRoute,
         routePending: state.getRouteProperties.isPending,
     }
@@ -37,6 +37,7 @@ const initialState = {
     showUndoConfirmation: false,
     timeElapsed: 0,
     showModal: false,
+    isRunning: false,
 }
 
 
@@ -50,8 +51,8 @@ class PropertyDetails extends Component {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
             if (this.props.property.contract_type === "Hourly") {
                 this.setState({...initialState, disabled: true, showModal: true}, () => {                    
-                    setTimeout(() => alert("Remember to log hours!"), 500) //replace this alert with the modal for logging hours
-                } )                                                        // it should open immediately, you can always close it
+                    setTimeout(() => alert("Remember to log hours!"), 200) 
+                } )                                                        
             } else this.setState(initialState)
         }
       }
@@ -67,11 +68,12 @@ class PropertyDetails extends Component {
 
     setSkipReason = (event) => this.setState({skipReason: event})
 
-    onCloseClick = () => this.setState((prevState) => ({showModal: !prevState.showModal}))
+    onCloseClick = () => {
+        if(!this.state.isRunning) this.setState((prevState) => ({showModal: !prevState.showModal}))
+    } 
 
-    enableButtons = () => this.setState({disabled:false})
+    setIsRunning = (isRunning) => this.setState({isRunning:isRunning})
     
-
     undoStatus = () => {
        // this.onStatusChange('Waiting')
         axios.delete(`${process.env.REACT_APP_API_URL}/undo/${this.state.currentLogEntry}`)
@@ -83,12 +85,19 @@ class PropertyDetails extends Component {
         .catch(err => alert(err))
     }
 
-    onStatusChange = (newStatus, skipDetails='') => {
-        this.setState({disabled: true})
+    onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {
+        this.setState({disabled: disabled})
         let property = {...this.props.property}
        
         if (this.state.work_type === 'Sanding') {
-            property.sand_contract === "Per Yard" ? property.price = property.price_per_yard * this.state.yards : property.price = property.price_per_yard
+            (property.sand_contract === "Per Yard" || property.contract_type === "Hourly") ? property.price = property.price_per_yard * this.state.yards : property.price = property.price_per_yard
+        } else if (property.contract_type === 'Hourly') {
+            let timeLogged = endTime - startTime
+            console.log(timeLogged)
+
+            //so now that we've properly handled sanding, we need to calculate hourly pay
+            // multiply vehicle hourly rate by time elapsed. 
+            // first i need 
         } else if (this.state.work_type === 'Sweeping') {
             property.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
@@ -104,19 +113,21 @@ class PropertyDetails extends Component {
                 tractor: this.props.tractor,
                 work_type: this.state.work_type,
                 yards: this.state.yards,
+                startTime: startTime, 
+                endTime: endTime,
             }
         )
         .then(res => {
             this.props.getRouteData() 
             console.log(res.data)
             console.log(res.data.serviceLog[0][0].key)
-            let confirmedStatus = res.data.route_data.status
+            let confirmedStatus = res.data.route_data[0].status
             // get confirmedPriorty = res.data.property.priority....?
             // then insert priority into the aproperty within alladdresses... will need to make sure that updates the route properties
             //  
-            if ( confirmedStatus = newStatus) {
-                this.setState({done_label: "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key})
-            } else alert(confirmedStatus)
+            if (confirmedStatus === newStatus) {
+                this.setState({done_label: confirmedStatus === "Waiting" ? "hidden" : "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key})
+            } else alert("confirmed status error: ", confirmedStatus)
             if (res.data.err.length > 0) {
                 console.log("Confirm ERROR", res.data.err)
                 alert(res.data.err)
@@ -182,16 +193,16 @@ class PropertyDetails extends Component {
                             </Form.Group>
                             </Card.Body>
                             {
-                                property.contract_type === "Hourly" ? <TimeTracker enableButtons={this.enableButtons}/> : null 
+                                property.contract_type === "Hourly" ? <TimeTracker onStatusChange={this.onStatusChange} isRunning={this.state.isRunning} setIsRunning={this.setIsRunning}/> : null 
                             }
                             <Card.Body className='buttonRowStyle'>
-                                <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
-                                <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled} onClick={this.toggleShowSkip}>Skip</Button>
+                                <Button variant="primary" size="lg" disabled={!property.routeName || this.state.isRunning} onClick={() => this.props.changeProperty(property, "prev")} >Prev</Button>
+                                <Button variant="danger" size="lg" disabled={this.props.routePending || this.state.disabled || this.state.isRunning} onClick={this.toggleShowSkip}>Skip</Button>
                                     <div style={{visibility: this.state.done_label, fontSize: "large"}}>                                    
                                         <Button variant='warning' size='lg' onClick={() => this.setState({showUndoConfirmation: true})} >Undo {this.state.newStatus}</Button>
                                     </div>
-                                <Button variant="success" size="lg" disabled={this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
-                                <Button variant="primary" size="lg" disabled={!property.routeName} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
+                                <Button variant="success" size="lg" disabled={this.state.isRunning || this.props.routePending || this.state.disabled || (property.sand_contract === "Per Yard" && this.state.yards === '0' && this.state.work_type === "Sanding")} onClick={() => this.onStatusChange('Done')}>Done</Button>
+                                <Button variant="primary" size="lg" disabled={!property.routeName || this.state.isRunning} onClick={() => this.props.changeProperty(property, "next")} >Next</Button>
                             </Card.Body>
                             <Card.Body>
                                 <SkipDetails

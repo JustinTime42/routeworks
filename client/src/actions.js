@@ -27,7 +27,9 @@ import {
     ROUTE_DATA_SUCCESS,
     ROUTE_DATA_FAILED,
     FILTER_PROPERTIES_SUCCESS,
-
+    GET_VEHICLE_TYPES_PENDING,
+    GET_VEHICLE_TYPES_SUCCESS,
+    GET_VEHICLE_TYPES_FAILED,
 } from './constants.js'
 // import { io } from "socket.io-client";
 // const socket = io('https://snowline-route-manager.herokuapp.com/')
@@ -212,11 +214,12 @@ export const setActiveDriver = (driver) => {
     }
 }
 
-export const setTractorName = (tractorName) => {
-    console.log(tractorName)
+export const setActiveTractor = (tractor, allTractors) => {
+    console.log(tractor)
+    const activeTractor = allTractors.find(item => item.name === tractor)
     return {
         type: SET_TRACTOR_NAME,
-        payload: tractorName
+        payload: activeTractor
     }
 }
 
@@ -231,34 +234,37 @@ export const getTractors = () => (dispatch) => {
     .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
 }
 
-export const getNewTractor = (newTractor, allTractors) => (dispatch) => {
-    dispatch({ type: GET_TRACTORS_PENDING})
-    console.log("all tractors:", allTractors)
-        allTractors.push(newTractor)
-        dispatch({ type: GET_TRACTORS_SUCCESS, payload: [...allTractors, newTractor]})
-    };
+export const getTractorTypes = () => (dispatch) => {
+    dispatch({type: GET_VEHICLE_TYPES_PENDING})
+    fetch(`${process.env.REACT_APP_API_URL}/tractortypes`)
+    .then(res => res.json())
+    .then(data => dispatch({type: GET_VEHICLE_TYPES_SUCCESS, payload: data}))
+    .catch(err => dispatch({type: GET_VEHICLE_TYPES_FAILED, payload: err}))
+}
+
+
+// export const getNewTractor = (newTractor, allTractors) => (dispatch) => {
+//     dispatch({ type: GET_TRACTORS_PENDING})
+//     console.log("all tractors:", allTractors)
+//         allTractors.push(newTractor)
+//         dispatch({ type: GET_TRACTORS_SUCCESS, payload: [...allTractors, newTractor]})
+//     };
 
 export const sendNewTractor = (tractor, allTractors) => (dispatch) => {
     dispatch({ type: GET_TRACTORS_PENDING})
-    // socket.emit('add-tractor', {"tractor_name": tractor}, newTractor => {
-    //     console.log(newTractor)
-    //     allTractors.push(newTractor[0])
-    //     dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
-    // });
-
     fetch(`${process.env.REACT_APP_API_URL}/newtractor`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },   
-        body: JSON.stringify({"tractor_name": tractor})
+        body: JSON.stringify({...tractor})
     })
     .then(response => response.json())
     .then(res => {
-        console.log("response", res)
+        console.log("response", res[0])
         allTractors.push(res[0])
         console.log(allTractors)
-        dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
+        dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors.sort((a,b) => (b.name < a.name) ? 1 : -1)})
     })
     .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
 }
@@ -272,11 +278,12 @@ export const deleteTractor = (tractor, allTractors) => (dispatch) => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({"tractor_name": tractor})
+        body: JSON.stringify({...tractor})
     })
     .then(res => res.json())
     .then(deleted => {
-        allTractors.splice(allTractors.findIndex(item => item.tractor_name === deleted), 1)
+        console.log(deleted)
+        allTractors.splice(allTractors.findIndex(item => item.name === deleted[0].name), 1)
         dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
     })
     .catch(err => dispatch({ type: GET_TRACTORS_FAILED, payload: err}))

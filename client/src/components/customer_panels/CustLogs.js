@@ -11,13 +11,16 @@ const CustLogs = (props) => {
     }, [activeProperty])
 
     const getLogs = () => {
+        const offset = new Date().getTimezoneOffset() * 60000
         fetch(`${process.env.REACT_APP_API_URL}/getlogs/${activeProperty.key}`)
         .then(response => response.json())
         .then(data => {
             let logs = []
             data.forEach(item => {                
                 item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
-                logs.push([item.timestamp, item.status, item.notes, item.description, item.user_name])
+                item.start_time = item.start_time ? new Date(item.start_time).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
+                item.end_time = item.end_time ? new Date(item.end_time).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
+                logs.push([item.timestamp, item.status, item.notes, item.description, item.user_name, item.start_time, item.end_time])
             })
             setEntries(logs)
         }) 
@@ -35,6 +38,8 @@ const CustLogs = (props) => {
                     <th>Notes</th>
                     <th>Description</th>
                     <th>Driver</th>
+                    { activeProperty.contract_type === 'Hourly' ? <th>Start Time</th> : null } 
+                    { activeProperty.contract_type === 'Hourly' ? <th>End Time</th> : null }
                 </tr>
             </thead>
             <tbody>

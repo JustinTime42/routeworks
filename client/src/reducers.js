@@ -32,6 +32,9 @@ import { SET_ACTIVE_ROUTE,
     ROUTE_DATA_SUCCESS,
     ROUTE_DATA_FAILED,
     FILTER_PROPERTIES_SUCCESS,
+    GET_VEHICLE_TYPES_PENDING,
+    GET_VEHICLE_TYPES_SUCCESS,
+    GET_VEHICLE_TYPES_FAILED
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -83,7 +86,8 @@ const initialStateDriver = {
     driver: {
         key: '',
         name: '',
-        percentage: ''
+        percentage: '',
+        hourly: '',
     }
 }
 
@@ -115,14 +119,17 @@ export const getDrivers = (state = initialStateDrivers, action={}) => {
     }
 }
 
-const initialStateTractor = {
-    tractorName: ''
-}
+const initialStateActiveTractor = {
+    activeTractor: {
+        name: '',
+        type: '',
+    }
 
-export const setTractorName = (state = initialStateTractor, action={}) => {
+}
+export const setActiveTractor = (state = initialStateActiveTractor, action={}) => {
     switch(action.type) {
         case SET_TRACTOR_NAME:
-            return {...state, tractorName: action.payload}
+            return {...state, activeTractor: action.payload}
         default: 
             return state
     }
@@ -142,6 +149,25 @@ export const getTractors = (state = initialStateTractors, action={}) => {
         case GET_TRACTORS_FAILED:
             return {...state, error: action.payload, isPending: false}
         default:
+            return state
+    }
+}
+
+const initialStateTractorTypes = {
+    tractorTypes: [],
+    isPending: false, 
+    error: ''
+}
+
+export const getTractorTypes = (state = initialStateTractorTypes, action={}) => {
+    switch(action.type) {
+        case GET_VEHICLE_TYPES_PENDING:
+            return{...state, isPending: true}
+        case GET_VEHICLE_TYPES_SUCCESS:
+            return {...state, tractorTypes: action.payload, isPending: false}
+        case GET_VEHICLE_TYPES_FAILED:
+            return {...state, error: action.payload, isPending: false}
+        default: 
             return state
     }
 }

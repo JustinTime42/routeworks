@@ -1,81 +1,100 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { Dropdown, DropdownButton, Button, FormControl } from "react-bootstrap"
-import { setTractorName, getTractors, deleteTractor, sendNewTractor } from '../actions'
+import { Dropdown, DropdownButton, Button, FormControl, Modal, Alert } from "react-bootstrap"
+import { setActiveTractor, getTractors, deleteTractor, sendNewTractor, getTractorTypes } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
 import {SocketContext, socket} from '../socket'
 
 const TractorName = () => {
     const [showEdit, setShowEdit] = useState(false)
-    const [tractor_name, editTractorName] = useState("")
-    const tractorName = useSelector(state => state.setTractorName.tractorName)
+    const [showModal, setShowModal] = useState(false)
+    const [showDelete, setShowDelete] = useState('')
+    const [newTractorName, editNewTractorName] = useState("")
+    const [newTractorType, editNewTractorType] = useState("")
+    const tractor = useSelector(state => state.setActiveTractor.activeTractor)
     const allTractors = useSelector(state => state.getTractors.allTractors)
+    const tractorTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const dispatch = useDispatch()
     const socket = useContext(SocketContext);
 
     useEffect(() => {
         dispatch(getTractors())
+        dispatch(getTractorTypes())
     }, [])
 
-    // useEffect(() => {
-    //     console.log("updating tractor list")
-    //     socket.on('newTractor', newTractor => {
-    //         console.log("new tractor: ", newTractor)
-    //         allTractors.push(newTractor[0])
-    //         dispatch({ type: 'GET_TRACTORS_SUCCESS', payload: allTractors})
-    //         dispatch(getNewTractor(newTractor[0], allTractors))
-    //     })
-    // })
-
-    const toggleEdit = () => setShowEdit(!showEdit)
-    const onChangeText = (event) => editTractorName(event.target.value)
-
-    const onSaveNew = () => {        
-        //socket.emit('add-tractor', {"tractor_name": tractor_name})
-        dispatch(sendNewTractor(tractor_name, allTractors))
-        setTractorName("")
+    const toggleEdit = () => {
+        setShowEdit(!showEdit)
+        setShowDelete('')
     } 
-    const onDelete = (tractor, allTractors) => {
-        dispatch(deleteTractor(tractor, allTractors))
-        setTractorName("")
-        dispatch(getTractors())
-        dispatch(setTractorName(''))
-    }
 
-    const onSetTractorName = (tractorName) => {
-        dispatch(setTractorName(tractorName))
+    const onSaveNew = () => {
+        console.log(newTractorName)
+        //socket.emit('add-tractor', {"tractor_name": tractor_name})
+        dispatch(sendNewTractor({name: newTractorName, type: newTractorType}, allTractors))
+        setShowModal(false)
+        dispatch(getTractors())
+    } 
+
+    const onDelete = (tractor) => {
+        dispatch(deleteTractor(tractor, allTractors))
+        dispatch(getTractors())
+        
     }
 
     return (
-        <DropdownButton size="sm" title={tractorName || "Select Tractor"} onSelect={onSetTractorName} > 
+        <>
+        <DropdownButton size="sm" title={tractor.name || "Select Tractor"} onSelect={(event) => dispatch(setActiveTractor(event, allTractors))} > 
             <AuthConsumer>
             {({ user }) => (
                 <Can
                     role={user.role}
                     perform="admin:visit"
                     yes={() => (
-                        <div><Button variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button></div>                    
+                        <div><Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button></div>                    
                     )}
                     no={() => null}               
                 />                            
             )}
-        </AuthConsumer> 
-        {
-            allTractors.map((tractor, i) => {
-                return (
-                    <div key={i} style={{display: "flex"}}>
-                        <Dropdown.Item eventKey={tractor.tractor_name}>{tractor.tractor_name}</Dropdown.Item>  
-                        <Button style={{visibility: showEdit ? "initial" : "hidden", }} onClick={() => onDelete(tractor.tractor_name, allTractors)}>delete</Button>
-                    </div>
-                )
-            })
-        }   
-        <div style={{visibility: showEdit ? "initial" : "hidden", display: "flex"}}>
-            <FormControl size="sm" type="text" onChange={onChangeText} placeholder="new tractor" value={tractor_name} />
-            <Button size="sm" onClick={onSaveNew}>Save</Button>                
-        </div>             
+            </AuthConsumer> 
+            {
+                allTractors.map((tractor, i) => {
+                    return (
+                        <div key={i} style={{display: "flex"}}>
+                            <Dropdown.Item eventKey={tractor.name}>{tractor.name} | {tractor.type}</Dropdown.Item>  
+                            <Button style={{visibility: (showEdit && !showDelete) ? "initial" : "hidden"}} onClick={() => setShowDelete(tractor)}>Delete</Button>
+                            <Alert show={showDelete === tractor} variant="danger">
+                                <div className="d-flex justify-content-end">
+                                <Button onClick={() => onDelete(tractor, allTractors)} variant="outline-success">
+                                    Delete {tractor.name}
+                                </Button>
+                                <Button onClick={() => setShowDelete('')} variant="outline-success">
+                                    Cancel
+                                </Button>
+                                </div>
+                        </Alert>
+                        </div>
+                    )
+                })
+            }   
+            <Button style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} variant="primary" size="sm" onClick={() => setShowModal(true)}>New Tractor</Button>
+                      
         </DropdownButton>
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                        <Modal.Body style={{display: "flex", justifyContent: "space-between"}}>
+                        <FormControl style={{width: '50%'}} size="sm" name="name" type="text" onChange={(event) => editNewTractorName(event.target.value)} placeholder="Name" value={newTractorName} />
+                        <DropdownButton onClick={e => e.stopPropagation()} size="sm" title={newTractorType || "Type"} onSelect={event => editNewTractorType(event)}>
+                            {
+                                tractorTypes.map(item => <Dropdown.Item key={item.type} eventKey={item.type}>{item.type}</Dropdown.Item>)
+                            }
+                        </DropdownButton>
+                        <Button size="sm" onClick={onSaveNew}>Save</Button>   
+                        <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>  
+                        </Modal.Body> 
+                    </Modal>   
+        </>
+
+        
     )    
 }
 

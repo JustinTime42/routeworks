@@ -21,7 +21,7 @@ const mapStateToProps = state => {
         isRoutePending: state.getRouteProperties.isPending,
         isAllPending: state.requestAllAddresses.isPending,
         driverName: state.setActiveDriver.driver,
-        tractorName: state.setTractorName.tractorName,
+        activeTractor: state.setActiveTractor.activeTractor,
         routesPending: state.requestRoutes.isPending,
         activeRoute: state.setActiveRoute.activeRoute,
         routeData: state.getRouteData.routeData,
@@ -65,7 +65,7 @@ class Driver extends Component {
                 </div>
                 { 
                 this.props.showRouteEditor ? <EditRoute /> : 
-                this.props.tractorName && (this.props.driverName.key !== '') ? <DisplayRoute /> :
+                this.props.activeTractor.name && (this.props.driverName.key !== '') ? <DisplayRoute /> :
                 <Alert variant="warning">Please enter driver and tractor name to begin.</Alert>                              
                 }             
             </div>            

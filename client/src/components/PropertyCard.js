@@ -72,9 +72,7 @@ const PropertyCard = (props) => {
                 <Col lg={1}>{levelText}</Col> 
                 <Col lg={1}>{visual}</Col>
             </>
-        )            
-                          
-     
+        )
     }
 
     const RouteString = () => {
