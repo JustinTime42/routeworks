@@ -139,7 +139,7 @@ app.post('/api/delroute', (req, res) => {
         .where('name', name)
         .del()
         .then(route => {
-            console.log(route[0])
+            console.log("routes: ", route[0])
             response.route.push(route[0])
         }) 
         .catch(err => response.err.push(err))
@@ -150,7 +150,7 @@ app.post('/api/delroute', (req, res) => {
         .where('route_name', name)
         .del()
         .then(route => {
-            console.log(route[0])
+            console.log("routeData: ", route)
             response.routeData.push(route[0])
         } )
         .catch(err => response.err.push(err))
