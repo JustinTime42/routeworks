@@ -130,12 +130,12 @@ app.post('/api/delroute', (req, res) => {
         err: []
     }    
     let promises = []
-    let { route_name } = req.body
+    let { name } = req.body
 
     promises.push(
         db('routes')
         .returning('*')
-        .where('route_name', route_name)
+        .where('name', name)
         .del()
         .then(route => {
             response.del.push(route)
