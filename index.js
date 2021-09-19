@@ -140,7 +140,7 @@ app.post('/api/delroute', (req, res) => {
         .del()
         .then(route => {
             console.log("routes: ", route[0])
-            response.route.push(route[0])
+            response.route = route[0]
         }) 
         .catch(err => response.err.push(err))
     )
@@ -151,7 +151,7 @@ app.post('/api/delroute', (req, res) => {
         .del()
         .then(route => {
             console.log("routeData: ", route)
-            response.routeData.push(route[0])
+            response.routeData = route
         } )
         .catch(err => response.err.push(err))
     )
