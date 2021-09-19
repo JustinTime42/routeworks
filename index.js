@@ -126,7 +126,8 @@ app.post('/api/addroute', (req, res) => {
 
 app.post('/api/delroute', (req, res) => {
     let response = {
-        del: [],
+        route: {},
+        routeData: {},
         err: []
     }    
     let promises = []
@@ -138,7 +139,7 @@ app.post('/api/delroute', (req, res) => {
         .where('name', name)
         .del()
         .then(route => {
-            response.del.push(route)
+            response.route.push(route)
         }) 
         .catch(err => response.err.push(err))
     )
@@ -147,7 +148,7 @@ app.post('/api/delroute', (req, res) => {
         .returning('*')
         .where('route_name', name)
         .del()
-        .then(route => response.del.push(route))
+        .then(route => response.routeData.push(route))
         .catch(err => response.err.push(err))
     )
     Promise.all(promises).then(() => res.json(response))
