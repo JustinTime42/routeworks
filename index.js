@@ -86,25 +86,7 @@ io.on('connection', (socket) => {
     });
   });
 */
-app.post('/api/newtractor', (req, res) => {
-    console.log(req.body)
-    const tractor = req.body
-    db('tractors')    
-    .returning('*')
-    .insert({...tractor})
-    .then(tractor =>  res.json(tractor))
-    .catch(err => res.json("error: " + err))
-})
 
-app.post('/api/deletetractor', (req, res) => {
-    console.log(req.body)
-    db('tractors')
-    .returning('*')
-    .where('name', req.body.name)
-    .del()
-    .then(tractor => res.json(tractor))
-    .catch(err => res.json(err))
-})
 
 app.get('/api/routelist', (req, res) => {
     db.select('*').from('routes')
@@ -577,7 +559,7 @@ app.post('/api/deletedriver', (req, res) => {
     .catch(err => res.json(err))
 })
 
-app.get('/api/tractors', (req, res) => {
+app.get('/api/vehicles', (req, res) => {
     db.select('*')
     .from('tractors')
     .orderBy('name')
@@ -585,7 +567,27 @@ app.get('/api/tractors', (req, res) => {
     .catch(err => res.json(err))
 })
 
-app.get('/api/tractortypes', (req, res) => {
+app.post('/api/newvehicle', (req, res) => {
+    console.log(req.body)
+    const tractor = req.body
+    db('tractors')    
+    .returning('*')
+    .insert({...tractor})
+    .then(tractor =>  res.json(tractor))
+    .catch(err => res.json("error: " + err))
+})
+
+app.post('/api/deletevehicle', (req, res) => {
+    console.log(req.body)
+    db('tractors')
+    .returning('*')
+    .where('name', req.body.name)
+    .del()
+    .then(tractor => res.json(tractor))
+    .catch(err => res.json(err))
+})
+
+app.get('/api/vehicletypes', (req, res) => {
     db.select('*')
     .from('vehicle_types')
     .orderBy('type')
@@ -600,6 +602,16 @@ app.post('/api/newvehicletype', (req, res) => {
     .insert({type})
     .then(newtype => res.json(newtype))
     .catch(err => res.json("error: ", err))
+})
+
+app.post('/api/deletevehicletype', (req, res) => {
+    console.log(req.body)
+    db('vehicle_types')
+    .returning('*')
+    .where('name', req.body.name)
+    .del()
+    .then(tractor => res.json(tractor))
+    .catch(err => res.json(err))
 })
 
 app.get('/api/alltags', (req, res) => {
