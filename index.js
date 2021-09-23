@@ -138,9 +138,12 @@ app.post('/api/delroute', (req, res) => {
         .catch(err => response.err.push(err))
     )
     Promise.all(promises).then(() => {
-        if (response.err) res.json(err)
+        if (response.err) {
+            res.json(response.err)
+        } 
         else res.json(response.route)
     })
+    .catch(err => res.json(err))
 })
 
 app.post('/api/newproperty', (req, res) => {
