@@ -605,7 +605,7 @@ app.post('/api/newvehicletype', (req, res) => {
     const name = req.body
     db('vehicle_types')
     .returning('*')
-    .insert({name})
+    .insert({...name})
     .then(newtype => res.json(newtype))
     .catch(err => res.json("error: ", err))
 })
