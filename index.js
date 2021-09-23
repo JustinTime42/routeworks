@@ -98,10 +98,10 @@ app.get('/api/routelist', (req, res) => {
 
 app.post('/api/addroute', (req, res) => {
     db('routes')
-    .returning('name')
+    .returning('*')
     .insert({...req.body})
-    .then(routeName => {
-        res.json(routeName)
+    .then(newRoute => {
+        res.json(newRoute)
     })
     .catch(err => res.json("error: " + err))
 })
