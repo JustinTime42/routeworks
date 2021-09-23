@@ -126,6 +126,7 @@ app.post('/api/delroute', (req, res) => {
         }) 
         .catch(err => response.err.push(err))
     )
+
     promises.push(
         db('route_data')
         .returning('*')
@@ -616,7 +617,7 @@ app.post('/api/deletevehicletype', (req, res) => {
     .returning('*')
     .where('name', req.body.name)
     .del()
-    .then(tractor => res.json(tractor))
+    .then(tractor => res.json(tractor[0]))
     .catch(err => res.json(err))
 })
 
