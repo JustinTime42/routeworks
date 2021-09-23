@@ -99,7 +99,7 @@ app.get('/api/routelist', (req, res) => {
 app.post('/api/addroute', (req, res) => {
     db('routes')
     .returning('name')
-    .insert({name: req.body.name})
+    .insert({...req.body})
     .then(routeName => {
         res.json(routeName)
     })
