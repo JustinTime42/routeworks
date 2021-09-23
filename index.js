@@ -138,7 +138,7 @@ app.post('/api/delroute', (req, res) => {
         .catch(err => response.err.push(err))
     )
     Promise.all(promises).then(() => {
-        if (response.err) {
+        if (response.err.length > 0) {
             res.json(response.err)
         } 
         else res.json(response.route)
