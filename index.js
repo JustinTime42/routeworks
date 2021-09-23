@@ -596,16 +596,16 @@ app.post('/api/deletevehicle', (req, res) => {
 app.get('/api/vehicletypes', (req, res) => {
     db.select('*')
     .from('vehicle_types')
-    .orderBy('type')
+    .orderBy('name')
     .then(data => res.json(data))
     .catch(err => res.json(err))
 })
 
 app.post('/api/newvehicletype', (req, res) => {
-    const type = req.body
+    const name = req.body
     db('vehicle_types')
     .returning('*')
-    .insert({type})
+    .insert({name})
     .then(newtype => res.json(newtype))
     .catch(err => res.json("error: ", err))
 })
