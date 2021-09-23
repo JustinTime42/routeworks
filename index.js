@@ -590,7 +590,7 @@ app.post('/api/deletevehicle', (req, res) => {
     .returning('*')
     .where('name', req.body.name)
     .del()
-    .then(tractor => res.json(tractor))
+    .then(tractor => res.json(tractor[0]))
     .catch(err => res.json(err))
 })
 
@@ -617,7 +617,7 @@ app.post('/api/deletevehicletype', (req, res) => {
     .returning('*')
     .where('name', req.body.name)
     .del()
-    .then(tractor => res.json(tractor[0]))
+    .then(vehicleType => res.json(vehicleType[0]))
     .catch(err => res.json(err))
 })
 
