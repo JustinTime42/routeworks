@@ -614,8 +614,8 @@ app.post('/api/newvehicletype', (req, res) => {
         .then(newtype => {
             response = {...newtype}
             console.log(newType)
-        } )
-        .catch(err => res.json("error: ", err))
+        })
+        .catch(err => res.json(err))
     )
 
     promises.push(
