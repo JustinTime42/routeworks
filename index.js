@@ -613,7 +613,7 @@ app.post('/api/newvehicletype', (req, res) => {
         .insert({...type})
         .then(newtype => {
             response = newtype
-            console.log(newType)
+            console.log(newtype)
         })
         .catch(err => response = err)
     )
