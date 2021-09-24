@@ -97,7 +97,7 @@ class PropertyDetails extends Component {
 
             //so now that we've properly handled sanding, we need to calculate hourly pay
             // multiply vehicle hourly rate by time elapsed. 
-            // first i need 
+            // first i need to build out the per vehicle pricing fields in the customers table
         } else if (this.state.work_type === 'Sweeping') {
             property.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            

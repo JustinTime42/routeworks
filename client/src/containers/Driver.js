@@ -80,7 +80,6 @@ const Driver = () => {
                     showAdditionalFields={true}
                 >
                     <SimpleSelector
-                        style={{margin: "1em"}}
                         title="Vehicle Type"
                         selectedItem={activeVehicleType}
                         itemArray={vehicleTypes}
@@ -89,7 +88,6 @@ const Driver = () => {
                         updateListAction={GET_VEHICLE_TYPES_SUCCESS}
                         setActiveAction={SET_ACTIVE_VEHICLE_TYPE}
                     />
-
                 </SimpleSelector>
                 <SearchBar />
                 <EditRouteButton /> 

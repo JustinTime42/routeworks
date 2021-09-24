@@ -219,12 +219,13 @@ const CustomerDetails = props => {
                     <Tab eventKey='job' title='Job Info'>
                         <Form>
                         <Form.Row> 
+                            {/* contract_type === hourly ? //pricing fields : <Col> below */}
                         <Col> 
                         <Form.Label size='sm'>Prices</Form.Label>
                             <Form.Group>
                                 <Form.Row>  
                                     <Col xs={8}>
-                                        <Form.Label size='sm'>Price</Form.Label>
+                                        <Form.Label size='sm'>Snow Price</Form.Label>
                                     </Col>
                                     <Col>
                                         <Form.Control size='sm' name="price" type="number" value={reduxProperty?.price || ''} onChange={onChange}/>
