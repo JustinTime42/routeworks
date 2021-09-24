@@ -80,7 +80,7 @@ const Driver = () => {
                     showAdditionalFields={true}
                 >
                     <SimpleSelector
-                        style={{marginRight: "1em"}}
+                        style={{margin: "1em"}}
                         title="Vehicle Type"
                         selectedItem={activeVehicleType}
                         itemArray={vehicleTypes}
