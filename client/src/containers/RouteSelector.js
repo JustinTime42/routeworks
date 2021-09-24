@@ -10,6 +10,7 @@ const editStyle = {
     float: "right"
 } // future feature
 
+//Deprecated Component
 const RouteSelector = () => {
     const [showEdit, setShowEdit] = useState(false)
     const [routeName, setRouteName] = useState("")

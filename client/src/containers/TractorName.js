@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { Dropdown, DropdownButton, Button, FormControl, Modal, Alert } from "react-bootstrap"
-import { setActiveTractor, getTractors, deleteTractor, sendNewTractor, getTractorTypes } from '../actions'
+import { setActiveTractor, getTractors, deleteItem, createItem, getTractorTypes } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
 import {SocketContext, socket} from '../socket'
+import {GET_TRACTORS_SUCCESS} from '../constants.js'
 
+//Deprecated component
 const TractorName = () => {
     const [showEdit, setShowEdit] = useState(false)
     const [showModal, setShowModal] = useState(false)
@@ -29,17 +31,14 @@ const TractorName = () => {
     } 
 
     const onSaveNew = () => {
-        console.log(newTractorName)
-        //socket.emit('add-tractor', {"tractor_name": tractor_name})
-        dispatch(sendNewTractor({name: newTractorName, type: newTractorType}, allTractors))
+        dispatch(createItem({name: newTractorName, type: newTractorType}, allTractors, "newTractor", GET_TRACTORS_SUCCESS))
         setShowModal(false)
-        dispatch(getTractors())
+        setShowEdit(false)
     } 
 
     const onDelete = (tractor) => {
-        dispatch(deleteTractor(tractor, allTractors))
-        dispatch(getTractors())
-        
+        dispatch(deleteItem(tractor, allTractors, "deletetractor", GET_TRACTORS_SUCCESS))
+        setShowDelete('') 
     }
 
     return (
@@ -62,8 +61,8 @@ const TractorName = () => {
                     return (
                         <div key={i} style={{display: "flex"}}>
                             <Dropdown.Item eventKey={tractor.name}>{tractor.name} | {tractor.type}</Dropdown.Item>  
-                            <Button style={{visibility: (showEdit && !showDelete) ? "initial" : "hidden"}} onClick={() => setShowDelete(tractor)}>Delete</Button>
-                            <Alert show={showDelete === tractor} variant="danger">
+                            <Button style={{visibility: (showEdit && (showDelete !== tractor.name)) ? "initial" : "hidden"}} onClick={() => setShowDelete(tractor.name)}>Delete</Button>
+                            <Alert show={showDelete === tractor.name} variant="danger">
                                 <div className="d-flex justify-content-end">
                                 <Button onClick={() => onDelete(tractor, allTractors)} variant="outline-success">
                                     Delete {tractor.name}
@@ -78,23 +77,20 @@ const TractorName = () => {
                 })
             }   
             <Button style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} variant="primary" size="sm" onClick={() => setShowModal(true)}>New Tractor</Button>
-                      
         </DropdownButton>
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
-                        <Modal.Body style={{display: "flex", justifyContent: "space-between"}}>
-                        <FormControl style={{width: '50%'}} size="sm" name="name" type="text" onChange={(event) => editNewTractorName(event.target.value)} placeholder="Name" value={newTractorName} />
-                        <DropdownButton onClick={e => e.stopPropagation()} size="sm" title={newTractorType || "Type"} onSelect={event => editNewTractorType(event)}>
-                            {
-                                tractorTypes.map(item => <Dropdown.Item key={item.type} eventKey={item.type}>{item.type}</Dropdown.Item>)
-                            }
-                        </DropdownButton>
-                        <Button size="sm" onClick={onSaveNew}>Save</Button>   
-                        <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>  
-                        </Modal.Body> 
-                    </Modal>   
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+            <Modal.Body style={{display: "flex", justifyContent: "space-between"}}>
+            <FormControl style={{width: '50%'}} size="sm" name="name" type="text" onChange={(event) => editNewTractorName(event.target.value)} placeholder="Name" value={newTractorName} />
+            <DropdownButton onClick={e => e.stopPropagation()} size="sm" title={newTractorType || "Type"} onSelect={event => editNewTractorType(event)}>
+                {
+                    tractorTypes.map(item => <Dropdown.Item key={item.type} eventKey={item.type}>{item.type}</Dropdown.Item>)
+                }                            
+            </DropdownButton>
+            <Button size="sm" onClick={onSaveNew}>Save</Button>   
+            <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>  
+            </Modal.Body> 
+        </Modal>   
         </>
-
-        
     )    
 }
 

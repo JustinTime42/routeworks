@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import axios from "axios"
 import { connect } from 'react-redux'
-import { Dropdown, DropdownButton, Button, Modal, Alert, Form } from 'react-bootstrap'
+import { Dropdown, DropdownButton, Button, Modal, Alert, Form, Row, Col } from 'react-bootstrap'
 import { setActiveDriver, getDrivers } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
@@ -136,9 +136,24 @@ class DriverName extends Component {
                     }
                 <Modal show={this.state.show} onHide={this.handleClose}>
                     <Modal.Body>
-                        <Form.Control size="sm" name="name" type="text" onChange={this.onChange} placeholder="Name" value={this.state.name} />
-                        <Form.Control size="sm" name="percentage" type="numeric" onChange={this.onChange} placeholder="Percentage" value={this.state.percentage} />
-                        <Form.Control size="sm" name="hourly" type="numeric" onChange={this.onChange} placeholder="Hourly" value={this.state.hourly} />
+                        <Form.Group as={Row}>
+                            <Form.Label column sm={2}>Name</Form.Label>
+                            <Col sm={10}>
+                                <Form.Control name="name" type="text" onChange={this.onChange} placeholder="Name" value={this.state.name}/>
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column sm={2}>Percentage</Form.Label>
+                            <Col sm={10}>
+                                <Form.Control name="percentage" type="numeric" onChange={this.onChange} placeholder="Percentage" value={this.state.percentage} />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column sm={2}>Hourly</Form.Label>
+                            <Col sm={10}>
+                                <Form.Control name="hourly" type="numeric" onChange={this.onChange} placeholder="Hourly" value={this.state.hourly} />
+                            </Col>
+                        </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button disabled={!this.state.key} variant="danger" onClick={() => this.setShowDelete(true)}>{this.state.deleteAlert ? "CANCEL" : "DELETE DRIVER"}</Button>

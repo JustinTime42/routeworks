@@ -16,13 +16,13 @@ import {
     SAVE_ROUTE_FAILED,
     SHOW_ROUTE_EDITOR,
     SHOW_ROUTE,
-    SET_TRACTOR_NAME,
+    SET_ACTIVE_TRACTOR,
     GET_DRIVERS_PENDING,
     GET_DRIVERS_SUCCESS,
     GET_DRIVERS_FAILED,
-    GET_TRACTORS_PENDING,
+    GET_ITEMS_PENDING,
     GET_TRACTORS_SUCCESS,
-    GET_TRACTORS_FAILED,
+    GET_ITEMS_FAILED,
     ROUTE_DATA_PENDING,
     ROUTE_DATA_SUCCESS,
     ROUTE_DATA_FAILED,
@@ -30,6 +30,7 @@ import {
     GET_VEHICLE_TYPES_PENDING,
     GET_VEHICLE_TYPES_SUCCESS,
     GET_VEHICLE_TYPES_FAILED,
+    SET_ACTIVE_VEHICLE_TYPE, 
 } from './constants.js'
 // import { io } from "socket.io-client";
 // const socket = io('https://snowline-route-manager.herokuapp.com/')
@@ -218,25 +219,25 @@ export const setActiveTractor = (tractor, allTractors) => {
     console.log(tractor)
     const activeTractor = allTractors.find(item => item.name === tractor)
     return {
-        type: SET_TRACTOR_NAME,
+        type: SET_ACTIVE_TRACTOR,
         payload: activeTractor
     }
 }
 
 export const getTractors = () => (dispatch) => {
-    dispatch({ type: GET_TRACTORS_PENDING })
-    fetch(`${process.env.REACT_APP_API_URL}/tractors`)
+    dispatch({ type: GET_ITEMS_PENDING })
+    fetch(`${process.env.REACT_APP_API_URL}/vehicles`)
     .then(response => response.json())
     .then(data => {
         console.log("tractors", data)
         dispatch({ type: GET_TRACTORS_SUCCESS, payload: data })
     }) 
-    .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
+    .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
 }
 
 export const getTractorTypes = () => (dispatch) => {
     dispatch({type: GET_VEHICLE_TYPES_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/tractortypes`)
+    fetch(`${process.env.REACT_APP_API_URL}/vehicletypes`)
     .then(res => res.json())
     .then(data => dispatch({type: GET_VEHICLE_TYPES_SUCCESS, payload: data}))
     .catch(err => dispatch({type: GET_VEHICLE_TYPES_FAILED, payload: err}))
@@ -244,49 +245,59 @@ export const getTractorTypes = () => (dispatch) => {
 
 
 // export const getNewTractor = (newTractor, allTractors) => (dispatch) => {
-//     dispatch({ type: GET_TRACTORS_PENDING})
+//     dispatch({ type: GET_ITEMS_PENDING})
 //     console.log("all tractors:", allTractors)
 //         allTractors.push(newTractor)
 //         dispatch({ type: GET_TRACTORS_SUCCESS, payload: [...allTractors, newTractor]})
 //     };
 
-export const sendNewTractor = (tractor, allTractors) => (dispatch) => {
-    dispatch({ type: GET_TRACTORS_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/newtractor`, {
+export const createItem = (item, itemArray, endPoint, actionType) => (dispatch) => {
+    console.log(item)
+    dispatch({ type: GET_ITEMS_PENDING})
+    fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },   
-        body: JSON.stringify({...tractor})
+        body: JSON.stringify(item)
     })
     .then(response => response.json())
     .then(res => {
-        console.log("response", res[0])
-        allTractors.push(res[0])
-        console.log(allTractors)
-        dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors.sort((a,b) => (b.name < a.name) ? 1 : -1)})
+        console.log("create Item response:", res[0])
+        let newItems = [...itemArray]
+        newItems.push(res[0])
+        dispatch({ type: actionType, payload: newItems.sort((a,b) => (b.name < a.name) ? 1 : -1)})
     })
-    .catch(error => dispatch({ type: GET_TRACTORS_FAILED, payload: error }))
+    .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
 }
 
-export const deleteTractor = (tractor, allTractors) => (dispatch) => {
-    console.log("tractor to delete:", tractor)
-    console.log("allTractors:", allTractors)
-    dispatch({ type: GET_TRACTORS_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/deleteTractor`, {
+export const deleteItem = (item, itemArray, endPoint, actionType) => (dispatch) => {
+    dispatch({ type: GET_ITEMS_PENDING})
+    fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
         method: 'POST', 
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({...tractor})
+        body: JSON.stringify(item)
     })
     .then(res => res.json())
     .then(deleted => {
-        console.log(deleted)
-        allTractors.splice(allTractors.findIndex(item => item.name === deleted[0].name), 1)
-        dispatch({ type: GET_TRACTORS_SUCCESS, payload: allTractors})
+        console.log("deleted: ", deleted)
+        console.log("item to delete: ", item.name)
+        let newItems = [...itemArray]
+        newItems.splice(itemArray.findIndex(item => item.name === deleted.name), 1)
+        dispatch({ type: actionType, payload: newItems})
     })
-    .catch(err => dispatch({ type: GET_TRACTORS_FAILED, payload: err}))
+    .catch(err => dispatch({ type: GET_ITEMS_FAILED, payload: err}))
+}
+
+export const setActiveItem = (item, itemArray, actionType) => {
+    console.log(item)
+    const activeItem = itemArray.find(i => i.name === item)
+    return {
+        type: actionType,
+        payload: activeItem
+    }
 }
 
 export const requestAllAddresses = () => (dispatch) => {

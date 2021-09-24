@@ -140,7 +140,7 @@ class EditRoute extends Component {
         console.log("running setSelected()")   
         let selected = []
         let customers = [...this.props.addresses]
-        let route = this.props.activeRoute
+        let route = this.props.activeRoute.name
         this.props.routeData.forEach(routeEntry => {
             if (routeEntry.route_name === route) {
                 let i = customers.findIndex(customer => customer.key === routeEntry.property_key)
@@ -165,7 +165,7 @@ class EditRoute extends Component {
         console.log("selected", selected)
         axios.post(`${process.env.REACT_APP_API_URL}/saveroute`, 
             {
-                route: this.props.activeRoute,
+                route: this.props.activeRoute.name,
                 selected: selected,
                 droppedCard: {property_key: droppedCard?.key, route_position: droppedCard?.route_position, status: droppedCard?.status},
                 whereTo: whereTo
@@ -186,7 +186,7 @@ class EditRoute extends Component {
         console.log("selected ", selected)
         axios.post(`${process.env.REACT_APP_API_URL}/initroute`,
             {
-                route: this.props.activeRoute,
+                route: this.props.activeRoute.name,
                 customers: selected      
             }
         )

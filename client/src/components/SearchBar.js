@@ -23,6 +23,7 @@ const SearchBar = () => {
         if (found) found.scrollIntoView(true)
         dispatch(setActiveProperty(customer))
         setMatches([])
+        setSearchValue('')
     }
 
     const listStyle = {

@@ -15,7 +15,7 @@ import { SET_ACTIVE_ROUTE,
     SAVE_ROUTE_FAILED,
     SHOW_ROUTE_EDITOR,
     SHOW_ROUTE,
-    SET_TRACTOR_NAME,
+    SET_ACTIVE_TRACTOR,
     NEW_PROPERTY_SUCCESS,
     NEW_PROPERTY_PENDING,
     NEW_PROPERTY_FAILED,
@@ -25,16 +25,17 @@ import { SET_ACTIVE_ROUTE,
     GET_DRIVERS_PENDING,
     GET_DRIVERS_SUCCESS,
     GET_DRIVERS_FAILED,
-    GET_TRACTORS_PENDING,
+    GET_ITEMS_PENDING,
     GET_TRACTORS_SUCCESS,
-    GET_TRACTORS_FAILED,
+    GET_ITEMS_FAILED,
     ROUTE_DATA_PENDING,
     ROUTE_DATA_SUCCESS,
     ROUTE_DATA_FAILED,
     FILTER_PROPERTIES_SUCCESS,
     GET_VEHICLE_TYPES_PENDING,
     GET_VEHICLE_TYPES_SUCCESS,
-    GET_VEHICLE_TYPES_FAILED
+    GET_VEHICLE_TYPES_FAILED,
+    SET_ACTIVE_VEHICLE_TYPE,
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -128,7 +129,7 @@ const initialStateActiveTractor = {
 }
 export const setActiveTractor = (state = initialStateActiveTractor, action={}) => {
     switch(action.type) {
-        case SET_TRACTOR_NAME:
+        case SET_ACTIVE_TRACTOR:
             return {...state, activeTractor: action.payload}
         default: 
             return state
@@ -142,11 +143,11 @@ const initialStateTractors = {
 }
 export const getTractors = (state = initialStateTractors, action={}) => {
     switch(action.type) {
-        case GET_TRACTORS_PENDING: 
+        case GET_ITEMS_PENDING: 
             return {...state, isPending: true}
         case GET_TRACTORS_SUCCESS:
             return {...state, allTractors: action.payload, isPending: false}
-        case GET_TRACTORS_FAILED:
+        case GET_ITEMS_FAILED:
             return {...state, error: action.payload, isPending: false}
         default:
             return state
@@ -168,6 +169,19 @@ export const getTractorTypes = (state = initialStateTractorTypes, action={}) => 
         case GET_VEHICLE_TYPES_FAILED:
             return {...state, error: action.payload, isPending: false}
         default: 
+            return state
+    }
+}
+
+const initialStateActiveVehicleType = {
+    activeVehicleType: '' 
+}
+
+export const setActiveVehicleType = (state=initialStateActiveVehicleType, action={}) => {
+    switch(action.type) {
+        case SET_ACTIVE_VEHICLE_TYPE:
+            return {...state, activeVehicleType: action.payload }
+        default:    
             return state
     }
 }
