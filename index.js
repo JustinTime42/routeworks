@@ -603,22 +603,48 @@ app.get('/api/vehicletypes', (req, res) => {
 })
 
 app.post('/api/newvehicletype', (req, res) => {
-    const name = req.body
-    db('vehicle_types')
-    .returning('*')
-    .insert({...name})
-    .then(newtype => res.json(newtype))
-    .catch(err => res.json("error: ", err))
+    const type = req.body
+    let response = {}
+    let promises = []
+
+    promises.push(
+        db('vehicle_types')
+        .returning('*')
+        .insert({...type})
+        .then(newtype => response = {newtype})
+        .catch(err => res.json("error: ", err))
+    )
+
+    promises.push(
+        db.schema.table('properties', table => table.string(type.name))
+        .catch(err => res.json("error: ", err))
+    )
+
+    Promise.all(promises)
+    .then(() => res.json(response))
+    .catch(err => res.json(err))    
 })
 
 app.post('/api/deletevehicletype', (req, res) => {
-    console.log(req.body)
-    db('vehicle_types')
-    .returning('*')
-    .where('name', req.body.name)
-    .del()
-    .then(vehicleType => res.json(vehicleType[0]))
-    .catch(err => res.json(err))
+    let response = {}
+    let promises = []
+
+    promises.push(
+        db('vehicle_types')
+        .returning('*')
+        .where('name', req.body.name)
+        .del()
+        .then(vehicleType => response = vehicleType[0])
+        .catch(err => res.json(err))
+    )
+
+    promises.push(
+        db.schema.table('properties', table => table.dropColumn(req.body.name))
+    )
+
+    Promise.all(promises)
+    .then(() => res.json(response))
+    .catch(err => res.json(err))  
 })
 
 app.get('/api/alltags', (req, res) => {
