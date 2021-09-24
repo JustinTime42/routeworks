@@ -612,15 +612,15 @@ app.post('/api/newvehicletype', (req, res) => {
         .returning('*')
         .insert({...type})
         .then(newtype => {
-            response = {...newtype}
+            response = newtype
             console.log(newType)
         })
-        .catch(err => res.json(err))
+        .catch(err => response = err)
     )
 
     promises.push(
         db.schema.table('properties', table => table.string(type.name))
-        .catch(err => res.json("error: ", err))
+        .catch(err => response = err)
     )
 
     Promise.all(promises)
