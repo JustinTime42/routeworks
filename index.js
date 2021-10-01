@@ -584,6 +584,16 @@ app.post('/api/newvehicle', (req, res) => {
     .catch(err => res.json("error: " + err))
 })
 
+app.post('/api/editvehicle', (req, res) => {
+    const vehicle = req.body
+    db('tractors')    
+    .returning('*')
+    .where('key', vehicle.key)
+    .update({...vehicle})
+     .then(vehicle =>  res.json(vehicle))
+     .catch(err => res.json("error: " + err))
+})
+
 app.post('/api/deletevehicle', (req, res) => {
     console.log(req.body)
     db('tractors')
