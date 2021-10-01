@@ -14,8 +14,8 @@ const editorSize = {height:"90vh"}
 
 const CustomerDetails = props => {
     const reduxProperty = useSelector(state => state.setActiveProperty.activeProperty)
-    //const [activeProperty, setActiveProperty] = useState(reduxProperty)
     const routeData = useSelector(state => state.getRouteData.routeData)
+    const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const dispatch = useDispatch()
     const [api, setApi] = useState([reduxProperty ? "editproperty" : "newproperty"])
     const [deleteAlert, setDeleteAlert] = useState(false)
@@ -24,7 +24,6 @@ const CustomerDetails = props => {
     const [sameAddress, setSameAddress] = useState(false)
 
     useEffect(() => { 
-        //setActiveProperty(reduxProperty)
         setApi(reduxProperty ? "editproperty" : "newproperty")
         setSameAddress(false)
         getTags()
@@ -64,8 +63,9 @@ const CustomerDetails = props => {
     
     const onChange = (event) => {
         let { target: { name, value } } = event
-        console.log(name)
-        let numberValues = ['price', 'value', 'price_per_yard', 'sweep_price']
+        let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
+        console.log(vTypes)
+        let numberValues = ['price', 'value', 'price_per_yard', 'sweep_price', ...vTypes]
         if (numberValues.includes(name)){
             value = Number(value)
         }
@@ -77,7 +77,6 @@ const CustomerDetails = props => {
         else {  
             dispatch(setActiveProperty({...reduxProperty, [name]: value}))
         }
-        console.log(reduxProperty)
     }
 
     const clickSameAddress = () => {
@@ -93,8 +92,8 @@ const CustomerDetails = props => {
         setSameAddress(!sameAddress)
     }
 
-    return (        
-        <Modal className="scrollable" style={editorSize} show={props.show} onHide={props.close} size='lg'>
+    return (      
+           <Modal className="scrollable" style={editorSize} show={props.show} onHide={props.close} size='lg'>
             <Modal.Header>Customer Editor</Modal.Header>
             <Modal.Body>
                 <Tabs defaultActiveKey='contact'>
@@ -219,61 +218,103 @@ const CustomerDetails = props => {
                     <Tab eventKey='job' title='Job Info'>
                         <Form>
                         <Form.Row> 
-                            {/* contract_type === hourly ? //pricing fields : <Col> below */}
-                        <Col> 
-                        <Form.Label size='sm'>Prices</Form.Label>
-                            <Form.Group>
-                                <Form.Row>  
+                            {
+                            reduxProperty?.contract_type === "Hourly" ? 
+                            <Col> 
+                            <Form.Label size='sm'>Prices</Form.Label>
+                            {
+                            vehicleTypes.map((item, i) => {  
+                                return (
+                                    <Form.Group key = {i}>
+                                        <Form.Row>  
+                                            <Col xs={8}>
+                                                <Form.Label size='sm'>{item.name} Price</Form.Label>
+                                            </Col>
+                                            <Col>
+                                                <Form.Control size='sm' name={item.name} type="number" value={reduxProperty[item.name] || ''} onChange={onChange}/>
+                                            </Col>
+                                        </Form.Row>                                    
+                                    </Form.Group>
+                                )
+                            })
+                            }
+                                <Form.Group>
+                                <Form.Row>
                                     <Col xs={8}>
-                                        <Form.Label size='sm'>Snow Price</Form.Label>
+                                        <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
                                     </Col>
                                     <Col>
-                                        <Form.Control size='sm' name="price" type="number" value={reduxProperty?.price || ''} onChange={onChange}/>
+                                        <Form.Control size='sm' name="price_per_yard" type="number" value={reduxProperty?.price_per_yard || ''} onChange={onChange}/>
                                     </Col>
-                                </Form.Row>                                    
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Row>  
+                                </Form.Row>
+                                </Form.Group>
+                                <Form.Group>
+                                <Form.Row>
                                     <Col xs={8}>
-                                        <Form.Label size='sm'>Seasonal Price</Form.Label>
+                                    <Form.Label size='sm'>Value</Form.Label>
                                     </Col>
                                     <Col>
-                                        <Form.Control size='sm' name="season_price" type="number" value={reduxProperty?.season_price || ''} onChange={onChange}/>
+                                        <Form.Control size='sm' name="value" type="number" value={reduxProperty?.value || ''} onChange={onChange}/>
                                     </Col>
-                                </Form.Row>                                    
-                            </Form.Group>
-                            <Form.Group>
-                            <Form.Row>
-                                <Col xs={8}>
-                                    <Form.Label size='sm'>Sweeping Price</Form.Label>
-                                </Col>                                    
-                                <Col>
-                                    <Form.Control size='sm' name="sweep_price" type="number" value={reduxProperty?.sweep_price || ''} onChange={onChange}/>
+                                </Form.Row>
+                                </Form.Group>
+                            </Col>
+                            :                        
+                            <Col> 
+                                <Form.Label size='sm'>Prices</Form.Label>
+                                    <Form.Group>
+                                        <Form.Row>  
+                                            <Col xs={8}>
+                                                <Form.Label size='sm'>Snow Price</Form.Label>
+                                            </Col>
+                                            <Col>
+                                                <Form.Control size='sm' name="price" type="number" value={reduxProperty?.price || ''} onChange={onChange}/>
+                                            </Col>
+                                        </Form.Row>                                    
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Row>  
+                                            <Col xs={8}>
+                                                <Form.Label size='sm'>Seasonal Price</Form.Label>
+                                            </Col>
+                                            <Col>
+                                                <Form.Control size='sm' name="season_price" type="number" value={reduxProperty?.season_price || ''} onChange={onChange}/>
+                                            </Col>
+                                        </Form.Row>                                    
+                                    </Form.Group>
+                                    <Form.Group>
+                                    <Form.Row>
+                                        <Col xs={8}>
+                                            <Form.Label size='sm'>Sweeping Price</Form.Label>
+                                        </Col>                                    
+                                        <Col>
+                                            <Form.Control size='sm' name="sweep_price" type="number" value={reduxProperty?.sweep_price || ''} onChange={onChange}/>
+                                        </Col>
+                                    </Form.Row>
+                                    </Form.Group>
+                                    <Form.Group>
+                                    <Form.Row>
+                                        <Col xs={8}>
+                                            <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control size='sm' name="price_per_yard" type="number" value={reduxProperty?.price_per_yard || ''} onChange={onChange}/>
+                                        </Col>
+                                    </Form.Row>
+                                    </Form.Group>
+                                    <Form.Group>
+                                    <Form.Row>
+                                        <Col xs={8}>
+                                        <Form.Label size='sm'>Value</Form.Label>
+                                        </Col>
+                                        <Col>
+                                            <Form.Control size='sm' name="value" type="number" value={reduxProperty?.value || ''} onChange={onChange}/>
+                                        </Col>
+                                    </Form.Row>
+                                    </Form.Group>
                                 </Col>
-                            </Form.Row>
-                            </Form.Group>
-                            <Form.Group>
-                            <Form.Row>
-                                <Col xs={8}>
-                                    <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
-                                </Col>
-                                <Col>
-                                    <Form.Control size='sm' name="price_per_yard" type="number" value={reduxProperty?.price_per_yard || ''} onChange={onChange}/>
-                                </Col>
-                            </Form.Row>
-                            </Form.Group>
-                            <Form.Group>
-                            <Form.Row>
-                                <Col xs={8}>
-                                <Form.Label size='sm'>Value</Form.Label>
-                                </Col>
-                                <Col>
-                                    <Form.Control size='sm' name="value" type="number" value={reduxProperty?.value || ''} onChange={onChange}/>
-                                </Col>
-                            </Form.Row>
-                            </Form.Group>
-                        </Col>
-                        <Col>
+                            }
+                            <Col>                           
                             <Form.Group>
                                 <Form.Label size='sm'>Surface Type</Form.Label>
                                     <Form.Control size='sm' name="surface_type" as="select" value={reduxProperty?.surface_type || ''} onChange={onChange}>
@@ -306,81 +347,87 @@ const CustomerDetails = props => {
                                             sandContractTypes.map(type => <option key={type} value={type}>{type}</option>)
                                         }
                                     </Form.Control>
-                            </Form.Group>
-                            <Form.Check
-                                name="is_new"
-                                type="checkbox"
-                                label="New?"
-                                checked = {!!reduxProperty?.is_new}
-                                onChange={onChange}
-                            />   
-                            <Form.Check 
-                                name="inactive"
-                                type="checkbox"
-                                label="Inactive?"
-                                checked = {!!reduxProperty?.inactive}
-                                onChange={onChange}
-                            />
-                            <Form.Check
-                                name="temp"
-                                type="checkbox"
-                                label="Temporary?"
-                                checked = {!!reduxProperty?.temp}
-                                onChange={onChange}
-                            />
-                            <Form.Check
-                                name="priority"
-                                type="checkbox"
-                                label="Priority?"
-                                checked = {!!reduxProperty?.priority}
-                                onChange={onChange}
-                            />
+                            </Form.Group>                            
                         </Col>
-                        <Col>
-                            <Form.Label>Tags</Form.Label> 
-                            <Form.Row style={{marginBottom: '1em'}}>
-                                <Col>
-                                    <Button size='sm' variant='primary' onClick={saveNewTag}>add tag</Button>
-                                </Col>
-                                <Col>
-                                    <Form.Control name="newTagName" type="text" placeholder={newTagName} onChange={onChange}/>
-                                </Col>
-                            </Form.Row>
-                            {                                    
-                                allTags.map((tag, i) => {
-                                    return(       
-                                        <Form.Row key={i}>
-                                            <Col xs={7}>
-                                                <Form.Check                                                          
-                                                    name={tag}
-                                                    type="checkbox"
-                                                    label={tag}
-                                                    checked = {reduxProperty?.tags?.includes(tag) || false}
-                                                    onChange={tagChange}
-                                                />  
-                                            </Col>
-                                        </Form.Row>                                       
-                                    )                               
-                                })                                    
-                            }
-                            <Form.Row>
-                                <Form.Label>Routes Assigned:</Form.Label>
-                            {
-                                routeData.map((entry, i) => {                                        
-                                    if (entry.property_key === reduxProperty?.key) {
-                                        return (
-                                            <Form.Label key={i}>{entry.route_name}, </Form.Label>
-                                        )
-                                    } else return null
-                                })
-                            }
-                            </Form.Row>  
-                        </Col>
+                            <Col>
+                                <Form.Label>Tags</Form.Label> 
+                                <Form.Row style={{marginBottom: '1em'}}>
+                                    <Col>
+                                        <Button size='sm' variant='primary' onClick={saveNewTag}>add tag</Button>
+                                    </Col>
+                                    <Col>
+                                        <Form.Control name="newTagName" type="text" placeholder={newTagName} onChange={onChange}/>
+                                    </Col>
+                                </Form.Row>
+                                {                                    
+                                    allTags.map((tag, i) => {
+                                        return(       
+                                            <Form.Row key={i}>
+                                                <Col xs={7}>
+                                                    <Form.Check                                                          
+                                                        name={tag}
+                                                        type="checkbox"
+                                                        label={tag}
+                                                        checked = {reduxProperty?.tags?.includes(tag) || false}
+                                                        onChange={tagChange}
+                                                    />  
+                                                </Col>
+                                            </Form.Row>                                       
+                                        )                               
+                                    })                                    
+                                }
+                                <Form.Row>
+                                    <Form.Label>Routes Assigned:</Form.Label>
+                                {
+                                    routeData.map((entry, i) => {                                        
+                                        if (entry.property_key === reduxProperty?.key) {
+                                            return (
+                                                <Form.Label key={i}>{entry.route_name}, </Form.Label>
+                                            )
+                                        } else return null
+                                    })
+                                }
+                                </Form.Row>  
+                            </Col>
                         </Form.Row>
-                        <Form.Group>
-                            <Form.Label>Notes</Form.Label>
-                                <Form.Control name="notes" as="textarea" rows="3" value={reduxProperty?.notes || ''} onChange={onChange}/>
-                        </Form.Group>
+                        <Form.Row style={{alignItems: "center"}}>
+                            <Col>
+                                <Form.Group>
+                                    <Form.Label>Notes</Form.Label>
+                                    <Form.Control name="notes" as="textarea" rows="3" value={reduxProperty?.notes || ''} onChange={onChange}/>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Check
+                                    name="is_new"
+                                    type="checkbox"
+                                    label="New?"
+                                    checked = {!!reduxProperty?.is_new}
+                                    onChange={onChange}
+                                />   
+                                <Form.Check 
+                                    name="inactive"
+                                    type="checkbox"
+                                    label="Inactive?"
+                                    checked = {!!reduxProperty?.inactive}
+                                    onChange={onChange}
+                                />
+                                <Form.Check
+                                    name="temp"
+                                    type="checkbox"
+                                    label="Temporary?"
+                                    checked = {!!reduxProperty?.temp}
+                                    onChange={onChange}
+                                />
+                                <Form.Check
+                                    name="priority"
+                                    type="checkbox"
+                                    label="Priority?"
+                                    checked = {!!reduxProperty?.priority}
+                                    onChange={onChange}
+                                />
+                            </Col>
+                        </Form.Row>                        
                     </Form> 
                     </Tab>
                     {
@@ -390,7 +437,6 @@ const CustomerDetails = props => {
                         </Tab> : null
                     }
                 </Tabs>
-                
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="danger" onClick={() => setDeleteAlert(!deleteAlert)}>{deleteAlert ? "Cancel" : "DELETE PROPERTY"}</Button>
@@ -409,7 +455,7 @@ const CustomerDetails = props => {
                 </Button>
                 </div>
             </Alert>
-        </Modal>
+        </Modal> 
     )
     
 }

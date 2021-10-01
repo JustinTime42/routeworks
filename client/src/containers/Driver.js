@@ -6,7 +6,7 @@ import DisplayRoute from "./DisplayRoute"
 import EditRoute from "./EditRoute"
 import EditRouteButton from "./AdminDropdown"
 import Spinner from "../components/Spinner"
-import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors } from "../actions"
+import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers } from "../actions"
 
 import SearchBar from "../components/SearchBar"
 import { Alert, Button, DropdownButton } from "react-bootstrap"
@@ -40,6 +40,7 @@ const Driver = () => {
         dispatch(requestRoutes())
         dispatch(getTractors())
         dispatch(getTractorTypes())
+        dispatch(getDrivers())
     }
 
     return (

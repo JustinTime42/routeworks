@@ -86,18 +86,18 @@ class PropertyDetails extends Component {
     }
 
     onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {
+        console.log("times: ", startTime, endTime)
+        let timeLogged = (Math.ceil(endTime / 60000) - Math.floor(startTime / 60000)) / 60
         this.setState({disabled: disabled})
         let property = {...this.props.property}
-       
+        let driverEarning = this.props.driver.percentage * .01 * property.value
+        if (property.contract_type === 'Hourly') {
+            driverEarning = timeLogged * this.props.driver.hourly
+        }
         if (this.state.work_type === 'Sanding') {
             (property.sand_contract === "Per Yard" || property.contract_type === "Hourly") ? property.price = property.price_per_yard * this.state.yards : property.price = property.price_per_yard
-        } else if (property.contract_type === 'Hourly') {
-            let timeLogged = endTime - startTime
-            console.log(timeLogged)
-
-            //so now that we've properly handled sanding, we need to calculate hourly pay
-            // multiply vehicle hourly rate by time elapsed. 
-            // first i need to build out the per vehicle pricing fields in the customers table
+        } else if (property.contract_type === 'Hourly') {            
+            property.price = timeLogged * property[this.props.tractor.type]
         } else if (this.state.work_type === 'Sweeping') {
             property.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
@@ -110,11 +110,12 @@ class PropertyDetails extends Component {
                 driver: this.props.driver,
                 route: this.props.activeRoute.name,
                 noteField: newStatus === 'Skipped' ? this.state.noteField + ' ' + skipDetails : this.state.noteField,
-                tractor: this.props.tractor,
+                tractor: this.props.tractor.name,
                 work_type: this.state.work_type,
                 yards: this.state.yards,
                 startTime: startTime, 
                 endTime: endTime,
+                earning: driverEarning,
             }
         )
         .then(res => {

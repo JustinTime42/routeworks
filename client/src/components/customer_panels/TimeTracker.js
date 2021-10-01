@@ -32,7 +32,7 @@ const TimeTracker = props => {
     const onStopPress = () => {
         clearInterval(interval) 
         props.setIsRunning(false)
-        props.onStatusChange('Waiting', '', new Date(startTime).toISOString(), new Date(Date.now()).toISOString(), false)
+        props.onStatusChange('Waiting', '', new Date(startTime), new Date(Date.now()), false)
     }
 
     return (

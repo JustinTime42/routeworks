@@ -120,6 +120,7 @@ class EditRoute extends Component {
              })
         } 
         if(this.props.filterProperties !== prevProps.filterProperties) {
+            //THIS filters and sorts everything with every input in the editor... that needs to be fixed
             this.setState({filteredItems: this.props.filterProperties})
         }
         // if(this.state.searchField !== prevState.searchField) {
