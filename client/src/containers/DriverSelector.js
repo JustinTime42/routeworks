@@ -112,7 +112,7 @@ class DriverName extends Component {
                     )}
                 </AuthConsumer>
                 {                    
-                    this.props.drivers.map((driver, i) => {  
+                    this.props.drivers.sort((a,b) => (b.name < a.name) ? 1 : -1).map((driver, i) => {  
                         return (
                              <div key={i} style={{display: "flex"}}>
                                 <Dropdown.Item key={driver.key} eventKey={driver.key}>
