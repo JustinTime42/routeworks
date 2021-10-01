@@ -82,7 +82,7 @@ const SimpleSelector = (props) => {
         <Button style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} variant="primary" size="sm" onClick={() => setShowModal(true)}>New {props.title}</Button>
     </DropdownButton>
     <Modal show={showModal} onHide={closeModal}>
-        <Modal.Body style={{display: "flex", justifyContent: "space-between"}}>
+        <Modal.Body style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
             <FormControl style={{width: '50%', margin: "3px"}} size="sm" name="name" type="text" onChange={(event) => setNewItem({name:event.target.value})} placeholder="Name" value={newItem.name || ''} />
             {props.children}
             <Button disabled={!newItem.name} style={{margin: "3px"}} size="sm" onClick={onCreate}>Save</Button>   

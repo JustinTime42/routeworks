@@ -271,6 +271,25 @@ export const createItem = (item, itemArray, endPoint, actionType) => (dispatch) 
     .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
 }
 
+// export const editItem = (item, itemArray, endPoint, actionType) => (dispatch) => {
+//     dispatch({ type: GET_ITEMS_PENDING})
+//     fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
+//         method: 'POST', 
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(item)
+//     })
+//     .then(res => res.json())
+//     .then(updated => {
+//         console.log("updated: ", updated)
+//         let newItems = [...itemArray]
+//         newItems[itemArray.findIndex(item => item.name === updated.name)] = updated       
+//         dispatch({ type: actionType, payload: newItems})
+//     })
+//     .catch(err => dispatch({ type: GET_ITEMS_FAILED, payload: err}))
+// }
+
 export const deleteItem = (item, itemArray, endPoint, actionType) => (dispatch) => {
     dispatch({ type: GET_ITEMS_PENDING})
     fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
