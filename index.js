@@ -726,7 +726,7 @@ app.get('/api/getlogs/', (req,res) => {
             'properties.bill_state', 'properties.bill_zip', 'service_log.invoice_number', 'service_log.reference', 
             'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type', 
             'service_log.notes', 'service_log.work_type', 'service_log.address', 'service_log.route_name', 'service_log.status',
-            'service_log.user_name', 'service_log.tractor', 'service_log.driver_earning', 'properties.value',
+            'service_log.user_name', 'service_log.tractor', 'service_log.driver_earning', 'properties.value', 'service_log.start_time', 'service_log.end_time'
         ]       
         db('service_log')
         .join('properties', 'service_log.property_key', '=', 'properties.key')
