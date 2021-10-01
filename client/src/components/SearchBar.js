@@ -40,7 +40,7 @@ const SearchBar = () => {
    
     useEffect(() => {
         onSetMatches()
-    }, [searchValue, activeProperty])
+    }, [searchValue, activeProperty?.key])
 
     const onSetMatches = () => {
         if (searchValue.length > 1 ) {
