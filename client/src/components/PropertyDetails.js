@@ -57,9 +57,6 @@ class PropertyDetails extends Component {
         }
       }
 
-      //componentdidmount if property.contract_type === hourly, set setState disabled:true
-      
-
     onTextChange = (event) => (this.setState({[event.target.name]: event.target.value}))
 
     setWorkType = (event) => (this.setState({work_type: event}))
@@ -75,7 +72,6 @@ class PropertyDetails extends Component {
     setIsRunning = (isRunning) => this.setState({isRunning:isRunning})
     
     undoStatus = () => {
-       // this.onStatusChange('Waiting')
         axios.delete(`${process.env.REACT_APP_API_URL}/undo/${this.state.currentLogEntry}`)
         .then(res => {
             console.log(res)
@@ -103,6 +99,11 @@ class PropertyDetails extends Component {
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (this.state.work_type === 'Snow Removal')) {            
             property.price = 0  
         }
+        if (property.contract_type === "Hourly" && newStatus === "Done") {
+            driverEarning = 0
+            property.price = 0
+        }
+
         axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
             {
                 property: property,    
@@ -127,10 +128,9 @@ class PropertyDetails extends Component {
             // then insert priority into the aproperty within alladdresses... will need to make sure that updates the route properties
             //  
             if (confirmedStatus === newStatus) {
-                this.setState({done_label: confirmedStatus === "Waiting" ? "hidden" : "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key})
+                this.setState({done_label: (confirmedStatus === "Waiting" || property.contract_type === "Hourly") ? "hidden" : "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key})
             } else alert("confirmed status error: ", confirmedStatus)
             if (res.data.err.length > 0) {
-                console.log("Confirm ERROR", res.data.err)
                 alert(res.data.err)
             }
         })

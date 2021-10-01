@@ -69,7 +69,7 @@ class DriverName extends Component {
     saveDriver = () => {
         console.log(this.state)
         const endpoint = this.state.key ? "editDriver" : "newDriver"        
-        axios.post(`${process.env.REACT_APP_API_URL}/${endpoint}`, { key: this.state.key, name: this.state.name, percentage: this.state.percentage, hourly: this.state.hourly })
+        axios.post(`${process.env.REACT_APP_API_URL}/${endpoint}`, { ...(!!this.state.key && {key: this.state.key}), name: this.state.name, percentage: this.state.percentage, hourly: this.state.hourly })
         .then(res => {
             console.log(res)
             this.props.onGetDrivers()

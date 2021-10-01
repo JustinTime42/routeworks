@@ -64,7 +64,6 @@ const CustomerDetails = props => {
     const onChange = (event) => {
         let { target: { name, value } } = event
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
-        console.log(vTypes)
         let numberValues = ['price', 'value', 'price_per_yard', 'sweep_price', ...vTypes]
         if (numberValues.includes(name)){
             value = Number(value)
@@ -248,15 +247,7 @@ const CustomerDetails = props => {
                                     </Col>
                                 </Form.Row>
                                 </Form.Group>
-                                <Form.Group>
-                                <Form.Row>
-                                    <Col xs={8}>
-                                    <Form.Label size='sm'>Value</Form.Label>
-                                    </Col>
-                                    <Col>
-                                        <Form.Control size='sm' name="value" type="number" value={reduxProperty?.value || ''} onChange={onChange}/>
-                                    </Col>
-                                </Form.Row>
+                                <Form.Group>                                
                                 </Form.Group>
                             </Col>
                             :                        

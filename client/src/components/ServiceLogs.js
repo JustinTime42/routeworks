@@ -29,6 +29,8 @@ const ServiceLogs = (props) => {
                 { label: "Property Value", key: "value"},
                 { label: "Contract Type", key: "contract_type"},
                 { label: "Work Type", key: "work_type"},
+                { label: "Start Time", key: "start_time"},
+                { label: "End Time", key: "end_time"},
             ]
         } else {
             headers = [
@@ -59,6 +61,8 @@ const ServiceLogs = (props) => {
                 { label: "Tractor", key: "tractor"},
                 { label: "Driver Earning", key: "driver_earning"},
                 { label: "Property Value", key: "value"},
+                { label: "Start Time", key: "start_time"},
+                { label: "End Time", key: "end_time"},
             ]  
         }
         return headers        
