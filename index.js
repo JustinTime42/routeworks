@@ -619,7 +619,7 @@ app.post('/api/newvehicletype', (req, res) => {
     )
 
     promises.push(
-        db.schema.table('properties', table => table.string(type.name))
+        db.schema.table('properties', table => table.float(type.name))
         .catch(err => response = err)
     )
 
