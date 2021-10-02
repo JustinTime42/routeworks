@@ -4,7 +4,7 @@ import { Dropdown, DropdownButton, Button, FormControl, Modal, Alert } from "rea
 import { setActiveTractor, getTractors, deleteItem, createItem, getTractorTypes } from '../actions'
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
-import {SocketContext, socket} from '../socket'
+//import {SocketContext, socket} from '../socket'
 import {GET_TRACTORS_SUCCESS} from '../constants.js'
 
 //Deprecated component
@@ -18,7 +18,7 @@ const TractorName = () => {
     const allTractors = useSelector(state => state.getTractors.allTractors)
     const tractorTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const dispatch = useDispatch()
-    const socket = useContext(SocketContext);
+    //const socket = useContext(SocketContext);
 
     useEffect(() => {
         dispatch(getTractors())

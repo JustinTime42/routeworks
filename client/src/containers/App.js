@@ -1,7 +1,7 @@
 import React from 'react'
 import HomePage from "../containers/Home"
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom"
-import {SocketContext, socket} from '../socket'
+//import {SocketContext, socket} from '../socket'
 import CallbackPage from "../auth/Callback"
 import Auth from "../auth/Auth"
 // import { io } from "socket.io-client"
@@ -17,7 +17,6 @@ function App() {
     // socket.on('err', err => alert(err))
 
     return (
-      <SocketContext.Provider value={socket}>
         <div className="App">
           <Auth>
             <Router>
@@ -27,8 +26,7 @@ function App() {
                   </Switch>
                 </Router>     
           </Auth>      
-        </div> 
-      </SocketContext.Provider>       
+        </div>      
     )  
   }
 
