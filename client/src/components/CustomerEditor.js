@@ -66,7 +66,7 @@ const CustomerDetails = props => {
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
         let numberValues = ['price', 'value', 'price_per_yard', 'sweep_price', ...vTypes]
         if (numberValues.includes(name)){
-            value = Number(value)
+            value = !value ? 0 : Number(value)
         }
         if (value === "on") {
             dispatch(setActiveProperty({...reduxProperty, [name]: !reduxProperty[name]}))          
@@ -230,7 +230,7 @@ const CustomerDetails = props => {
                                                 <Form.Label size='sm'>{item.name} Price</Form.Label>
                                             </Col>
                                             <Col>
-                                                <Form.Control size='sm' name={item.name} type="number" value={reduxProperty[item.name] || '0'} onChange={onChange}/>
+                                                <Form.Control size='sm' name={item.name} type="number" value={reduxProperty[item.name] || ''} onChange={onChange}/>
                                             </Col>
                                         </Form.Row>                                    
                                     </Form.Group>
@@ -243,7 +243,7 @@ const CustomerDetails = props => {
                                         <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
                                     </Col>
                                     <Col>
-                                        <Form.Control size='sm' name="price_per_yard" type="number" value={reduxProperty?.price_per_yard || '0'} onChange={onChange}/>
+                                        <Form.Control size='sm' name="price_per_yard" type="number" value={reduxProperty?.price_per_yard || ''} onChange={onChange}/>
                                     </Col>
                                 </Form.Row>
                                 </Form.Group>
@@ -259,7 +259,7 @@ const CustomerDetails = props => {
                                                 <Form.Label size='sm'>Snow Price</Form.Label>
                                             </Col>
                                             <Col>
-                                                <Form.Control size='sm' name="price" type="number" value={reduxProperty?.price || '0'} onChange={onChange}/>
+                                                <Form.Control size='sm' name="price" type="number" value={reduxProperty?.price || ''} onChange={onChange}/>
                                             </Col>
                                         </Form.Row>                                    
                                     </Form.Group>
@@ -269,7 +269,7 @@ const CustomerDetails = props => {
                                                 <Form.Label size='sm'>Seasonal Price</Form.Label>
                                             </Col>
                                             <Col>
-                                                <Form.Control size='sm' name="season_price" type="number" value={reduxProperty?.season_price || '0'} onChange={onChange}/>
+                                                <Form.Control size='sm' name="season_price" type="number" value={reduxProperty?.season_price || ''} onChange={onChange}/>
                                             </Col>
                                         </Form.Row>                                    
                                     </Form.Group>
@@ -279,7 +279,7 @@ const CustomerDetails = props => {
                                             <Form.Label size='sm'>Sweeping Price</Form.Label>
                                         </Col>                                    
                                         <Col>
-                                            <Form.Control size='sm' name="sweep_price" type="number" value={reduxProperty?.sweep_price || '0'} onChange={onChange}/>
+                                            <Form.Control size='sm' name="sweep_price" type="number" value={reduxProperty?.sweep_price || ''} onChange={onChange}/>
                                         </Col>
                                     </Form.Row>
                                     </Form.Group>
@@ -289,7 +289,7 @@ const CustomerDetails = props => {
                                             <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
                                         </Col>
                                         <Col>
-                                            <Form.Control size='sm' name="price_per_yard" type="number" value={reduxProperty?.price_per_yard || '0'} onChange={onChange}/>
+                                            <Form.Control size='sm' name="price_per_yard" type="number" value={reduxProperty?.price_per_yard || ''} onChange={onChange}/>
                                         </Col>
                                     </Form.Row>
                                     </Form.Group>
@@ -299,7 +299,7 @@ const CustomerDetails = props => {
                                         <Form.Label size='sm'>Value</Form.Label>
                                         </Col>
                                         <Col>
-                                            <Form.Control size='sm' name="value" type="number" value={reduxProperty?.value || '0'} onChange={onChange}/>
+                                            <Form.Control size='sm' name="value" type="number" value={reduxProperty?.value || ''} onChange={onChange}/>
                                         </Col>
                                     </Form.Row>
                                     </Form.Group>
