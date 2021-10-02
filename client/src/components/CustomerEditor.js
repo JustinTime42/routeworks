@@ -64,9 +64,9 @@ const CustomerDetails = props => {
     const onChange = (event) => {
         let { target: { name, value } } = event
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
-        let numberValues = ['price', 'value', 'price_per_yard', 'sweep_price', ...vTypes]
+        let numberValues = ['price', 'value', 'price_per_yard', 'sweep_price', 'season_price', ...vTypes]
         if (numberValues.includes(name)){
-            value = !value ? 0 : Number(value)
+            value = !value ? null : Number(value)
         }
         if (value === "on") {
             dispatch(setActiveProperty({...reduxProperty, [name]: !reduxProperty[name]}))          
