@@ -40,10 +40,17 @@ const SearchBar = () => {
    
     useEffect(() => {
         onSetMatches()
-    }, [searchValue, activeProperty]) // activeProperty?.key so it doesn't refresh the whole list for every key press. 
+    }, [searchValue]) // activeProperty?.key so it doesn't refresh the whole list for every key press. 
                                         // trouble is, that makes it also not update after saving
 
+    useEffect(() => {
+        updateMatches()
+    }, [activeProperty])
 
+    const updateMatches = () => {
+        let index = matches.findIndex(item => item.key === activeProperty.key)
+        matches[index] = activeProperty
+    }
 
     const onSetMatches = () => {
         if (searchValue.length > 1 ) {
