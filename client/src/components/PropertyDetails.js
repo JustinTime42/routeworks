@@ -123,7 +123,7 @@ class PropertyDetails extends Component {
             this.props.getRouteData() 
             console.log(res.data)
             console.log(res.data.serviceLog[0][0].key)
-            let confirmedStatus = res.data.route_data[0].status
+            let confirmedStatus = res.data.serviceLog[0][0].status
             // get confirmedPriorty = res.data.property.priority....?
             // then insert priority into the aproperty within alladdresses... will need to make sure that updates the route properties
             //  
