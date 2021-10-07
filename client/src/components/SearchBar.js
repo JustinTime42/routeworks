@@ -48,7 +48,7 @@ const SearchBar = () => {
     }, [activeProperty])
 
     const updateMatches = () => {
-        let index = matches.findIndex(item => item.key === activeProperty.key)
+        let index = matches.findIndex(item => item.key === activeProperty?.key)
         matches[index] = activeProperty
     }
 
