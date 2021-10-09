@@ -161,7 +161,7 @@ class PropertyDetails extends Component {
                             <Row>
                                 <Col>
                                     <h3>{property?.cust_name}</h3>
-                                    <h4>{property?.address}</h4>
+                                    <a href={`https://www.google.com/maps/place/${property?.address}%20${property?.city}%20${property?.state}%20${property?.zip}`} target="_blank">{property?.address}</a>
                                     <p>phone: {property?.cust_phone}</p>
                                 </Col>
                                 <Col>
