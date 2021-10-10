@@ -153,13 +153,14 @@ export const deleteProperty = (property, allAddresses, routeData, routeName = nu
     })
     .then(res => res.json())
     .then(deleted => {
-        allAddresses.splice(allAddresses.findIndex(item => item.key === deleted.key), 1)
+        let newAddresses = [...allAddresses]
+        newAddresses.splice(newAddresses.findIndex(item => item.key === deleted.key), 1)
         let newRouteData = routeData.filter(entry => entry.property_key !== property.key)
         console.log(newRouteData)
         dispatch({ type: ROUTE_DATA_SUCCESS, payload: newRouteData })
-        dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
+        dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: newAddresses})
         if (routeName) {
-            dispatch(filterRouteProperties(allAddresses, routeName))
+            dispatch(filterRouteProperties(newAddresses, routeName))
         }
     })
     .catch(err => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: err}))
