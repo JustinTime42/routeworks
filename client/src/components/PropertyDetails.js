@@ -49,7 +49,7 @@ class PropertyDetails extends Component {
     
     componentDidUpdate(prevProps) {
         if(prevProps.property !== this.props.property || prevProps.activeRoute !== this.props.activeRoute){
-            if (this.props.property.contract_type === "Hourly") {
+            if (this.props.property?.contract_type === "Hourly") {
                 this.setState({...initialState, disabled: true, showModal: true}, () => {                    
                     setTimeout(() => alert("Remember to log hours!"), 200) 
                 } )                                                        
@@ -92,7 +92,7 @@ class PropertyDetails extends Component {
         }
         if (this.state.work_type === 'Sanding') {
             (property.sand_contract === "Per Yard" || property.contract_type === "Hourly") ? property.price = property.price_per_yard * this.state.yards : property.price = property.price_per_yard
-        } else if (property.contract_type === 'Hourly') {            
+        } else if (property.contract_type === 'Hourly') {
             property.price = timeLogged * property[this.props.tractor.type]
         } else if (this.state.work_type === 'Sweeping') {
             property.price = property.sweep_price
