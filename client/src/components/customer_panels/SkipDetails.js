@@ -40,6 +40,7 @@ const SkipDetails = (props) => {
 
     const isConfirmDisabled = () => {
         if ((skipReason === 'Snow Depth') && (snowDepth)) return false
+        else if (skipReason === 'Soft Ground') return false
         else if ((skipReason === 'Other Reason') && (otherNotes)) return false
         else if ((skipReason === 'Customer Request') || skipReason ==='Already Cleared') return false
         else return true
@@ -52,6 +53,7 @@ const SkipDetails = (props) => {
                 <Button size="lg" style={{marginRight:"3px"}} onClick={cancelSkip}>Cancel</Button>
                 <Button size="lg" disabled={isConfirmDisabled()} onClick={confirmSkip} variant="primary">Confirm</Button>
                 <DropdownButton style={{margin:"1em"}} size="lg" title={skipReason || "Select Reason"} onSelect={setSkipReason}>
+                    <Dropdown.Item key="Soft Ground" eventKey="Soft Ground"><h5>Soft Ground</h5></Dropdown.Item>
                     <Dropdown.Item key="Snow Depth" eventKey="Snow Depth"><h5>Not Enough Snow</h5></Dropdown.Item>
                     <Dropdown.Item key="Customer Request" eventKey="Customer Request"><h5>Customer Request</h5></Dropdown.Item>
                     <Dropdown.Item key="Already Cleared" eventKey="Already Cleared"><h5>Already Cleared</h5></Dropdown.Item>
