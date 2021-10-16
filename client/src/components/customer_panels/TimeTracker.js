@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
+import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert, Container } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
+import '../../styles/driver.css'
 
 let interval
 
@@ -20,7 +21,7 @@ const TimeTracker = props => {
         let hours = Math.floor(timeElapsed / 3600000).toString().padStart(2,'0')
         let minutes = (Math.floor(timeElapsed / 60000) % 60).toString().padStart(2,'0')
         let seconds = (Math.floor(timeElapsed / 1000) % 60).toString().padStart(2,'0')
-        return <h3>{hours}:{minutes}:{seconds}</h3>
+        return <h4>{hours}:{minutes}:{seconds}</h4>
     }
 
     const onStartPress = () => {
@@ -36,14 +37,17 @@ const TimeTracker = props => {
     }
 
     return (
-        <Row className='buttonRowStyle' style={{ width:"70%", marginRight:'auto', marginLeft:'auto'}}>
-        <h4>Log Time</h4>
-        <Form.Label>{startTime ? (new Date(startTime)).toLocaleTimeString() : null}</Form.Label>
-        <Button disabled={props.isRunning} size='lg' onClick={onStartPress}>Start</Button>
-        <DisplayTime />
-        <Button disabled={!props.isRunning} size='lg' onClick={onStopPress}>Stop</Button>                                    
-    </Row>
-
+        <Container style={{ width:"90%", marginRight:'auto', marginLeft:'auto'}}>
+            <Row>
+                <Col><h4>Log Time</h4></Col>
+            </Row>
+            <Row className='buttonRowStyle' style={{flexWrap:'nowrap'}}>                
+                <Col sm={4}><Form.Label><h5>{startTime ? (new Date(startTime)).toLocaleTimeString() : null}</h5></Form.Label></Col>
+                <Col><Button disabled={props.isRunning} size='lg' onClick={onStartPress}>Start</Button></Col>
+                <Col><DisplayTime /></Col>
+                <Col><Button disabled={!props.isRunning} size='lg' onClick={onStopPress}>Stop</Button></Col>                                    
+            </Row>
+        </Container>
     )
 }
 
