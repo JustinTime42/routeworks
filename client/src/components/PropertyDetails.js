@@ -131,11 +131,11 @@ class PropertyDetails extends Component {
                 this.setState({done_label: (confirmedStatus === "Waiting" || property.contract_type === "Hourly") ? "hidden" : "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key})
             } else alert("confirmed status error: ", confirmedStatus)
             if (res.data.err.length > 0) {
-                alert(res.data.err)
+                alert("prop details ln134 error: ", res.data.err[0])
             }
         })
         .catch(err => {
-            console.log("ERROR", err)
+            console.log("prop details ln138 error:", err)
             alert(err)
         })
     }
