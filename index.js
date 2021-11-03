@@ -451,7 +451,7 @@ app.post('/api/setstatus', (req, res) => {
         .returning('*')
         .where({
             property_key: property.key,
-            route_name: route,            
+            route_name: route || null,            
         })
         .update({
             status: status,
