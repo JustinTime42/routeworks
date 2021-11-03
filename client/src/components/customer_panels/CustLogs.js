@@ -20,9 +20,10 @@ const CustLogs = (props) => {
                 item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
                 item.start_time = item.start_time ? new Date(item.start_time).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
                 item.end_time = item.end_time ? new Date(item.end_time).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
-                logs.push([item.timestamp, item.status, item.notes, item.description, item.user_name, item.start_time, item.end_time])
+                logs.push([item.timestamp, item.status, item.notes, item.description, item.user_name, item.tractor, item.start_time, item.end_time])
             })
             setEntries(logs)
+            console.log(logs)
         }) 
         .catch(error => alert(error))
     }
