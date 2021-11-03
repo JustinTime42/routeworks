@@ -763,7 +763,7 @@ app.get('/api/getlogs/', (req,res) => {
 app.get('/api/getlogs/:property', (req, res) => {
     const { property } = req.params
     db.where('service_log.property_key', property)
-    .select('timestamp', 'status', 'notes', 'description', 'user_name', 'start_time', 'end_time' )
+    .select('timestamp', 'status', 'notes', 'description', 'user_name', 'tractor', 'start_time', 'end_time' )
     .from('service_log')
     .orderBy('timestamp', 'desc')
     .then(data => res.json(data))

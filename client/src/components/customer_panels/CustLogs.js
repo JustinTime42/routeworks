@@ -38,6 +38,7 @@ const CustLogs = (props) => {
                     <th>Notes</th>
                     <th>Description</th>
                     <th>Driver</th>
+                    <th>Tractor</th>
                     { activeProperty.contract_type === 'Hourly' ? <th>Start Time</th> : null } 
                     { activeProperty.contract_type === 'Hourly' ? <th>End Time</th> : null }
                 </tr>
