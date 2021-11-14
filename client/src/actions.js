@@ -44,6 +44,7 @@ export const setActiveRoute = (routeName) => {
 
 export const setActiveProperty = (property) => (dispatch) => {
     if (!property) {
+        console.log(property)
         dispatch({type: SET_ACTIVE_PROPERTY, payload: property })
     } else {
         console.log(property)
@@ -312,7 +313,6 @@ export const deleteItem = (item, itemArray, endPoint, actionType) => (dispatch) 
 }
 
 export const setActiveItem = (item, itemArray, actionType) => {
-    console.log(item)
     const activeItem = itemArray.find(i => i.name === item)
     return {
         type: actionType,

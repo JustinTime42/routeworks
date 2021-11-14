@@ -4,7 +4,7 @@ import axios from "axios"
 import { Dropdown, DropdownButton, Button, FormControl, Alert } from "react-bootstrap"
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
-import { setActiveRoute, requestRoutes, getRouteData } from "../actions"
+import { setActiveRoute, requestRoutes, getRouteData, requestAllAddresses, setActiveProperty } from "../actions"
 
 const editStyle = {
     float: "right"
@@ -20,7 +20,13 @@ const RouteSelector = () => {
     const isPending = useSelector(state => state.requestRoutes.isPending)
     const dispatch = useDispatch()
 
-    useEffect(() => dispatch(requestRoutes()), [])
+    useEffect(() => {
+        console.log("is activeRoute changing??")
+        dispatch(requestRoutes())
+        dispatch(requestAllAddresses())
+        dispatch(getRouteData())
+        dispatch(setActiveProperty(null))
+    }, [activeRoute])
     
     const handleSave = () => {
         axios.post(`${process.env.REACT_APP_API_URL}/addroute`, { route_name: routeName })

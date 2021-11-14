@@ -23,6 +23,7 @@ const PropertyCard = (props) => {
         width: props.width,
         backgroundColor: cardBg(), 
         justifyContent:'space-between',
+        flexWrap: "nowrap",
     }
     const rightStyle = {
         float: "right", 
@@ -33,6 +34,7 @@ const PropertyCard = (props) => {
     const statusStyle = {
         padding: "1px",
         borderRadius: "10px",
+        width: "75px",
         backgroundColor: status === "Waiting" ? `rgba(255,200,0,0.9)` : 
             status === "Skipped" ? `rgba(255,0,0,0.7)` :
             status === "Done" ? `rgba(0,255,0,0.7)` : null
@@ -69,8 +71,8 @@ const PropertyCard = (props) => {
         }  
         return (
             <>
-                <Col lg={1}>{levelText}</Col> 
-                <Col lg={1}>{visual}</Col>
+                <Col>{levelText}{visual}</Col> 
+                
             </>
         )
     }
@@ -87,7 +89,7 @@ const PropertyCard = (props) => {
 
     return(
         <Row id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
-            <Col lg={7}>
+            <Col style={{flex:"2 1 auto"}}>
                 <h5 style={{textAlign: "left", fontWeight: "bold"}}>  
                 {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}{props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}{props.address ? props.address.is_new ? "*" : null : null}            
                 </h5> 
@@ -95,7 +97,7 @@ const PropertyCard = (props) => {
                 {props.admin ? <RouteString /> : null}                     
             </Col>
             <ServiceLevel />
-            <Col lg={3}>
+            <Col style={{flex:"1 1 75px"}}>
             {(typeof(props.address.route_position) === "number") ?                     
                     <p style={{...statusStyle}}>
                         {status}                        

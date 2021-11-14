@@ -6,7 +6,7 @@ import DisplayRoute from "./DisplayRoute"
 import EditRoute from "./EditRoute"
 import EditRouteButton from "./AdminDropdown"
 import Spinner from "../components/Spinner"
-import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers } from "../actions"
+import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, setActiveProperty } from "../actions"
 
 import SearchBar from "../components/SearchBar"
 import { Alert, Button, DropdownButton } from "react-bootstrap"
@@ -57,6 +57,11 @@ const Driver = () => {
                     deleteEndpoint="delroute"
                     updateListAction={REQUEST_ROUTES_SUCCESS}
                     setActiveAction={SET_ACTIVE_ROUTE}
+                    selectActions={[requestRoutes, requestAllAddresses, getRouteData, setActiveProperty]}
+                    // dispatch(requestRoutes())
+                    // dispatch(requestAllAddresses())
+                    // dispatch(getRouteData())
+                    // dispatch(setActiveProperty(null))
                 />   
                 {/* upgrade driver selector to the simpleSelector component
                 <SimpleSelector

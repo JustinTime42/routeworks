@@ -44,9 +44,14 @@ const SimpleSelector = (props) => {
         setShowEdit(false)
     }
 
+    const onSelect = (event) => {
+        dispatch(setActiveItem(event, props.itemArray, props.setActiveAction))
+        props.selectActions?.forEach(item => dispatch(item()))
+    }
+
     return (   
         <>        
-        <DropdownButton size="sm" title={props.selectedItem.name || `Select ${props.title}`} onSelect={(event) => dispatch(setActiveItem(event, props.itemArray, props.setActiveAction))} > 
+        <DropdownButton size="sm" title={props.selectedItem.name || `Select ${props.title}`} onSelect={(event) => onSelect(event)} > 
         <AuthConsumer>
         {({ user }) => (
             <Can
