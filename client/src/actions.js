@@ -31,9 +31,17 @@ import {
     GET_VEHICLE_TYPES_SUCCESS,
     GET_VEHICLE_TYPES_FAILED,
     SET_ACTIVE_VEHICLE_TYPE, 
+    SET_CURRENT_USER,
 } from './constants.js'
 // import { io } from "socket.io-client";
 // const socket = io('https://snowline-route-manager.herokuapp.com/')
+
+export const setCurrentUser = (currentUser) => {
+    return {
+        type: SET_CURRENT_USER,
+        payload: currentUser
+    }
+}
 
 export const setActiveRoute = (routeName) => {
     return {

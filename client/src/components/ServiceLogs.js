@@ -32,30 +32,43 @@ const ServiceLogs = (props) => {
                 { label: "Start Time", key: "start_time"},
                 { label: "End Time", key: "end_time"},
             ]
+        } else if (logType === "hourly") {
+            headers = [
+                { label: "Customer Name", key: "cust_name" },
+                { label: "Date", key: "date" },
+                { label: "Time", key: "time" },
+                { label: "Notes", key: "notes" },
+                { label: "Work Type", key: "work_type"},
+                { label: "Driver", key: "user_name" },
+                { label: "Tractor", key: "tractor" },
+                { label: "Description", key: "description" },
+                { label: "UnitAmount", key: "price" }, //if hourly, this was (rounded quarter x hourly billing rate) else (yards x yardage rate)
+                { label: "Start Time", key: "start_time"},
+                { label: "End Time", key: "end_time"},
+                { label: "Elapsed Time", key: "elapsed_time"}, // (stop time - start time) rounded down to nearest minute, then up to nearest 15 mins
+                { label: "Hourly Rate", key: "hourly_rate"},
+                { label: "Rate Per Yard", key: "price_per_yard"},
+                { label: "Yards", key: "yards"},
+
+            ]
+            // check to see if hourly rate is actually save din the service log... might need to be added cause it's only calculated at the end
+            // these are all numbers that should be calculated at the time of service... not at the time the log is pulled
+
         } else {
             headers = [
-                { label: "ContactName", key: "cust_name" },
-                { label: "EmailAddress", key: "cust_email" },
-                { label: "POAddressLine1", key: "bill_address" },
-                { label: "POCity", key: "bill_city" },
-                { label: "PORegion", key: "bill_state" },
-                { label: "POPostalCode", key: "bill_zip" },
+                { label: "Contract Type", key: "contract_type"},
+                { label: "Contact Name", key: "cust_name" },
+                { label: "Date", key: "date" },
+                { label: "Time", key: "time" },
+                { label: "Notes", key: "notes" },
+                { label: "Description", key: "description" },
                 { label: "InvoiceNumber", key: "invoice_number" },
                 { label: "Reference", key: "reference" },
                 { label: "InvoiceDate", key: "invoiceDate" },
                 { label: "DueDate", key: "dueDate" },
-                { label: "Description", key: "description" },
-                { label: "Quantity", key: "quantity" },
                 { label: "UnitAmount", key: "price" },
-                { label: "AccountCode", key: "accountCode" },
-                { label: "TaxType", key: "taxType" },
-                { label: "Date", key: "date" },
-                { label: "Time", key: "time" },
-                { label: "Contract Type", key: "contract_type"},
-                { label: "Notes", key: "notes" },
                 { label: "Work Type", key: "work_type"},
                 { label: "Service Address", key: "address"},
-                { label: "Route Name", key: "route_name"},
                 { label: "Status", key: "status"},
                 { label: "Driver Name", key: "user_name"},
                 { label: "Tractor", key: "tractor"},
@@ -63,6 +76,14 @@ const ServiceLogs = (props) => {
                 { label: "Property Value", key: "value"},
                 { label: "Start Time", key: "start_time"},
                 { label: "End Time", key: "end_time"},
+                { label: "Email Address", key: "cust_email" },
+                { label: "Quantity", key: "quantity" },
+                { label: "AccountCode", key: "accountCode" },
+                { label: "TaxType", key: "taxType" },
+                { label: "POAddressLine1", key: "bill_address" },
+                { label: "POCity", key: "bill_city" },
+                { label: "PORegion", key: "bill_state" },
+                { label: "POPostalCode", key: "bill_zip" },
             ]  
         }
         return headers        
@@ -97,6 +118,9 @@ const ServiceLogs = (props) => {
                 item.date = new Date(item.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                 item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                 })) 
+            }
+            if (logType === 'hourly') {
+
             }
             setLogs(logs)
             setShowDownloadLink(true)

@@ -40,7 +40,6 @@ const initialState = {
     isRunning: false,
 }
 
-
 class PropertyDetails extends Component {
     constructor(props){
         super(props)

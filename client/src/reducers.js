@@ -36,8 +36,23 @@ import { SET_ACTIVE_ROUTE,
     GET_VEHICLE_TYPES_SUCCESS,
     GET_VEHICLE_TYPES_FAILED,
     SET_ACTIVE_VEHICLE_TYPE,
+    SET_CURRENT_USER
 } from './constants.js'
 
+const initialStateCurrentUser = {
+    currentUser: null
+}
+
+export const setCurrentUser = (state=initialStateCurrentUser, action={}) => {
+    switch(action.type) {
+        case SET_CURRENT_USER:
+            return {...state, currentUser: action.payload }
+        default:
+            return state 
+
+    }
+
+}
 const initialStateActiveRoute = {
     activeRoute: '' 
 }
