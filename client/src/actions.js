@@ -32,6 +32,7 @@ import {
     GET_VEHICLE_TYPES_FAILED,
     SET_ACTIVE_VEHICLE_TYPE, 
     SET_CURRENT_USER,
+    TIMER_IS_RUNNING,
 } from './constants.js'
 // import { io } from "socket.io-client";
 // const socket = io('https://snowline-route-manager.herokuapp.com/')
@@ -48,6 +49,13 @@ export const setActiveRoute = (routeName) => {
         type: SET_ACTIVE_ROUTE,
         payload: routeName  
     }      
+}
+
+export const setTimerIsRunning = (isRunning) => {
+    return {
+        type: TIMER_IS_RUNNING,
+        payload: isRunning
+    }
 }
 
 export const setActiveProperty = (property) => (dispatch) => {

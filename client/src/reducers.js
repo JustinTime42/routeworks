@@ -36,7 +36,8 @@ import { SET_ACTIVE_ROUTE,
     GET_VEHICLE_TYPES_SUCCESS,
     GET_VEHICLE_TYPES_FAILED,
     SET_ACTIVE_VEHICLE_TYPE,
-    SET_CURRENT_USER
+    SET_CURRENT_USER,
+    TIMER_IS_RUNNING
 } from './constants.js'
 
 const initialStateCurrentUser = {
@@ -51,8 +52,21 @@ export const setCurrentUser = (state=initialStateCurrentUser, action={}) => {
             return state 
 
     }
-
 }
+
+const initialStateTimerIsRunning = {
+    timerIsRunning: false
+}
+
+export const setTimerIsRunning = (state=initialStateTimerIsRunning, action={}) => {
+    switch(action.type) {
+        case TIMER_IS_RUNNING:
+            return {...state, timerIsRunning: action.payload}
+        default: 
+            return state
+    }
+}
+
 const initialStateActiveRoute = {
     activeRoute: '' 
 }

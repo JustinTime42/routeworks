@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from "react-redux"
 import { Tabs, Tab, Card, Col, Row, Button, Form, Dropdown, DropdownButton, Alert, Modal } from 'react-bootstrap'
 import axios from 'axios'
-import { getRouteData, requestAllAddresses } from "../actions"
+import { getRouteData, requestAllAddresses, setTimerIsRunning } from "../actions"
 import CustLogs from './customer_panels/CustLogs'
 import SkipDetails from './customer_panels/SkipDetails'
 import TimeTracker from './customer_panels/TimeTracker'
@@ -21,7 +21,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getRouteData: () => dispatch(getRouteData()),
-        getAllAddresses: () => dispatch(requestAllAddresses())      
+        getAllAddresses: () => dispatch(requestAllAddresses()),  
+        setTimerIsRunning: (isRunning) => dispatch(setTimerIsRunning(isRunning))    
     }
 }
 
@@ -68,7 +69,10 @@ class PropertyDetails extends Component {
         if(!this.state.isRunning) this.setState((prevState) => ({showModal: !prevState.showModal}))
     } 
 
-    setIsRunning = (isRunning) => this.setState({isRunning:isRunning})
+    setIsRunning = (isRunning) => {
+        this.props.setTimerIsRunning(isRunning)
+        this.setState({isRunning:isRunning})
+    } 
     
     undoStatus = () => {
         axios.delete(`${process.env.REACT_APP_API_URL}/undo/${this.state.currentLogEntry}`)
