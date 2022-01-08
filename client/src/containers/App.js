@@ -1,89 +1,48 @@
-  export default App
-  import React, { useState, useEffect } from 'react';
-  import { useDispatch, useSelector } from 'react-redux'
-  import Parse from 'parse/dist/parse.min.js';
-  import { Button, Form, Card } from 'react-bootstrap'
-  import { setCurrentUser } from '../actions'
-  import { UserRegistration } from './UserRegistration';
+import React, { useState, useEffect} from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setCurrentUser } from '../actions'
+import HomePage from "../containers/Home"
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom"
+import CallbackPage from "../auth/Callback"
+import Auth from "../auth/Auth"
+import { UserLogin } from '../auth/UserLogin'
+import Driver from "../containers/Driver"
+import "../App.css"
+// Import Parse minified version
+import Parse from 'parse/dist/parse.min.js';
+
+// Your Parse initialization configuration goes here
+const PARSE_APPLICATION_ID = 'F9woWDILIrqv5eElFUevlJBrenx1Ca7BJsDNL2MA';
+const PARSE_HOST_URL = 'https://parseapi.back4app.com/';
+const PARSE_JAVASCRIPT_KEY = '8IDqhrfkxT5wBtpPhBtvKqTQRF8lOH70hvICMe0r';
+Parse.initialize(PARSE_APPLICATION_ID, PARSE_JAVASCRIPT_KEY);
+Parse.serverURL = PARSE_HOST_URL;
+
+function App() { 
   
-  export const UserLogin = () => {
-    // State variables
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [isNew, setIsNew] = useState(false)
-    //const [currentUser, setCurrentUser] = useState(null);
-    const dispatch = useDispatch()
-  
-    // Function that will return current user and also update current username
-    const getCurrentUser = async function () {
-      const currentUser = await Parse.User.current();
-      // Update state variable holding current user
-      //setCurrentUser(currentUser);
-      console.log(currentUser)
-      dispatch(setCurrentUser(currentUser))
-      
-      return currentUser;
-    }
-  
-    const doUserLogIn = async function () {
-      setIsNew(false)
-      // Note that these values come from state variables that we've declared before
-      const usernameValue = username;
-      const passwordValue = password;
-      try {
-        const loggedInUser = await Parse.User.logIn(usernameValue, passwordValue);
-  
-        const currentUser = await Parse.User.current();
-        console.log(loggedInUser === currentUser);
-        // Clear input fields
-        setUsername('');
-        setPassword('');
-        
-        getCurrentUser();
-        console.log('isnew', isNew)
-        return true;
-      } catch (error) {
-        // Error can be caused by wrong parameters or lack of Internet connection
-        alert(`Error! ${error.message}`);
-        return false;
-      }
-      
-    };
-  
+  const currentUser = useSelector(state => state.setCurrentUser?.currentUser)
+  useEffect(() => {
+    console.log(currentUser?.get('fullName'))
+  }, [currentUser])
+
+
     return (
-            isNew ? <UserRegistration setIsNew={setIsNew}/> : 
-            <Card className="text-center" style={{ width: '18rem', marginTop: '2em', marginLeft: 'auto', marginRight: 'auto' }}>
-              <Card.Header>Login</Card.Header>
-              <Card.Body>
-                  <Card.Title>Special title treatment</Card.Title>
-                  <Card.Text>
-                              <Form.Control
-                                      value={username}
-                                      onChange={(event) => setUsername(event.target.value)}
-                                      placeholder="Username"
-                                      size="large"
-                                      className="form_input"
-                                      />
-                                      <Form.Control
-                                      value={password}
-                                      onChange={(event) => setPassword(event.target.value)}
-                                      placeholder="Password"
-                                      size="large"
-                                      type="password"
-                                      className="form_input"
-                                  />
-                  </Card.Text>
-                  <Button
-                          onClick={() => doUserLogIn()}
-                          variant="primary"
-                          size="large"
-                      >
-                          Log In
-                      </Button>
-                      <p>Don't have an account? <Button variant='primary' onClick={() => setIsNew(true)}>Sign up</Button></p>
-              </Card.Body>
-              </Card>    
-    )
-  };
-  
-  
+        <div className="App">
+          {
+            currentUser ? 
+            <Driver />
+          : <UserLogin />
+          }
+          
+          {/* <Auth>
+            <Router>
+                  <Switch>
+                    <Route exact path="/" component={HomePage}/>
+                    <Route path="/callback" component={CallbackPage}/>
+                  </Switch>
+                </Router>     
+          </Auth>       */}
+        </div>       
+    )  
+  }
+  export default App
