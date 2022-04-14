@@ -36,6 +36,9 @@ import { SET_ACTIVE_ROUTE,
     GET_VEHICLE_TYPES_SUCCESS,
     GET_VEHICLE_TYPES_FAILED,
     SET_ACTIVE_VEHICLE_TYPE,
+    SET_WORK_TYPE,
+    WHICH_MODAL,
+    TEMP_ITEM  
 } from './constants.js'
 
 const initialStateActiveRoute = {
@@ -122,6 +125,7 @@ export const getDrivers = (state = initialStateDrivers, action={}) => {
 
 const initialStateActiveTractor = {
     activeTractor: {
+        key: 0,
         name: '',
         type: '',
     }
@@ -132,6 +136,19 @@ export const setActiveTractor = (state = initialStateActiveTractor, action={}) =
         case SET_ACTIVE_TRACTOR:
             return {...state, activeTractor: action.payload}
         default: 
+            return state
+    }
+}
+
+const intitialStateActiveWorkType = {
+    workType: null
+}
+
+export const setActiveWorkType = (state = intitialStateActiveWorkType, action={}) => {
+    switch(action.type) {
+        case SET_WORK_TYPE:
+            return {...state, workType: action.payload}
+        default:
             return state
     }
 }
@@ -294,6 +311,32 @@ export const showRoute = (state = initialStateShowRoute, action={}) => {
     switch(action.type) {
         case SHOW_ROUTE: 
             return {...state, showRoute: action.payload}
+        default:
+            return state
+    }
+}
+
+export const initialStateWhichModal = {
+    whichModal: null
+}
+
+export const setWhichModal = (state = initialStateWhichModal, action={}) =>  {
+    switch(action.type) {
+        case WHICH_MODAL:
+            return {...state, whichModal: action.payload}
+        default:
+            return state
+    }
+}
+
+export const initialStateTempItem = {
+    item: {key:0}
+}
+
+export const setTempItem = (state = initialStateTempItem, action={}) => {
+    switch(action.type) {
+        case TEMP_ITEM:
+            return {...state, item: action.payload} 
         default:
             return state
     }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import SimpleSelector from "../components/SimpleSelector"
+import ShiftSetup from '../components/ShiftSetup';
 import DriverName from "./DriverSelector"
 import DisplayRoute from "./DisplayRoute"
 import EditRoute from "./EditRoute"
@@ -73,28 +74,8 @@ const Driver = () => {
                     updateListAction={GET_DRIVERS_SUCCESS}
                     setActiveAction={SET_DRIVER_NAME}
                 />                */}
-                <DriverName />
-                <SimpleSelector
-                    title="Vehicle"
-                    selectedItem={activeTractor}
-                    itemArray={tractors}
-                    createEndpoint="newvehicle"
-                    deleteEndpoint="deletevehicle"
-                    updateListAction={GET_TRACTORS_SUCCESS}
-                    setActiveAction={SET_ACTIVE_TRACTOR}
-                    additionalFields={{type: activeVehicleType.name}}
-                    showAdditionalFields={true}
-                >
-                    <SimpleSelector
-                        title="Vehicle Type"
-                        selectedItem={activeVehicleType}
-                        itemArray={vehicleTypes}
-                        createEndpoint="newvehicletype"
-                        deleteEndpoint="deletevehicletype"
-                        updateListAction={GET_VEHICLE_TYPES_SUCCESS}
-                        setActiveAction={SET_ACTIVE_VEHICLE_TYPE}
-                    />
-                </SimpleSelector>
+                
+                <ShiftSetup />
                 <SearchBar />
                 <EditRouteButton /> 
                 <Button variant="primary" size="sm" onClick={refreshData}>Refresh Data</Button>
