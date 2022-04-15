@@ -709,7 +709,7 @@ app.post('/api/deleteworktype', (req, res) => {
     .catch(err => res.json(err))
 })
 
-app.post('/api/worktypes', (req, res) => {
+app.get('/api/worktypes', (req, res) => {
     db.select('*')
     .from('work_types')
     .orderBy('name')
