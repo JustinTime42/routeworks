@@ -681,6 +681,42 @@ app.post('/api/deletevehicletype', (req, res) => {
     .catch(err => res.json(err))  
 })
 
+app.post('/api/newworktype', (req, res) => {
+    const worktype = req.body
+    db('work_types')    
+    .returning('*')
+    .insert({...worktype})
+    .then(worktype =>  res.json(worktype))
+    .catch(err => res.json("error: " + err))
+})
+
+app.post('/api/editworktype', (req, res) => {
+    const worktype = req.body
+    db('work_types')    
+    .returning('*')
+    .where('key', worktype.key)
+    .update({...worktype})
+     .then(worktype =>  res.json(worktype))
+     .catch(err => res.json("error: " + err))
+})
+
+app.post('/api/deleteworktype', (req, res) => {
+    db('work_types')
+    .returning('*')
+    .where('name', req.body.key)
+    .del()
+    .then(worktype => res.json(worktype[0]))
+    .catch(err => res.json(err))
+})
+
+app.post('/api/worktypes', (req, res) => {
+    db.select('*')
+    .from('work_types')
+    .orderBy('name')
+    .then(data => res.json(data))
+    .catch(err => res.json(err))
+})
+
 app.get('/api/alltags', (req, res) => {
     db.select('*')
     .from('tags')
