@@ -106,6 +106,27 @@ app.post('/api/addroute', (req, res) => {
     .catch(err => res.json("error: " + err))
 })
 
+app.post('/api/editroute', (req, res) => {
+    db('routes')
+    .returning('*')
+    .where('key', req.body.key)
+    .update({...req.body})
+    .then(newRoute => {
+        res.json(newRoute)
+    })
+    .catch(err => res.json("error: " + err))
+})
+
+// app.post('/api/editdriver', (req, res) => {
+//     const driver = req.body
+//     db('drivers')    
+//     .returning('*')
+//     .where('key', driver.key)
+//     .update({...driver})
+//      .then(driver =>  res.json(driver))
+//      .catch(err => res.json("error: " + err))
+// })
+
 app.post('/api/delroute', (req, res) => {
     let response = {
         route: {},

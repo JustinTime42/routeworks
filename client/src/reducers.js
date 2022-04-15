@@ -98,7 +98,8 @@ const initialStateDriver = {
 export const setActiveDriver = (state = initialStateDriver, action={}) => {
     switch(action.type) {
         case SET_ACTIVE_DRIVER:
-            return {...state, driver: action.payload}
+            if (!action.payload) {return {...state, driver: initialStateDriver}} 
+            else return {...state, driver: action.payload}
         default:
             return state
     }
@@ -134,7 +135,8 @@ const initialStateActiveTractor = {
 export const setActiveTractor = (state = initialStateActiveTractor, action={}) => {
     switch(action.type) {
         case SET_ACTIVE_TRACTOR:
-            return {...state, activeTractor: action.payload}
+            if (!action.payload) {return {...state, activeTractor: initialStateActiveTractor}} 
+            else return {...state, activeTractor: action.payload}
         default: 
             return state
     }

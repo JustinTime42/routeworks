@@ -58,12 +58,13 @@ const Driver = () => {
                     deleteEndpoint="delroute"
                     updateListAction={REQUEST_ROUTES_SUCCESS}
                     setActiveAction={SET_ACTIVE_ROUTE}
-                    selectActions={[requestRoutes, requestAllAddresses, getRouteData, setActiveProperty]}
+                    whichModal="Route"
+                   // selectActions={[requestRoutes, requestAllAddresses, getRouteData, setActiveProperty]}
                     // dispatch(requestRoutes())
                     // dispatch(requestAllAddresses())
                     // dispatch(getRouteData())
                     // dispatch(setActiveProperty(null))
-                />   
+                />      
                 {/* upgrade driver selector to the simpleSelector component
                 <SimpleSelector
                     title="Driver"
@@ -82,7 +83,7 @@ const Driver = () => {
             </div>
             { 
             showRouteEditor ? <EditRoute /> : 
-            activeTractor.name && (activeDriver.key !== '') ? <DisplayRoute /> :
+            activeTractor.name && (activeDriver.key !== '')  && activeRoute ? <DisplayRoute /> :
             <Alert variant="warning">Please enter driver and tractor name to begin.</Alert>                              
             }             
         </div>            

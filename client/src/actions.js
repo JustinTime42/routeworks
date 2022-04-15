@@ -212,22 +212,22 @@ export const getDrivers = () => (dispatch) => {
     .catch(err => dispatch({ type: GET_DRIVERS_FAILED, payload: err}))
 }
 
-export const setActiveDriver = (driver) => {    
-    console.log(driver)
-    return {
-        type: SET_ACTIVE_DRIVER,
-        payload: driver
-    }
-}
+// export const setActiveDriver = (driver) => {    
+//     console.log(driver)
+//     return {
+//         type: SET_ACTIVE_DRIVER,
+//         payload: driver
+//     }
+// }
 
-export const setActiveTractor = (tractor, allTractors) => {
-    console.log(tractor)
-    const activeTractor = allTractors.find(item => item.name === tractor)
-    return {
-        type: SET_ACTIVE_TRACTOR,
-        payload: activeTractor
-    }
-}
+// export const setActiveTractor = (tractor, allTractors) => {
+//     console.log(tractor)
+//     const activeTractor = allTractors.find(item => item.name === tractor)
+//     return {
+//         type: SET_ACTIVE_TRACTOR,
+//         payload: activeTractor
+//     }
+// }
 
 export const getTractors = () => (dispatch) => {
     dispatch({ type: GET_ITEMS_PENDING })

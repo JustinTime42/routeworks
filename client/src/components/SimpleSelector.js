@@ -62,7 +62,7 @@ const SimpleSelector = (props) => {
 
     return (   
         <>        
-        <DropdownButton size="sm" title={props.selectedItem.name || `Select ${props.title}`} onSelect={(event) => onSelect(event)} > 
+        <DropdownButton size="sm" title={props.selectedItem?.name || `Select ${props.title}`} onSelect={(event) => onSelect(event)} > 
         <AuthConsumer>
         {({ user }) => (
             <Can
