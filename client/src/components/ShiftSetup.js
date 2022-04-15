@@ -2,11 +2,12 @@ import React, { useState }  from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import {Form, Col, Row } from 'react-bootstrap'
 import SimpleSelector from './SimpleSelector'
-import DriverName from '../containers/DriverSelector'
+import DriverEditor from './DriverEditor'
 import TractorEditor from './TractorEditor'
 
-import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS, GET_DRIVERS_SUCCESS, SET_DRIVER_NAME} from '../constants.js'
+import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER} from '../constants.js'
 import { setActiveWorkType } from '../reducers'
+import Driver from '../containers/Driver'
 
 const ShiftSetup = () => {
     const activeDriver = useSelector(state => state.setActiveDriver.driver)    
@@ -31,7 +32,7 @@ const ShiftSetup = () => {
                 editEndpoint="editdriver"
                 deleteEndpoint="deletedriver"
                 updateListAction={GET_DRIVERS_SUCCESS}
-                setActiveAction={SET_DRIVER_NAME} // change this constant to match pattern with the rest
+                setActiveAction={SET_ACTIVE_DRIVER} // change this constant to match pattern with the rest
                 whichModal="Driver"
             />
             <SimpleSelector  
@@ -47,6 +48,7 @@ const ShiftSetup = () => {
                 whichModal="Vehicle" 
             />
             <TractorEditor/>
+            <DriverEditor />
         </div>        
     )
 }

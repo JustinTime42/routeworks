@@ -3,7 +3,7 @@ import {
     REQUEST_ROUTES_PENDING,
     REQUEST_ROUTES_SUCCESS,
     REQUEST_ROUTES_FAILED, 
-    SET_DRIVER_NAME,
+    SET_ACTIVE_DRIVER,
     UPDATE_ADDRESSES_PENDING,
     UPDATE_ADDRESSES_SUCCESS,
     UPDATE_ADDRESSES_FAILED,
@@ -215,7 +215,7 @@ export const getDrivers = () => (dispatch) => {
 export const setActiveDriver = (driver) => {    
     console.log(driver)
     return {
-        type: SET_DRIVER_NAME,
+        type: SET_ACTIVE_DRIVER,
         payload: driver
     }
 }

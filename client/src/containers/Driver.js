@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import SimpleSelector from "../components/SimpleSelector"
 import ShiftSetup from '../components/ShiftSetup';
-import DriverName from "./DriverSelector"
+
 import DisplayRoute from "./DisplayRoute"
 import EditRoute from "./EditRoute"
 import EditRouteButton from "./AdminDropdown"
@@ -11,7 +11,7 @@ import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getT
 
 import SearchBar from "../components/SearchBar"
 import { Alert, Button, DropdownButton } from "react-bootstrap"
-import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS, GET_DRIVERS_SUCCESS, SET_DRIVER_NAME} from '../constants.js'
+import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER} from '../constants.js'
 
 import '../styles/driver.css'
 
@@ -72,7 +72,7 @@ const Driver = () => {
                     createEndpoint="newdriver"
                     deleteEndpoint="deletedriver"
                     updateListAction={GET_DRIVERS_SUCCESS}
-                    setActiveAction={SET_DRIVER_NAME}
+                    setActiveAction={SET_ACTIVE_DRIVER}
                 />                */}
                 
                 <ShiftSetup />

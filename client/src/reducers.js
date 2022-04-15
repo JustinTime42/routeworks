@@ -2,7 +2,7 @@ import { SET_ACTIVE_ROUTE,
     REQUEST_ROUTES_PENDING,
     REQUEST_ROUTES_SUCCESS,
     REQUEST_ROUTES_FAILED,
-    SET_DRIVER_NAME,
+    SET_ACTIVE_DRIVER,
     UPDATE_ADDRESSES_PENDING,
     UPDATE_ADDRESSES_SUCCESS,
     UPDATE_ADDRESSES_FAILED,
@@ -97,7 +97,7 @@ const initialStateDriver = {
 
 export const setActiveDriver = (state = initialStateDriver, action={}) => {
     switch(action.type) {
-        case SET_DRIVER_NAME:
+        case SET_ACTIVE_DRIVER:
             return {...state, driver: action.payload}
         default:
             return state
