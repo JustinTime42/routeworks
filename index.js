@@ -703,7 +703,7 @@ app.post('/api/editworktype', (req, res) => {
 app.post('/api/deleteworktype', (req, res) => {
     db('work_types')
     .returning('*')
-    .where('name', req.body.key)
+    .where('key', req.body.key)
     .del()
     .then(worktype => res.json(worktype[0]))
     .catch(err => res.json(err))
