@@ -53,6 +53,7 @@ const TractorEditor = (props) => {
                     deleteEndpoint="deletevehicletype"
                     updateListAction={GET_VEHICLE_TYPES_SUCCESS}
                     setActiveAction={SET_ACTIVE_VEHICLE_TYPE}
+                    whichModal="VehicleType"
                 />
                 <div className="flex justify-content-around">
                     <Button variant="danger" style={{visibility: ((deleteAlert !== tempItem?.name) && tempItem) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(tempItem)}>Delete</Button>

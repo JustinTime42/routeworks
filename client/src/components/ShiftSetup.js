@@ -5,6 +5,7 @@ import SimpleSelector from './SimpleSelector'
 import DriverEditor from './editor_panels/DriverEditor'
 import TractorEditor from './editor_panels/TractorEditor'
 import WorkTypeEditor from './editor_panels/WorkTypeEditor'
+import VehicleTypeEditor from './editor_panels/VehicleTypeEditor'
 import { setActiveItem, setWhichModal } from "../actions"
 
 import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE} from '../constants.js'
@@ -116,6 +117,7 @@ const ShiftSetup = () => {
             <TractorEditor/>
             <DriverEditor />
             <WorkTypeEditor />
+            <VehicleTypeEditor />
         </div>        
     )
 }

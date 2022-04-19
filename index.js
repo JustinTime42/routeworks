@@ -659,6 +659,48 @@ app.post('/api/newvehicletype', (req, res) => {
     .catch(err => res.json(err))    
 })
 
+// app.get('/api/worktypes', (req, res) => {
+//     db.select('*')
+//     .from('work_types')
+//     .orderBy('name')
+//     .then(data => res.json(data))
+//     .catch(err => res.json(err))
+// })
+app.post('/api/editvehicletype', (req, res) => {
+    const type = req.body
+    let response = {}
+    let promises = []
+    let originalTypeName = ''
+ 
+    // get the original name of the editted type
+    db.select('name') 
+    .from('vehicle_types')
+    .where('key', type.key)
+    .then(result => originalTypeName = result)
+
+    // change column name from the old name to the new name
+    promises.push(
+        db.schema.alterTable('properties', table => table.renameColumn(originalTypeName, type.name))
+        .catch(err => response = err)
+    )
+    
+    // change the vehicle type name in the vehicle_types table
+    promises.push(
+        db('vehicle_types')
+        .returning('*')
+        .where('key', type.key)
+        .update({...type})
+        .then(newtype => {
+            response = newtype
+        })
+        .catch(err => response = err)
+    )
+
+    Promise.all(promises)
+    .then(() => res.json(response))
+    .catch(err => res.json(err))    
+})
+
 app.post('/api/deletevehicletype', (req, res) => {
     let response = {}
     let promises = []
