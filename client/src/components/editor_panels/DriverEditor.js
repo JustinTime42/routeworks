@@ -2,8 +2,8 @@
     import React, {  useState } from "react"
     import { useDispatch, useSelector } from "react-redux";
     import {Button, Alert, Modal, Form, Row, Col } from "react-bootstrap"
-    import { createItem, deleteItem, editItem, setWhichModal, setTempItem } from "../actions"
-    import {GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER} from '../constants.js'
+    import { createItem, deleteItem, editItem, setWhichModal, setTempItem } from "../../actions"
+    import {GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER} from '../../constants.js'
     
     const DriverEditor = (props) => {
         const [deleteAlert, setDeleteAlert] = useState('')
@@ -50,13 +50,13 @@
                         <Form.Group as={Row}>
                             <Form.Label column sm={2}>Percentage</Form.Label>
                             <Col sm={8}>
-                                <Form.Control name="percentage" type="numeric" onChange={onChange} placeholder="Percentage" value={tempItem?.percentage} />
+                                <Form.Control name="percentage" type="numeric" onChange={onChange} placeholder="Percentage" value={tempItem?.percentage || 0} />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
                             <Form.Label column sm={2}>Hourly</Form.Label>
                             <Col sm={8}>
-                                <Form.Control name="hourly" type="numeric" onChange={onChange} placeholder="Hourly" value={tempItem?.hourly} />
+                                <Form.Control name="hourly" type="numeric" onChange={onChange} placeholder="Hourly" value={tempItem?.hourly || 0} />
                             </Col>
                         </Form.Group>
                 <div className="flex justify-content-around">

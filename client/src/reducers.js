@@ -36,6 +36,9 @@ import { SET_ACTIVE_ROUTE,
     GET_VEHICLE_TYPES_SUCCESS,
     GET_VEHICLE_TYPES_FAILED,
     SET_ACTIVE_VEHICLE_TYPE,
+    GET_WORK_TYPES_SUCCESS,
+    GET_WORK_TYPES_PENDING,
+    GET_WORK_TYPES_FAILED,
     SET_WORK_TYPE,
     WHICH_MODAL,
     TEMP_ITEM  
@@ -47,8 +50,9 @@ const initialStateActiveRoute = {
 
 export const setActiveRoute = (state=initialStateActiveRoute, action={}) => {
     switch(action.type) {
-        case SET_ACTIVE_ROUTE:
-            return {...state, activeRoute: action.payload }
+        case SET_ACTIVE_ROUTE:  
+            console.log({...state, ...initialStateActiveProperty, activeRoute: action.payload})          
+            return {...state, ...initialStateActiveProperty, activeRoute: action.payload}
         default:    
             return state
     }
@@ -98,7 +102,7 @@ const initialStateDriver = {
 export const setActiveDriver = (state = initialStateDriver, action={}) => {
     switch(action.type) {
         case SET_ACTIVE_DRIVER:
-            if (!action.payload) {return {...state, driver: initialStateDriver}} 
+            if (!action.payload) {return {...state, ...initialStateDriver}} 
             else return {...state, driver: action.payload}
         default:
             return state
@@ -135,20 +139,43 @@ const initialStateActiveTractor = {
 export const setActiveTractor = (state = initialStateActiveTractor, action={}) => {
     switch(action.type) {
         case SET_ACTIVE_TRACTOR:
-            if (!action.payload) {return {...state, activeTractor: initialStateActiveTractor}} 
+            if (!action.payload) {return {...state, ...initialStateActiveTractor}} 
             else return {...state, activeTractor: action.payload}
         default: 
             return state
     }
 }
 
-const intitialStateActiveWorkType = {
-    workType: null
+const initialStateWorkTypes = {
+    isPending: false,
+    allWorkTypes: [],
+    error: ''
 }
 
-export const setActiveWorkType = (state = intitialStateActiveWorkType, action={}) => {
+export const getWorkTypes = (state = initialStateWorkTypes, action={}) => {
+    switch(action.type) {
+        case GET_WORK_TYPES_PENDING:
+            return {...state, isPending: true}
+        case GET_WORK_TYPES_SUCCESS:
+            return {...state, allWorkTypes: action.payload, isPending: false}
+        case GET_WORK_TYPES_FAILED:
+            return {...state, error: action.payload, isPending: false}
+        default: 
+            return state
+    }
+}
+
+const initialStateActiveWorkType = {
+    workType: {
+        key: 0,
+        name: '',
+    }
+}
+
+export const setActiveWorkType = (state = initialStateActiveWorkType, action={}) => {
     switch(action.type) {
         case SET_WORK_TYPE:
+            if (!action.payload) {return {...state, ...initialStateActiveWorkType}} 
             return {...state, workType: action.payload}
         default:
             return state

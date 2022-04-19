@@ -30,7 +30,10 @@ import {
     GET_VEHICLE_TYPES_PENDING,
     GET_VEHICLE_TYPES_SUCCESS,
     GET_VEHICLE_TYPES_FAILED,
-    SET_ACTIVE_VEHICLE_TYPE, 
+    SET_ACTIVE_VEHICLE_TYPE,
+    GET_WORK_TYPES_SUCCESS,
+    GET_WORK_TYPES_PENDING,
+    GET_WORK_TYPES_FAILED,
     SET_WORK_TYPE,
     WHICH_MODAL,
     TEMP_ITEM,
@@ -248,6 +251,13 @@ export const getTractorTypes = () => (dispatch) => {
     .catch(err => dispatch({type: GET_VEHICLE_TYPES_FAILED, payload: err}))
 }
 
+export const getWorkTypes = () => (dispatch) => {
+    dispatch({type: GET_WORK_TYPES_PENDING})
+    fetch(`${process.env.REACT_APP_API_URL}/worktypes`)
+    .then(res => res.json())
+    .then(data => dispatch({type: GET_WORK_TYPES_SUCCESS, payload: data}))
+    .catch(err => dispatch({type: GET_WORK_TYPES_FAILED, payload: err}))
+}
 
 // export const getNewTractor = (newTractor, allTractors) => (dispatch) => {
 //     dispatch({ type: GET_ITEMS_PENDING})

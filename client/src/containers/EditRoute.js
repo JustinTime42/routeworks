@@ -5,7 +5,7 @@ import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRou
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "../components/PropertyCard"
-import CustomerDetails from "../components/CustomerEditor"
+import CustomerDetails from "../components/editor_panels/CustomerEditor"
 import '../styles/driver.css'
 
 const mapStateToProps = state => {

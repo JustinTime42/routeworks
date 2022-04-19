@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import {Button, FormControl, Alert, Modal } from "react-bootstrap"
-import SimpleSelector from "./SimpleSelector";
-import { setActiveItem, createItem, deleteItem, editItem, setWhichModal, setTempItem } from "../actions"
-import {GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_TRACTOR} from '../constants.js'
+import SimpleSelector from "../SimpleSelector";
+import { setActiveItem, createItem, deleteItem, editItem, setWhichModal, setTempItem } from "../../actions"
+import {GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_TRACTOR} from '../../constants.js'
 
 const TractorEditor = (props) => {
     const [deleteAlert, setDeleteAlert] = useState('')

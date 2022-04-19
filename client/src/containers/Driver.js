@@ -2,12 +2,13 @@ import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import SimpleSelector from "../components/SimpleSelector"
 import ShiftSetup from '../components/ShiftSetup';
+import RouteEditor from '../components/editor_panels/RouteEditor';
 
 import DisplayRoute from "./DisplayRoute"
 import EditRoute from "./EditRoute"
 import EditRouteButton from "./AdminDropdown"
 import Spinner from "../components/Spinner"
-import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, setActiveProperty } from "../actions"
+import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, setActiveProperty, getWorkTypes} from "../actions"
 
 import SearchBar from "../components/SearchBar"
 import { Alert, Button, DropdownButton } from "react-bootstrap"
@@ -29,6 +30,7 @@ const Driver = () => {
     const tractors = useSelector(state => state.getTractors.allTractors)
     const activeVehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
+    const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -42,6 +44,7 @@ const Driver = () => {
         dispatch(getTractors())
         dispatch(getTractorTypes())
         dispatch(getDrivers())
+        dispatch(getWorkTypes())
     }
 
     return (
@@ -49,7 +52,7 @@ const Driver = () => {
             {
             (isAllPending || isRoutePending || routesPending) ? <Spinner /> : null
             } 
-            <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px"}}>
+            <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px", alignItems:'center',}}>
                 <SimpleSelector
                     title="Route"
                     selectedItem={activeRoute}
@@ -59,32 +62,17 @@ const Driver = () => {
                     updateListAction={REQUEST_ROUTES_SUCCESS}
                     setActiveAction={SET_ACTIVE_ROUTE}
                     whichModal="Route"
-                   // selectActions={[requestRoutes, requestAllAddresses, getRouteData, setActiveProperty]}
-                    // dispatch(requestRoutes())
-                    // dispatch(requestAllAddresses())
-                    // dispatch(getRouteData())
-                    // dispatch(setActiveProperty(null))
-                />      
-                {/* upgrade driver selector to the simpleSelector component
-                <SimpleSelector
-                    title="Driver"
-                    selectedItem={activeDriver}
-                    itemArray={drivers}
-                    createEndpoint="newdriver"
-                    deleteEndpoint="deletedriver"
-                    updateListAction={GET_DRIVERS_SUCCESS}
-                    setActiveAction={SET_ACTIVE_DRIVER}
-                />                */}
-                
-                <ShiftSetup />
+                />
+                <RouteEditor />
+                <ShiftSetup />                
                 <SearchBar />
                 <EditRouteButton /> 
-                <Button variant="primary" size="sm" onClick={refreshData}>Refresh Data</Button>
+                <Button variant="primary" size="sm" onClick={refreshData}>Refresh</Button>
             </div>
             { 
             showRouteEditor ? <EditRoute /> : 
-            activeTractor.name && (activeDriver.key !== '')  && activeRoute ? <DisplayRoute /> :
-            <Alert variant="warning">Please enter driver and tractor name to begin.</Alert>                              
+            activeTractor.name && (activeDriver.key !== '')  && activeRoute.name && activeWorkType.name ? <DisplayRoute /> :
+            <Alert variant="warning">Please select route, driver, vehicle, and work type to begin.</Alert>                              
             }             
         </div>            
     )

@@ -61,7 +61,7 @@ const SimpleSelector = (props) => {
     
 
     return (   
-        <>        
+        <div style={props.style}>        
         <DropdownButton size="sm" title={props.selectedItem?.name || `Select ${props.title}`} onSelect={(event) => onSelect(event)} > 
         <AuthConsumer>
         {({ user }) => (
@@ -107,7 +107,7 @@ const SimpleSelector = (props) => {
             <Button style={{margin: "3px"}} variant="secondary" onClick={closeModal}>Close</Button>  
         </Modal.Body> 
     </Modal>    */}
-    </>
+    </div>
     )
 }
 
