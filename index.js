@@ -673,7 +673,7 @@ app.post('/api/editvehicletype', (req, res) => {
 
     // change column name from the old name to the new name
     promises.push(
-        db.schema.alterTable('properties', table => table.renameColumn(originalTypeName, type.name))
+        db.schema.alterTable('properties', table => table.renameColumn(Sander, type.name))
         .catch(err => response = err)
     )
     
