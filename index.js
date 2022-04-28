@@ -670,12 +670,12 @@ app.post('/api/editvehicletype', (req, res) => {
     // change column name from the old name to the new name
     promises.push(
             // get the original name of the editted type
-        db.select('name') 
+        db.select('*') 
         .from('vehicle_types')
         .where('key', type.key)
         .then(result => {
             console.log('result: ', result)
-            db.schema.alterTable('properties', table => table.renameColumn(result, type.name))
+            db.schema.alterTable('properties', table => table.renameColumn(result[0].name, type.name))
             .catch(err => response = err)            
             
             db('vehicle_types')
