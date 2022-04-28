@@ -674,7 +674,7 @@ app.post('/api/editvehicletype', (req, res) => {
         .from('vehicle_types')
         .where('key', type.key)
         .then(result => {
-            console.log(result)
+            console.log('result: ', result)
             db.schema.alterTable('properties', table => table.renameColumn(result, type.name))
             .catch(err => response = err)            
             
@@ -687,6 +687,7 @@ app.post('/api/editvehicletype', (req, res) => {
             })
             .catch(err => response = err)
         })
+        .catch(err => response = err)
     )
     
     // // change the vehicle type name in the vehicle_types table
