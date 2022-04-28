@@ -659,13 +659,6 @@ app.post('/api/newvehicletype', (req, res) => {
     .catch(err => res.json(err))    
 })
 
-// app.get('/api/worktypes', (req, res) => {
-//     db.select('*')
-//     .from('work_types')
-//     .orderBy('name')
-//     .then(data => res.json(data))
-//     .catch(err => res.json(err))
-// })
 app.post('/api/editvehicletype', (req, res) => {
     const type = req.body
     let response = {}
