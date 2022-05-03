@@ -688,7 +688,7 @@ app.post('/api/editvehicletype', (req, res) => {
                 .then(newtype => {
                     console.log(newtype)
                     response.typesUpdate = newtype
-                    res.json(response)
+                    res.json(response.typesUpdate)
                 })
                 .catch(err => res.json(err))
             })
