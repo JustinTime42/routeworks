@@ -661,11 +661,13 @@ app.post('/api/newvehicletype', (req, res) => {
 
 app.post('/api/editvehicletype', (req, res) => {
     const type = req.body
-    let response = {}
+    let response = {
+        propertiesUpdate: null,
+        typesUpdate: null,
+        err: null,
+    }
     let promises = []
     let originalTypeName = ''
- 
-
 
     // change column name from the old name to the new name
     promises.push(
@@ -676,24 +678,21 @@ app.post('/api/editvehicletype', (req, res) => {
         .then(result => {
             console.log('result: ', result)
             db.schema.alterTable('properties', table => table.renameColumn(result[0].name, type.name))
-            .catch(err => response = err)            
+            .then(result => response.propertiesUpdate = result)
+            .catch(err => response.err = err)            
             
             db('vehicle_types')
             .returning('*')
             .where('key', type.key)
             .update({...type})
             .then(newtype => {
-                response = newtype
+                console.log(newtype)
+                response.typesUpdate = newtype
             })
             .catch(err => response = err)
         })
         .catch(err => response = err)
     )
-    
-    // // change the vehicle type name in the vehicle_types table
-    // promises.push(
-        
-    // )
 
     Promise.all(promises)
     .then(() => res.json(response))
