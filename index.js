@@ -664,7 +664,7 @@ app.post('/api/editvehicletype', (req, res) => {
     let response = {
         propertiesUpdate: null,
         typesUpdate: null,
-        err: null,
+        err: [],
     }
     let promises = []
     let originalTypeName = ''
@@ -673,13 +673,14 @@ app.post('/api/editvehicletype', (req, res) => {
     promises.push(
             // get the original name of the editted type
         db.select('*') 
+        .returning('*')
         .from('vehicle_types')
         .where('key', type.key)
         .then(result => {
             console.log('result: ', result)
             db.schema.alterTable('properties', table => table.renameColumn(result[0].name, type.name))
             .then(result => response.propertiesUpdate = result)
-            .catch(err => response.err = err)            
+            .catch(err => response.err.push(err))            
             
             db('vehicle_types')
             .returning('*')
@@ -689,9 +690,9 @@ app.post('/api/editvehicletype', (req, res) => {
                 console.log(newtype)
                 response.typesUpdate = newtype
             })
-            .catch(err => response = err)
+            .catch(err => response.err.push(err))
         })
-        .catch(err => response = err)
+        .catch(err => response.err.push(err))
     )
 
     Promise.all(promises)
