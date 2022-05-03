@@ -670,7 +670,7 @@ app.post('/api/editvehicletype', (req, res) => {
     let originalTypeName = ''
 
     // change column name from the old name to the new name
-    promises.push(
+    //promises.push(
             // get the original name of the editted type
         db.select('*') 
         .returning('*')
@@ -679,25 +679,27 @@ app.post('/api/editvehicletype', (req, res) => {
         .then(result => {
             console.log('result: ', result)
             db.schema.alterTable('properties', table => table.renameColumn(result[0].name, type.name))
-            .then(result => response.propertiesUpdate = result)
-            .catch(err => response.err.push(err))            
-            
-            db('vehicle_types')
-            .returning('*')
-            .where('key', type.key)
-            .update({...type})
-            .then(newtype => {
-                console.log(newtype)
-                response.typesUpdate = newtype
+            .then(result => {
+                response.propertiesUpdate = result
+                db('vehicle_types')
+                .returning('*')
+                .where('key', type.key)
+                .update({...type})
+                .then(newtype => {
+                    console.log(newtype)
+                    response.typesUpdate = newtype
+                    res.json(response)
+                })
+                .catch(err => res.json(err))
             })
-            .catch(err => response.err.push(err))
+            .catch(err => res.json(err))
         })
-        .catch(err => response.err.push(err))
-    )
+        .catch(err => res.json(err))
+    
 
-    Promise.all(promises)
-    .then(() => res.json(response))
-    .catch(err => res.json(err))    
+    // Promise.all(promises)
+    // .then(() => res.json(response))
+    // .catch(err => res.json(err))    
 })
 
 app.post('/api/deletevehicletype', (req, res) => {
