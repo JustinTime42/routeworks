@@ -459,7 +459,7 @@ app.post('/api/setstatus', (req, res) => {
     let promises = []
     let month = new Date().getMonth() + 1
     let year = new Date().getFullYear().toString().substr(-2)
-    yards = (yards !== '0') ? ": " + yards + " yds" : "" 
+    yards = (yards !== 0) ? ": " + yards + " yds" : "" 
     let response = {
         route_data: {},
         serviceLog: [],
