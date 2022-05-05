@@ -45,7 +45,7 @@ const TimeTracker = props => {
                 <Col sm={4}><Form.Label><h5>{startTime ? (new Date(startTime)).toLocaleTimeString() : null}</h5></Form.Label></Col>
                 <Col><Button disabled={props.isRunning} size='lg' onClick={onStartPress}>Start</Button></Col>
                 <Col><DisplayTime /></Col>
-                <Col><Button disabled={!props.isRunning} size='lg' onClick={onStopPress}>Stop</Button></Col>                                    
+                <Col><Button disabled={!props.isRunning || (props.yards === 0)} size='lg' onClick={onStopPress}>Stop</Button></Col>                                    
             </Row>
         </Container>
     )

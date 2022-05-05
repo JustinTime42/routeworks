@@ -31,18 +31,26 @@ const PropertyDetails = (props) => {
 
     const driver = useSelector(state => state.setActiveDriver.driver)
     const tractor = useSelector(state => state.setActiveTractor.activeTractor)
+    const tractorType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routePending = useSelector(state => state.getRouteProperties.isPending)
     const workType = useSelector(state => state.setActiveWorkType.workType)
     const dispatch = useDispatch()
 
     useEffect(() => {
+        console.log("active property: ", props.property)
         if (props.property?.contract_type === "Hourly") { 
-            setState(() => ({...initialState, disabled: true, showModal: true}, () => {
-                setTimeout(() => alert("Remember to log hours!"), 200) 
-            }))                                                     
+            console.log("active property is hourly")
+            setState(() => ({...initialState, disabled: true, showModal: true})) 
         } else setState(initialState)
     }, [props.property, activeRoute])
+
+    useEffect(() => {
+        if (showModal) {
+            setTimeout(() => alert("Remember to log hours!"), 200) 
+            console.log("showModal: ") 
+        }
+    },[showModal])
 
     const onTextChange = (event) => {
         let {target: {name, value} } = event
@@ -59,7 +67,7 @@ const PropertyDetails = (props) => {
     const toggleShowSkip = () => setState(prevState => ({...prevState, showSkipConfirmation: !prevState.showSkipConfirmation}))
 
     const onCloseClick = () => {
-        if(!isRunning) setState((prevState) => ({...prevState, showModal: !prevState.showModal}))
+        if(!isRunning) setState((prevState) => ({...prevState, showModal: false}))
     } 
 
     const setIsRunning = (isRunning) => setState(prevState => ({...prevState, isRunning:isRunning}))
@@ -75,6 +83,7 @@ const PropertyDetails = (props) => {
     }
 
     const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {
+        let status = newStatus
         console.log("times: ", startTime, endTime)
         let timeLogged = (Math.ceil(endTime / 60000) - Math.floor(startTime / 60000)) / 60
         setState(prevState => ({...prevState, disabled: disabled}))
@@ -86,24 +95,24 @@ const PropertyDetails = (props) => {
         if (workType.name === 'Sanding') {
             (property.sand_contract === "Per Yard" || property.contract_type === "Hourly") ? property.price = property.price_per_yard * yards : property.price = property.price_per_yard
         } else if (property.contract_type === 'Hourly') {
-            property.price = timeLogged * property[tractor.type]
+            property.price = timeLogged * property[tractorType.name]
+            console.log(property.price)
         } else if (workType.name === 'Sweeping') {
             property.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (workType.name === 'Snow Removal')) {            
             property.price = 0  
         }
-        if (property.contract_type === "Hourly" && newStatus === "Done") {
-            driverEarning = 0
-            property.price = 0
+        if (property.contract_type === "Hourly") { 
+            status = 'Hourly'
         }
 
         axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
             {
                 property: property,    
-                status: newStatus,
+                status: status,
                 driver: driver,
                 route: activeRoute.name,
-                noteField: newStatus === 'Skipped' ? noteField + ' ' + skipDetails : noteField,
+                noteField: status === 'Skipped' ? noteField + ' ' + skipDetails : noteField,
                 tractor: tractor.name,
                 work_type: workType.name,
                 yards: yards,
@@ -120,8 +129,8 @@ const PropertyDetails = (props) => {
             // get confirmedPriorty = res.data.property.priority....?
             // then insert priority into the aproperty within alladdresses... will need to make sure that updates the route properties
             //  
-            if (confirmedStatus === newStatus) {
-                setState(prevState => ({...prevState, done_label: (confirmedStatus === "Waiting" || property.contract_type === "Hourly") ? "hidden" : "visible", newStatus:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key}))
+            if (confirmedStatus === status) {
+                setState(prevState => ({...prevState, done_label: (confirmedStatus === "Waiting" || property.contract_type === "Hourly") ? "hidden" : "visible", status:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key}))
             } else alert("confirmed status error: ", confirmedStatus)
             if (res.data.err.length > 0) {
                 alert("prop details ln134 error: ", res.data.err[0])
@@ -168,7 +177,7 @@ const PropertyDetails = (props) => {
                         </Form.Group>
                         </Card.Body>
                         {
-                            property.contract_type === "Hourly" ? <TimeTracker onStatusChange={onStatusChange} isRunning={isRunning} setIsRunning={setIsRunning}/> : null 
+                            property.contract_type === "Hourly" ? <TimeTracker yards={yards} onStatusChange={onStatusChange} isRunning={isRunning} setIsRunning={setIsRunning}/> : null 
                         }
                         <Card.Body className='buttonRowStyle'>
                             <Button variant="primary" size="lg" disabled={!property.routeName || isRunning} onClick={() => props.changeProperty(property, "prev")} >Prev</Button>
@@ -176,7 +185,14 @@ const PropertyDetails = (props) => {
                                 <div style={{visibility: done_label, fontSize: "large"}}>                                    
                                     <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
                                 </div>
-                            <Button variant="success" size="lg" disabled={isRunning || routePending || disabled || (property.sand_contract === "Per Yard" && yards === '0' && workType.name === "Sanding")} onClick={() => onStatusChange('Done')}>Done</Button>
+                            <Button 
+                                style={{visibility: (property.contract_type === 'Hourly') ? 'hidden' : 'visible'}} 
+                                variant="success" 
+                                size="lg"  
+                                disabled={isRunning || routePending || disabled || (property.sand_contract === "Per Yard" && yards === '0' && workType.name === "Sanding")} 
+                                onClick={() => onStatusChange('Done')}>
+                                    Done
+                            </Button>
                             <Button variant="primary" size="lg" disabled={!property.routeName || isRunning} onClick={() => props.changeProperty(property, "next")} >Next</Button>
                         </Card.Body>
                         <Card.Body>

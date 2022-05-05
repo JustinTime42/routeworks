@@ -35,7 +35,8 @@ import {
     GET_WORK_TYPES_PENDING,
     GET_WORK_TYPES_FAILED,
     SET_WORK_TYPE,
-    WHICH_MODAL,
+    SHOW_MODAL,
+    HIDE_MODAL,
     TEMP_ITEM,
 } from './constants.js'
 // import { io } from "socket.io-client";
@@ -297,7 +298,7 @@ export const editItem = (item, itemArray, endPoint, actionType, activeActionType
     })
     .then(res => res.json())
     .then(updated => {
-        console.log("updated: ", updated[0])
+        console.log("updated: ", updated)
         let newItems = [...itemArray]
         newItems[itemArray.findIndex(item => item.key === updated[0].key)] = updated[0] 
         dispatch({type: activeActionType, payload: updated[0]})        
@@ -365,9 +366,16 @@ export const showRoute = (show) => {
     }
 }
 
-export const setWhichModal = (which) => {
+export const showModal = (which) => {
     return {
-        type: WHICH_MODAL,
+        type: SHOW_MODAL,
+        payload: which
+    }
+}
+
+export const hideModal = (which) => {
+    return {
+        type: HIDE_MODAL,
         payload: which
     }
 }

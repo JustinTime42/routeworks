@@ -40,7 +40,8 @@ import { SET_ACTIVE_ROUTE,
     GET_WORK_TYPES_PENDING,
     GET_WORK_TYPES_FAILED,
     SET_WORK_TYPE,
-    WHICH_MODAL,
+    SHOW_MODAL,
+    HIDE_MODAL,
     TEMP_ITEM  
 } from './constants.js'
 
@@ -50,8 +51,7 @@ const initialStateActiveRoute = {
 
 export const setActiveRoute = (state=initialStateActiveRoute, action={}) => {
     switch(action.type) {
-        case SET_ACTIVE_ROUTE:  
-            console.log({...state, ...initialStateActiveProperty, activeRoute: action.payload})          
+        case SET_ACTIVE_ROUTE:          
             return {...state, ...initialStateActiveProperty, activeRoute: action.payload}
         default:    
             return state
@@ -132,15 +132,18 @@ const initialStateActiveTractor = {
     activeTractor: {
         key: 0,
         name: '',
-        type: '',
+        type: 0,
     }
-
 }
+
 export const setActiveTractor = (state = initialStateActiveTractor, action={}) => {
     switch(action.type) {
         case SET_ACTIVE_TRACTOR:
             if (!action.payload) {return {...state, ...initialStateActiveTractor}} 
-            else return {...state, activeTractor: action.payload}
+            else {
+                //setActiveVehicleType()
+                return {...state, activeTractor: action.payload}
+            } 
         default: 
             return state
     }
@@ -220,7 +223,10 @@ export const getTractorTypes = (state = initialStateTractorTypes, action={}) => 
 }
 
 const initialStateActiveVehicleType = {
-    activeVehicleType: '' 
+    activeVehicleType: {
+        key: 0,
+        name: '',
+    }
 }
 
 export const setActiveVehicleType = (state=initialStateActiveVehicleType, action={}) => {
@@ -345,14 +351,16 @@ export const showRoute = (state = initialStateShowRoute, action={}) => {
     }
 }
 
-export const initialStateWhichModal = {
-    whichModal: null
+export const initialStateWhichModals = {
+    modals: []
 }
 
-export const setWhichModal = (state = initialStateWhichModal, action={}) =>  {
+export const whichModals = (state = initialStateWhichModals, action={}) =>  {
     switch(action.type) {
-        case WHICH_MODAL:
-            return {...state, whichModal: action.payload}
+        case SHOW_MODAL:
+            return {...state, modals: [...state.modals, action.payload]}
+        case HIDE_MODAL:
+            return {...state, modals: state.modals.filter(item => item !== action.payload)}
         default:
             return state
     }

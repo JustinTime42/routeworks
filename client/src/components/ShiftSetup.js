@@ -5,10 +5,9 @@ import SimpleSelector from './SimpleSelector'
 import DriverEditor from './editor_panels/DriverEditor'
 import TractorEditor from './editor_panels/TractorEditor'
 import WorkTypeEditor from './editor_panels/WorkTypeEditor'
-import VehicleTypeEditor from './editor_panels/VehicleTypeEditor'
-import { setActiveItem, setWhichModal } from "../actions"
+import { setActiveItem, showModal, hideModal, setTempItem } from "../actions"
 
-import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE} from '../constants.js'
+import {SET_ACTIVE_TRACTOR, SET_ACTIVE_VEHICLE_TYPE, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE} from '../constants.js'
 import { setActiveWorkType } from '../reducers'
 import Driver from '../containers/Driver'
 
@@ -20,8 +19,8 @@ const ShiftSetup = () => {
     const activeVehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
     const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
-  //  const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
-    const whichModal = useSelector(state => state.setWhichModal.whichModal)
+    const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
+    const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
 
     const outerDivStyle = {
@@ -49,17 +48,38 @@ const ShiftSetup = () => {
         dispatch(setActiveItem(null, workTypes, SET_WORK_TYPE))
     }
     const onShow = () => {
-        dispatch(setWhichModal("Shift"))
+        dispatch(showModal("Shift"))
         onClearOptions()
     }
 
     const onCancel = () => {
         onClearOptions()
-        dispatch(setWhichModal(null))
+        dispatch(hideModal("Shift"))
     }
     
     const onSave = () => {
-        dispatch(setWhichModal(null))
+        dispatch(hideModal("Shift"))
+    }
+
+    const onCreate = (whichModal) => {
+        dispatch(setTempItem({key:0}))
+        dispatch(showModal(whichModal))
+    }
+
+    const onEdit = (item, whichModal) => {
+        console.log(item)        
+        dispatch(setTempItem(item))
+        dispatch(showModal(whichModal))
+    }
+    
+    const onSelect = (event, itemArray, setActiveAction) => {
+        dispatch(setActiveItem(Number(event), itemArray, setActiveAction))
+    }
+
+    const onSelectVehicle = (event, itemArray, setActiveAction) => {
+        let newActive = tractors.find(item => item.key === Number(event))
+        dispatch(setActiveItem(Number(event), itemArray, setActiveAction))
+        dispatch(setActiveItem(newActive.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
     }
 
     return (
@@ -68,7 +88,7 @@ const ShiftSetup = () => {
             <div style={labelStyle}>{activeVehicle.name || 'vehicle'}</div>
             <div style={labelStyle}>{activeWorkType.name || 'work type'}</div>
             <Button size='sm' variant='primary' onClick={onShow}>Edit Shift</Button>            
-            <Modal show={whichModal === 'Shift'} onHide={() => dispatch(setWhichModal(null))}>
+            <Modal show={modals.includes('Shift')} onHide={() => dispatch(hideModal('Shift'))}>
                 <Modal.Header closeButton>
                     <Modal.Title>Select Shift Details</Modal.Title>
                 </Modal.Header>
@@ -77,37 +97,33 @@ const ShiftSetup = () => {
                     title="Driver"
                     selectedItem={activeDriver}
                     itemArray={drivers}
-                    createEndpoint="newdriver"
-                    editEndpoint="editdriver"
-                    deleteEndpoint="deletedriver"
-                    updateListAction={GET_DRIVERS_SUCCESS}
-                    setActiveAction={SET_ACTIVE_DRIVER} 
                     whichModal="Driver"
+                    setActiveAction={SET_ACTIVE_DRIVER}
+                    onCreate={onCreate}
+                    onEdit={onEdit}
+                    onSelect={onSelect}
                 />
                 <SimpleSelector  
                     style={selectorStyle}
                     title="Vehicle"
                     selectedItem={activeVehicle}
-                    itemArray={tractors}
-                    createEndpoint="newvehicle"
-                    deleteEndpoint="deletevehicle"
-                    updateListAction={GET_TRACTORS_SUCCESS}
+                    itemArray={tractors}                    
+                    whichModal="Vehicle"
                     setActiveAction={SET_ACTIVE_TRACTOR}
-                    additionalFields={{type: activeVehicleType.name}}
-                    showAdditionalFields={true}
-                    whichModal="Vehicle" 
+                    onCreate={onCreate}
+                    onEdit={onEdit}
+                    onSelect={onSelectVehicle} 
                 />
                 <SimpleSelector  
                     style={selectorStyle}
                     title="Work Type"
                     selectedItem={activeWorkType}
-                    itemArray={workTypes}
-                    createEndpoint="newworktype"
-                    deleteEndpoint="deleteworktype"
-                    updateListAction={GET_WORK_TYPES_SUCCESS}
-                    setActiveAction={SET_WORK_TYPE}
-                    showAdditionalFields={true}
-                    whichModal="WorkType" 
+                    itemArray={workTypes}                   
+                    whichModal="WorkType"
+                    setActiveAction={SET_WORK_TYPE} 
+                    onCreate={onCreate}
+                    onEdit={onEdit}
+                    onSelect={onSelect}
                 />
                 <Modal.Footer>
                     <Button variant='primary' onClick={onSave}>Save</Button>
@@ -116,8 +132,7 @@ const ShiftSetup = () => {
             </Modal>
             <TractorEditor/>
             <DriverEditor />
-            <WorkTypeEditor />
-            <VehicleTypeEditor />
+            <WorkTypeEditor />            
         </div>        
     )
 }

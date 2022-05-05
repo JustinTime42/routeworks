@@ -1,16 +1,21 @@
 
-    import React, {  useState } from "react"
+    import React, {  useState, useEffect } from "react"
     import { useDispatch, useSelector } from "react-redux";
     import {Button, Alert, Modal, Form, Row, Col } from "react-bootstrap"
-    import { createItem, deleteItem, editItem, setWhichModal, setTempItem } from "../../actions"
+    import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
     import {GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER} from '../../constants.js'
     
     const DriverEditor = (props) => {
         const [deleteAlert, setDeleteAlert] = useState('')
         const drivers = useSelector(state => state.getDrivers.drivers)
-        const whichModal = useSelector(state => state.setWhichModal.whichModal)
+        const modals = useSelector(state => state.whichModals.modals)
         const tempItem = useSelector(state => state.setTempItem.item)
         const dispatch = useDispatch()
+
+        useEffect(() => {
+            console.log(modals)
+            console.log(modals.includes('Driver'))
+        }, [modals])
 
         const onChange = (event) => {            
             let {target: {name, value} } = event
@@ -30,16 +35,16 @@
             else {
                 dispatch(editItem(tempItem, drivers, 'editdriver', GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER))
             } 
-            dispatch(setWhichModal(null))    
+            dispatch(hideModal('Driver'))    
        }
 
        const onDelete = (item) => {
         dispatch(deleteItem(tempItem, drivers, "deletedriver", GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER))
-        dispatch(setWhichModal(null))                 
+        dispatch(hideModal('Driver'))                 
     }
 
     return (
-        <Modal show={whichModal === 'Driver'} onHide={() => dispatch(setWhichModal(null))}>
+        <Modal show={modals.includes('Driver')} onHide={() => dispatch(hideModal('Driver'))}>
             <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "space-between"}}>
                 <Form.Group as={Row}>
                             <Form.Label column sm={2}>Name</Form.Label>
@@ -62,7 +67,7 @@
                 <div className="flex justify-content-around">
                     <Button variant="danger" style={{visibility: ((deleteAlert !== tempItem?.name) && tempItem) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(tempItem)}>Delete</Button>
                     <Button disabled={!tempItem} style={{margin: "3px"}} onClick={onSave}>Save</Button>   
-                    <Button style={{margin: "3px"}} variant="secondary" onClick={() => dispatch(setWhichModal(null))}>Close</Button>
+                    <Button style={{margin: "3px"}} variant="secondary" onClick={() => dispatch(hideModal('Driver'))}>Close</Button>
                 </div>
                 <Alert className="d-flex justify-content-around mb-3" show={deleteAlert === tempItem}>
                     <Button onClick={() => onDelete(tempItem)} variant="danger">

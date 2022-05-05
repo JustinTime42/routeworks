@@ -8,7 +8,7 @@ import DisplayRoute from "./DisplayRoute"
 import EditRoute from "./EditRoute"
 import EditRouteButton from "./AdminDropdown"
 import Spinner from "../components/Spinner"
-import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, setActiveProperty, getWorkTypes} from "../actions"
+import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, getWorkTypes, setTempItem, showModal, hideModal, setActiveItem} from "../actions"
 
 import SearchBar from "../components/SearchBar"
 import { Alert, Button, DropdownButton } from "react-bootstrap"
@@ -47,6 +47,21 @@ const Driver = () => {
         dispatch(getWorkTypes())
     }
 
+    const onCreate = (whichModal) => {
+        dispatch(setTempItem({key:0}))
+        dispatch(showModal(whichModal))
+    }
+
+    const onEdit = (item, whichModal) => {
+        console.log(item)        
+        dispatch(setTempItem(item))
+        dispatch(showModal(whichModal))
+    }
+    
+    const onSelect = (event, itemArray, setActiveAction) => {
+        dispatch(setActiveItem(Number(event), itemArray, setActiveAction))
+    }
+
     return (
         <div style={{margin: "1em"}}>
             {
@@ -57,11 +72,11 @@ const Driver = () => {
                     title="Route"
                     selectedItem={activeRoute}
                     itemArray={routes}
-                    createEndpoint="addroute"
-                    deleteEndpoint="delroute"
-                    updateListAction={REQUEST_ROUTES_SUCCESS}
                     setActiveAction={SET_ACTIVE_ROUTE}
                     whichModal="Route"
+                    onCreate={onCreate}
+                    onEdit={onEdit}
+                    onSelect={onSelect}
                 />
                 <RouteEditor />
                 <ShiftSetup />                

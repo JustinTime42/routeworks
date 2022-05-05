@@ -72,7 +72,7 @@ class DisplayRoute extends Component {
         }
     }
 
-    render(){        
+    render() {        
         return(
             <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
                 <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>

@@ -7,7 +7,7 @@ const PropertyCard = (props) => {
 
     const routeData = useSelector(state => state.getRouteData.routeData)
 
-    const status = props.address.status
+    const status = props.address.contract_type === "Hourly" ? "Hourly" : props.address.status
 
     const cardBg = () => {        
         if (props.address.inactive) return `rgba(255,0,0,0.5)`
@@ -32,12 +32,13 @@ const PropertyCard = (props) => {
     }
 
     const statusStyle = {
+        textAlign: "center",
         padding: "1px",
         borderRadius: "10px",
         width: "75px",
         backgroundColor: status === "Waiting" ? `rgba(255,200,0,0.9)` : 
             status === "Skipped" ? `rgba(255,0,0,0.7)` :
-            status === "Done" ? `rgba(0,255,0,0.7)` : null
+            status === "Done" ? `rgba(0,255,0,0.7)` : 'rgba(255, 255, 255,0.1)'
     }
 
     const editStyle = {
