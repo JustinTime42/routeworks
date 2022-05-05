@@ -100,10 +100,7 @@ const ServiceLogs = (props) => {
         fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${start}&end=${end}`)
         .then(response => response.json())
         .then(logs => {
-            entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
-            entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-            entry.start_time = new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-            entry.end_time = new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+
             if (logType === 'xero') {
                 logs.forEach(entry => {
                     entry.invoiceDate = invoiceDate
@@ -112,12 +109,23 @@ const ServiceLogs = (props) => {
                     entry.accountCode = 4000
                     entry.taxType = 'Tax Exempt (0%)'
                     entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
+                    entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+                    entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.start_time = new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.end_time = new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                 })
-            } else if (logTime === 'hourly') {
-                entry.elapsed = (entry.end_time - entry.start_time) / 3600000 // elapsed time as decimal hours
-                entry.elapsed_rounded = Math.ceil(entry.elapsed/900000) // elapsed time as decimal hours rounded up to nearest 15 minutes                
-                console.log(`${cust_name}: Elapsed time: ${elapsed}. Rounded up to 15 minutes: ${elapsed_rounded}`)
-                entry.total_price = (entry.contract_type === 'Hourly') ? (entry.elapsed_rounded * entry.hourly_rate) : (entry.yards * entry.price_per_yard)
+            } else if (logType === 'hourly') {
+                logs.forEach(entry => {
+                    entry.elapsed = (entry.end_time - entry.start_time) / 3600000 // elapsed time as decimal hours
+                    entry.elapsed_rounded = Math.ceil(entry.elapsed/900000) // elapsed time as decimal hours rounded up to nearest 15 minutes                
+                    console.log(`${entry.cust_name}: Elapsed time: ${entry.elapsed}. Rounded up to 15 minutes: ${entry.elapsed_rounded}`)
+                    entry.total_price = (entry.contract_type === 'Hourly') ? (entry.elapsed_rounded * entry.hourly_rate) : (entry.yards * entry.price_per_yard)
+                    entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
+                    entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+                    entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.start_time = new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.end_time = new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                })                
             }
             setLogs(logs)
             setShowDownloadLink(true)
