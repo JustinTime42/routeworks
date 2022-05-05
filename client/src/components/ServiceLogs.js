@@ -54,6 +54,11 @@ const ServiceLogs = (props) => {
                 { label: "Property Value", key: "value"},
                 { label: "Start Time", key: "start_time"},
                 { label: "End Time", key: "end_time"},
+                { label: "Yardage Rate", key: "price_per_yard"},
+                { label: "Yards", key: "yards"},
+                { label: "Elapsed Precise", key: "elapsed"},
+                { label: "Elapsed Rounded", key: "elapsed_rounded"},
+                { label: "Hourly Rate", key: "hourly_rate"},
                 { label: "Quantity", key: "quantity" },
                 { label: "AccountCode", key: "accountCode" },
                 { label: "TaxType", key: "taxType" },
@@ -76,12 +81,10 @@ const ServiceLogs = (props) => {
                 { label: "UnitAmount", key: "price" },
                 { label: "Start Time", key: "start_time"},
                 { label: "End Time", key: "end_time"},
-                //elapsed time and rest of new items here
                 { label: "Elapsed Precise", key: "elapsed"},
                 { label: "Elapsed Rounded", key: "elapsed_rounded"},
-                { label: "Total Price", key: "total_price"},
                 { label: "Hourly Rate", key: "hourly_rate"},
-                { label: "Yardage Rate", key: "yardage_rate"},
+                { label: "Yardage Rate", key: "price_per_yard"},
                 { label: "Yards", key: "yards"},
             ]
         }
@@ -116,10 +119,10 @@ const ServiceLogs = (props) => {
                 })
             } else if (logType === 'hourly') {
                 logs.forEach(entry => {
-                    entry.elapsed = (entry.end_time - entry.start_time) / 3600000 // elapsed time as decimal hours
-                    entry.elapsed_rounded = Math.ceil(entry.elapsed/900000) // elapsed time as decimal hours rounded up to nearest 15 minutes                
+                    console.log(entry.end_time)
+                    entry.elapsed = (new Date(entry.end_time) - new Date(entry.start_time)) / 3600000 // elapsed time as decimal hours
+                    entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes                
                     console.log(`${entry.cust_name}: Elapsed time: ${entry.elapsed}. Rounded up to 15 minutes: ${entry.elapsed_rounded}`)
-                    entry.total_price = (entry.contract_type === 'Hourly') ? (entry.elapsed_rounded * entry.hourly_rate) : (entry.yards * entry.price_per_yard)
                     entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
                     entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                     entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
@@ -149,6 +152,9 @@ const ServiceLogs = (props) => {
                                     <Dropdown.Item key="xero" eventKey="xero">                                
                                             Xero                             
                                     </Dropdown.Item>
+                                    <Dropdown.Item key="hourly" eventKey="hourly">                                
+                                            Hourly                        
+                                    </Dropdown.Item> 
                                     <Dropdown.Item key="raw" eventKey="raw">                                
                                             Raw                          
                                     </Dropdown.Item> 

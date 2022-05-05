@@ -85,7 +85,9 @@ const PropertyDetails = (props) => {
     const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {
         let status = newStatus
         console.log("times: ", startTime, endTime)
-        let timeLogged = (Math.ceil(endTime / 60000) - Math.floor(startTime / 60000)) / 60
+
+        // round down to the nearest minute. and then up to the nearest quarter hour
+        let timeLogged = Math.ceil(Math.floor((endTime - startTime) / 60000) / 15) / 4        
         setState(prevState => ({...prevState, disabled: disabled}))
         let property = {...props.property}
         let driverEarning = driver.percentage * .01 * property.value
@@ -119,6 +121,8 @@ const PropertyDetails = (props) => {
                 startTime: startTime, 
                 endTime: endTime,
                 earning: driverEarning,
+                price_per_yard: property.price_per_yard,
+                hourly_rate: property[tractorType.name]
             }
         )
         .then(res => {
@@ -177,7 +181,7 @@ const PropertyDetails = (props) => {
                         </Form.Group>
                         </Card.Body>
                         {
-                            property.contract_type === "Hourly" ? <TimeTracker yards={yards} onStatusChange={onStatusChange} isRunning={isRunning} setIsRunning={setIsRunning}/> : null 
+                            property.contract_type === "Hourly" ? <TimeTracker yards={yards} workType={workType} onStatusChange={onStatusChange} isRunning={isRunning} setIsRunning={setIsRunning}/> : null 
                         }
                         <Card.Body className='buttonRowStyle'>
                             <Button variant="primary" size="lg" disabled={!property.routeName || isRunning} onClick={() => props.changeProperty(property, "prev")} >Prev</Button>
@@ -189,7 +193,7 @@ const PropertyDetails = (props) => {
                                 style={{visibility: (property.contract_type === 'Hourly') ? 'hidden' : 'visible'}} 
                                 variant="success" 
                                 size="lg"  
-                                disabled={isRunning || routePending || disabled || (property.sand_contract === "Per Yard" && yards === '0' && workType.name === "Sanding")} 
+                                disabled={isRunning || routePending || disabled || (property.sand_contract === "Per Yard" && yards === 0 && workType.name === "Sanding")} 
                                 onClick={() => onStatusChange('Done')}>
                                     Done
                             </Button>

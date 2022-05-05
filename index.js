@@ -543,7 +543,7 @@ app.get('/api/contactinfo', (req, res) => {
     }
     tags.forEach(tag => {
         promises.push(
-            db.select('cust_name', 'address', 'cust_email', 'tags')
+            db.select('cust_name', 'address', 'cust_email', 'cust_email2', 'tags')
             .from('properties')
             .where('tags', 'like', `%${tag}%`)
             .then(data => response.data.push(data))
