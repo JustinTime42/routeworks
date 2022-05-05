@@ -455,11 +455,11 @@ app.delete('/api/undo/:logKey', (req,res) => {
 })
 
 app.post('/api/setstatus', (req, res) => {
-    let { property, route, yards, startTime, endTime, status, priority, work_type, noteField, driver, tractor, earning, hourly_rate, price_per_yard } = req.body
+    const { property, route, yards, startTime, endTime, status, priority, work_type, noteField, driver, tractor, earning, hourly_rate, price_per_yard } = req.body
     let promises = []
     let month = new Date().getMonth() + 1
     let year = new Date().getFullYear().toString().substr(-2)
-    yards = (yards !== 0) ? ": " + yards + " yds" : "" 
+    yardString = (yards !== 0) ? ": " + yards + " yds" : "" 
     let response = {
         route_data: {},
         serviceLog: [],
@@ -500,14 +500,15 @@ app.post('/api/setstatus', (req, res) => {
             property_key: property.key,
             price: property.price,
             driver_earning: earning, 
-            description: status === 'Skipped' ? '' : work_type + yards,
+            description: status === 'Skipped' ? '' : work_type + yardString,
             invoice_number: `A${property.key}${year}${month}`,
             reference: property.address,
             work_type: work_type,
             start_time: startTime,
             end_time: endTime,
             price_per_yard: price_per_yard,
-            hourly_rate: hourly_rate
+            hourly_rate: hourly_rate,
+            yards: yards,
         })
         .then(property => response.serviceLog.push(property))
         .catch(err => {
