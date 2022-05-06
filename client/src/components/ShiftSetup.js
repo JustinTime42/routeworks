@@ -34,8 +34,9 @@ const ShiftSetup = () => {
     }
 
     const labelStyle = {
-        marginRight: '1em',
-        marginLeft: '1em'
+        marginLeft: '1em',
+        whiteSpace:'nowrap',
+        overflow: 'hidden'
     }
 
     const selectorStyle = {
@@ -87,7 +88,7 @@ const ShiftSetup = () => {
             <div style={labelStyle}>{activeDriver.name || 'driver'}</div>
             <div style={labelStyle}>{activeVehicle.name || 'vehicle'}</div>
             <div style={labelStyle}>{activeWorkType.name || 'work type'}</div>
-            <Button size='sm' variant='primary' onClick={onShow}>Edit Shift</Button>            
+            <Button style={labelStyle} size='sm' variant='primary' onClick={onShow}>Edit Shift</Button>            
             <Modal show={modals.includes('Shift')} onHide={() => dispatch(hideModal('Shift'))}>
                 <Modal.Header closeButton>
                     <Modal.Title>Select Shift Details</Modal.Title>
