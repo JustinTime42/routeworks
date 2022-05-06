@@ -224,7 +224,7 @@ const PropertyDetails = (props) => {
 const DetailsPanel = (props) => {
     return (
         props.property?.contract_type === "Hourly" ? 
-        <Modal show={props.showModal} onHide={props.onCloseClick} backdrop='static' size='lg'>
+        <Modal style={{marginTop: '2em'}} show={props.showModal} onHide={props.onCloseClick} backdrop='static' size='lg'>
             <Modal.Header closeButton></Modal.Header>
             {props.children}
         </Modal> :

@@ -7,7 +7,7 @@ import TractorEditor from './editor_panels/TractorEditor'
 import WorkTypeEditor from './editor_panels/WorkTypeEditor'
 import { setActiveItem, showModal, hideModal, setTempItem } from "../actions"
 
-import {SET_ACTIVE_TRACTOR, SET_ACTIVE_VEHICLE_TYPE, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE} from '../constants.js'
+import {SET_ACTIVE_TRACTOR, SET_ACTIVE_VEHICLE_TYPE, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY} from '../constants.js'
 import { setActiveWorkType } from '../reducers'
 import Driver from '../containers/Driver'
 
@@ -16,6 +16,7 @@ const ShiftSetup = () => {
     const activeVehicle = useSelector(state => state.setActiveTractor.activeTractor)
     const drivers = useSelector(state => state.getDrivers.drivers)
     const tractors = useSelector(state => state.getTractors.allTractors)
+    const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeVehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
     const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
@@ -47,10 +48,12 @@ const ShiftSetup = () => {
         dispatch(setActiveItem(null, drivers, SET_ACTIVE_DRIVER))
         dispatch(setActiveItem(null, tractors, SET_ACTIVE_TRACTOR))
         dispatch(setActiveItem(null, workTypes, SET_WORK_TYPE))
+        
     }
     const onShow = () => {
         dispatch(showModal("Shift"))
         onClearOptions()
+        dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
     }
 
     const onCancel = () => {
@@ -59,7 +62,7 @@ const ShiftSetup = () => {
     }
     
     const onSave = () => {
-        dispatch(hideModal("Shift"))
+        dispatch(hideModal("Shift"))        
     }
 
     const onCreate = (whichModal) => {

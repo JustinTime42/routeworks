@@ -4,7 +4,8 @@ import axios from "axios"
 import { Dropdown, DropdownButton, Button, FormControl, Alert } from "react-bootstrap"
 import Can from "../auth/Can"
 import { AuthConsumer } from "../authContext"
-import { setActiveRoute, requestRoutes, getRouteData, requestAllAddresses, setActiveProperty } from "../actions"
+import { setActiveRoute, requestRoutes, getRouteData, requestAllAddresses, setActiveProperty, setActiveItem } from "../actions"
+import {SET_ACTIVE_PROPERTY} from '../../constants.js'
 
 const editStyle = {
     float: "right"
@@ -16,6 +17,7 @@ const RouteSelector = () => {
     const [routeName, setRouteName] = useState("")
     const [deleteAlert, setDeleteAlert] = useState('')
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
+    const customers = useSelector(state => state.requestAllAddresses.addresses)
     const routes = useSelector(state => state.requestRoutes.routes)
     const isPending = useSelector(state => state.requestRoutes.isPending)
     const dispatch = useDispatch()
@@ -62,9 +64,15 @@ const RouteSelector = () => {
         setDeleteAlert('')
     }
 
+    const onSelect = (event) => {
+        dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
+        dispatch(setActiveRoute(event))
+        
+    }
+
     return isPending ? <p>Loading</p> :
         (           
-        <DropdownButton size="sm" title={activeRoute || "Select Route"} onSelect={event => dispatch(setActiveRoute(event))} >      
+        <DropdownButton size="sm" title={activeRoute || "Select Route"} onSelect={event => onSelect(event)} >      
                 <AuthConsumer>
                 {({ user }) => (
                     <Can

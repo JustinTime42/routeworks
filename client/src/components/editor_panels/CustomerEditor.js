@@ -10,7 +10,7 @@ const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Ca
 
 
 const sandContractTypes = ["Per Visit", "Per Yard"]
-const editorSize = {height:"90vh"}
+const editorSize = {height:"90vh", marginTop: '2em'}
 
 const CustomerDetails = props => {
     const reduxProperty = useSelector(state => state.setActiveProperty.activeProperty)
