@@ -31,7 +31,8 @@ const ShiftSetup = () => {
         justifyContent: "space-around",
         margin: "5px",
         backgroundColor: "rgba(255, 255, 255,0.1)",
-        borderRadius:"5px"
+        borderRadius:"5px",
+        width: '50%'
     }
 
     const labelStyle = {
