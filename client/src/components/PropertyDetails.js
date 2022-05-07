@@ -116,6 +116,7 @@ const PropertyDetails = (props) => {
                 route: activeRoute.name,
                 noteField: status === 'Skipped' ? noteField + ' ' + skipDetails : noteField,
                 tractor: tractor.name,
+                vehicle_type: tractorType.name, 
                 work_type: workType.name,
                 yards: yards,
                 startTime: startTime, 

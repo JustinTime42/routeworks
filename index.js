@@ -455,7 +455,7 @@ app.delete('/api/undo/:logKey', (req,res) => {
 })
 
 app.post('/api/setstatus', (req, res) => {
-    const { property, route, yards, startTime, endTime, status, priority, work_type, noteField, driver, tractor, earning, hourly_rate, price_per_yard } = req.body
+    const { property, route, yards, startTime, endTime, status, priority, work_type, noteField, driver, tractor, earning, hourly_rate, price_per_yard, vehicle_type } = req.body
     let promises = []
     let month = new Date().getMonth() + 1
     let year = new Date().getFullYear().toString().substr(-2)
@@ -509,6 +509,7 @@ app.post('/api/setstatus', (req, res) => {
             price_per_yard: price_per_yard,
             hourly_rate: hourly_rate,
             yards: yards,
+            vehicle_type: vehicle_type,
         })
         .then(property => response.serviceLog.push(property))
         .catch(err => {
@@ -840,8 +841,8 @@ app.get('/api/getlogs/', (req,res) => {
             'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type', 
             'service_log.notes', 'service_log.work_type', 'service_log.address', 'service_log.route_name', 'service_log.status',
             'service_log.user_name', 'service_log.tractor', 'service_log.driver_earning', 'properties.value', 'service_log.start_time', 'service_log.end_time',
-            'service_log.price_per_yard', 'service_log.yards'
-        ]       
+            'service_log.price_per_yard', 'service_log.yards', 'service_log.vehicle_type'
+        ]
         db('service_log')
         .join('properties', 'service_log.property_key', '=', 'properties.key')
         .select(getFields)
@@ -860,7 +861,7 @@ app.get('/api/getlogs/', (req,res) => {
             'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type', 
             'service_log.notes', 'service_log.work_type', 'service_log.address', 'service_log.route_name', 'service_log.status',
             'service_log.user_name', 'service_log.tractor', 'service_log.driver_earning', 'properties.value', 'service_log.start_time', 'service_log.end_time',
-            'service_log.hourly_rate', 'service_log.price_per_yard', 'service_log.yards'
+            'service_log.hourly_rate', 'service_log.price_per_yard', 'service_log.yards', 'service_log.vehicle_type'
         ]       
         db('service_log')
         .join('properties', 'service_log.property_key', '=', 'properties.key')
