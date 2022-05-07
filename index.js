@@ -251,6 +251,16 @@ app.post('/api/initroute', (req, res) => {
     Promise.all(promises).then(() => res.json(response))    
 })
 
+app.post('/api/edititem', (req,  res) => {
+    const { table, newItem, whereObj } = req.body
+    db(table)
+    .returning('*')
+    .where(whereObj)
+    .update({...newItem})
+    .then(returned => res.json(returned))
+    .catch(err => res.json("error: ", err))
+})
+
 app.post('/api/saveroute', (req, res) => {
 
     const { selected, droppedCard, route, whereTo } = req.body
