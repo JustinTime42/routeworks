@@ -18,7 +18,7 @@ const PropertyCard = (props) => {
     const status = props.address.contract_type === "Hourly" ? "Hourly" : props.address.status
 
     const cardBg = () => {        
-        if (props.address.active === false) return `rgba(255,0,0,0.5)`
+        if (props.address.active === false) return `rgba(231,76,60,.2)`
         else if (props.address.temp) return `rgba(255,110,0,0.5)`
         else return null
     }
