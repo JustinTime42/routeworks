@@ -46,13 +46,17 @@ import { SET_ACTIVE_ROUTE,
 } from './constants.js'
 
 const initialStateActiveRoute = {
-    activeRoute: '' 
+    activeRoute: {
+        key: '',
+        name: ''
+    }
 }
 
 export const setActiveRoute = (state=initialStateActiveRoute, action={}) => {
     switch(action.type) {
-        case SET_ACTIVE_ROUTE:          
-            return {...state, ...initialStateActiveProperty, activeRoute: action.payload}
+        case SET_ACTIVE_ROUTE:       
+            if (!action.payload) {return {...state, ...initialStateActiveRoute}}   
+            else return {...state, ...initialStateActiveProperty, activeRoute: action.payload}
         default:    
             return state
     }
@@ -281,6 +285,7 @@ export const initialStateRouteProperties = {
     isPending: false,
     error: ''
 }
+
 export const getRouteProperties = (state = initialStateRouteProperties, action={}) => {
     switch(action.type) {
         case GET_ROUTE_PENDING: 

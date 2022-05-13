@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
-import {Button, FormControl, Alert, Modal } from "react-bootstrap"
+import {Button, FormControl, Alert, Modal, Form, Row, Col } from "react-bootstrap"
 import SimpleSelector from "../SimpleSelector";
 import VehicleTypeEditor from './VehicleTypeEditor'
 import { setActiveItem, createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
@@ -27,6 +27,10 @@ const TractorEditor = (props) => {
 
     const onChangeTypeName = (event) => {
         setVehicleType({...vehicleType, name: event.target.value})
+    }
+
+    const onChangeActive = () => {
+        dispatch(setTempItem({...tempItem, active:!tempItem.active}))
     }
 
     const onSave = () => {
@@ -95,6 +99,17 @@ const TractorEditor = (props) => {
                     onEdit={onEditType}
                     onSelect={onSelectType}
                 />
+                <Form.Group as={Row}>
+                    <Col sm={8}>
+                        <Form.Check
+                            name="active"
+                            type="checkbox"
+                            label="Active?"
+                            checked = {!!tempItem?.active}
+                            onChange={onChangeActive}
+                        /> 
+                    </Col>
+                </Form.Group> 
                 <div className="flex justify-content-around">
                     <Button variant="danger" style={{visibility: ((deleteAlert !== tempItem?.name) && tempItem) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(tempItem)}>Delete</Button>
                     <Button disabled={!tempItem} style={{margin: "3px"}} onClick={onSave}>Save</Button>   

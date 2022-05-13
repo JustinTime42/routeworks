@@ -287,7 +287,7 @@ export const createItem = (item, itemArray, endPoint, actionType, activeActionTy
     .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
 }
 
-export const editItem = (item, itemArray, endPoint, actionType, activeActionType) => (dispatch) => {
+export const editItem = (item, itemArray, endPoint, actionType, activeActionType=null) => (dispatch) => {
     dispatch({ type: GET_ITEMS_PENDING})
     fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
         method: 'POST', 

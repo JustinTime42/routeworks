@@ -36,16 +36,17 @@ class DisplayRoute extends Component {
           this.setState({
             activeProperty: this.props.activeProperty,
             routeProperties: this.getRouteProperties(),
-        })
+        }, console.log(this.state))
       }
     }
 
     getRouteProperties = () => {
         let routeProperties = []
+        console.log("active Route: ", this.props.activeRoute)
         this.props.routeData.forEach(routeEntry => {
             if (routeEntry.route_name === this.props.activeRoute.name) {
                 let customer = this.props.addresses.find(property => property.key === routeEntry.property_key)
-                routeProperties.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status })
+                routeProperties.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status, active: routeEntry.active })
             }
         })
         console.log('route properties: ', routeProperties)
@@ -77,17 +78,20 @@ class DisplayRoute extends Component {
             <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
                 <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                     {
-                        this.state.routeProperties.map((address, i )=> {                            
-                            return (
-                                <PropertyCard                                                                    
-                                    i={i}  
-                                    route={this.props.activeRoute.name}                                   
-                                    key={address.key} 
-                                    address={address}
-                                    activeProperty={this.props.activeProperty}
-                                    handleClick={this.changeActiveProperty}                                    
-                                />  
-                            )                                                            
+                        this.state.routeProperties.map((address, i )=> {
+                            if (address.active){
+                                return (
+                                    <PropertyCard                                                                    
+                                        i={i}  
+                                        route={this.props.activeRoute.name}                                   
+                                        key={address.key} 
+                                        address={address}
+                                        activeProperty={this.props.activeProperty}
+                                        handleClick={this.changeActiveProperty}                             
+                                    />  
+                                )   
+                            }  else return null                          
+                                                                                     
                         }) 
                     }
                 </div>

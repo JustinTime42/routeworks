@@ -84,7 +84,7 @@ const ShiftSetup = () => {
     const onSelectVehicle = (event, itemArray, setActiveAction) => {
         let newActive = tractors.find(item => item.key === Number(event))
         dispatch(setActiveItem(Number(event), itemArray, setActiveAction))
-        dispatch(setActiveItem(newActive.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
+        dispatch(setActiveItem(newActive?.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
     }
 
     return (

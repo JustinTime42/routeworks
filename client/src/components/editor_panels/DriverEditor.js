@@ -12,21 +12,22 @@
         const tempItem = useSelector(state => state.setTempItem.item)
         const dispatch = useDispatch()
 
-        useEffect(() => {
-            console.log(modals)
-            console.log(modals.includes('Driver'))
-        }, [modals])
-
-        const onChange = (event) => {            
+        const onChange = (event) => {     
+            console.log(event.target.value)       
             let {target: {name, value} } = event
             if (name === "percentage" || name === "hourly") {
                 value = Number(value)
                 if (isNaN(value)) {
                     value = tempItem[name]
                 }
+            } else if (event.target.value === "on") {
+                console.log("toggling active")
+                dispatch(setTempItem({...tempItem, active: !tempItem.active}))
+            } else {
+                dispatch(setTempItem({...tempItem, [name]: value}))
             }
-            dispatch(setTempItem({...tempItem, [name]: value}))
         }
+
         const onSave = () => {
             if (tempItem.key === 0) {            
                 const {key, ...item} = tempItem 
@@ -64,6 +65,18 @@
                                 <Form.Control name="hourly" type="numeric" onChange={onChange} placeholder="Hourly" value={tempItem?.hourly || 0} />
                             </Col>
                         </Form.Group>
+                        <Form.Group as={Row}>
+                    <Form.Label column sm={2}>Active</Form.Label>
+                    <Col sm={8}>
+                        <Form.Check
+                            name="active"
+                            type="checkbox"
+                            label="Active?"
+                            checked = {!!tempItem?.active}
+                            onChange={onChange}
+                        /> 
+                    </Col>
+                </Form.Group> 
                 <div className="flex justify-content-around">
                     <Button variant="danger" style={{visibility: ((deleteAlert !== tempItem?.name) && tempItem) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(tempItem)}>Delete</Button>
                     <Button disabled={!tempItem} style={{margin: "3px"}} onClick={onSave}>Save</Button>   

@@ -13,7 +13,11 @@
         const dispatch = useDispatch()
 
         const onChange = (event) => {
-            dispatch(setTempItem({...tempItem, name: event.target.value}))
+            if (event.target.value === "on") {
+                dispatch(setTempItem({...tempItem, [event.target.name]: !tempItem[event.target.name]}))
+            } else {
+                dispatch(setTempItem({...tempItem, name: event.target.value}))
+            }  
         }
 
         const onSave = () => {
@@ -36,11 +40,24 @@
         <Modal show={modals.includes('Route')} onHide={() => dispatch(hideModal('Route'))}>
             <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "space-between"}}>
                 <Form.Group as={Row}>
-                            <Form.Label column sm={2}>Name</Form.Label>
-                            <Col sm={8}>
-                                <Form.Control name="name" type="text" onChange={onChange} placeholder="Name" value={tempItem?.name || ''}/>
-                            </Col>
-                        </Form.Group>                        
+                    <Form.Label column sm={2}>Name</Form.Label>
+                        <Col sm={8}>
+                            <Form.Control name="name" type="text" onChange={onChange} placeholder="Name" value={tempItem?.name || ''}/>
+                        </Col>
+                </Form.Group>   
+                <Form.Group as={Row}>
+                    <Form.Label column sm={2}>Active</Form.Label>
+                    <Col sm={8}>
+                        <Form.Check
+                            name="active"
+                            type="checkbox"
+                            label="Active?"
+                            checked = {!!tempItem?.active}
+                            onChange={onChange}
+                        /> 
+                    </Col>
+                </Form.Group>     
+
                 <div className="flex justify-content-around">
                     <Button variant="danger" style={{visibility: ((deleteAlert !== tempItem?.name) && tempItem) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(tempItem)}>Delete</Button>
                     <Button disabled={!tempItem} style={{margin: "3px"}} onClick={onSave}>Save</Button>   
