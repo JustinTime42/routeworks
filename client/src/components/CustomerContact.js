@@ -51,6 +51,7 @@ const CustomerContact = (props) => {
         { label: "Customer Name", key: "cust_name" },
         { label: "Service Address", key: "address" },
         { label: "Customer Email", key: "cust_email" },
+        { label: "Customer Email 2", key: "cust_email2" },
         { label: "Tags", key: "tags" }
     ]
 

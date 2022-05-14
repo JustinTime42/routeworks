@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import SimpleSelector from "../components/SimpleSelector"
-import DriverName from "./DriverSelector"
+import ShiftSetup from '../components/ShiftSetup';
+import RouteEditor from '../components/editor_panels/RouteEditor';
+
 import DisplayRoute from "./DisplayRoute"
 import EditRoute from "./EditRoute"
 import EditRouteButton from "./AdminDropdown"
 import Spinner from "../components/Spinner"
-import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, setActiveProperty } from "../actions"
+import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, getWorkTypes, setTempItem, showModal, setActiveItem} from "../actions"
 
 import SearchBar from "../components/SearchBar"
 import { Alert, Button, DropdownButton } from "react-bootstrap"
-import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS, GET_DRIVERS_SUCCESS, SET_DRIVER_NAME} from '../constants.js'
+import {SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE} from '../constants.js'
 
 import '../styles/driver.css'
 
@@ -19,15 +21,12 @@ const Driver = () => {
     const isRoutePending = useSelector(state => state.getRouteProperties.isPending)
     const isAllPending = useSelector(state => state.requestAllAddresses.isPending)
     const activeDriver = useSelector(state => state.setActiveDriver.driver)
-    const drivers = useSelector(state => state.getDrivers.drivers)
+    const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)
     const routesPending = useSelector(state => state.requestRoutes.isPending)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
-    const routeData = useSelector(state => state.getRouteData.routeData)
     const routes = useSelector(state => state.requestRoutes.routes)
-    const tractors = useSelector(state => state.getTractors.allTractors)
-    const activeVehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
-    const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
+    const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -41,6 +40,23 @@ const Driver = () => {
         dispatch(getTractors())
         dispatch(getTractorTypes())
         dispatch(getDrivers())
+        dispatch(getWorkTypes())
+    }
+
+    const onCreate = (whichModal) => {
+        dispatch(setTempItem({key:0}))
+        dispatch(showModal(whichModal))
+    }
+
+    const onEdit = (item, whichModal) => {
+        console.log(item)        
+        dispatch(setTempItem(item))
+        dispatch(showModal(whichModal))
+    }
+    
+    const onSelect = (event, itemArray, setActiveAction) => {
+        dispatch(setActiveItem(Number(event), itemArray, setActiveAction))
+        dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
     }
 
     return (
@@ -48,61 +64,27 @@ const Driver = () => {
             {
             (isAllPending || isRoutePending || routesPending) ? <Spinner /> : null
             } 
-            <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px"}}>
+            <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px", alignItems:'center',}}>
                 <SimpleSelector
                     title="Route"
                     selectedItem={activeRoute}
                     itemArray={routes}
-                    createEndpoint="addroute"
-                    deleteEndpoint="delroute"
-                    updateListAction={REQUEST_ROUTES_SUCCESS}
                     setActiveAction={SET_ACTIVE_ROUTE}
-                    selectActions={[requestRoutes, requestAllAddresses, getRouteData, setActiveProperty]}
-                    // dispatch(requestRoutes())
-                    // dispatch(requestAllAddresses())
-                    // dispatch(getRouteData())
-                    // dispatch(setActiveProperty(null))
-                />   
-                {/* upgrade driver selector to the simpleSelector component
-                <SimpleSelector
-                    title="Driver"
-                    selectedItem={activeDriver}
-                    itemArray={drivers}
-                    createEndpoint="newdriver"
-                    deleteEndpoint="deletedriver"
-                    updateListAction={GET_DRIVERS_SUCCESS}
-                    setActiveAction={SET_DRIVER_NAME}
-                />                */}
-                <DriverName />
-                <SimpleSelector
-                    title="Vehicle"
-                    selectedItem={activeTractor}
-                    itemArray={tractors}
-                    createEndpoint="newvehicle"
-                    deleteEndpoint="deletevehicle"
-                    updateListAction={GET_TRACTORS_SUCCESS}
-                    setActiveAction={SET_ACTIVE_TRACTOR}
-                    additionalFields={{type: activeVehicleType.name}}
-                    showAdditionalFields={true}
-                >
-                    <SimpleSelector
-                        title="Vehicle Type"
-                        selectedItem={activeVehicleType}
-                        itemArray={vehicleTypes}
-                        createEndpoint="newvehicletype"
-                        deleteEndpoint="deletevehicletype"
-                        updateListAction={GET_VEHICLE_TYPES_SUCCESS}
-                        setActiveAction={SET_ACTIVE_VEHICLE_TYPE}
-                    />
-                </SimpleSelector>
+                    whichModal="Route"
+                    onCreate={onCreate}
+                    onEdit={onEdit}
+                    onSelect={onSelect}
+                />
+                <RouteEditor />
+                <ShiftSetup />                
                 <SearchBar />
                 <EditRouteButton /> 
-                <Button variant="primary" size="sm" onClick={refreshData}>Refresh Data</Button>
+                <Button variant="primary" size="sm" onClick={refreshData}>Refresh</Button>
             </div>
             { 
             showRouteEditor ? <EditRoute /> : 
-            activeTractor.name && (activeDriver.key !== '') ? <DisplayRoute /> :
-            <Alert variant="warning">Please enter driver and tractor name to begin.</Alert>                              
+            activeTractor.name && (activeDriver.key !== '')  && activeWorkType.name ? <DisplayRoute /> :
+            <Alert variant="warning">Please select route, driver, vehicle, and work type to begin.</Alert>                              
             }             
         </div>            
     )

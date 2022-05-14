@@ -2,7 +2,7 @@ import { SET_ACTIVE_ROUTE,
     REQUEST_ROUTES_PENDING,
     REQUEST_ROUTES_SUCCESS,
     REQUEST_ROUTES_FAILED,
-    SET_DRIVER_NAME,
+    SET_ACTIVE_DRIVER,
     UPDATE_ADDRESSES_PENDING,
     UPDATE_ADDRESSES_SUCCESS,
     UPDATE_ADDRESSES_FAILED,
@@ -37,7 +37,14 @@ import { SET_ACTIVE_ROUTE,
     GET_VEHICLE_TYPES_FAILED,
     SET_ACTIVE_VEHICLE_TYPE,
     SET_CURRENT_USER,
-    TIMER_IS_RUNNING
+    TIMER_IS_RUNNING,
+    GET_WORK_TYPES_SUCCESS,
+    GET_WORK_TYPES_PENDING,
+    GET_WORK_TYPES_FAILED,
+    SET_WORK_TYPE,
+    SHOW_MODAL,
+    HIDE_MODAL,
+    TEMP_ITEM  
 } from './constants.js'
 
 const initialStateCurrentUser = {
@@ -68,13 +75,17 @@ export const setTimerIsRunning = (state=initialStateTimerIsRunning, action={}) =
 }
 
 const initialStateActiveRoute = {
-    activeRoute: '' 
+    activeRoute: {
+        key: '',
+        name: ''
+    }
 }
 
 export const setActiveRoute = (state=initialStateActiveRoute, action={}) => {
     switch(action.type) {
-        case SET_ACTIVE_ROUTE:
-            return {...state, activeRoute: action.payload }
+        case SET_ACTIVE_ROUTE:       
+            if (!action.payload) {return {...state, ...initialStateActiveRoute}}   
+            else return {...state, ...initialStateActiveProperty, activeRoute: action.payload}
         default:    
             return state
     }
@@ -123,8 +134,9 @@ const initialStateDriver = {
 
 export const setActiveDriver = (state = initialStateDriver, action={}) => {
     switch(action.type) {
-        case SET_DRIVER_NAME:
-            return {...state, driver: action.payload}
+        case SET_ACTIVE_DRIVER:
+            if (!action.payload) {return {...state, ...initialStateDriver}} 
+            else return {...state, driver: action.payload}
         default:
             return state
     }
@@ -151,16 +163,57 @@ export const getDrivers = (state = initialStateDrivers, action={}) => {
 
 const initialStateActiveTractor = {
     activeTractor: {
+        key: 0,
         name: '',
-        type: '',
+        type: 0,
     }
-
 }
+
 export const setActiveTractor = (state = initialStateActiveTractor, action={}) => {
     switch(action.type) {
         case SET_ACTIVE_TRACTOR:
-            return {...state, activeTractor: action.payload}
+            if (!action.payload) {return {...state, ...initialStateActiveTractor}} 
+            else {
+                //setActiveVehicleType()
+                return {...state, activeTractor: action.payload}
+            } 
         default: 
+            return state
+    }
+}
+
+const initialStateWorkTypes = {
+    isPending: false,
+    allWorkTypes: [],
+    error: ''
+}
+
+export const getWorkTypes = (state = initialStateWorkTypes, action={}) => {
+    switch(action.type) {
+        case GET_WORK_TYPES_PENDING:
+            return {...state, isPending: true}
+        case GET_WORK_TYPES_SUCCESS:
+            return {...state, allWorkTypes: action.payload, isPending: false}
+        case GET_WORK_TYPES_FAILED:
+            return {...state, error: action.payload, isPending: false}
+        default: 
+            return state
+    }
+}
+
+const initialStateActiveWorkType = {
+    workType: {
+        key: 0,
+        name: '',
+    }
+}
+
+export const setActiveWorkType = (state = initialStateActiveWorkType, action={}) => {
+    switch(action.type) {
+        case SET_WORK_TYPE:
+            if (!action.payload) {return {...state, ...initialStateActiveWorkType}} 
+            return {...state, workType: action.payload}
+        default:
             return state
     }
 }
@@ -203,7 +256,10 @@ export const getTractorTypes = (state = initialStateTractorTypes, action={}) => 
 }
 
 const initialStateActiveVehicleType = {
-    activeVehicleType: '' 
+    activeVehicleType: {
+        key: 0,
+        name: '',
+    }
 }
 
 export const setActiveVehicleType = (state=initialStateActiveVehicleType, action={}) => {
@@ -258,6 +314,7 @@ export const initialStateRouteProperties = {
     isPending: false,
     error: ''
 }
+
 export const getRouteProperties = (state = initialStateRouteProperties, action={}) => {
     switch(action.type) {
         case GET_ROUTE_PENDING: 
@@ -323,6 +380,34 @@ export const showRoute = (state = initialStateShowRoute, action={}) => {
     switch(action.type) {
         case SHOW_ROUTE: 
             return {...state, showRoute: action.payload}
+        default:
+            return state
+    }
+}
+
+export const initialStateWhichModals = {
+    modals: []
+}
+
+export const whichModals = (state = initialStateWhichModals, action={}) =>  {
+    switch(action.type) {
+        case SHOW_MODAL:
+            return {...state, modals: [...state.modals, action.payload]}
+        case HIDE_MODAL:
+            return {...state, modals: state.modals.filter(item => item !== action.payload)}
+        default:
+            return state
+    }
+}
+
+export const initialStateTempItem = {
+    item: {key:0}
+}
+
+export const setTempItem = (state = initialStateTempItem, action={}) => {
+    switch(action.type) {
+        case TEMP_ITEM:
+            return {...state, item: action.payload} 
         default:
             return state
     }

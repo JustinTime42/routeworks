@@ -32,32 +32,10 @@ const ServiceLogs = (props) => {
                 { label: "Start Time", key: "start_time"},
                 { label: "End Time", key: "end_time"},
             ]
-        } else if (logType === "hourly") {
-            headers = [
-                { label: "Customer Name", key: "cust_name" },
-                { label: "Date", key: "date" },
-                { label: "Time", key: "time" },
-                { label: "Notes", key: "notes" },
-                { label: "Work Type", key: "work_type"},
-                { label: "Driver", key: "user_name" },
-                { label: "Tractor", key: "tractor" },
-                { label: "Description", key: "description" },
-                { label: "UnitAmount", key: "price" }, //if hourly, this was (rounded quarter x hourly billing rate) else (yards x yardage rate)
-                { label: "Start Time", key: "start_time"},
-                { label: "End Time", key: "end_time"},
-                { label: "Elapsed Time", key: "elapsed_time"}, // (stop time - start time) rounded down to nearest minute, then up to nearest 15 mins
-                { label: "Hourly Rate", key: "hourly_rate"},
-                { label: "Rate Per Yard", key: "price_per_yard"},
-                { label: "Yards", key: "yards"},
-
-            ]
-            // check to see if hourly rate is actually save din the service log... might need to be added cause it's only calculated at the end
-            // these are all numbers that should be calculated at the time of service... not at the time the log is pulled
-
-        } else {
+        } else if (logType === 'xero') {
             headers = [
                 { label: "Contract Type", key: "contract_type"},
-                { label: "Contact Name", key: "cust_name" },
+                { label: "ContactName", key: "cust_name" },
                 { label: "Date", key: "date" },
                 { label: "Time", key: "time" },
                 { label: "Notes", key: "notes" },
@@ -65,26 +43,52 @@ const ServiceLogs = (props) => {
                 { label: "InvoiceNumber", key: "invoice_number" },
                 { label: "Reference", key: "reference" },
                 { label: "InvoiceDate", key: "invoiceDate" },
-                { label: "DueDate", key: "dueDate" },
+                { label: "DueDate", key: "dueDate" }, 
                 { label: "UnitAmount", key: "price" },
                 { label: "Work Type", key: "work_type"},
                 { label: "Service Address", key: "address"},
                 { label: "Status", key: "status"},
                 { label: "Driver Name", key: "user_name"},
-                { label: "Tractor", key: "tractor"},
+                { label: "Vehicle", key: "tractor"},
+                { label: "Vehicle Type", key: "vehicle_type"},
                 { label: "Driver Earning", key: "driver_earning"},
                 { label: "Property Value", key: "value"},
                 { label: "Start Time", key: "start_time"},
                 { label: "End Time", key: "end_time"},
-                { label: "Email Address", key: "cust_email" },
+                { label: "Yardage Rate", key: "price_per_yard"},
+                { label: "Yards", key: "yards"},
+                { label: "Elapsed Precise", key: "elapsed"},
+                { label: "Elapsed Rounded", key: "elapsed_rounded"},
+                { label: "Hourly Rate", key: "hourly_rate"},
                 { label: "Quantity", key: "quantity" },
                 { label: "AccountCode", key: "accountCode" },
                 { label: "TaxType", key: "taxType" },
+                { label: "EmailAddress", key: "cust_email" },
                 { label: "POAddressLine1", key: "bill_address" },
                 { label: "POCity", key: "bill_city" },
                 { label: "PORegion", key: "bill_state" },
                 { label: "POPostalCode", key: "bill_zip" },
             ]  
+        } else if (logType === 'hourly') {
+            headers = [
+                { label: "ContactName", key: "cust_name" },
+                { label: "Date", key: "date" },
+                { label: "Time", key: "time" },
+                { label: "Notes", key: "notes" },
+                { label: "Work Type", key: "work_type"},
+                { label: "Driver Name", key: "user_name"},
+                { label: "Vehicle", key: "tractor"},
+                { label: "Vehicle Type", key: "vehicle_type"},
+                { label: "Description", key: "description" },
+                { label: "UnitAmount", key: "price" },
+                { label: "Start Time", key: "start_time"},
+                { label: "End Time", key: "end_time"},
+                { label: "Elapsed Precise", key: "elapsed"},
+                { label: "Elapsed Rounded", key: "elapsed_rounded"},
+                { label: "Hourly Rate", key: "hourly_rate"},
+                { label: "Yardage Rate", key: "price_per_yard"},
+                { label: "Yards", key: "yards"},
+            ]
         }
         return headers        
     }  
@@ -101,7 +105,7 @@ const ServiceLogs = (props) => {
         fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${start}&end=${end}`)
         .then(response => response.json())
         .then(logs => {
-            console.log(logs)
+
             if (logType === 'xero') {
                 logs.forEach(entry => {
                     entry.invoiceDate = invoiceDate
@@ -112,12 +116,21 @@ const ServiceLogs = (props) => {
                     entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
                     entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                     entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.start_time = new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.end_time = new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                 })
-            } else {
-                logs.forEach((item => { 
-                item.date = new Date(item.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
-                item.time = new Date(item.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                })) 
+            } else if (logType === 'hourly') {
+                logs.forEach(entry => {
+                    console.log(entry.end_time)
+                    entry.elapsed = (new Date(entry.end_time) - new Date(entry.start_time)) / 3600000 // elapsed time as decimal hours
+                    entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes                
+                    console.log(`${entry.cust_name}: Elapsed time: ${entry.elapsed}. Rounded up to 15 minutes: ${entry.elapsed_rounded}`)
+                    entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
+                    entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+                    entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.start_time = new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.end_time = new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                })                
             }
             if (logType === 'hourly') {
 
@@ -144,6 +157,9 @@ const ServiceLogs = (props) => {
                                     <Dropdown.Item key="xero" eventKey="xero">                                
                                             Xero                             
                                     </Dropdown.Item>
+                                    <Dropdown.Item key="hourly" eventKey="hourly">                                
+                                            Hourly                        
+                                    </Dropdown.Item> 
                                     <Dropdown.Item key="raw" eventKey="raw">                                
                                             Raw                          
                                     </Dropdown.Item> 

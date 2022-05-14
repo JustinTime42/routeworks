@@ -5,7 +5,7 @@ import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRou
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "../components/PropertyCard"
-import CustomerDetails from "../components/CustomerEditor"
+import CustomerDetails from "../components/editor_panels/CustomerEditor"
 import '../styles/driver.css'
 
 const mapStateToProps = state => {
@@ -15,6 +15,7 @@ const mapStateToProps = state => {
         addresses: state.requestAllAddresses.addresses,
         isAllPending: state.requestAllAddresses.isPending,
         error: state.requestAllAddresses.error,
+        routeProperties: state.getRouteProperties.addresses,
         routeData: state.getRouteData.routeData,
         isRoutePending: state.getRouteData.isPending,
         filterProperties: state.filterProperties.customers,
@@ -84,7 +85,7 @@ class EditRoute extends Component {
         this.state = { 
             items: [],
             filteredItems: this.props.filterProperties,
-            selected: [],
+            selected: this.props.routeProperties,
             searchField: '',
             routeSearchField: '',
             showModal: false,
@@ -103,7 +104,8 @@ class EditRoute extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {    
-        if(this.props.isRoutePending !== prevProps.isRoutePending || this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses) {
+        if(this.props.isRoutePending !== prevProps.isRoutePending || this.props.isAllPending !== prevProps.isAllPending || prevProps.activeRoute !== this.props.activeRoute || this.props.addresses !== prevProps.addresses || this.props.routeData !== prevProps.routeData) {
+            console.log("EditRoute running componentDidUpdate")
             this.setSelected()
             this.setState((prevState, prevProps) => {
                 return {
@@ -119,8 +121,8 @@ class EditRoute extends Component {
             //     }   
              })
         } 
-        if(this.props.filterProperties !== prevProps.filterProperties) {
-            //THIS filters and sorts everything with every input in the editor... that needs to be fixed
+        
+        if(this.props.filterProperties !== prevProps.filterProperties) {            
             this.setState({filteredItems: this.props.filterProperties})
         }
         // if(this.state.searchField !== prevState.searchField) {
@@ -146,12 +148,12 @@ class EditRoute extends Component {
             if (routeEntry.route_name === route) {
                 let i = customers.findIndex(customer => customer.key === routeEntry.property_key)
                 let customer = customers[i]                
-                selected.push({...customer, routeName: routeEntry.route_name, route_position: routeEntry.route_position, status: routeEntry.status})
+                selected.push({...customer, routeName: routeEntry.route_name, route_position: routeEntry.route_position, status: routeEntry.status, active: routeEntry.active})
                 customers[i].routeName = route
             }
         })
         let sortedSelect = selected.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
-        console.log(sortedSelect)
+        console.log("selected: ", sortedSelect)
        //let unselected = customers.filter(customer => customer.routeName !== route)
         this.setState({selected: sortedSelect })  
     }
@@ -355,6 +357,7 @@ class EditRoute extends Component {
                                                 admin={true} 
                                                 detailsClick={this.onDetailsPropertyClick} 
                                                 handleClick={this.handlePropertyClick}
+                                                refreshData={this.refreshData}
                                                 activeProperty={this.props.activeProperty}
                                             />
                                         </div>

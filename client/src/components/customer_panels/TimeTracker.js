@@ -17,6 +17,10 @@ const TimeTracker = props => {
         }
     },[props.isRunning])
 
+    useEffect(() => {
+        console.log(`yards is: ${props.yards}. workType is: ${props.workType}`)
+    })
+
     const DisplayTime = () => {
         let hours = Math.floor(timeElapsed / 3600000).toString().padStart(2,'0')
         let minutes = (Math.floor(timeElapsed / 60000) % 60).toString().padStart(2,'0')
@@ -45,7 +49,7 @@ const TimeTracker = props => {
                 <Col sm={4}><Form.Label><h5>{startTime ? (new Date(startTime)).toLocaleTimeString() : null}</h5></Form.Label></Col>
                 <Col><Button disabled={props.isRunning} size='lg' onClick={onStartPress}>Start</Button></Col>
                 <Col><DisplayTime /></Col>
-                <Col><Button disabled={!props.isRunning} size='lg' onClick={onStopPress}>Stop</Button></Col>                                    
+                <Col><Button disabled={!props.isRunning || ((props.workType.name === 'Sanding') && (props.yards === 0))} size='lg' onClick={onStopPress}>Stop</Button></Col>                                    
             </Row>
         </Container>
     )

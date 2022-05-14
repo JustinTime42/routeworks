@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { requestAllAddresses, getRouteProperties, setActiveProperty } from '../actions'
+import { requestAllAddresses, getRouteProperties, setActiveProperty } from '../../actions'
 import axios from "axios"
-import CustLogs from './customer_panels/CustLogs'
-import '../styles/driver.css'
-import { serviceLevels } from "../globals.js"
+import CustLogs from '../customer_panels/CustLogs'
+import '../../styles/driver.css'
+import { serviceLevels } from "../../globals.js"
 const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt", "Hourly"]
 
 
 const sandContractTypes = ["Per Visit", "Per Yard"]
-const editorSize = {height:"90vh"}
+const editorSize = {height:"90vh", marginTop: '2em'}
 
 const CustomerDetails = props => {
     const reduxProperty = useSelector(state => state.setActiveProperty.activeProperty)

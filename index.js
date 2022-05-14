@@ -106,6 +106,27 @@ app.post('/api/addroute', (req, res) => {
     .catch(err => res.json("error: " + err))
 })
 
+app.post('/api/editroute', (req, res) => {
+    db('routes')
+    .returning('*')
+    .where('key', req.body.key)
+    .update({...req.body})
+    .then(newRoute => {
+        res.json(newRoute)
+    })
+    .catch(err => res.json("error: " + err))
+})
+
+// app.post('/api/editdriver', (req, res) => {
+//     const driver = req.body
+//     db('drivers')    
+//     .returning('*')
+//     .where('key', driver.key)
+//     .update({...driver})
+//      .then(driver =>  res.json(driver))
+//      .catch(err => res.json("error: " + err))
+// })
+
 app.post('/api/delroute', (req, res) => {
     let response = {
         route: {},
@@ -228,6 +249,16 @@ app.post('/api/initroute', (req, res) => {
         )          
     })
     Promise.all(promises).then(() => res.json(response))    
+})
+
+app.post('/api/edititem', (req,  res) => {
+    const { table, newItem, whereObj } = req.body
+    db(table)
+    .returning('*')
+    .where(whereObj)
+    .update({...newItem})
+    .then(returned => res.json(returned))
+    .catch(err => res.json("error: ", err))
 })
 
 app.post('/api/saveroute', (req, res) => {
@@ -434,11 +465,11 @@ app.delete('/api/undo/:logKey', (req,res) => {
 })
 
 app.post('/api/setstatus', (req, res) => {
-    let { property, route, yards, startTime, endTime, status, priority, work_type, noteField, driver, tractor, earning } = req.body
+    const { property, route, yards, startTime, endTime, status, priority, work_type, noteField, driver, tractor, earning, hourly_rate, price_per_yard, vehicle_type } = req.body
     let promises = []
     let month = new Date().getMonth() + 1
     let year = new Date().getFullYear().toString().substr(-2)
-    yards = (yards !== '0') ? ": " + yards + " yds" : "" 
+    yardString = (yards !== 0) ? ": " + yards + " yds" : "" 
     let response = {
         route_data: {},
         serviceLog: [],
@@ -479,12 +510,16 @@ app.post('/api/setstatus', (req, res) => {
             property_key: property.key,
             price: property.price,
             driver_earning: earning, 
-            description: status === 'Skipped' ? '' : work_type + yards,
+            description: status === 'Skipped' ? '' : work_type + yardString,
             invoice_number: `A${property.key}${year}${month}`,
             reference: property.address,
             work_type: work_type,
             start_time: startTime,
             end_time: endTime,
+            price_per_yard: price_per_yard,
+            hourly_rate: hourly_rate,
+            yards: yards,
+            vehicle_type: vehicle_type,
         })
         .then(property => response.serviceLog.push(property))
         .catch(err => {
@@ -519,7 +554,7 @@ app.get('/api/contactinfo', (req, res) => {
     }
     tags.forEach(tag => {
         promises.push(
-            db.select('cust_name', 'address', 'cust_email', 'tags')
+            db.select('cust_name', 'address', 'cust_email', 'cust_email2', 'tags')
             .from('properties')
             .where('tags', 'like', `%${tag}%`)
             .then(data => response.data.push(data))
@@ -638,6 +673,49 @@ app.post('/api/newvehicletype', (req, res) => {
     .catch(err => res.json(err))    
 })
 
+app.post('/api/editvehicletype', (req, res) => {
+    const type = req.body
+    let response = {
+        propertiesUpdate: null,
+        typesUpdate: null,
+        err: [],
+    }
+    let promises = []
+    let originalTypeName = ''
+
+    // change column name from the old name to the new name
+    //promises.push(
+            // get the original name of the editted type
+        db.select('*') 
+        .returning('*')
+        .from('vehicle_types')
+        .where('key', type.key)
+        .then(result => {
+            console.log('result: ', result)
+            db.schema.alterTable('properties', table => table.renameColumn(result[0].name, type.name))
+            .then(result => {
+                response.propertiesUpdate = result
+                db('vehicle_types')
+                .returning('*')
+                .where('key', type.key)
+                .update({...type})
+                .then(newtype => {
+                    console.log(newtype)
+                    response.typesUpdate = newtype
+                    res.json(response.typesUpdate)
+                })
+                .catch(err => res.json(err))
+            })
+            .catch(err => res.json(err))
+        })
+        .catch(err => res.json(err))
+    
+
+    // Promise.all(promises)
+    // .then(() => res.json(response))
+    // .catch(err => res.json(err))    
+})
+
 app.post('/api/deletevehicletype', (req, res) => {
     let response = {}
     let promises = []
@@ -658,6 +736,42 @@ app.post('/api/deletevehicletype', (req, res) => {
     Promise.all(promises)
     .then(() => res.json(response))
     .catch(err => res.json(err))  
+})
+
+app.post('/api/newworktype', (req, res) => {
+    const worktype = req.body
+    db('work_types')    
+    .returning('*')
+    .insert({...worktype})
+    .then(worktype =>  res.json(worktype))
+    .catch(err => res.json("error: " + err))
+})
+
+app.post('/api/editworktype', (req, res) => {
+    const worktype = req.body
+    db('work_types')    
+    .returning('*')
+    .where('key', worktype.key)
+    .update({...worktype})
+     .then(worktype =>  res.json(worktype))
+     .catch(err => res.json("error: " + err))
+})
+
+app.post('/api/deleteworktype', (req, res) => {
+    db('work_types')
+    .returning('*')
+    .where('key', req.body.key)
+    .del()
+    .then(worktype => res.json(worktype[0]))
+    .catch(err => res.json(err))
+})
+
+app.get('/api/worktypes', (req, res) => {
+    db.select('*')
+    .from('work_types')
+    .orderBy('name')
+    .then(data => res.json(data))
+    .catch(err => res.json(err))
 })
 
 app.get('/api/alltags', (req, res) => {
@@ -736,8 +850,9 @@ app.get('/api/getlogs/', (req,res) => {
             'properties.bill_state', 'properties.bill_zip', 'service_log.invoice_number', 'service_log.reference', 
             'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type', 
             'service_log.notes', 'service_log.work_type', 'service_log.address', 'service_log.route_name', 'service_log.status',
-            'service_log.user_name', 'service_log.tractor', 'service_log.driver_earning', 'properties.value', 'service_log.start_time', 'service_log.end_time'
-        ]       
+            'service_log.user_name', 'service_log.tractor', 'service_log.driver_earning', 'properties.value', 'service_log.start_time', 'service_log.end_time',
+            'service_log.price_per_yard', 'service_log.yards', 'service_log.vehicle_type'
+        ]
         db('service_log')
         .join('properties', 'service_log.property_key', '=', 'properties.key')
         .select(getFields)
@@ -748,6 +863,26 @@ app.get('/api/getlogs/', (req,res) => {
         .orderBy('service_log.timestamp')
         .then(data => res.json(data))
         .catch(err => res.json(err))        
+    } else if (options.type === 'hourly') { 
+        const getFields =
+        [
+            'properties.cust_name', 'properties.cust_email', 'properties.bill_address', 'properties.bill_city', 
+            'properties.bill_state', 'properties.bill_zip', 'service_log.invoice_number', 'service_log.reference', 
+            'service_log.item_code', 'service_log.description', 'service_log.price', 'service_log.timestamp', 'properties.contract_type', 
+            'service_log.notes', 'service_log.work_type', 'service_log.address', 'service_log.route_name', 'service_log.status',
+            'service_log.user_name', 'service_log.tractor', 'service_log.driver_earning', 'properties.value', 'service_log.start_time', 'service_log.end_time',
+            'service_log.hourly_rate', 'service_log.price_per_yard', 'service_log.yards', 'service_log.vehicle_type'
+        ]       
+        db('service_log')
+        .join('properties', 'service_log.property_key', '=', 'properties.key')
+        .select(getFields)
+        .whereBetween('service_log.timestamp', [options.start, options.end])
+        // .whereNotIn('properties.contract_type', ['Monthly', 'Seasonal'])
+        // .orWhere('service_log.work_type', '<>', 'Snow Removal')  
+        // .andWhere('service_log.status', 'Done')
+        .orderBy('service_log.timestamp')
+        .then(data => res.json(data))
+        .catch(err => res.json(err)) 
     } else {
         db.whereBetween('service_log.timestamp', [options.start, options.end])
         .select('service_log.key', 'service_log.address', 'service_log.route_name', 'service_log.status', 'service_log.timestamp', 'service_log.notes', 

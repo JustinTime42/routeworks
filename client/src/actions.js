@@ -3,7 +3,7 @@ import {
     REQUEST_ROUTES_PENDING,
     REQUEST_ROUTES_SUCCESS,
     REQUEST_ROUTES_FAILED, 
-    SET_DRIVER_NAME,
+    SET_ACTIVE_DRIVER,
     UPDATE_ADDRESSES_PENDING,
     UPDATE_ADDRESSES_SUCCESS,
     UPDATE_ADDRESSES_FAILED,
@@ -30,9 +30,16 @@ import {
     GET_VEHICLE_TYPES_PENDING,
     GET_VEHICLE_TYPES_SUCCESS,
     GET_VEHICLE_TYPES_FAILED,
-    SET_ACTIVE_VEHICLE_TYPE, 
     SET_CURRENT_USER,
     TIMER_IS_RUNNING,
+    SET_ACTIVE_VEHICLE_TYPE,
+    GET_WORK_TYPES_SUCCESS,
+    GET_WORK_TYPES_PENDING,
+    GET_WORK_TYPES_FAILED,
+    SET_WORK_TYPE,
+    SHOW_MODAL,
+    HIDE_MODAL,
+    TEMP_ITEM,
 } from './constants.js'
 // import { io } from "socket.io-client";
 // const socket = io('https://snowline-route-manager.herokuapp.com/')
@@ -225,22 +232,22 @@ export const getDrivers = () => (dispatch) => {
     .catch(err => dispatch({ type: GET_DRIVERS_FAILED, payload: err}))
 }
 
-export const setActiveDriver = (driver) => {    
-    console.log(driver)
-    return {
-        type: SET_DRIVER_NAME,
-        payload: driver
-    }
-}
+// export const setActiveDriver = (driver) => {    
+//     console.log(driver)
+//     return {
+//         type: SET_ACTIVE_DRIVER,
+//         payload: driver
+//     }
+// }
 
-export const setActiveTractor = (tractor, allTractors) => {
-    console.log(tractor)
-    const activeTractor = allTractors.find(item => item.name === tractor)
-    return {
-        type: SET_ACTIVE_TRACTOR,
-        payload: activeTractor
-    }
-}
+// export const setActiveTractor = (tractor, allTractors) => {
+//     console.log(tractor)
+//     const activeTractor = allTractors.find(item => item.name === tractor)
+//     return {
+//         type: SET_ACTIVE_TRACTOR,
+//         payload: activeTractor
+//     }
+// }
 
 export const getTractors = () => (dispatch) => {
     dispatch({ type: GET_ITEMS_PENDING })
@@ -261,6 +268,13 @@ export const getTractorTypes = () => (dispatch) => {
     .catch(err => dispatch({type: GET_VEHICLE_TYPES_FAILED, payload: err}))
 }
 
+export const getWorkTypes = () => (dispatch) => {
+    dispatch({type: GET_WORK_TYPES_PENDING})
+    fetch(`${process.env.REACT_APP_API_URL}/worktypes`)
+    .then(res => res.json())
+    .then(data => dispatch({type: GET_WORK_TYPES_SUCCESS, payload: data}))
+    .catch(err => dispatch({type: GET_WORK_TYPES_FAILED, payload: err}))
+}
 
 // export const getNewTractor = (newTractor, allTractors) => (dispatch) => {
 //     dispatch({ type: GET_ITEMS_PENDING})
@@ -269,8 +283,7 @@ export const getTractorTypes = () => (dispatch) => {
 //         dispatch({ type: GET_TRACTORS_SUCCESS, payload: [...allTractors, newTractor]})
 //     };
 
-export const createItem = (item, itemArray, endPoint, actionType) => (dispatch) => {
-    console.log(item)
+export const createItem = (item, itemArray, endPoint, actionType, activeActionType) => (dispatch) => {
     dispatch({ type: GET_ITEMS_PENDING})
     fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
         method: 'POST',
@@ -279,36 +292,38 @@ export const createItem = (item, itemArray, endPoint, actionType) => (dispatch) 
         },   
         body: JSON.stringify(item)
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(res => {
-        console.log("create Item response:", res[0])
+        console.log("create Item response:", res)
         let newItems = [...itemArray]
         newItems.push(res[0])
+        dispatch({ type: activeActionType, payload: res[0]})
         dispatch({ type: actionType, payload: newItems.sort((a,b) => (b.name < a.name) ? 1 : -1)})
     })
     .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
 }
 
-// export const editItem = (item, itemArray, endPoint, actionType) => (dispatch) => {
-//     dispatch({ type: GET_ITEMS_PENDING})
-//     fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
-//         method: 'POST', 
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(item)
-//     })
-//     .then(res => res.json())
-//     .then(updated => {
-//         console.log("updated: ", updated)
-//         let newItems = [...itemArray]
-//         newItems[itemArray.findIndex(item => item.name === updated.name)] = updated       
-//         dispatch({ type: actionType, payload: newItems})
-//     })
-//     .catch(err => dispatch({ type: GET_ITEMS_FAILED, payload: err}))
-// }
+export const editItem = (item, itemArray, endPoint, actionType, activeActionType=null) => (dispatch) => {
+    dispatch({ type: GET_ITEMS_PENDING})
+    fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(item)
+    })
+    .then(res => res.json())
+    .then(updated => {
+        console.log("updated: ", updated)
+        let newItems = [...itemArray]
+        newItems[itemArray.findIndex(item => item.key === updated[0].key)] = updated[0] 
+        dispatch({type: activeActionType, payload: updated[0]})        
+        dispatch({ type: actionType, payload: newItems})
+    })
+    .catch(err => dispatch({ type: GET_ITEMS_FAILED, payload: err}))
+}
 
-export const deleteItem = (item, itemArray, endPoint, actionType) => (dispatch) => {
+export const deleteItem = (item, itemArray, endPoint, actionType, activeActionType) => (dispatch) => {
     dispatch({ type: GET_ITEMS_PENDING})
     fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
         method: 'POST', 
@@ -323,17 +338,26 @@ export const deleteItem = (item, itemArray, endPoint, actionType) => (dispatch) 
         console.log("item to delete: ", item.name)
         let newItems = [...itemArray]
         newItems.splice(itemArray.findIndex(item => item.name === deleted.name), 1)
+        dispatch({ type: activeActionType, payload: {key: 0, name: '', type: ''}}) 
         dispatch({ type: actionType, payload: newItems})
     })
     .catch(err => dispatch({ type: GET_ITEMS_FAILED, payload: err}))
 }
 
 export const setActiveItem = (item, itemArray, actionType) => {
-    const activeItem = itemArray.find(i => i.name === item)
-    return {
-        type: actionType,
-        payload: activeItem
+    const activeItem = itemArray.find(i => i.key === item)
+    if (activeItem) {
+        return {
+            type: actionType,
+            payload: activeItem
+        }
     }
+    else {
+        return {
+            type: actionType,
+        }
+    }
+
 }
 
 export const requestAllAddresses = () => (dispatch) => {
@@ -357,3 +381,26 @@ export const showRoute = (show) => {
         payload: show
     }
 }
+
+export const showModal = (which) => {
+    return {
+        type: SHOW_MODAL,
+        payload: which
+    }
+}
+
+export const hideModal = (which) => {
+    return {
+        type: HIDE_MODAL,
+        payload: which
+    }
+}
+
+export const setTempItem = (item) => {
+    console.log(item)
+    return {
+        type: TEMP_ITEM,
+        payload: item
+    }
+}
+

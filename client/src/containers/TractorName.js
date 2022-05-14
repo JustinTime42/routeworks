@@ -93,5 +93,5 @@ const TractorName = () => {
         </>
     )    
 }
-
-export default TractorName
+// deprecated component in favor of TractorEditor
+// export default TractorName
