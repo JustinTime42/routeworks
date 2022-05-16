@@ -14,15 +14,15 @@ export const UserLogin = () => {
   const dispatch = useDispatch()
 
   // Function that will return current user and also update current username
-  const getCurrentUser = async function () {
-    const currentUser = await Parse.User.current();
-    // Update state variable holding current user
-    //setCurrentUser(currentUser);
-    console.log(currentUser)
-    dispatch(setCurrentUser(currentUser))
+  // const getCurrentUser = async function () {
+  //   const currentUser = await Parse.User.current();
+  //   // Update state variable holding current user
+  //   //setCurrentUser(currentUser);
+  //   console.log(currentUser)
+  //   dispatch(setCurrentUser(currentUser))
     
-    return currentUser;
-  }
+  //   return currentUser;
+  // }
 
   const doUserLogIn = async function () {
     setIsNew(false)
@@ -32,14 +32,14 @@ export const UserLogin = () => {
     try {
       const loggedInUser = await Parse.User.logIn(usernameValue, passwordValue);
 
-      const currentUser = await Parse.User.current();
-      console.log(loggedInUser === currentUser);
+      //const currentUser = await Parse.User.current();
+      console.log(loggedInUser );
+      dispatch(setCurrentUser(loggedInUser.attributes))
       // Clear input fields
       setUsername('');
       setPassword('');
       
-      getCurrentUser();
-      console.log('isnew', isNew)
+
       return true;
     } catch (error) {
       // Error can be caused by wrong parameters or lack of Internet connection

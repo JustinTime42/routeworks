@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react'
-import { useDispatch, useSelector, setTimerIsRunning } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useIdleTimer } from 'react-idle-timer'
 import { setCurrentUser } from '../actions'
 import HomePage from "../containers/Home"
@@ -19,10 +19,10 @@ const PARSE_JAVASCRIPT_KEY = '8IDqhrfkxT5wBtpPhBtvKqTQRF8lOH70hvICMe0r';
 Parse.initialize(PARSE_APPLICATION_ID, PARSE_JAVASCRIPT_KEY);
 Parse.serverURL = PARSE_HOST_URL;
 
-function App() { 
+const App = (props) => { 
   const isTimerRunning = useSelector(state => state.setTimerIsRunning.timerIsRunning)
   const dispatch = useDispatch()
-  const timeout = 10000
+  const timeout = 100000
   
   const currentUser = useSelector(state => state.setCurrentUser?.currentUser)
   const handleOnIdle = () => handleLogout()
@@ -37,7 +37,7 @@ function App() {
   })
 
   useEffect(() => {
-    console.log(currentUser?.get('fullName'))
+    console.log(currentUser)
   }, [currentUser])
 
   useEffect(() => {
@@ -51,6 +51,7 @@ function App() {
   // now I need to be able to pause the idle time using the "pause" method if hourly timer is running
   const handleLogout = async function () {
     if (currentUser) {
+      console.log("logging out")
       try {
         await Parse.User.logOut();
         const currentUser = await Parse.User.current();
