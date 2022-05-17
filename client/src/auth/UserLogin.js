@@ -33,8 +33,8 @@ export const UserLogin = () => {
       const loggedInUser = await Parse.User.logIn(usernameValue, passwordValue);
 
       //const currentUser = await Parse.User.current();
-      console.log(loggedInUser );
-      dispatch(setCurrentUser(loggedInUser.attributes))
+      console.log(loggedInUser.get('appRole') );
+      dispatch(setCurrentUser(loggedInUser))
       // Clear input fields
       setUsername('');
       setPassword('');

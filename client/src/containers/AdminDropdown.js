@@ -10,7 +10,8 @@ import RawCustomerData from '../components/RawCustomerData'
 
 const mapStateToProps = state => {
     return {
-        showEditor: state.showRouteEditor.showEditor
+        showEditor: state.showRouteEditor.showEditor,
+        currentUser: state.setCurrentUser.currentUser
     }
 }
 
@@ -27,6 +28,7 @@ class EditRouteButton extends Component {
             showLogsMenu: false,
             showContactsMenu: false,
             showRawTableModal: false,
+            userRole: props.currentUser.get('appRole')
         }
     }
 
@@ -46,14 +48,9 @@ class EditRouteButton extends Component {
     onClose = () => this.setState({showLogsMenu: false, showDownload: false, showContactsMenu: false, showRawTableModal: false})
     
     render() {
-        return (
-            <AuthConsumer>
-            {({ user }) => (
-                <Can
-                    role={user.role}
-                    perform="admin:visit"
-                    yes={() => (
-                        <>                        
+        if(this.state.userRole === 'Admin') {
+            return (
+                <>                        
                         <DropdownButton size="sm" title="Admin" onSelect={this.onSelect}>        
                             <Dropdown.Item key="editor" eventKey="editor">                                
                                 {this.props.showEditor ? "Show Route" : "Show Editor"}                               
@@ -71,13 +68,9 @@ class EditRouteButton extends Component {
                         <ServiceLogs show={this.state.showLogsMenu} onClose={this.onClose} /> 
                         <CustomerContact show={this.state.showContactsMenu} onClose={this.onClose} />  
                         <RawCustomerData show={this.state.showRawTableModal} onClose={this.onClose} />                      
-                        </>             
-                    )}
-                    no={() => <p></p>}               
-                />                            
-            )}
-            </AuthConsumer>
-        )
+                    </>
+            )
+        } else return null
     }
 }
 

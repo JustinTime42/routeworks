@@ -10,6 +10,7 @@ import DropdownItem from "react-bootstrap/esm/DropdownItem";
 const SimpleSelector = (props) => {    
     const [showEdit, setShowEdit] = useState(false)
     const isEditor = useSelector(state => state.showRouteEditor.showEditor)
+    const userRole = useSelector(state => state.setCurrentUser.currentUser.get('appRole'))
 
     const toggleEdit = () => {
         setShowEdit(!showEdit)
@@ -18,18 +19,10 @@ const SimpleSelector = (props) => {
     return (   
         <div style={props.style}>        
         <DropdownButton size="sm" title={props.selectedItem?.name || `Select ${props.title}`} onSelect={(event) => props.onSelect(event, props.itemArray, props.setActiveAction)} > 
-        <AuthConsumer>
-        {({ user }) => (
-            <Can
-                role={user.role}
-                perform="admin:visit"
-                yes={() => (
-                    <div><Button style={{float: 'left', marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button></div>                    
-                )}
-                no={() => null}               
-            />                            
-        )}
-        </AuthConsumer>  
+        {
+            (userRole === 'Admin') ?         
+                    <div><Button style={{float: 'left', marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button></div> : null                                             
+        } 
         <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={(event) => props.onSelect(null, props.itemArray, props.setActiveAction)}>Clear</Button> 
         {
             props.itemArray.filter(item => item.active === true).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => {
