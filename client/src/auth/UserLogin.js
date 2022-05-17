@@ -54,7 +54,6 @@ export const UserLogin = () => {
           <Card className="text-center" style={{ width: '18rem', marginTop: '2em', marginLeft: 'auto', marginRight: 'auto' }}>
             <Card.Header>Login</Card.Header>
             <Card.Body>
-                <Card.Title>Special title treatment</Card.Title>
                 <Card.Text>
                             <Form.Control
                                     value={username}
@@ -79,7 +78,6 @@ export const UserLogin = () => {
                     >
                         Log In
                     </Button>
-                    <p>Don't have an account? <Button variant='primary' onClick={() => setIsNew(true)}>Sign up</Button></p>
             </Card.Body>
             </Card>    
   )

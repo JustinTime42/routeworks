@@ -24,7 +24,7 @@ const App = (props) => {
   const dispatch = useDispatch()
   const timeout = 100000
   
-  const currentUser = useSelector(state => state.setCurrentUser?.currentUser)
+  let currentUser = useSelector(state => state.setCurrentUser.currentUser)
   const handleOnIdle = () => handleLogout()
 
   const {
@@ -37,16 +37,13 @@ const App = (props) => {
   })
 
   useEffect(() => {
-    console.log(currentUser)
-  }, [currentUser])
+    getCurrentUser()
+  }, [])
 
-  useEffect(() => {
-    if (isTimerRunning) {
-      pause()
-    } else {
-      resume()
-    } 
-  }, [isTimerRunning])
+  const getCurrentUser = async function () {
+    const user = await Parse.User.current();
+    dispatch(setCurrentUser(user))    
+  };
 
   // now I need to be able to pause the idle time using the "pause" method if hourly timer is running
   const handleLogout = async function () {
