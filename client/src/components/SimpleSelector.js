@@ -17,7 +17,11 @@ const SimpleSelector = (props) => {
 
     return (   
         <div style={props.style}>        
-        <DropdownButton size="sm" title={props.selectedItem?.name || `Select ${props.title}`} onSelect={(event) => props.onSelect(event, props.itemArray, props.setActiveAction)} > 
+        <Dropdown size="sm" onSelect={(event) => props.onSelect(event, props.itemArray, props.setActiveAction)} > 
+        <Dropdown.Toggle size='sm'>
+            {props.selectedItem?.name || `Select ${props.title}`}
+        </Dropdown.Toggle>
+        <Dropdown.Menu style={{maxHeight: '80vh', overflow:'scroll'}} >
         <AuthConsumer>
         {({ user }) => (
             <Can
@@ -69,7 +73,8 @@ const SimpleSelector = (props) => {
             onClick={() => props.onCreate(props.whichModal)}>
             New {props.title}
         </Button>
-    </DropdownButton>
+        </Dropdown.Menu>
+    </Dropdown>
     </div>
     )
 }
