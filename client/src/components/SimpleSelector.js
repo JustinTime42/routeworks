@@ -18,11 +18,23 @@ const SimpleSelector = (props) => {
 
     return (   
         <div style={props.style}>        
-        <DropdownButton size="sm" title={props.selectedItem?.name || `Select ${props.title}`} onSelect={(event) => props.onSelect(event, props.itemArray, props.setActiveAction)} > 
-        {
-            (userRole === 'Admin') ?         
-                    <div><Button style={{float: 'left', marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button></div> : null                                             
-        } 
+        <Dropdown size="sm" onSelect={(event) => props.onSelect(event, props.itemArray, props.setActiveAction)} > 
+        <Dropdown.Toggle size='sm'>
+            {props.selectedItem?.name || `Select ${props.title}`}
+        </Dropdown.Toggle>
+        <Dropdown.Menu style={{maxHeight: '80vh', overflow:'scroll'}} >
+        <AuthConsumer>
+        {({ user }) => (
+            <Can
+                role={user.role}
+                perform="admin:visit"
+                yes={() => (
+                    <div><Button style={{float: 'left', marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button></div>                    
+                )}
+                no={() => null}               
+            />                            
+        )}
+        </AuthConsumer>  
         <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={(event) => props.onSelect(null, props.itemArray, props.setActiveAction)}>Clear</Button> 
         {
             props.itemArray.filter(item => item.active === true).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => {
@@ -62,7 +74,8 @@ const SimpleSelector = (props) => {
             onClick={() => props.onCreate(props.whichModal)}>
             New {props.title}
         </Button>
-    </DropdownButton>
+        </Dropdown.Menu>
+    </Dropdown>
     </div>
     )
 }
