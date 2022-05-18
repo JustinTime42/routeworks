@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from "react-redux";
+import { useParseQuery } from  '@parse/react';
+import Parse from 'parse/dist/parse.min.js';
 import SimpleSelector from "../components/SimpleSelector"
 import ShiftSetup from '../components/ShiftSetup';
 import RouteEditor from '../components/editor_panels/RouteEditor';
@@ -54,8 +56,13 @@ const Driver = () => {
         dispatch(showModal(whichModal))
     }
     
-    const onSelect = (event, itemArray, setActiveAction) => {
-        dispatch(setActiveItem(Number(event), results, setActiveAction))
+    const onSelect = async(event, className, itemArray, setActiveAction) => {
+        //search localdatastore for item that matches in the class, 
+        const newClass = Parse.Object.extend('route')
+        const query = new Parse.Query(newClass)
+        query.fromLocalDatastore()
+        const result = await query.get(Number(event))
+        dispatch(setActiveItem(result, itemArray, setActiveAction))
         dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
     }
 

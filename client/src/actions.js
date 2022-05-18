@@ -367,7 +367,7 @@ export const deleteItem = (item, itemArray, endPoint, actionType, activeActionTy
 }
 
 export const setActiveItem = (item, itemArray, actionType) => {
-    const activeItem = itemArray.find(i => i.key === item)
+    const activeItem = itemArray.find(i => i.key === item.get('objectID'))
     if (activeItem) {
         return {
             type: actionType,

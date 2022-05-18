@@ -20,15 +20,17 @@ const SimpleSelector = (props) => {
        count,
        error,
        reload
-     } = useParseQuery(parseQuery, {
-        enableLocalDatastore: true, 
-        enableLiveQuery: true, 
-      });
+     } = useParseQuery(parseQuery);
 
     const toggleEdit = () => {
         setShowEdit(!showEdit)
     }
 
+    const SelectList = Parse.Object.extend(props.className);
+    const selectList = new SelectList();
+
+
+   
     // useEffect(() => {
     //     console.log(results)
     //     if (results) {

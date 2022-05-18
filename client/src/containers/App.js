@@ -24,6 +24,8 @@ const PARSE_JAVASCRIPT_KEY = '8IDqhrfkxT5wBtpPhBtvKqTQRF8lOH70hvICMe0r';
 Parse.initialize(PARSE_APPLICATION_ID, PARSE_JAVASCRIPT_KEY);
 Parse.serverURL = PARSE_HOST_URL;
 
+Parse.enableLocalDatastore()
+
 const App = (props) => { 
   const isTimerRunning = useSelector(state => state.setTimerIsRunning.timerIsRunning)
   const dispatch = useDispatch()
