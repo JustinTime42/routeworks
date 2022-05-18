@@ -301,7 +301,7 @@ class EditRoute extends Component {
         if(!newDetails.contract_type) {
             newDetails.contract_type = "Per Occurrence"
         }
-        let {routeName, route_position, status, ...details} = newDetails
+        let {routeName, route_position, status, active, ...details} = newDetails
         if (!newDetails.key) {
             this.props.onSaveNewProperty(details, this.props.addresses)
         } else {
