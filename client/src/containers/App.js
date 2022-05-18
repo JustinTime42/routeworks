@@ -1,6 +1,5 @@
 import React, { useState, useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useIdleTimer } from 'react-idle-timer'
 import { setCurrentUser } from '../actions'
 import HomePage from "../containers/Home"
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom"
@@ -11,8 +10,14 @@ import Driver from "../containers/Driver"
 import "../App.css"
 // Import Parse minified version
 import Parse from 'parse/dist/parse.min.js';
+import { initializeParse, useParseQuery } from  '@parse/react';
 
-// Your Parse initialization configuration goes here
+initializeParse(
+  'https://routemanager.b4a.io/',
+  'F9woWDILIrqv5eElFUevlJBrenx1Ca7BJsDNL2MA',
+  '8IDqhrfkxT5wBtpPhBtvKqTQRF8lOH70hvICMe0r',
+)
+
 const PARSE_APPLICATION_ID = 'F9woWDILIrqv5eElFUevlJBrenx1Ca7BJsDNL2MA';
 const PARSE_HOST_URL = 'https://parseapi.back4app.com/';
 const PARSE_JAVASCRIPT_KEY = '8IDqhrfkxT5wBtpPhBtvKqTQRF8lOH70hvICMe0r';
@@ -25,42 +30,34 @@ const App = (props) => {
   const timeout = 100000
   
   let currentUser = useSelector(state => state.setCurrentUser.currentUser)
-  const handleOnIdle = () => handleLogout()
+ // const handleOnIdle = () => handleLogout()
 
-  const {
-    isIdle,
-    pause,
-    resume
-  } = useIdleTimer({
-    timeout,
-    onIdle: handleOnIdle
-  })
+  // const userQuery = new Parse.Query('_User');
+  // const {
+  //    isLive,
+  //    isLoading,
+  //    isSyncing,
+  //    results,
+  //    count,
+  //    error,
+  //    reload
+  //  } = useParseQuery(userQuery);
+
 
   useEffect(() => {
-    getCurrentUser()
-  }, [])
+    console.log(currentUser)
+  }, [currentUser])
 
-  const getCurrentUser = async function () {
-    const user = await Parse.User.current();
-    dispatch(setCurrentUser(user))    
-  };
+
+
+  // const getCurrentUser = async function () {
+  //   const user = await Parse.User.current();
+  //   console.log(user)
+  //   dispatch(setCurrentUser(user))    
+  // };
 
   // now I need to be able to pause the idle time using the "pause" method if hourly timer is running
-  const handleLogout = async function () {
-    if (currentUser) {
-      console.log("logging out")
-      try {
-        await Parse.User.logOut();
-        const currentUser = await Parse.User.current();
-      dispatch(setCurrentUser(null))
-        return true;
-      } catch (error) {
-        alert(`Error! ${error.message}`);
-        return false;
-      }
-    }
-    
-  };
+  // 
 
     return (
         <div className="App">

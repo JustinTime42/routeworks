@@ -18,16 +18,18 @@
             } else {
                 dispatch(setTempItem({...tempItem, name: event.target.value}))
             }  
-        }
+        }   
 
         const onSave = () => {
-            if (tempItem.key === 0) {            
-                const {key, ...item} = tempItem 
-                dispatch(createItem(item, routes, 'addroute', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
-            }
-            else {
-                dispatch(editItem(tempItem, routes, 'editroute', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
-            } 
+            dispatch(createItem(tempItem, routes, 'route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+
+            // if (tempItem.key === 0) {            
+            //     const {key, ...item} = tempItem 
+            //     dispatch(createItem(item, routes, 'route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+            // }
+            // else {
+            //     dispatch(editItem(tempItem, routes, 'editroute', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+            // } 
             dispatch(hideModal('Route'))    
         }
 

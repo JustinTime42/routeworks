@@ -1,3 +1,4 @@
+import Parse from 'parse/dist/parse.min.js';
 import { 
     SET_ACTIVE_ROUTE,
     REQUEST_ROUTES_PENDING,
@@ -82,12 +83,16 @@ export const setActiveProperty = (property) => (dispatch) => {
     }
 }
 
-export const requestRoutes = () => (dispatch) => {
+export const requestRoutes = (results) => (dispatch) => {
     dispatch({ type: REQUEST_ROUTES_PENDING })
-    fetch(`${process.env.REACT_APP_API_URL}/routelist`)
-    .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_ROUTES_SUCCESS, payload: data }))
-    .catch(error => dispatch({ type: REQUEST_ROUTES_FAILED, payload: error }))
+    return {
+        type: REQUEST_ROUTES_SUCCESS,
+        payload: results
+    }
+    // fetch(`${process.env.REACT_APP_API_URL}/routelist`)
+    // .then(response => response.json())
+    // .then(data => dispatch({ type: REQUEST_ROUTES_SUCCESS, payload: data }))
+    // .catch(error => dispatch({ type: REQUEST_ROUTES_FAILED, payload: error }))
 }
 
 export const deleteRoute = (route) => (dispatch) => {
@@ -283,24 +288,41 @@ export const getWorkTypes = () => (dispatch) => {
 //         dispatch({ type: GET_TRACTORS_SUCCESS, payload: [...allTractors, newTractor]})
 //     };
 
-export const createItem = (item, itemArray, endPoint, actionType, activeActionType) => (dispatch) => {
-    dispatch({ type: GET_ITEMS_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },   
-        body: JSON.stringify(item)
-    })
-    .then(res => res.json())
-    .then(res => {
-        console.log("create Item response:", res)
-        let newItems = [...itemArray]
-        newItems.push(res[0])
-        dispatch({ type: activeActionType, payload: res[0]})
-        dispatch({ type: actionType, payload: newItems.sort((a,b) => (b.name < a.name) ? 1 : -1)})
-    })
-    .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
+export const createItem = (item, itemArray, className, actionType, activeActionType) => (dispatch) => {
+   // dispatch({ type: GET_ITEMS_PENDING})
+   console.log(className)
+   
+    const sendToDB = async() => {
+        const newItem = new Parse.Object(className);
+        //newItem.set('name:', item.name)
+        console.log(newItem)
+        try{
+            let result = await newItem.save(item);
+            alert('Object updated with objectId: ' + result.id);
+        }catch(error){
+            alert('Failed to update object, with error code: ' + error.message);
+        }
+    } 
+
+
+    sendToDB()
+
+    // fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },   
+    //     body: JSON.stringify(item)
+    // })
+    // .then(res => res.json())
+    // .then(res => {
+    //     console.log("create Item response:", res)
+    //     let newItems = [...itemArray]
+    //     newItems.push(res[0])
+    //     dispatch({ type: activeActionType, payload: res[0]})
+    //     dispatch({ type: actionType, payload: newItems.sort((a,b) => (b.name < a.name) ? 1 : -1)})
+    // })
+    // .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
 }
 
 export const editItem = (item, itemArray, endPoint, actionType, activeActionType=null) => (dispatch) => {

@@ -36,7 +36,7 @@ const Driver = () => {
     const refreshData = () => {
         dispatch(requestAllAddresses())
         dispatch(getRouteData())
-        dispatch(requestRoutes())
+       // dispatch(requestRoutes())
         dispatch(getTractors())
         dispatch(getTractorTypes())
         dispatch(getDrivers())
@@ -44,7 +44,7 @@ const Driver = () => {
     }
 
     const onCreate = (whichModal) => {
-        dispatch(setTempItem({key:0}))
+        dispatch(setTempItem({}))
         dispatch(showModal(whichModal))
     }
 
@@ -55,7 +55,7 @@ const Driver = () => {
     }
     
     const onSelect = (event, itemArray, setActiveAction) => {
-        dispatch(setActiveItem(Number(event), itemArray, setActiveAction))
+        dispatch(setActiveItem(Number(event), results, setActiveAction))
         dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
     }
 
@@ -67,6 +67,8 @@ const Driver = () => {
             <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px", alignItems:'center',}}>
                 <SimpleSelector
                     title="Route"
+                    className='route'
+                    reduxListAction= {requestRoutes}
                     selectedItem={activeRoute}
                     itemArray={routes}
                     setActiveAction={SET_ACTIVE_ROUTE}
@@ -76,7 +78,7 @@ const Driver = () => {
                     onSelect={onSelect}
                 />
                 <RouteEditor />
-                <ShiftSetup />                
+                {/* <ShiftSetup />                 */}
                 <SearchBar />
                 <EditRouteButton /> 
                 <Button variant="primary" size="sm" onClick={refreshData}>Refresh</Button>

@@ -5,7 +5,8 @@ import SimpleSelector from './SimpleSelector'
 import DriverEditor from './editor_panels/DriverEditor'
 import TractorEditor from './editor_panels/TractorEditor'
 import WorkTypeEditor from './editor_panels/WorkTypeEditor'
-import { setActiveItem, showModal, hideModal, setTempItem } from "../actions"
+import Parse from 'parse/dist/parse.min.js';
+import { setActiveItem, showModal, hideModal, setTempItem, setCurrentUser } from "../actions"
 
 import {SET_ACTIVE_TRACTOR, SET_ACTIVE_VEHICLE_TYPE, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY} from '../constants.js'
 import { setActiveWorkType } from '../reducers'
@@ -22,6 +23,7 @@ const ShiftSetup = () => {
     const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const modals = useSelector(state => state.whichModals.modals)
+    const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
 
     const outerDivStyle = {
@@ -87,6 +89,22 @@ const ShiftSetup = () => {
         dispatch(setActiveItem(newActive?.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
     }
 
+    const handleLogout = async function () {
+          if (currentUser) {
+            console.log("logging out")
+            try {
+              await Parse.User.logOut();
+              const currentUser = await Parse.User.current();
+            dispatch(setCurrentUser(null))
+              return true;
+            } catch (error) {
+              alert(`Error! ${error.message}`);
+              return false;
+            }
+          }
+          
+        };
+
     return (
         <div style={outerDivStyle}>
             <div style={labelStyle}>{activeDriver.name || 'driver'}</div>
@@ -100,6 +118,7 @@ const ShiftSetup = () => {
                 <SimpleSelector
                     style={selectorStyle}
                     title="Driver"
+                    className='driver'
                     selectedItem={activeDriver}
                     itemArray={drivers}
                     whichModal="Driver"
@@ -111,6 +130,7 @@ const ShiftSetup = () => {
                 <SimpleSelector  
                     style={selectorStyle}
                     title="Vehicle"
+                    className='vehicle'
                     selectedItem={activeVehicle}
                     itemArray={tractors}                    
                     whichModal="Vehicle"
@@ -122,6 +142,7 @@ const ShiftSetup = () => {
                 <SimpleSelector  
                     style={selectorStyle}
                     title="Work Type"
+                    className='work_type'
                     selectedItem={activeWorkType}
                     itemArray={workTypes}                   
                     whichModal="WorkType"
@@ -131,6 +152,7 @@ const ShiftSetup = () => {
                     onSelect={onSelect}
                 />
                 <Modal.Footer>
+                    <Button variant='primary' onClick={handleLogout}>Log Out</Button>
                     <Button variant='primary' onClick={onSave}>Save</Button>
                     <Button variant='secondary' onClick={onCancel}>Cancel</Button>
                 </Modal.Footer>
