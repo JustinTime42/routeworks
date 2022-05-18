@@ -116,8 +116,8 @@ const ServiceLogs = (props) => {
                     entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
                     entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                     entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                    entry.start_time = new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                    entry.end_time = new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.start_time = (entry.start_time === null) ? null : new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.end_time = (entry.end_time === null) ? null : new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                 })
             } else if (logType === 'hourly') {
                 logs.forEach(entry => {
@@ -128,8 +128,8 @@ const ServiceLogs = (props) => {
                     entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
                     entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                     entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                    entry.start_time = new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                    entry.end_time = new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.start_time = (entry.start_time === null) ? null : new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.end_time = (entry.end_time === null) ? null : new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                 })                
             }
             setLogs(logs)
