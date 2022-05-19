@@ -9,7 +9,7 @@ import Parse from 'parse/dist/parse.min.js';
 const SimpleSelector = (props) => {    
     const [showEdit, setShowEdit] = useState(false)
     const isEditor = useSelector(state => state.showRouteEditor.showEditor)
-    const userRole = useSelector(state => state.setCurrentUser.currentUser.get('appRole'))
+    const userRole = 'Admin' // useSelector(state => state.setCurrentUser.currentUser.get('appRole'))
     const dispatch = useDispatch()
     const parseQuery = new Parse.Query(props.className);
     const {

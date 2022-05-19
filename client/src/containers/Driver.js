@@ -84,10 +84,10 @@ const Driver = () => {
                     onEdit={onEdit}
                     onSelect={onSelect}
                 />
-                <RouteEditor />
-                {/* <ShiftSetup />                 */}
+                {/* <RouteEditor /> */}
+                <ShiftSetup />                
                 <SearchBar />
-                <EditRouteButton /> 
+                {/* <EditRouteButton />  */}
                 <Button variant="primary" size="sm" onClick={refreshData}>Refresh</Button>
             </div>
             { 

@@ -1,5 +1,6 @@
 import React, { useState }  from 'react'
 import { useDispatch, useSelector } from "react-redux"
+import firebase from 'firebase/compat'
 import {Form, Col, Row, Modal, Button } from 'react-bootstrap'
 import SimpleSelector from './SimpleSelector'
 import DriverEditor from './editor_panels/DriverEditor'
@@ -90,18 +91,13 @@ const ShiftSetup = () => {
     }
 
     const handleLogout = async function () {
-          if (currentUser) {
-            console.log("logging out")
-            try {
-              await Parse.User.logOut();
-              const currentUser = await Parse.User.current();
-            dispatch(setCurrentUser(null))
-              return true;
-            } catch (error) {
-              alert(`Error! ${error.message}`);
-              return false;
-            }
-          }
+        firebase.auth().signOut().then(function() {
+            // Sign-out successful.
+            console.log('User Logged Out!');
+          }).catch(function(error) {
+            // An error happened.
+            console.log(error);
+          });
           
         };
 
@@ -115,7 +111,7 @@ const ShiftSetup = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>Select Shift Details</Modal.Title>
                 </Modal.Header>
-                <SimpleSelector
+                {/* <SimpleSelector
                     style={selectorStyle}
                     title="Driver"
                     className='driver'
@@ -150,16 +146,16 @@ const ShiftSetup = () => {
                     onCreate={onCreate}
                     onEdit={onEdit}
                     onSelect={onSelect}
-                />
+                /> */}
                 <Modal.Footer>
                     <Button variant='primary' onClick={handleLogout}>Log Out</Button>
                     <Button variant='primary' onClick={onSave}>Save</Button>
                     <Button variant='secondary' onClick={onCancel}>Cancel</Button>
                 </Modal.Footer>
             </Modal>
-            <TractorEditor/>
+            {/* <TractorEditor/>
             <DriverEditor />
-            <WorkTypeEditor />            
+            <WorkTypeEditor />             */}
         </div>        
     )
 }

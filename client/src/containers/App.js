@@ -1,4 +1,10 @@
 import React, { useState, useEffect} from 'react'
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import firebase from 'firebase/compat/app';
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import 'firebase/compat/auth';
 import { useDispatch, useSelector } from 'react-redux'
 import { setCurrentUser } from '../actions'
 import HomePage from "../containers/Home"
@@ -8,29 +14,54 @@ import Auth from "../auth/Auth"
 import { UserLogin } from '../auth/UserLogin'
 import Driver from "../containers/Driver"
 import "../App.css"
-// Import Parse minified version
-import Parse from 'parse/dist/parse.min.js';
-import { initializeParse, useParseQuery } from  '@parse/react';
 
-initializeParse(
-  'https://routemanager.b4a.io/',
-  'F9woWDILIrqv5eElFUevlJBrenx1Ca7BJsDNL2MA',
-  '8IDqhrfkxT5wBtpPhBtvKqTQRF8lOH70hvICMe0r',
-)
+const firebaseConfig = {
+  apiKey: "AIzaSyAz_B_1cW3bWfQkol5Q6uRJcWajO7YXDwY",
+  authDomain: "route-manager-dev-80270.firebaseapp.com",
+  projectId: "route-manager-dev-80270",
+  storageBucket: "route-manager-dev-80270.appspot.com",
+  messagingSenderId: "133436449157",
+  appId: "1:133436449157:web:2a8b8bb960a963c47824ec",
+  measurementId: "G-7KG3DHMY56"
+};
 
-const PARSE_APPLICATION_ID = 'F9woWDILIrqv5eElFUevlJBrenx1Ca7BJsDNL2MA';
-const PARSE_HOST_URL = 'https://parseapi.back4app.com/';
-const PARSE_JAVASCRIPT_KEY = '8IDqhrfkxT5wBtpPhBtvKqTQRF8lOH70hvICMe0r';
-Parse.initialize(PARSE_APPLICATION_ID, PARSE_JAVASCRIPT_KEY);
-Parse.serverURL = PARSE_HOST_URL;
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
 
-Parse.enableLocalDatastore()
+const config = {
+  apiKey: 'AIzaSyAz_B_1cW3bWfQkol5Q6uRJcWajO7YXDwY',
+  authDomain: 'route-manager-dev-80270.firebaseapp.com',
+  // ...
+};
+firebase.initializeApp(config);
+
+// Configure FirebaseUI.
+const uiConfig = {
+  // Popup signin flow rather than redirect flow.
+  signInFlow: 'popup',
+  // We will display Google and Facebook as auth providers.
+  signInOptions: [
+    firebase.auth.EmailAuthProvider.PROVIDER_ID,
+  ],
+  callbacks: {
+    // Avoid redirects after sign-in.
+    signInSuccessWithAuthResult: () => false,
+  },
+};
 
 const App = (props) => { 
-  const isTimerRunning = useSelector(state => state.setTimerIsRunning.timerIsRunning)
-  const dispatch = useDispatch()
-  const timeout = 100000
   
+  const dispatch = useDispatch()
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  
+  useEffect(() => {
+    const unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
+      setIsSignedIn(!!user);
+    });
+    return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
+  }, []);
+
   let currentUser = useSelector(state => state.setCurrentUser.currentUser)
  // const handleOnIdle = () => handleLogout()
 
@@ -61,23 +92,18 @@ const App = (props) => {
   // now I need to be able to pause the idle time using the "pause" method if hourly timer is running
   // 
 
+  if (!isSignedIn) {
     return (
-        <div className="App">
-          {
-            currentUser ? 
-            <Driver />
-          : <UserLogin />
-          }
-          
-          {/* <Auth>
-            <Router>
-                  <Switch>
-                    <Route exact path="/" component={HomePage}/>
-                    <Route path="/callback" component={CallbackPage}/>
-                  </Switch>
-                </Router>     
-          </Auth>       */}
-        </div>       
-    )  
+      <div>
+        <h1>My App</h1>
+        <p>Please sign-in:</p>
+        <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+      </div>
+    );
   }
+  return (
+    <Driver />
+  );
+}
+
   export default App
