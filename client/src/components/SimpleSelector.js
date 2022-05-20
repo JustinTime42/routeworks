@@ -28,7 +28,16 @@ const SimpleSelector = (props) => {
                 role={user.role}
                 perform="admin:visit"
                 yes={() => (
-                    <div><Button style={{float: 'left', marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button></div>                    
+                    <div style={{display: 'flex', float: "left"}}>
+                        <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button>
+                        <Button 
+                            style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} 
+                            variant="primary" 
+                            size="sm" 
+                            onClick={() => props.onCreate(props.whichModal)}>
+                            New
+                        </Button>
+                    </div>                    
                 )}
                 no={() => null}               
             />                            
@@ -66,13 +75,6 @@ const SimpleSelector = (props) => {
             </>                
             : null
         } 
-        <Button 
-            style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} 
-            variant="primary" 
-            size="sm" 
-            onClick={() => props.onCreate(props.whichModal)}>
-            New {props.title}
-        </Button>
         </Dropdown.Menu>
     </Dropdown>
     </div>
