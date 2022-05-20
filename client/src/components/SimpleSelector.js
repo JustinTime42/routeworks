@@ -34,7 +34,34 @@ const SimpleSelector = (props) => {
     }
    
     return (   
-        <div style={props.style}>
+        <div style={props.style}>        
+        <Dropdown size="sm" onSelect={(event) => props.onSelect(event, props.itemArray, props.setActiveAction)} > 
+        <Dropdown.Toggle size='sm'>
+            {props.selectedItem?.name || `Select ${props.title}`}
+        </Dropdown.Toggle>
+        <Dropdown.Menu style={{maxHeight: '80vh', overflow:'scroll'}} >
+        <AuthConsumer>
+        {({ user }) => (
+            <Can
+                role={user.role}
+                perform="admin:visit"
+                yes={() => (
+                    <div style={{display: 'flex', float: "left"}}>
+                        <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button>
+                        <Button 
+                            style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} 
+                            variant="primary" 
+                            size="sm" 
+                            onClick={() => props.onCreate(props.whichModal)}>
+                            New
+                        </Button>
+                    </div>                    
+                )}
+                no={() => null}               
+            />                            
+        )}
+        </AuthConsumer>  
+        <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={(event) => props.onSelect(null, props.itemArray, props.setActiveAction)}>Clear</Button> 
         {
             props.itemArray && (
                 <Dropdown size="sm" onSelect={(event) => props.onSelect(event, props.itemArray, props.setActiveAction)} > 
@@ -60,6 +87,7 @@ const SimpleSelector = (props) => {
                             )                                           
                     })
                 }
+<<<<<<< HEAD
                 {
                     userRole === 'Admin' ? 
                     <>
@@ -88,6 +116,13 @@ const SimpleSelector = (props) => {
                 </Dropdown.Menu>
             </Dropdown>  
             )}                             
+=======
+            </>                
+            : null
+        } 
+        </Dropdown.Menu>
+    </Dropdown>
+>>>>>>> 0f8a2bea29fe6639d2e763702eb9f9d200bceca0
     </div>
     )
 }

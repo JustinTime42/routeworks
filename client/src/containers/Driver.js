@@ -46,7 +46,7 @@ const Driver = () => {
     }
 
     const onCreate = (whichModal) => {
-        dispatch(setTempItem({}))
+        dispatch(setTempItem({key:0, active:true}))
         dispatch(showModal(whichModal))
     }
 
