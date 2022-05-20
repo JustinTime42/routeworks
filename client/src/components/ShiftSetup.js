@@ -1,6 +1,8 @@
-import React, { useState }  from 'react'
+import React, { useState, useEffect }  from 'react'
 import { useDispatch, useSelector } from "react-redux"
+import { useAuthState } from "react-firebase-hooks/auth";
 import firebase from 'firebase/compat'
+import {logout, auth} from '../firebase'
 import {Form, Col, Row, Modal, Button } from 'react-bootstrap'
 import SimpleSelector from './SimpleSelector'
 import DriverEditor from './editor_panels/DriverEditor'
@@ -14,6 +16,7 @@ import { setActiveWorkType } from '../reducers'
 import Driver from '../containers/Driver'
 
 const ShiftSetup = () => {
+    const [user, loading, error] = useAuthState(auth);
     const activeDriver = useSelector(state => state.setActiveDriver.driver)    
     const activeVehicle = useSelector(state => state.setActiveTractor.activeTractor)
     const drivers = useSelector(state => state.getDrivers.drivers)
@@ -57,7 +60,7 @@ const ShiftSetup = () => {
     const onShow = () => {
         dispatch(showModal("Shift"))
         onClearOptions()
-        dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
+       // dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
     }
 
     const onCancel = () => {
@@ -91,15 +94,9 @@ const ShiftSetup = () => {
     }
 
     const handleLogout = async function () {
-        firebase.auth().signOut().then(function() {
-            // Sign-out successful.
-            console.log('User Logged Out!');
-          }).catch(function(error) {
-            // An error happened.
-            console.log(error);
-          });
-          
-        };
+        dispatch(hideModal("Shift"))
+        logout()
+    };
 
     return (
         <div style={outerDivStyle}>

@@ -1,4 +1,5 @@
-import Parse from 'parse/dist/parse.min.js';
+import { addDoc, collection } from "firebase/firestore"; 
+import {db} from './firebase'
 import { 
     SET_ACTIVE_ROUTE,
     REQUEST_ROUTES_PENDING,
@@ -83,6 +84,7 @@ export const setActiveProperty = (property) => (dispatch) => {
     }
 }
 
+//deprecated see SimpleSelector
 export const requestRoutes = (results) => (dispatch) => {
     dispatch({ type: REQUEST_ROUTES_PENDING })
     return {
@@ -290,39 +292,17 @@ export const getWorkTypes = () => (dispatch) => {
 
 export const createItem = (item, itemArray, className, actionType, activeActionType) => (dispatch) => {
    // dispatch({ type: GET_ITEMS_PENDING})
-   console.log(className)
-   
+
+
     const sendToDB = async() => {
-        const newItem = new Parse.Object(className);
-        //newItem.set('name:', item.name)
-        console.log(newItem)
-        try{
-            let result = await newItem.save(item);
-            alert('Object updated with objectId: ' + result.id);
-        }catch(error){
-            alert('Failed to update object, with error code: ' + error.message);
-        }
-    } 
-
-
+        try {
+         const docRef = await addDoc(collection(db, className), {...item});       
+         console.log("Document written with ID: ", docRef.id);
+       } catch (e) {
+         console.error("Error adding document: ", e);
+       }
+    }
     sendToDB()
-
-    // fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },   
-    //     body: JSON.stringify(item)
-    // })
-    // .then(res => res.json())
-    // .then(res => {
-    //     console.log("create Item response:", res)
-    //     let newItems = [...itemArray]
-    //     newItems.push(res[0])
-    //     dispatch({ type: activeActionType, payload: res[0]})
-    //     dispatch({ type: actionType, payload: newItems.sort((a,b) => (b.name < a.name) ? 1 : -1)})
-    // })
-    // .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
 }
 
 export const editItem = (item, itemArray, endPoint, actionType, activeActionType=null) => (dispatch) => {
@@ -367,7 +347,8 @@ export const deleteItem = (item, itemArray, endPoint, actionType, activeActionTy
 }
 
 export const setActiveItem = (item, itemArray, actionType) => {
-    const activeItem = itemArray.find(i => i.key === item.get('objectID'))
+    console.log(itemArray)
+    const activeItem = itemArray.find(i => i.name === item)
     if (activeItem) {
         return {
             type: actionType,

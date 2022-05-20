@@ -14,7 +14,7 @@ import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getT
 
 import SearchBar from "../components/SearchBar"
 import { Alert, Button, DropdownButton } from "react-bootstrap"
-import {SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE} from '../constants.js'
+import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE} from '../constants.js'
 
 import '../styles/driver.css'
 
@@ -56,13 +56,8 @@ const Driver = () => {
         dispatch(showModal(whichModal))
     }
     
-    const onSelect = async(event, className, itemArray, setActiveAction) => {
-        //search localdatastore for item that matches in the class, 
-        const newClass = Parse.Object.extend('route')
-        const query = new Parse.Query(newClass)
-        query.fromLocalDatastore()
-        const result = await query.get(Number(event))
-        dispatch(setActiveItem(result, itemArray, setActiveAction))
+    const onSelect = (event, itemArray, setActiveAction) => {
+        dispatch(setActiveItem(event, itemArray, setActiveAction))
         dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
     }
 
@@ -75,7 +70,7 @@ const Driver = () => {
                 <SimpleSelector
                     title="Route"
                     className='route'
-                    reduxListAction= {requestRoutes}
+                    reduxListAction= {REQUEST_ROUTES_SUCCESS}
                     selectedItem={activeRoute}
                     itemArray={routes}
                     setActiveAction={SET_ACTIVE_ROUTE}
@@ -84,8 +79,8 @@ const Driver = () => {
                     onEdit={onEdit}
                     onSelect={onSelect}
                 />
-                {/* <RouteEditor /> */}
-                <ShiftSetup />                
+                <RouteEditor />
+                {/* <ShiftSetup />                 */}
                 <SearchBar />
                 {/* <EditRouteButton />  */}
                 <Button variant="primary" size="sm" onClick={refreshData}>Refresh</Button>

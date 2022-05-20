@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
-import Can from '../auth/Can'
-import { AuthConsumer } from "../authContext"
 import { connect } from "react-redux"
 import {showRouteEditor} from "../actions"
 import ServiceLogs from "../components/ServiceLogs"
