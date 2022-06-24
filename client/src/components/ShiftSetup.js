@@ -1,17 +1,18 @@
 import React, { useState, useEffect }  from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { useAuthState } from "react-firebase-hooks/auth";
-import firebase from 'firebase/compat'
+import { useAuthState } from "react-firebase-hooks/auth"; 
+//import firebase from 'firebase/compat'
 import {logout, auth} from '../firebase'
 import {Form, Col, Row, Modal, Button } from 'react-bootstrap'
 import SimpleSelector from './SimpleSelector'
 import DriverEditor from './editor_panels/DriverEditor'
 import TractorEditor from './editor_panels/TractorEditor'
+import {getAdminItem} from '../firebase'
 import WorkTypeEditor from './editor_panels/WorkTypeEditor'
 import Parse from 'parse/dist/parse.min.js';
 import { setActiveItem, showModal, hideModal, setTempItem, setCurrentUser } from "../actions"
 
-import {SET_ACTIVE_TRACTOR, SET_ACTIVE_VEHICLE_TYPE, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY} from '../constants.js'
+import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY} from '../constants.js'
 import { setActiveWorkType } from '../reducers'
 import Driver from '../containers/Driver'
 
@@ -72,24 +73,28 @@ const ShiftSetup = () => {
         dispatch(hideModal("Shift"))        
     }
 
-    const onCreate = (whichModal) => {
-        dispatch(setTempItem({key:0}))
+    const onCreate = (whichModal, item, collection) => {
+        
+        dispatch(setTempItem(item))
         dispatch(showModal(whichModal))
     }
 
-    const onEdit = (item, whichModal) => {
-        console.log(item)        
+    const onEdit = (item, whichModal, collection) => {
+        getAdminItem(item, collection)
+        .then(item => {
+            dispatch(setTempItem(item))
+        })        
         dispatch(setTempItem(item))
         dispatch(showModal(whichModal))
     }
     
     const onSelect = (event, itemArray, setActiveAction) => {
-        dispatch(setActiveItem(Number(event), itemArray, setActiveAction))
+        dispatch(setActiveItem(event, itemArray, setActiveAction))
     }
 
     const onSelectVehicle = (event, itemArray, setActiveAction) => {
         let newActive = tractors.find(item => item.key === Number(event))
-        dispatch(setActiveItem(Number(event), itemArray, setActiveAction))
+        dispatch(setActiveItem(event, itemArray, setActiveAction))
         dispatch(setActiveItem(newActive?.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
     }
 
@@ -108,10 +113,11 @@ const ShiftSetup = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>Select Shift Details</Modal.Title>
                 </Modal.Header>
-                {/* <SimpleSelector
+                <SimpleSelector
                     style={selectorStyle}
                     title="Driver"
-                    className='driver'
+                    collection='driver'
+                    reduxListAction= {GET_DRIVERS_SUCCESS}
                     selectedItem={activeDriver}
                     itemArray={drivers}
                     whichModal="Driver"
@@ -123,16 +129,17 @@ const ShiftSetup = () => {
                 <SimpleSelector  
                     style={selectorStyle}
                     title="Vehicle"
-                    className='vehicle'
+                    collection='vehicle'
                     selectedItem={activeVehicle}
                     itemArray={tractors}                    
                     whichModal="Vehicle"
                     setActiveAction={SET_ACTIVE_TRACTOR}
+                    reduxListAction= {GET_TRACTORS_SUCCESS}
                     onCreate={onCreate}
                     onEdit={onEdit}
                     onSelect={onSelectVehicle} 
                 />
-                <SimpleSelector  
+                {/* <SimpleSelector  
                     style={selectorStyle}
                     title="Work Type"
                     className='work_type'
@@ -150,9 +157,9 @@ const ShiftSetup = () => {
                     <Button variant='secondary' onClick={onCancel}>Cancel</Button>
                 </Modal.Footer>
             </Modal>
-            {/* <TractorEditor/>
+            <TractorEditor/>
             <DriverEditor />
-            <WorkTypeEditor />             */}
+            {/* <WorkTypeEditor />             */}
         </div>        
     )
 }

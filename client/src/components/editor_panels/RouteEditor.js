@@ -21,20 +21,16 @@
         }   
 
         const onSave = () => {
-            dispatch(createItem(tempItem, routes, 'route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
-
-            // if (tempItem.key === 0) {            
-            //     const {key, ...item} = tempItem 
-            //     dispatch(createItem(item, routes, 'route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
-            // }
-            // else {
-            //     dispatch(editItem(tempItem, routes, 'editroute', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
-            // } 
+            if (tempItem.id) {
+                dispatch(editItem(tempItem, routes, 'route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+            } else {
+                dispatch(createItem(tempItem, routes, 'route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+            }
             dispatch(hideModal('Route'))    
         }
 
         const onDelete = () => {
-            dispatch(deleteItem(tempItem, routes, "delroute", REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+            dispatch(deleteItem(tempItem, routes, "route", REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
             dispatch(hideModal('Route'))                 
         }
 
@@ -58,8 +54,7 @@
                             onChange={onChange}
                         /> 
                     </Col>
-                </Form.Group>     
-
+                </Form.Group> 
                 <div className="flex justify-content-around">
                     <Button variant="danger" style={{visibility: ((deleteAlert !== tempItem?.name) && tempItem) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(tempItem)}>Delete</Button>
                     <Button disabled={!tempItem} style={{margin: "3px"}} onClick={onSave}>Save</Button>   

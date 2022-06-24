@@ -34,26 +34,29 @@ const TractorEditor = (props) => {
     }
 
     const onSave = () => {
-        let newTractor = {...tempItem, type: activeVehicleType.key}
-        console.log(newTractor)
-         if (tempItem.key === 0) {            
-             const {key, ...item} = newTractor 
-             console.log("creating new item", item)
-             dispatch(createItem(item, tractors, 'newvehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
-         }
-         else {
-             dispatch(editItem(newTractor, tractors, 'editvehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
-         } 
-         dispatch(hideModal('Vehicle'))    
+        if (!activeVehicleType.id) {alert('please enter vehicle type')}
+        else {
+            let newTractor = {...tempItem, type: activeVehicleType.key}
+            console.log(newTractor)
+            if (tempItem.key === 0) {            
+                const {key, ...item} = newTractor 
+                console.log("creating new item", item)
+                dispatch(createItem(item, tractors, 'vehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
+            }
+            else {
+                dispatch(editItem(newTractor, tractors, 'vehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
+            } 
+            dispatch(hideModal('Vehicle'))    
+        }
     } 
 
     const onDelete = (item) => {
-        dispatch(deleteItem(tempItem, tractors, "deletevehicle", GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
+        dispatch(deleteItem(tempItem, tractors, "vehicle", GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
         dispatch(hideModal('Vehicle'))             
     }
 
     const onCreateType = (whichModal) => {        
-        setVehicleType({key:0,name:''})
+        setVehicleType({name:''})
         dispatch(showModal(whichModal))
     }
 
@@ -92,8 +95,10 @@ const TractorEditor = (props) => {
                 <SimpleSelector
                     title="Vehicle Type"
                     selectedItem={activeVehicleType}
-                    itemArray={vehicleTypes}                    
+                    itemArray={vehicleTypes}   
+                    collection='vehicle_type'                
                     setActiveAction={SET_ACTIVE_VEHICLE_TYPE}
+                    reduxListAction= {GET_VEHICLE_TYPES_SUCCESS}
                     whichModal="VehicleType"
                     onCreate={onCreateType}
                     onEdit={onEditType}

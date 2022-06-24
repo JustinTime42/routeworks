@@ -1,4 +1,4 @@
-import { addDoc, collection } from "firebase/firestore"; 
+import { addDoc, collection, doc, setDoc, deleteDoc } from "firebase/firestore"; 
 import {db} from './firebase'
 import { 
     SET_ACTIVE_ROUTE,
@@ -291,59 +291,34 @@ export const getWorkTypes = () => (dispatch) => {
 //     };
 
 export const createItem = (item, itemArray, className, actionType, activeActionType) => (dispatch) => {
-   // dispatch({ type: GET_ITEMS_PENDING})
-
-
     const sendToDB = async() => {
         try {
-         const docRef = await addDoc(collection(db, className), {...item});       
+         const docRef = await addDoc(collection(db, className), {...item})
          console.log("Document written with ID: ", docRef.id);
+         dispatch({type: activeActionType, payload: item})
        } catch (e) {
-         console.error("Error adding document: ", e);
+         console.log("Error adding document: ", e);
        }
     }
     sendToDB()
 }
 
-export const editItem = (item, itemArray, endPoint, actionType, activeActionType=null) => (dispatch) => {
-    dispatch({ type: GET_ITEMS_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(item)
-    })
-    .then(res => res.json())
-    .then(updated => {
-        console.log("updated: ", updated)
-        let newItems = [...itemArray]
-        newItems[itemArray.findIndex(item => item.key === updated[0].key)] = updated[0] 
-        dispatch({type: activeActionType, payload: updated[0]})        
-        dispatch({ type: actionType, payload: newItems})
-    })
-    .catch(err => dispatch({ type: GET_ITEMS_FAILED, payload: err}))
+export const editItem = (item, itemArray, className, actionType, activeActionType=null) => (dispatch) => {
+    const {id, ...itemDetails} = item
+    const itemRef = doc(db, className, item.id)
+    const sendToDB = async() => {
+        try {            
+            await setDoc(itemRef, {...itemDetails}, {merge: true})
+            dispatch({type: activeActionType, payload: item})
+        } catch (e) { console.log("error adding document: ", e)}
+    }
+    sendToDB()
 }
 
-export const deleteItem = (item, itemArray, endPoint, actionType, activeActionType) => (dispatch) => {
-    dispatch({ type: GET_ITEMS_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/${endPoint}`, {
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(item)
-    })
-    .then(res => res.json())
-    .then(deleted => {
-        console.log("deleted: ", deleted)
-        console.log("item to delete: ", item.name)
-        let newItems = [...itemArray]
-        newItems.splice(itemArray.findIndex(item => item.name === deleted.name), 1)
-        dispatch({ type: activeActionType, payload: {key: 0, name: '', type: ''}}) 
-        dispatch({ type: actionType, payload: newItems})
-    })
-    .catch(err => dispatch({ type: GET_ITEMS_FAILED, payload: err}))
+export const deleteItem = (item, itemArray, className, actionType, activeActionType=null) => (dispatch) => {
+    deleteDoc(doc(db, className, item.admin_key))
+    .then(() => dispatch({type: activeActionType, payload: null}))
+    .catch(err => console.log(err))
 }
 
 export const setActiveItem = (item, itemArray, actionType) => {

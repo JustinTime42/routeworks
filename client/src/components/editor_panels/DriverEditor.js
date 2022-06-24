@@ -1,9 +1,8 @@
-
     import React, {  useState, useEffect } from "react"
     import { useDispatch, useSelector } from "react-redux";
     import {Button, Alert, Modal, Form, Row, Col } from "react-bootstrap"
     import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
-    import {GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER} from '../../constants.js'
+    import {GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, TEMP_ITEM} from '../../constants.js'
     
     const DriverEditor = (props) => {
         const [deleteAlert, setDeleteAlert] = useState('')
@@ -20,27 +19,27 @@
                 if (isNaN(value)) {
                     value = tempItem[name]
                 }
+                dispatch(setTempItem({...tempItem, adminFields: {...tempItem.adminFields, [name]: value}}))
             } else if (event.target.value === "on") {
                 console.log("toggling active")
-                dispatch(setTempItem({...tempItem, active: !tempItem.active}))
+                dispatch(setTempItem({...tempItem, nonAdminFields: {...tempItem.nonAdminFields, active: !tempItem.nonAdminFields.active}}))
             } else {
-                dispatch(setTempItem({...tempItem, [name]: value}))
+                dispatch(setTempItem({...tempItem, nonAdminFields: {...tempItem.nonAdminFields, [name]: value}}))
             }
         }
 
         const onSave = () => {
-            if (tempItem.key === 0) {            
-                const {key, ...item} = tempItem 
-                dispatch(createItem(item, drivers, 'newdriver', GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER))
+            if (tempItem.id) { 
+                dispatch(editItem(tempItem, drivers, 'admin/admin_lists/admin_driver', GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER)) 
             }
             else {
-                dispatch(editItem(tempItem, drivers, 'editdriver', GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER))
+                dispatch(createItem(tempItem, drivers, 'admin/admin_lists/admin_driver', GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER))
             } 
             dispatch(hideModal('Driver'))    
        }
 
        const onDelete = (item) => {
-        dispatch(deleteItem(tempItem, drivers, "deletedriver", GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER))
+        dispatch(deleteItem(tempItem, drivers, "admin_driver", GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER))
         dispatch(hideModal('Driver'))                 
     }
 
@@ -50,19 +49,19 @@
                 <Form.Group as={Row}>
                             <Form.Label column sm={2}>Name</Form.Label>
                             <Col sm={8}>
-                                <Form.Control name="name" type="text" onChange={onChange} placeholder="Name" value={tempItem?.name || ''}/>
+                                <Form.Control name="name" type="text" onChange={onChange} placeholder="Name" value={tempItem?.nonAdminFields?.name || ''}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
                             <Form.Label column sm={2}>Percentage</Form.Label>
                             <Col sm={8}>
-                                <Form.Control name="percentage" type="numeric" onChange={onChange} placeholder="Percentage" value={tempItem?.percentage || 0} />
+                                <Form.Control name="percentage" type="numeric" onChange={onChange} placeholder="Percentage" value={tempItem?.adminFields?.percentage || 0} />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
                             <Form.Label column sm={2}>Hourly</Form.Label>
                             <Col sm={8}>
-                                <Form.Control name="hourly" type="numeric" onChange={onChange} placeholder="Hourly" value={tempItem?.hourly || 0} />
+                                <Form.Control name="hourly" type="numeric" onChange={onChange} placeholder="Hourly" value={tempItem?.adminFields?.hourly || 0} />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
@@ -72,7 +71,7 @@
                             name="active"
                             type="checkbox"
                             label="Active?"
-                            checked = {!!tempItem?.active}
+                            checked = {!!tempItem?.nonAdminFields?.active}
                             onChange={onChange}
                         /> 
                     </Col>

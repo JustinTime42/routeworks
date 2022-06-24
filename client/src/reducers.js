@@ -48,7 +48,9 @@ import { SET_ACTIVE_ROUTE,
 } from './constants.js'
 
 const initialStateCurrentUser = {
-    currentUser: null
+    currentUser: {
+        admin: false
+    }
 }
 
 export const setCurrentUser = (state=initialStateCurrentUser, action={}) => {
@@ -76,7 +78,6 @@ export const setTimerIsRunning = (state=initialStateTimerIsRunning, action={}) =
 
 const initialStateActiveRoute = {
     activeRoute: {
-        key: '',
         name: ''
     }
 }
@@ -125,7 +126,6 @@ export const requestRoutes = (state = initialStateRoutes, action={}) => {
 
 const initialStateDriver = {
     driver: {
-        key: '',
         name: '',
         percentage: '',
         hourly: '',
@@ -163,7 +163,6 @@ export const getDrivers = (state = initialStateDrivers, action={}) => {
 
 const initialStateActiveTractor = {
     activeTractor: {
-        key: 0,
         name: '',
         type: 0,
     }
@@ -203,7 +202,6 @@ export const getWorkTypes = (state = initialStateWorkTypes, action={}) => {
 
 const initialStateActiveWorkType = {
     workType: {
-        key: 0,
         name: '',
     }
 }
@@ -257,7 +255,6 @@ export const getTractorTypes = (state = initialStateTractorTypes, action={}) => 
 
 const initialStateActiveVehicleType = {
     activeVehicleType: {
-        key: 0,
         name: '',
     }
 }
@@ -401,7 +398,7 @@ export const whichModals = (state = initialStateWhichModals, action={}) =>  {
 }
 
 export const initialStateTempItem = {
-    item: {key:0, active:true}
+    item: {active:true}
 }
 
 export const setTempItem = (state = initialStateTempItem, action={}) => {

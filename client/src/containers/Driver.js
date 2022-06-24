@@ -5,10 +5,11 @@ import Parse from 'parse/dist/parse.min.js';
 import SimpleSelector from "../components/SimpleSelector"
 import ShiftSetup from '../components/ShiftSetup';
 import RouteEditor from '../components/editor_panels/RouteEditor';
+import { app, auth, logout, functions } from '../firebase'
 
 import DisplayRoute from "./DisplayRoute"
 import EditRoute from "./EditRoute"
-import EditRouteButton from "./AdminDropdown"
+import AdminDropdown from "./AdminDropdown"
 import Spinner from "../components/Spinner"
 import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, getWorkTypes, setTempItem, showModal, setActiveItem} from "../actions"
 
@@ -29,6 +30,7 @@ const Driver = () => {
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
     const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
+    const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -41,7 +43,7 @@ const Driver = () => {
        // dispatch(requestRoutes())
         dispatch(getTractors())
         dispatch(getTractorTypes())
-        dispatch(getDrivers())
+        //dispatch(getDrivers())
         dispatch(getWorkTypes())
     }
 
@@ -69,7 +71,7 @@ const Driver = () => {
             <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px", alignItems:'center',}}>
                 <SimpleSelector
                     title="Route"
-                    className='route'
+                    collection='route'
                     reduxListAction= {REQUEST_ROUTES_SUCCESS}
                     selectedItem={activeRoute}
                     itemArray={routes}
@@ -80,9 +82,10 @@ const Driver = () => {
                     onSelect={onSelect}
                 />
                 <RouteEditor />
-                {/* <ShiftSetup />                 */}
+                <ShiftSetup />                
                 <SearchBar />
-                {/* <EditRouteButton />  */}
+                { currentUser.admin ? <AdminDropdown /> : null }
+                 
                 <Button variant="primary" size="sm" onClick={refreshData}>Refresh</Button>
             </div>
             { 

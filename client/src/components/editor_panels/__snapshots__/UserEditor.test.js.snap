@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`expects to render UserEditor component 1`] = `
+<Container
+  fluid={false}
+  style={
+    Object {
+      "marginTop": "400px",
+      "position": "fixed",
+      "width": "100vw",
+    }
+  }
+>
+  <Button
+    active={false}
+    disabled={false}
+    onClick={[Function]}
+    variant="primary"
+  >
+    Fetch Users
+  </Button>
+  <Button
+    active={false}
+    disabled={false}
+    variant="primary"
+  >
+    Create New User
+  </Button>
+  <Form>
+    <Container
+      fluid={false}
+    >
+      <Row>
+        <Col
+          sm={4}
+        >
+          Display Name
+        </Col>
+        <Col
+          sm={3}
+        >
+          Email
+        </Col>
+        <Col
+          sm={3}
+        >
+          Password
+        </Col>
+        <Col
+          sm={1}
+        >
+          Role
+        </Col>
+      </Row>
+      <Row>
+        <Col
+          sm={4}
+        >
+          <FormControl
+            name="displayName"
+            onChange={[Function]}
+            type="text"
+          />
+        </Col>
+        <Col
+          sm={3}
+        >
+          <FormControl
+            name="email"
+            onChange={[Function]}
+            type="text"
+          />
+        </Col>
+        <Col
+          sm={3}
+        >
+          <FormControl
+            name="password"
+            onChange={[Function]}
+            type="text"
+          />
+        </Col>
+        <Col
+          sm={1}
+        >
+          <FormCheck
+            name="admin"
+            onClick={[Function]}
+            type="checkbox"
+          />
+        </Col>
+        <Col
+          sm={1}
+        >
+          <Button
+            active={false}
+            disabled={false}
+            onClick={[Function]}
+            variant="primary"
+          >
+            Save
+          </Button>
+           
+        </Col>
+      </Row>
+    </Container>
+  </Form>
+</Container>
+`;

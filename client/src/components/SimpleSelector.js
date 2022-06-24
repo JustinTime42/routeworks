@@ -10,18 +10,17 @@ import { requestRoutes } from "../actions";
 const SimpleSelector = (props) => {    
     const [showEdit, setShowEdit] = useState(false)
     const isEditor = useSelector(state => state.showRouteEditor.showEditor)
+    const currentUser = useSelector(state => state.setCurrentUser.currentUser)
 
-    //TODO get RBAC working
-    // probably through custom claims. probably might as well make an admin user portal in the app while I'm at it. 
-    const userRole = 'Admin' // useSelector(state => state.setCurrentUser.currentUser.get('appRole'))
     const dispatch = useDispatch()
   
     useEffect(() => {
-        const q = query(collection(db, "route"))
+        const q = query(collection(db, props.collection))
         const unsub = onSnapshot(q, (querySnapshot) => {
             const results = [];
             querySnapshot.forEach((doc) => {
-                results.push(doc.data());
+                const id = doc.id
+                results.push({...doc.data(), id});
             })
             dispatch({type:props.reduxListAction, payload: results})
         })
@@ -41,28 +40,22 @@ const SimpleSelector = (props) => {
                 {props.selectedItem?.name || `Select ${props.title}`}
             </Dropdown.Toggle>
             <Dropdown.Menu style={{maxHeight: '80vh', overflow:'scroll'}} >
-                {/* <AuthConsumer>
-                {({ user }) => (
-                    <Can
-                        role={user.role}
-                        perform="admin:visit"
-                        yes={() => (
-                            <div style={{display: 'flex', float: "left"}}>
-                                <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button>
-                                <Button 
-                                    style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} 
-                                    variant="primary" 
-                                    size="sm" 
-                                    onClick={() => props.onCreate(props.whichModal)}>
-                                    New
-                                </Button>
-                            </div>                    
-                        )}
-                        no={() => null}               
-                    />                            
-                )}
-                </AuthConsumer>  
-            <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={(event) => props.onSelect(null, props.itemArray, props.setActiveAction)}>Clear</Button>  */}
+            {
+                currentUser.admin ? 
+                <div style={{display: 'flex', float: "left"}}>
+                    <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button>
+                    <Button 
+                        style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} 
+                        variant="primary" 
+                        size="sm" 
+                        onClick={() => props.onCreate(props.whichModal, {active:true})}>
+                        New
+                    </Button>
+                </div>   : null
+            }
+                                             
+                        
+            <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={(event) => props.onSelect(null, props.itemArray, props.setActiveAction)}>Clear</Button>
             {
                 props.itemArray ? 
                     // <Dropdown size="sm" onSelect={(event) => props.onSelect(event, props.itemArray, props.setActiveAction)} > 
@@ -82,7 +75,7 @@ const SimpleSelector = (props) => {
                                 return (
                                     <div key={i} style={{display: "flex"}}>                        
                                         <Dropdown.Item eventKey={item.name}>{item.name}
-                                            <Button style={{visibility: (showEdit) ? "initial" : "hidden"}} onClick={() => props.onEdit(item, props.whichModal)}>Edit</Button>
+                                            <Button style={{visibility: (showEdit) ? "initial" : "hidden"}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
                                         </Dropdown.Item>
                                     </div>
                                 )                                           

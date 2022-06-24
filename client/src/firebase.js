@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app"
+import { getFunctions, httpsCallable } from 'firebase/functions'
 import {
     GoogleAuthProvider,
     getAuth,
@@ -9,12 +10,14 @@ import {
     signOut,
 } from "firebase/auth"
 import {
-    getFirestore,
-    query,
-    getDocs,
-    collection,
-    where,
-    addDoc,
+  getDoc,
+  doc,
+  getFirestore,
+  query,
+  getDocs,
+  collection,
+  where,
+  addDoc,
 } from "firebase/firestore"
 
 const firebaseConfig = {
@@ -28,8 +31,9 @@ const firebaseConfig = {
   };
 
 const app = initializeApp(firebaseConfig)
-const auth = getAuth()
+const auth = getAuth(app)
 const db = getFirestore(app)
+const functions = getFunctions(app)
 
 const logInWithEmailAndPassword = async (email, password) => {
     try {
@@ -40,14 +44,49 @@ const logInWithEmailAndPassword = async (email, password) => {
     }
 }
 
+            // move this to its own folder of functions 
+  const getAdminItem = async(item, collection) => {
+    try {
+        const docRef = doc(db, `admin/admin_lists/admin_${collection}`, item.admin_key);
+        const docSnap = await getDoc(docRef);
+        const id = docSnap.id
+        if (docSnap.exists()) {
+            return ({...docSnap.data(), id })  
+        } else {
+            return `couldn't find ${item.name}`
+        }
+    }
+    catch (e) {
+        alert(e)
+    }      
+    
+}
+
+// const createUser = async (auth, email, password) => {
+//   createUserWithEmailAndPassword(auth, email, password)
+//   .then((userCredential) => {
+//     // Signed in 
+//     const user = userCredential.user;
+//     // ...
+//   })
+//   .catch((error) => {
+//     const errorCode = error.code;
+//     const errorMessage = error.message;
+//     // ..
+//   })
+// }
+
 const logout = () => {
-signOut(auth);
-};
+signOut(auth)
+}
 
 export {
-    app,
-    auth,
-    db,
-    logInWithEmailAndPassword,
-    logout,
-  };
+  functions,
+  app,
+  auth,
+  db,
+  logInWithEmailAndPassword,
+  logout,
+  httpsCallable,
+  getAdminItem,
+}
