@@ -398,7 +398,7 @@ export const whichModals = (state = initialStateWhichModals, action={}) =>  {
 }
 
 export const initialStateTempItem = {
-    item: {active:true}
+    item: {}
 }
 
 export const setTempItem = (state = initialStateTempItem, action={}) => {

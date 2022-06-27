@@ -309,14 +309,14 @@ export const editItem = (item, itemArray, className, actionType, activeActionTyp
     const sendToDB = async() => {
         try {            
             await setDoc(itemRef, {...itemDetails}, {merge: true})
-            dispatch({type: activeActionType, payload: item})
+            dispatch({type: activeActionType, payload: item.nonAdminFields})
         } catch (e) { console.log("error adding document: ", e)}
     }
     sendToDB()
 }
 
 export const deleteItem = (item, itemArray, className, actionType, activeActionType=null) => (dispatch) => {
-    deleteDoc(doc(db, className, item.admin_key))
+    deleteDoc(doc(db, className, item.id))
     .then(() => dispatch({type: activeActionType, payload: null}))
     .catch(err => console.log(err))
 }

@@ -5,7 +5,7 @@ import {showRouteEditor} from "../actions"
 import ServiceLogs from "../components/ServiceLogs"
 import CustomerContact from '../components/CustomerContact'
 import RawCustomerData from '../components/RawCustomerData'
-import UserEditor from '../components/editor_panels/UserEditor'
+// import UserEditor from '../components/editor_panels/UserEditor'
 
 const mapStateToProps = state => {
     return {
@@ -69,7 +69,7 @@ class AdminDropdown extends Component {
                         <ServiceLogs show={this.state.showLogsMenu} onClose={this.onClose} /> 
                         <CustomerContact show={this.state.showContactsMenu} onClose={this.onClose} />  
                         <RawCustomerData show={this.state.showRawTableModal} onClose={this.onClose} />
-                        <UserEditor show={this.state.showUserEditor} onClose={this.onClose} />                      
+                        {/* <UserEditor show={this.state.showUserEditor} onClose={this.onClose} />                       */}
                     </>
             )
      //  } else return null

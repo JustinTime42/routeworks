@@ -71,7 +71,7 @@ const UserEditor = (props) => {
                             <Col sm={4}><Form.Control name="displayName" type="text" value={newUser.displayName} onChange={onChange} /></Col>
                             <Col sm={3}><Form.Control name="email" type="text" value={newUser.email} onChange={onChange} /></Col>
                             <Col sm={3}><Form.Control name="password" type="text" value={newUser.password} onChange={onChange} /></Col>
-                            <Col sm={1}><Form.Check name="admin" type="checkbox" checked={newUser.customClaims?.admin} onClick={onChange} /></Col>
+                            <Col sm={1}><Form.Check name="admin" type="checkbox" checked={newUser.customClaims?.admin} onChange={onChange} /></Col>
                             <Col sm={1}><Button onClick={onSaveUser}>Save</Button> </Col>                                                                        
                         </Row>
                         {

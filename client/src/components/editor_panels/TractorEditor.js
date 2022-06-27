@@ -21,6 +21,15 @@ const TractorEditor = (props) => {
         setVehicleType(activeVehicleType)
     },[activeVehicleType])
 
+    useEffect(() => {
+        if(!('name' in tempItem) && modals.includes('Vehicle')) {
+            dispatch(setTempItem({name: '', active: true}))
+        }
+        if(tempItem.type) {
+            dispatch(setActiveItem(tempItem.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
+        }
+    }, [tempItem])
+
     const onChangeName = (event) => {
         dispatch(setTempItem({...tempItem, name: event.target.value}))
     }
@@ -36,54 +45,51 @@ const TractorEditor = (props) => {
     const onSave = () => {
         if (!activeVehicleType.id) {alert('please enter vehicle type')}
         else {
-            let newTractor = {...tempItem, type: activeVehicleType.key}
+            let newTractor = {...tempItem, type: activeVehicleType}
             console.log(newTractor)
-            if (tempItem.key === 0) {            
-                const {key, ...item} = newTractor 
-                console.log("creating new item", item)
-                dispatch(createItem(item, tractors, 'vehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
+            if (tempItem.id) {    
+                dispatch(editItem(tempItem, tractors, 'driver/driver_lists/vehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
             }
             else {
-                dispatch(editItem(newTractor, tractors, 'vehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
+                dispatch(createItem(tempItem, tractors, 'driver/driver_lists/vehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
             } 
             dispatch(hideModal('Vehicle'))    
         }
     } 
 
     const onDelete = (item) => {
-        dispatch(deleteItem(tempItem, tractors, "vehicle", GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
+        dispatch(deleteItem(tempItem, tractors, "driver/driver_lists/vehicle", GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
         dispatch(hideModal('Vehicle'))             
     }
 
     const onCreateType = (whichModal) => {        
-        setVehicleType({name:''})
+        setVehicleType({name:'', active:true})
         dispatch(showModal(whichModal))
     }
+    
+    // maybe here I can setTempItem(...tempItem, type: event)
+    const onSelectType = (event, itemArray, setActiveAction) => {
+        dispatch(setActiveItem(event, itemArray, setActiveAction))
+        dispatch(setTempItem({...tempItem, type: event}))
+    }
 
-    // here I'll alter state.tempItem
     const onEditType = (item, whichModal) => {
         console.log(item)   
         dispatch(showModal(whichModal))
     }
-    
-    // here I'll select state.activeType
-    const onSelectType = (event, itemArray, setActiveAction) => {
-        dispatch(setActiveItem(Number(event), itemArray, setActiveAction))
-    }
 
     const onSaveType = () => {
-        if (vehicleType.key === 0) {            
-            const {key, ...item} = vehicleType 
-            dispatch(createItem(item, vehicleTypes, 'newvehicletype', GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))
+        if (vehicleType.id) {  
+            dispatch(editItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))  
         }
         else {
-            dispatch(editItem(vehicleType, vehicleTypes, 'editvehicletype', GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))
+            dispatch(createItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))
         } 
         dispatch(hideModal('VehicleType'))    
     }
 
     const onDeleteType = () => {
-        dispatch(deleteItem(vehicleType, vehicleTypes, 'deletevehicletype', GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))
+        dispatch(deleteItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))
         dispatch(hideModal('VehicleType'))                 
     }
 
@@ -96,7 +102,8 @@ const TractorEditor = (props) => {
                     title="Vehicle Type"
                     selectedItem={activeVehicleType}
                     itemArray={vehicleTypes}   
-                    collection='vehicle_type'                
+                    collection='vehicle_type'   
+                    collectionPath='driver/driver_lists/'             
                     setActiveAction={SET_ACTIVE_VEHICLE_TYPE}
                     reduxListAction= {GET_VEHICLE_TYPES_SUCCESS}
                     whichModal="VehicleType"

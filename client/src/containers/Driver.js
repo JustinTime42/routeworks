@@ -48,19 +48,18 @@ const Driver = () => {
     }
 
     const onCreate = (whichModal) => {
-        dispatch(setTempItem({key:0, active:true}))
+        dispatch(setTempItem({}))
         dispatch(showModal(whichModal))
     }
 
     const onEdit = (item, whichModal) => {
-        console.log(item)        
         dispatch(setTempItem(item))
         dispatch(showModal(whichModal))
     }
     
     const onSelect = (event, itemArray, setActiveAction) => {
         dispatch(setActiveItem(event, itemArray, setActiveAction))
-        dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
+        dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))
     }
 
     return (
@@ -72,6 +71,7 @@ const Driver = () => {
                 <SimpleSelector
                     title="Route"
                     collection='route'
+                    collectionPath='driver/driver_lists/'
                     reduxListAction= {REQUEST_ROUTES_SUCCESS}
                     selectedItem={activeRoute}
                     itemArray={routes}

@@ -5,14 +5,14 @@ import { requestAllAddresses, getRouteProperties, setActiveProperty } from '../.
 import axios from "axios"
 import CustLogs from '../customer_panels/CustLogs'
 import '../../styles/driver.css'
-import { serviceLevels } from "../../globals.js"
+import { serviceLevels  } from '../../globals'
 const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt", "Hourly"]
 
 
 const sandContractTypes = ["Per Visit", "Per Yard"]
 const editorSize = {height:"90vh", marginTop: '2em'}
 
-const CustomerDetails = props => {
+const CustomerEditor = (props) => {
     const reduxProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const routeData = useSelector(state => state.getRouteData.routeData)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
@@ -54,12 +54,6 @@ const CustomerDetails = props => {
         .then(tag => setAllTags([...allTags, tag.data])) 
         .catch(err => console.log(err))
     }
-
-    // const deleteTag = (tag) => {
-    //     axios.post(`${process.env.REACT_APP_API_URL}/deltag`, { tag_name: tag})
-    //     .then(tag => setAllTags([...allTags.splice(allTags.indexOf(tag.data[0].tag_name), 1)])) 
-    //     .catch(err => console.log(err))
-    // }
     
     const onChange = (event) => {
         let { target: { name, value } } = event
@@ -216,7 +210,7 @@ const CustomerDetails = props => {
                     </Tab>
                     <Tab eventKey='job' title='Job Info'>
                         <Form>
-                        <Form.Row> 
+                        <Row> 
                             {
                             reduxProperty?.contract_type === "Hourly" ? 
                             <Col> 
@@ -225,27 +219,27 @@ const CustomerDetails = props => {
                             vehicleTypes.map((item, i) => {  
                                 return (
                                     <Form.Group key = {i}>
-                                        <Form.Row>  
+                                        <Row>  
                                             <Col xs={8}>
                                                 <Form.Label size='sm'>{item.name} Price</Form.Label>
                                             </Col>
                                             <Col>
                                                 <Form.Control size='sm' name={item.name} type="number" value={reduxProperty[item.name] || ''} onChange={onChange}/>
                                             </Col>
-                                        </Form.Row>                                    
+                                        </Row>                                    
                                     </Form.Group>
                                 )
                             })
                             }
                                 <Form.Group>
-                                <Form.Row>
+                                <Row>
                                     <Col xs={8}>
                                         <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
                                     </Col>
                                     <Col>
                                         <Form.Control size='sm' name="price_per_yard" type="number" value={reduxProperty?.price_per_yard || ''} onChange={onChange}/>
                                     </Col>
-                                </Form.Row>
+                                </Row>
                                 </Form.Group>
                                 <Form.Group>                                
                                 </Form.Group>
@@ -254,54 +248,54 @@ const CustomerDetails = props => {
                             <Col> 
                                 <Form.Label size='sm'>Prices</Form.Label>
                                     <Form.Group>
-                                        <Form.Row>  
+                                        <Row>  
                                             <Col xs={8}>
                                                 <Form.Label size='sm'>Snow Price</Form.Label>
                                             </Col>
                                             <Col>
                                                 <Form.Control size='sm' name="price" type="number" value={reduxProperty?.price || ''} onChange={onChange}/>
                                             </Col>
-                                        </Form.Row>                                    
+                                        </Row>                                    
                                     </Form.Group>
                                     <Form.Group>
-                                        <Form.Row>  
+                                        <Row>  
                                             <Col xs={8}>
                                                 <Form.Label size='sm'>Seasonal Price</Form.Label>
                                             </Col>
                                             <Col>
                                                 <Form.Control size='sm' name="season_price" type="number" value={reduxProperty?.season_price || ''} onChange={onChange}/>
                                             </Col>
-                                        </Form.Row>                                    
+                                        </Row>                                    
                                     </Form.Group>
                                     <Form.Group>
-                                    <Form.Row>
+                                    <Row>
                                         <Col xs={8}>
                                             <Form.Label size='sm'>Sweeping Price</Form.Label>
                                         </Col>                                    
                                         <Col>
                                             <Form.Control size='sm' name="sweep_price" type="number" value={reduxProperty?.sweep_price || ''} onChange={onChange}/>
                                         </Col>
-                                    </Form.Row>
+                                    </Row>
                                     </Form.Group>
                                     <Form.Group>
-                                    <Form.Row>
+                                    <Row>
                                         <Col xs={8}>
                                             <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
                                         </Col>
                                         <Col>
                                             <Form.Control size='sm' name="price_per_yard" type="number" value={reduxProperty?.price_per_yard || ''} onChange={onChange}/>
                                         </Col>
-                                    </Form.Row>
+                                    </Row>
                                     </Form.Group>
                                     <Form.Group>
-                                    <Form.Row>
+                                    <Row>
                                         <Col xs={8}>
                                         <Form.Label size='sm'>Value</Form.Label>
                                         </Col>
                                         <Col>
                                             <Form.Control size='sm' name="value" type="number" value={reduxProperty?.value || ''} onChange={onChange}/>
                                         </Col>
-                                    </Form.Row>
+                                    </Row>
                                     </Form.Group>
                                 </Col>
                             }
@@ -342,18 +336,18 @@ const CustomerDetails = props => {
                         </Col>
                             <Col>
                                 <Form.Label>Tags</Form.Label> 
-                                <Form.Row style={{marginBottom: '1em'}}>
+                                <Row style={{marginBottom: '1em'}}>
                                     <Col>
                                         <Button size='sm' variant='primary' onClick={saveNewTag}>add tag</Button>
                                     </Col>
                                     <Col>
                                         <Form.Control name="newTagName" type="text" placeholder={newTagName} onChange={onChange}/>
                                     </Col>
-                                </Form.Row>
+                                </Row>
                                 {                                    
                                     allTags.map((tag, i) => {
                                         return(       
-                                            <Form.Row key={i}>
+                                            <Row key={i}>
                                                 <Col xs={7}>
                                                     <Form.Check                                                          
                                                         name={tag}
@@ -363,11 +357,11 @@ const CustomerDetails = props => {
                                                         onChange={tagChange}
                                                     />  
                                                 </Col>
-                                            </Form.Row>                                       
+                                            </Row>                                       
                                         )                               
                                     })                                    
                                 }
-                                <Form.Row>
+                                <Row>
                                     <Form.Label>Routes Assigned:</Form.Label>
                                 {
                                     routeData.map((entry, i) => {                                        
@@ -378,10 +372,10 @@ const CustomerDetails = props => {
                                         } else return null
                                     })
                                 }
-                                </Form.Row>  
+                                </Row>  
                             </Col>
-                        </Form.Row>
-                        <Form.Row style={{alignItems: "center"}}>
+                        </Row>
+                        <Row style={{alignItems: "center"}}>
                             <Col>
                                 <Form.Group>
                                     <Form.Label>Notes</Form.Label>
@@ -418,7 +412,7 @@ const CustomerDetails = props => {
                                     onChange={onChange}
                                 />
                             </Col>
-                        </Form.Row>                        
+                        </Row>                        
                     </Form> 
                     </Tab>
                     {
@@ -451,4 +445,4 @@ const CustomerDetails = props => {
     
 }
 
-export default CustomerDetails
+export default CustomerEditor

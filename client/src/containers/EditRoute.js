@@ -5,7 +5,8 @@ import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRou
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "../components/PropertyCard"
-import CustomerDetails from "../components/editor_panels/CustomerEditor"
+// import CustomerEditor from "../components/editor_panels/CustomerEditor"
+import CustomerEditor from '../components/editor_panels/CustomerEditor'
 import '../styles/driver.css'
 
 const mapStateToProps = state => {
@@ -408,7 +409,7 @@ class EditRoute extends Component {
                     )}
                 </Droppable>
             </DragDropContext>
-                <CustomerDetails 
+                <CustomerEditor 
                     activeProperty={this.props.activeProperty} 
                     onSave={this.onPropertySave}
                     show={this.state.showModal}

@@ -46,8 +46,9 @@ const logInWithEmailAndPassword = async (email, password) => {
 
             // move this to its own folder of functions 
   const getAdminItem = async(item, collection) => {
+    console.log("getAdminItem", item)
     try {
-        const docRef = doc(db, `admin/admin_lists/admin_${collection}`, item.admin_key);
+        const docRef = doc(db, `admin/admin_lists/${collection}`, item.admin_key);
         const docSnap = await getDoc(docRef);
         const id = docSnap.id
         if (docSnap.exists()) {
@@ -58,8 +59,7 @@ const logInWithEmailAndPassword = async (email, password) => {
     }
     catch (e) {
         alert(e)
-    }      
-    
+    }
 }
 
 // const createUser = async (auth, email, password) => {

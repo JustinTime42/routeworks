@@ -1,5 +1,5 @@
 
-    import React, {  useState } from "react"
+    import React, {  useEffect, useState } from "react"
     import { useDispatch, useSelector } from "react-redux";
     import {Button, Alert, Modal, Form, Row, Col } from "react-bootstrap"
     import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
@@ -12,6 +12,12 @@
         const tempItem = useSelector(state => state.setTempItem.item)
         const dispatch = useDispatch()
 
+        useEffect(() => {
+            if(!('name' in tempItem) && modals.includes('Route')) {
+                dispatch(setTempItem({name: '', active: true}))
+            }
+        },[tempItem])
+
         const onChange = (event) => {
             if (event.target.value === "on") {
                 dispatch(setTempItem({...tempItem, [event.target.name]: !tempItem[event.target.name]}))
@@ -22,9 +28,9 @@
 
         const onSave = () => {
             if (tempItem.id) {
-                dispatch(editItem(tempItem, routes, 'route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+                dispatch(editItem(tempItem, routes, 'driver/driver_lists/route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
             } else {
-                dispatch(createItem(tempItem, routes, 'route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+                dispatch(createItem(tempItem, routes, 'driver/driver_lists/route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
             }
             dispatch(hideModal('Route'))    
         }

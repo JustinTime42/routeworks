@@ -9,12 +9,10 @@ import DriverEditor from './editor_panels/DriverEditor'
 import TractorEditor from './editor_panels/TractorEditor'
 import {getAdminItem} from '../firebase'
 import WorkTypeEditor from './editor_panels/WorkTypeEditor'
-import Parse from 'parse/dist/parse.min.js';
 import { setActiveItem, showModal, hideModal, setTempItem, setCurrentUser } from "../actions"
 
 import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY} from '../constants.js'
 import { setActiveWorkType } from '../reducers'
-import Driver from '../containers/Driver'
 
 const ShiftSetup = () => {
     const [user, loading, error] = useAuthState(auth);
@@ -73,17 +71,19 @@ const ShiftSetup = () => {
         dispatch(hideModal("Shift"))        
     }
 
-    const onCreate = (whichModal, item, collection) => {
-        
-        dispatch(setTempItem(item))
+    const onCreate = (whichModal) => {        
+        dispatch(setTempItem({}))
         dispatch(showModal(whichModal))
     }
 
-    const onEdit = (item, whichModal, collection) => {
+    const onEditAdmin = (item, whichModal, collection) => {
         getAdminItem(item, collection)
         .then(item => {
             dispatch(setTempItem(item))
         })        
+        dispatch(showModal(whichModal))
+    }
+    const onEdit = (item, whichModal) => {
         dispatch(setTempItem(item))
         dispatch(showModal(whichModal))
     }
@@ -109,7 +109,7 @@ const ShiftSetup = () => {
             <div style={labelStyle}>{activeVehicle.name || 'vehicle'}</div>
             <div style={labelStyle}>{activeWorkType.name || 'work type'}</div>
             <Button style={labelStyle} size='sm' variant='primary' onClick={onShow}>Edit Shift</Button>            
-            <Modal show={modals.includes('Shift')} onHide={() => dispatch(hideModal('Shift'))}>
+            <Modal style={{textAlign:'center'}} show={modals.includes('Shift')} onHide={() => dispatch(hideModal('Shift'))}>
                 <Modal.Header closeButton>
                     <Modal.Title>Select Shift Details</Modal.Title>
                 </Modal.Header>
@@ -117,19 +117,21 @@ const ShiftSetup = () => {
                     style={selectorStyle}
                     title="Driver"
                     collection='driver'
+                    collectionPath='driver/driver_lists/'
                     reduxListAction= {GET_DRIVERS_SUCCESS}
                     selectedItem={activeDriver}
                     itemArray={drivers}
                     whichModal="Driver"
                     setActiveAction={SET_ACTIVE_DRIVER}
                     onCreate={onCreate}
-                    onEdit={onEdit}
+                    onEdit={onEditAdmin}
                     onSelect={onSelect}
                 />
                 <SimpleSelector  
                     style={selectorStyle}
                     title="Vehicle"
                     collection='vehicle'
+                    collectionPath='driver/driver_lists/'
                     selectedItem={activeVehicle}
                     itemArray={tractors}                    
                     whichModal="Vehicle"
@@ -139,18 +141,20 @@ const ShiftSetup = () => {
                     onEdit={onEdit}
                     onSelect={onSelectVehicle} 
                 />
-                {/* <SimpleSelector  
+                <SimpleSelector  
                     style={selectorStyle}
                     title="Work Type"
-                    className='work_type'
+                    collection='work_type'
+                    collectionPath={'driver/driver_lists/'}
                     selectedItem={activeWorkType}
-                    itemArray={workTypes}                   
+                    itemArray={workTypes}              
                     whichModal="WorkType"
                     setActiveAction={SET_WORK_TYPE} 
+                    reduxListAction= {GET_WORK_TYPES_SUCCESS}
                     onCreate={onCreate}
                     onEdit={onEdit}
                     onSelect={onSelect}
-                /> */}
+                />
                 <Modal.Footer>
                     <Button variant='primary' onClick={handleLogout}>Log Out</Button>
                     <Button variant='primary' onClick={onSave}>Save</Button>
@@ -159,7 +163,7 @@ const ShiftSetup = () => {
             </Modal>
             <TractorEditor/>
             <DriverEditor />
-            {/* <WorkTypeEditor />             */}
+            <WorkTypeEditor />            
         </div>        
     )
 }
