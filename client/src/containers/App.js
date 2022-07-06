@@ -1,23 +1,24 @@
-import React, {useEffect} from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react'
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase";
 import { UserLogin } from '../auth/UserLogin'
 import Driver from "../containers/Driver"
 import "../App.css"
-import { setCurrentUser } from '../actions';
+import { setCurrentUser } from '../actions'
+import { useDispatch } from 'react-redux';
 
 const App = (props) => { 
-  const [user] = useAuthState(auth);
-  const currentUser = useSelector(state => state.setCurrentUser.currentUser)
-  const dispatch = useDispatch() 
+   const [user] = useAuthState(auth);
+   const dispatch = useDispatch()
 
-  useEffect(() => {    
+  useEffect(() => {
     if(user) {
-      user.getIdTokenResult()
-      .then(result => dispatch(setCurrentUser(result.claims)))
-    }    
-  },[user])
+      user.getIdTokenResult().then(user => {
+        console.log(user.claims)
+        dispatch(setCurrentUser(user.claims))
+      })      
+    }  
+  }, [user])
 
   if (user) {
     return <Driver />
@@ -26,4 +27,4 @@ const App = (props) => {
   }
 }
 
-  export default App
+export default App

@@ -10,19 +10,15 @@ const SimpleSelector = (props) => {
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
   
-    useEffect(() => {
-        const q = query(collection(db, `${props.collectionPath}${props.collection}`)) 
-        const unsub = onSnapshot(q, (querySnapshot) => {
-            const results = [];
-            querySnapshot.forEach((doc) => {
-                const id = doc.id
-                results.push({...doc.data(), id});
-            })
-            dispatch({type:props.reduxListAction, payload: results})
+    useEffect(() => { 
+        const unsub = onSnapshot(collection(db, `${props.collectionPath}${props.collection}`), (querySnapshot) => {
+            //const results = [];
+            
+            dispatch({type:props.reduxListAction, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
         return () => {
             unsub()
-        }        
+        }
     },[])
 
     const toggleEdit = () => {

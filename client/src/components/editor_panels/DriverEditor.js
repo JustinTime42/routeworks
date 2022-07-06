@@ -14,7 +14,7 @@
         useEffect(() => {
             if (!tempItem.nonAdminFields && modals.includes('Driver')) {
                 console.log("updating driver editor")
-                dispatch(setTempItem({nonAdminFields: {name: '', active: true}}))
+                dispatch(setTempItem({nonAdminFields: {name: '', active: true}, adminFields: {}}))
             }
         }, [tempItem])
 
@@ -37,16 +37,16 @@
 
         const onSave = () => {
             if (tempItem.id) { 
-                dispatch(editItem(tempItem, drivers, 'admin/admin_lists/driver', GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER)) 
+                dispatch(editItem(tempItem, drivers, 'admin/admin_lists/driver', SET_ACTIVE_DRIVER, GET_DRIVERS_SUCCESS)) 
             }
             else {
-                dispatch(createItem(tempItem, drivers, 'admin/admin_lists/driver', GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER))
+                dispatch(createItem(tempItem, drivers, 'admin/admin_lists/driver', SET_ACTIVE_DRIVER, GET_DRIVERS_SUCCESS))
             } 
             dispatch(hideModal('Driver'))    
        }
 
        const onDelete = (item) => {
-        dispatch(deleteItem(item, drivers, "admin/admin_lists/driver", GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER))
+        dispatch(deleteItem(item, drivers, "admin/admin_lists/driver", SET_ACTIVE_DRIVER, GET_DRIVERS_SUCCESS))
         dispatch(hideModal('Driver'))                 
     }
 

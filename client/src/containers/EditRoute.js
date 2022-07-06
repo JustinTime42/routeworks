@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { connect } from "react-redux"
-import { requestAllAddresses, getRouteProperties, filterRouteProperties, saveRoute, setActiveProperty, saveNewProperty, editProperty, deleteProperty, getRouteData } from "../actions"
+import { requestAllAddresses, filterRouteProperties, saveRoute, setActiveProperty, saveNewProperty, editProperty, deleteProperty, getRouteData, createItem, editItem, setTempItem, showModal, hideModal } from "../actions"
 import Button from 'react-bootstrap/Button'
 import axios from "axios"
 import PropertyCard from "../components/PropertyCard"
 // import CustomerEditor from "../components/editor_panels/CustomerEditor"
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
 import '../styles/driver.css'
+import { SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS } from '../constants'
 
 const mapStateToProps = state => {
     return {
@@ -20,19 +21,26 @@ const mapStateToProps = state => {
         routeData: state.getRouteData.routeData,
         isRoutePending: state.getRouteData.isPending,
         filterProperties: state.filterProperties.customers,
+        tempItem: state.setTempItem.item,
+        modals: state.whichModals.modals
     }
-} 
+}
 
 const mapDispatchToProps = (dispatch) => {
     return {    
         onSaveRoute: (route) => dispatch(saveRoute(route)),
         onGetAllAddresses: () => dispatch(requestAllAddresses()),
         onSetActiveProperty: (property) => dispatch(setActiveProperty(property)),
-        onSaveNewProperty: (property, allAddresses) => dispatch(saveNewProperty(property, allAddresses)),
-        onEditProperty: (property, allAddresses) => dispatch(editProperty(property, allAddresses)),
+        onSaveNewProperty: (property, collection, activeActionType) => dispatch(createItem(property, collection, activeActionType)),
+        onEditProperty: (property, collection, activeActionType) => dispatch(editItem(property, collection, activeActionType)),
         onDeleteProperty: (property, allAddresses, routeName) => dispatch(deleteProperty(property, allAddresses, routeName)),
         onFilterRouteProperties: (addresses, route) => dispatch(filterRouteProperties(addresses, route)),
         getRouteData: () => dispatch(getRouteData()),
+        setTempItem: (item) => dispatch(setTempItem(item)),
+        showModal: (which) => dispatch(showModal(which)),
+        hideModal: (which) => dispatch(hideModal(which)),
+        createCustomer: (customer, list, route, activeAction, listAction) => dispatch(createItem(customer, list, route, activeAction, listAction)),
+        editCustomer: (customer) => dispatch(editItem(customer))
     }
 }
 
@@ -111,27 +119,20 @@ class EditRoute extends Component {
             this.setState((prevState, prevProps) => {
                 return {
                     activeProperty: prevProps.activeProperty
-                }
-            // }, () => {
-            //     if(this.props.activeProperty?.routeName === this.props.activeRoute) {
-            //         let currentPosition = this.props.activeProperty.route_position - 1
-            //         console.log("currentposition", currentPosition)  
-            //         if (document.getElementById(`card${currentPosition}`)) {
-            //             document.getElementById(`card${currentPosition}`).scrollIntoView(true)
-            //         }                    
-            //     }   
+                }  
              })
-        } 
-        
+        }         
         if(this.props.filterProperties !== prevProps.filterProperties) {            
             this.setState({filteredItems: this.props.filterProperties})
         }
-        // if(this.state.searchField !== prevState.searchField) {
-        //     this.setState((prevState, prevProps) => ({filteredItems: this.onFilterProperties(prevState.searchField, prevProps.addresses)}))
-
-        // }
         if (snapshot && document.getElementById('droppable2scroll')) {
             document.getElementById('droppable2scroll').scrollTop = snapshot
+        }
+        if(this.props.tempItem !== prevProps.tempItem) {
+            if (!this.props.tempItem?.nonAdminFields && this.props.modals.includes('Customer')) {
+                console.log("updating driver editor")
+                this.props.setTempItem({nonAdminFields: {name: '', active: true}})
+            }
         }
     }
 
@@ -201,7 +202,7 @@ class EditRoute extends Component {
         })
     }
     
-    getList = id => this.state[this.id2List[id]];
+    
 
     onDragEnd = result => {
         const { source, destination } = result
@@ -219,7 +220,7 @@ class EditRoute extends Component {
 
         //If only reordering route
         if (source.droppableId === destination.droppableId) {
-            if (source.droppableId === 'droppable2') { 
+            if (source.droppableId === 'droppable2') {
                 const orderedItems = reorder(
                     this.getList(source.droppableId),
                     source.index,
@@ -274,19 +275,21 @@ class EditRoute extends Component {
 
     onNewPropertyClick = () => {
         //this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
-        this.props.onSetActiveProperty(null)
-        console.log("showmodal", this.state.showModal)
-        this.setState((prevState) => ({showModal: true}), () => console.log("showmodal", this.state.showModal))       
+        this.props.setTempItem({nonAdminFields: {}, adminFields: {}})
+        this.props.showModal("Customer")
+             
     }
 
     onDetailsPropertyClick = (property) => {
         //this.setState({scrollPosition: document.getElementById('droppable2scroll').scrollTop})
         //this.props.onSetActiveProperty(property)
+        this.props.showModal('Customer')
+        this.props.setTempItem({...this.props.activeProperty}) 
         this.setState({showModal: true, activeProperty: property}, () => console.log(this.state.showModal))
     }
 
     onCloseClick = () => {
-        this.setState((prevState) => ({showModal: !prevState.showModal}))
+        this.props.hideModal('Customer')
     }
 
     onDelete = () => {
@@ -299,14 +302,16 @@ class EditRoute extends Component {
     }
 
     onPropertySave = (newDetails) => {
+        console.log(newDetails)
         if(!newDetails.contract_type) {
             newDetails.contract_type = "Per Occurrence"
         }
         let {routeName, route_position, status, active, ...details} = newDetails
-        if (!newDetails.key) {
-            this.props.onSaveNewProperty(details, this.props.addresses)
+        if (newDetails.id) {
+            this.props.editCustomer(details, this.props.addresses, 'admin/admin_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS)
         } else {
-            this.props.onEditProperty(details, this.props.addresses)
+            console.log(this.props.addresses)
+            this.props.createCustomer(details, this.props.addresses, 'admin/admin_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS)            
         }
         this.setState({showModal: false, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
         this.setSelected()

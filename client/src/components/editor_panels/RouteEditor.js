@@ -28,15 +28,15 @@
 
         const onSave = () => {
             if (tempItem.id) {
-                dispatch(editItem(tempItem, routes, 'driver/driver_lists/route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+                dispatch(editItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             } else {
-                dispatch(createItem(tempItem, routes, 'driver/driver_lists/route', REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+                dispatch(createItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             }
             dispatch(hideModal('Route'))    
         }
 
         const onDelete = () => {
-            dispatch(deleteItem(tempItem, routes, "route", REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE))
+            dispatch(deleteItem(tempItem, routes, "route", SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             dispatch(hideModal('Route'))                 
         }
 

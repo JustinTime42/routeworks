@@ -7,9 +7,9 @@
     const WorkTypeEditor = (props) => {
         const [deleteAlert, setDeleteAlert] = useState('')
         
-        const { workTypes } = props
         const modals = useSelector(state => state.whichModals.modals)
         const tempItem = useSelector(state => state.setTempItem.item)
+        const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
         const dispatch = useDispatch()
 
         const onChange = (event) => {
@@ -20,7 +20,6 @@
             }            
         }
 
-        //I'm not a huge fan of this pattern...
         useEffect(() => {
             if(!('name' in tempItem) && modals.includes('WorkType')) {
                 dispatch(setTempItem({name: '', active: true}))
@@ -29,16 +28,16 @@
 
         const onSave = () => {
             if (!tempItem.id) {
-                dispatch(createItem(tempItem, workTypes, 'driver/driver_lists/work_type', GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE))                               
+                dispatch(createItem(tempItem, workTypes, 'driver/driver_lists/work_type', SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))                               
             }
             else {
-                dispatch(editItem(tempItem, workTypes, 'driver/driver_lists/work_type', GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE))
+                dispatch(editItem(tempItem, workTypes, 'driver/driver_lists/work_type', SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))
             } 
             dispatch(hideModal('WorkType'))    
         }
 
         const onDelete = () => {
-            dispatch(deleteItem(tempItem, workTypes, 'deleteworktype', GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE))
+            dispatch(deleteItem(tempItem, workTypes, 'driver/driver_lists/work_type', SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))
             dispatch(hideModal('WorkType'))                 
         }
 

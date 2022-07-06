@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { useParseQuery } from  '@parse/react';
-import Parse from 'parse/dist/parse.min.js';
 import SimpleSelector from "../components/SimpleSelector"
 import ShiftSetup from '../components/ShiftSetup';
 import RouteEditor from '../components/editor_panels/RouteEditor';
-import { app, auth, logout, functions } from '../firebase'
+import { addDoc, collection } from 'firebase/firestore';
+import { app, auth, logout, functions, db } from '../firebase'
 
 import DisplayRoute from "./DisplayRoute"
 import EditRoute from "./EditRoute"
@@ -18,6 +17,7 @@ import { Alert, Button, DropdownButton } from "react-bootstrap"
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE} from '../constants.js'
 
 import '../styles/driver.css'
+import UserEditor from '../components/editor_panels/UserEditor';
 
 const Driver = () => {
     const showRouteEditor = useSelector(state => state.showRouteEditor.showEditor)
@@ -33,18 +33,106 @@ const Driver = () => {
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        refreshData()
-    },[])
+    // useEffect(() => {
+    //     refreshData()
+    // },[])
 
     const refreshData = () => {
-        dispatch(requestAllAddresses())
-        dispatch(getRouteData())
-       // dispatch(requestRoutes())
-        dispatch(getTractors())
-        dispatch(getTractorTypes())
-        //dispatch(getDrivers())
-        dispatch(getWorkTypes())
+        let newCustomerArray = []
+        customers.forEach(item => {
+            let newItem = {
+                nonAdminFields: {                    
+                    cust_name: item.cust_name,
+                    cust_fname: item.cust_fname,
+                    cust_lname: item.cust_lname,
+                    cust_phone: item.cust_phone,
+                    surfaceType: item.surfaceType,
+                    is_new: item.is_new,
+                    notes: item.notes,
+                    active: !item.inactive,
+                    temp: item.temp,                    
+                    cust_email: item.cust_email,
+                    cust_email2: item.cust_email2,
+                    include_email2: item.include_email2,
+                    address: item.address,
+                    service_city: item.city,
+                    service_state: item.state,
+                    service_zip: item.zip,
+                    bill_address: item.bill_address,
+                    bill_city: item.bill_city,
+                    bill_state: item.bill_state,
+                    bill_zip: item.bill_zip,
+                    tags: item.tags,
+                    service_level: item.service_level,
+                },
+                adminFields: {
+                    snow_price: item.price,
+                    sand_price: item.price,
+                    sweep_price: item.price,
+                    value: item.value,
+                    price_per_yard: item.price_per_yard,
+                    season_price: item.season_price,
+                    contract_type: item.contract_type,
+                    sand_contract_type: item.sand_contract,
+                    Sander: item.Sander,
+                    'Work Truck (1 laborer)': item['Work Truck (1 laborer)'],
+                    'Tractor with snow blower': item['Tractor with snow blower'],
+                    'Sidewalk snow blower': item['Sidewalk snow blower'],
+                    'Vacuum sweeper truck': item['Vacuum sweeper truck'],
+                    Plow: item.Plow,
+                    'Grader AWD': item['Grader AWD'],
+                    'Water Truck - Small': item['Water Truck - Small '],
+                    Laborer: item.Laborer,
+                    'Asphalt Patching': item['Asphalt Patching'],
+                    'Compact Track Loader': item['Compact Track Loader'],
+                    'Dump Truck - small': item['Dump Truck - small'],
+                    'Excavator - Small': item['Excavator - Small'],
+                    'Water Truck - 2000 gal': item['Water Truck - 2000 gal'],
+                    'Vibratory Roller': item['Vibratory Roller'],
+                }
+            }            
+            let keysArray = Object.keys(newItem.adminFields)
+            keysArray.forEach(i => {
+                if (newItem.adminFields[i] === null || newItem.adminFields[i] === undefined) {
+                    delete newItem.adminFields[i]
+                }
+            }) 
+            keysArray = Object.keys(newItem.nonAdminFields) 
+            keysArray.forEach(i => {
+                if (newItem.nonAdminFields[i] === null || newItem.nonAdminFields[i] === undefined) {
+                    delete newItem.nonAdminFields[i]
+                }
+            }) 
+            newCustomerArray.push(newItem)
+        })
+        console.log(newCustomerArray)
+        // push entire batch of documents to admin/admin_lists/customer
+        newCustomerArray.forEach(item => {
+            
+            sendToDB(item)
+        })
+
+        /*gonna use this temporarily to move data to new database
+        old structure: {item}
+        new structure: {nonAdminFields: {}, adminFields{pricing stuff}}
+        for each customer in customers, 
+        */
+    //     dispatch(requestAllAddresses())
+    //     dispatch(getRouteData())
+    //    // dispatch(requestRoutes())
+    //     dispatch(getTractors())
+    //     dispatch(getTractorTypes())
+    //     //dispatch(getDrivers())
+    //     dispatch(getWorkTypes())
+    }
+
+    const sendToDB = async(item) => {
+        console.log(item)
+        try {
+            const docRef = await addDoc(collection(db, 'admin/admin_lists/customer'), {...item})                     
+       } catch (e) {
+         alert("Error adding document: ", e);
+       }
     }
 
     const onCreate = (whichModal) => {
@@ -84,6 +172,7 @@ const Driver = () => {
                 <RouteEditor />
                 <ShiftSetup />                
                 <SearchBar />
+                {/* <UserEditor /> */}
                 { currentUser.admin ? <AdminDropdown /> : null }
                  
                 <Button variant="primary" size="sm" onClick={refreshData}>Refresh</Button>

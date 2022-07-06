@@ -48,17 +48,17 @@ const TractorEditor = (props) => {
             let newTractor = {...tempItem, type: activeVehicleType}
             console.log(newTractor)
             if (tempItem.id) {    
-                dispatch(editItem(tempItem, tractors, 'driver/driver_lists/vehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
+                dispatch(editItem(tempItem, tractors, 'driver/driver_lists/vehicle', SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
             }
             else {
-                dispatch(createItem(tempItem, tractors, 'driver/driver_lists/vehicle', GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
+                dispatch(createItem(tempItem, tractors, 'driver/driver_lists/vehicle', SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
             } 
             dispatch(hideModal('Vehicle'))    
         }
     } 
 
     const onDelete = (item) => {
-        dispatch(deleteItem(tempItem, tractors, "driver/driver_lists/vehicle", GET_TRACTORS_SUCCESS, SET_ACTIVE_TRACTOR))
+        dispatch(deleteItem(tempItem, tractors, "driver/driver_lists/vehicle", SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
         dispatch(hideModal('Vehicle'))             
     }
 
@@ -80,10 +80,10 @@ const TractorEditor = (props) => {
 
     const onSaveType = () => {
         if (vehicleType.id) {  
-            dispatch(editItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))  
+            dispatch(editItem(vehicleType, 'driver/driver_lists/vehicle_type', SET_ACTIVE_VEHICLE_TYPE))  
         }
         else {
-            dispatch(createItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))
+            dispatch(createItem(vehicleType, 'driver/driver_lists/vehicle_type', SET_ACTIVE_VEHICLE_TYPE))
         } 
         dispatch(hideModal('VehicleType'))    
     }
