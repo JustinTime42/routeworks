@@ -25,6 +25,7 @@ import React, {useState, useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import * as styles from './route-builder-styles'
 import * as dnd from './drag-functions'
+import {UPDATE_ADDRESSES_SUCCESS, GET_ROUTE_SUCCESS, SET_ACTIVE_ROUTE} from '../../constants'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { editItem, requestAllAddresses, filterRouteProperties, saveRoute, setActiveProperty, saveNewProperty, editProperty, deleteProperty, getRouteData, createItem, setTempItem } from "../../actions"
 
@@ -38,40 +39,136 @@ const RouteBuilder = () => {
     const routeData = useSelector(state => state.getRouteData.routeData)
     const dispatch = useDispatch()
 
-    const [onRouteList, setOnRouteList] = useState(routeProperties)
     const [offRouteList, setOffRouteList] = useState([])
-    const [allCustomers, setAllCustomers] = useState([])
+    //const [allCustomers, setAllCustomers] = useState([])
     const [scrollPosition, setScrollPosition] = useState(0)
     const [searchField, setSearchField] = useState('')
     
-
     useEffect(() => {
-        const q = query(collection(db, `admin/admin_lists/customer`)) 
-        const unsub = onSnapshot(q, (querySnapshot) => {
-            const results = [];
-            querySnapshot.forEach((doc) => {
-                const id = doc.id
-                results.push({...doc.data(), id});
-            })
-            setAllCustomers(results)
+        const unsub = onSnapshot(collection(db, `admin/admin_lists/customer`), (querySnapshot) => {
+            dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
         return () => {
             unsub()
-        }        
+        }
     },[])
 
     useEffect(() => {
-        const q = query(collection(db, `admin/admin_lists/customer`)) 
-        const unsub = onSnapshot(q, (querySnapshot) => {
-            const results = [];
-            querySnapshot.forEach((doc) => {
-                const id = doc.id
-                results.push({...doc.data(), id});
-            })
-            setAllCustomers(results)
+        const unsub = onSnapshot(collection(db, 'route_data'), (querySnapshot) => {
+            dispatch({type: GET_ROUTE_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
         return () => {
             unsub()
-        }        
+        }
     },[])
+
+    const onInitRoute = () => {
+        dispatch(editItem(routeProperties.map(i => i.status = "Waiting"), [], 'route_data', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS)   )
+        routeProperties.map(i => i.status === 'Waiting')
+    }
+
+    return (
+        this.props.isAllPending || this.props.isRoutePending ?
+        <h1></h1> :(
+        <>
+        <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
+            {/* <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.refreshData}>Refresh Data</Button> */}
+            <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={onInitRoute}>Initialize Route</Button>
+            <Button variant="primary" size="sm" onClick={this.onNewPropertyClick}>New</Button>
+        </div>
+        <div className="adminGridContainer">
+        <DragDropContext onDragEnd={dnd.onDragEnd}>
+            <Droppable droppableId="droppable2">                    
+                {(provided, snapshot) => (
+                    <div
+                        className="leftSide, scrollable"
+                        id="droppable2scroll"
+                        ref={provided.innerRef}
+                        style={getListStyle(snapshot.isDraggingOver)}>
+                        {routeProperties.map((item, index) => (
+                            <Draggable
+                                key={item.id}
+                                draggableId={`L${item.id.toString()}`}
+                                index={index}>
+                                {(provided, snapshot) => (
+                                    <div
+                                        id={`${item.id}routecard`}
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        style={getItemStyle(
+                                            snapshot.isDragging,
+                                            provided.draggableProps.style
+                                        )}>
+                                        <PropertyCard 
+                                            i={index} 
+                                            route={this.props.activeRoute}
+                                            key={item.key} 
+                                            address={item} 
+                                            admin={true} 
+                                            detailsClick={this.onDetailsPropertyClick} 
+                                            handleClick={this.handlePropertyClick}
+                                            refreshData={this.refreshData}
+                                            activeProperty={this.props.activeProperty}
+                                        />
+                                    </div>
+                                )}
+                            </Draggable>
+                        ))
+                        }
+                        {provided.placeholder}
+                    </div>
+                )}
+            </Droppable>
+            <Droppable className="rightSide" droppableId="droppable">
+                {(provided, snapshot) => (
+                    <div
+                        ref={provided.innerRef}
+                        className="rightSide, scrollable"
+                        style={getListStyle(snapshot.isDraggingOver)}>
+                        {this.state.filteredItems.map((item, index) => (
+                            <Draggable
+                                key={item.key}
+                                draggableId={`R${item.key.toString()}`}
+                                index={index}>
+                                {(provided, snapshot) => (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        style={getItemStyle(
+                                            snapshot.isDragging,
+                                            provided.draggableProps.style
+                                        )}>
+                                        <PropertyCard 
+                                            route={this.props.activeRoute} 
+                                            key={item.key} 
+                                            address={item} 
+                                            admin={true} 
+                                            detailsClick={this.onDetailsPropertyClick} 
+                                            handleClick={this.handlePropertyClick}
+                                            activeProperty={this.props.activeProperty}
+                                        />
+                                            
+                                    </div>
+                                )}
+                            </Draggable>
+                        ))}
+                        {provided.placeholder}
+                    </div>
+                )}
+            </Droppable>
+        </DragDropContext>
+            <CustomerEditor 
+                activeProperty={this.props.activeProperty} 
+                onSave={this.onPropertySave}
+                show={this.state.showModal}
+                close={this.onCloseClick}
+                onDelete={this.onDelete}
+            />
+        </div>
+        </>  
+   ))    
 }
+
+export default RouteBuilder

@@ -155,6 +155,8 @@ export const filterProperties = (matches) => {
     }    
 }
 
+
+
 export const saveNewProperty = (property, allAddresses) => (dispatch) => {
     dispatch({ type: UPDATE_ADDRESSES_PENDING})
     fetch(`${process.env.REACT_APP_API_URL}/newproperty`, {
@@ -301,14 +303,12 @@ export const createItem = (item, itemList, className, activeActionType, listActi
 }
 
 export const editItem = (item, itemList, className, activeActionType, listAction) => (dispatch) => {
-    dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})
-    let tempList = [...itemList]
-    if (item.nonAdminFields) {
+    dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})    
+    if (item.adminFields) {
+        let tempList = [...itemList]
         tempList[tempList.findIndex(i => i.admin_key === item.id)] = item.nonAdminFields
-    } else {
-        tempList[tempList.findIndex(i => i.id === item.id)] = item
+        dispatch({type: listAction, payload: tempList})
     }    
-    dispatch({type: listAction, payload: tempList})     
     const {id, ...itemDetails} = item
     const itemRef = doc(db, className, item.id)    
     const sendToDB = async() => {
@@ -320,14 +320,12 @@ export const editItem = (item, itemList, className, activeActionType, listAction
 }
 
 export const deleteItem = (item, itemList, className, activeActionType, listAction) => (dispatch) => {
-    dispatch({type: activeActionType, payload: null})
-    let tempList = [...itemList]
-    if (item.nonAdminFields) {
+    dispatch({type: activeActionType, payload: null})    
+    if (item.adminFields) {
+        let tempList = [...itemList]
         tempList.splice(tempList.findIndex(i => i.admin_key === item.id), 1)
-    } else {
-        tempList.splice(tempList.findIndex(i => i.id === item.id), 1)
-    }    
-    dispatch({type: listAction, payload: tempList}) 
+        dispatch({type: listAction, payload: tempList}) 
+    }     
     deleteDoc(doc(db, className, item.id))
     .then(() => dispatch({type: activeActionType, payload: null}))
     .catch(err => console.log(err))
@@ -387,10 +385,10 @@ export const hideModal = (which) => {
 }
 
 export const setTempItem = (item) => {
-    console.log(item)
     return {
         type: TEMP_ITEM,
         payload: item
     }
 }
+
 
