@@ -146,8 +146,9 @@ const Driver = () => {
     }
     
     const onSelect = (event, itemArray, setActiveAction) => {
+        console.log(event)
         dispatch(setActiveItem(event, itemArray, setActiveAction))
-        dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))
+      //  dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))
     }
 
     return (

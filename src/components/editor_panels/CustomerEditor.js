@@ -440,8 +440,7 @@ const CustomerEditor = (props) => {
                 </div>
             </Alert>
         </Modal> 
-    )
-    
+    )    
 }
 
 export default CustomerEditor

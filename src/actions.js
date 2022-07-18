@@ -53,10 +53,10 @@ export const setCurrentUser = (currentUser) => {
     }
 }
 
-export const setActiveRoute = (routeName) => {
+export const setActiveRoute = (route) => {
     return {
         type: SET_ACTIVE_ROUTE,
-        payload: routeName  
+        payload: route
     }      
 }
 
@@ -334,6 +334,7 @@ export const deleteItem = (item, itemList, className, activeActionType, listActi
 export const setActiveItem = (item, itemArray, actionType) => {
     console.log(itemArray)
     const activeItem = itemArray.find(i => i.name === item)
+    console.log("activeItem ", activeItem)
     if (activeItem) {
         return {
             type: actionType,
@@ -343,6 +344,7 @@ export const setActiveItem = (item, itemArray, actionType) => {
     else {
         return {
             type: actionType,
+            payload: item
         }
     }
 

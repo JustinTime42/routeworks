@@ -42,6 +42,10 @@ const TractorEditor = (props) => {
         dispatch(setTempItem({...tempItem, active:!tempItem.active}))
     }
 
+    const onChangeTypeActive = () => {
+        setVehicleType({...vehicleType, active: !vehicleType.active})
+    }
+
     const onSave = () => {
         if (!activeVehicleType.id) {alert('please enter vehicle type')}
         else {
@@ -80,10 +84,10 @@ const TractorEditor = (props) => {
 
     const onSaveType = () => {
         if (vehicleType.id) {  
-            dispatch(editItem(vehicleType, 'driver/driver_lists/vehicle_type', SET_ACTIVE_VEHICLE_TYPE))  
+            dispatch(editItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))  
         }
         else {
-            dispatch(createItem(vehicleType, 'driver/driver_lists/vehicle_type', SET_ACTIVE_VEHICLE_TYPE))
+            dispatch(createItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))
         } 
         dispatch(hideModal('VehicleType'))    
     }
@@ -137,7 +141,7 @@ const TractorEditor = (props) => {
                 </Alert>      
             </Modal.Body> 
         </Modal>
-        <VehicleTypeEditor onSaveType={onSaveType} onChange={onChangeTypeName} vehicleType={vehicleType} onDeleteType={onDeleteType}/>
+        <VehicleTypeEditor onSaveType={onSaveType} onChange={onChangeTypeName} onChangeTypeActive={onChangeTypeActive} vehicleType={vehicleType} onDeleteType={onDeleteType}/>
         </>         
     )
 }

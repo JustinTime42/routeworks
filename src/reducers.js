@@ -86,7 +86,7 @@ export const setActiveRoute = (state=initialStateActiveRoute, action={}) => {
     switch(action.type) {
         case SET_ACTIVE_ROUTE:       
             if (!action.payload) {return {...state, ...initialStateActiveRoute}}   
-            else return {...state, ...initialStateActiveProperty, activeRoute: action.payload}
+            else return {...state, activeRoute: action.payload}
         default:    
             return state
     }

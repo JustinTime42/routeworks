@@ -14,7 +14,7 @@
 
         useEffect(() => {
             if(!('name' in tempItem) && modals.includes('Route')) {
-                dispatch(setTempItem({name: '', active: true}))
+                dispatch(setTempItem({name: '', active: true, customers: []}))
             }
         },[tempItem])
 
@@ -23,8 +23,8 @@
                 dispatch(setTempItem({...tempItem, [event.target.name]: !tempItem[event.target.name]}))
             } else {
                 dispatch(setTempItem({...tempItem, name: event.target.value}))
-            }  
-        }   
+            }
+        }
 
         const onSave = () => {
             if (tempItem.id) {
@@ -32,11 +32,11 @@
             } else {
                 dispatch(createItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             }
-            dispatch(hideModal('Route'))    
+            dispatch(hideModal('Route'))
         }
 
         const onDelete = () => {
-            dispatch(deleteItem(tempItem, routes, "route", SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+            dispatch(deleteItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             dispatch(hideModal('Route'))                 
         }
 

@@ -51,7 +51,7 @@ const SimpleSelector = (props) => {
                                 return (
                                     <div key={i} style={{display: "flex"}}>                        
                                         <Dropdown.Item eventKey={item.name}>{item.name}
-                                            <Button style={{visibility: (showEdit) ? "initial" : "hidden"}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
+                                            <Button disabled={!item.id} style={{visibility: (showEdit) ? "initial" : "hidden"}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
                                         </Dropdown.Item>
                                     </div>
                                 )                                           
