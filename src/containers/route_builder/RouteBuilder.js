@@ -20,6 +20,74 @@ maintain two lists:
 For state management, we'll use local state synced with firestore subscription like the dropdowns
 */
 
+ /*
+    Things removed from DragEnd
+    onSave - maybe can be caught with a useEffect or can be re-added to onDragEnd by sending to db there
+    checking if customer is already on route (should be unnecessary)
+    setStates changed to return statements. will need to setState here, so I'll need to add some functionality here
+    The right hand list just needs to be the customers that are returned by the searchfield and aren't on the route
+    if the right hand list.length() === 0, search the left side and scroll to results
+
+    new shape of routeData stored in firebase should be:
+
+    so I could store the route_data like in heroku, then subscribe to the query: 
+        I need a way to identify the properties in the route. 
+    routeData: [{
+        customer_id:
+        routeName:
+        route_position:
+        Priority:
+        active:
+        status:        
+    }]
+    then we can subscribe to the query arrayContains(routeName:)
+
+    Each customer can have an array: routes_assigned, and I can subscribe to the query customers where
+    routes_assigned array-contains, 'routeName'
+    We'd still need a route_data collection exactly like in postgress to store the rest of the relevant route data 
+    and then merge that data into the customer data just like now
+    actually maybe there should be a collection of routes - hey there already is!
+    a document would look like this: 
+    routeName: [
+
+        or
+        customer_id: {
+            routeName:
+            route_position:
+            Priority:
+            active:
+            status:
+        }
+    ]
+
+    or, in addition to the routes_assigned field, I could also have a an array of maps within the customer document. 
+    Nope. separate document for the route makes more sense. If the route_data is stored in the customer document, then
+    when a route gets re-ordered, we'll have to do a write on every customer document on that route, rather than 
+    just on the route_data document
+
+    /driver/driver_lists/route/[routeID] will be of the shape: 
+    name:
+    active: 
+    customers: [
+        {        
+            customer_id:
+            cust_name:
+            service_address:
+            routes_assigned:
+            contract_type
+            service_level
+            route_position:
+            Priority:
+            active:
+            status:
+        },
+    ]
+    this will cap routes at 180 customers per route, but that should be plenty and will greatly reduce writes
+
+    then, when driver hits done, it writes to this document and do the service log
+    */ 
+ 
+    
 
 import React, {useState, useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux";
