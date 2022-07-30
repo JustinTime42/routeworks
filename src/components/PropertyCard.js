@@ -105,36 +105,37 @@ const PropertyCard = (props) => {
         return <p>{routes}</p>
     }
 
-    const toggleActive = () => {
-       // dispatch({ type: ROUTE_DATA_PENDING})
-        let item = {
-            table: 'route_data',
-            newItem: {active: !props.address.active},
-            whereObj: {
-                property_key: props.address.key,
-                route_name: props.route.name,
-            }
-        }
-        fetch(`${process.env.REACT_APP_API_URL}/edititem`, {
-            method: 'POST', 
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(item)
-        })
-        .then(res => res.json())
-        .then(updated => {
-            console.log("updated: ", updated)
-            let newItems = [...routeData]
-            newItems[routeData.findIndex(item => item.property_key === updated[0].property_key)].active = updated[0].active
-           // dispatch({ type: ROUTE_DATA_SUCCESS, payload: newItems})
-           // dispatch(requestAllAddresses())
-            props.refreshData()
-        })
-        .catch(err => dispatch({ type: GET_ITEMS_FAILED, payload: err}))
-    }
+    // moved to parent component
+    // const toggleActive = () => {
+    //    // dispatch({ type: ROUTE_DATA_PENDING})
+    //     let item = {
+    //         table: 'route_data',
+    //         newItem: {active: !props.address.active},
+    //         whereObj: {
+    //             property_key: props.address.key,
+    //             route_name: props.route.name,
+    //         }
+    //     }
+    //     fetch(`${process.env.REACT_APP_API_URL}/edititem`, {
+    //         method: 'POST', 
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(item)
+    //     })
+    //     .then(res => res.json())
+    //     .then(updated => {
+    //         console.log("updated: ", updated)
+    //         let newItems = [...routeData]
+    //         newItems[routeData.findIndex(item => item.property_key === updated[0].property_key)].active = updated[0].active
+    //        // dispatch({ type: ROUTE_DATA_SUCCESS, payload: newItems})
+    //        // dispatch(requestAllAddresses())
+    //         props.refreshData()
+    //     })
+    //     .catch(err => dispatch({ type: GET_ITEMS_FAILED, payload: err}))
+    // }
 
-    return(
+    return (
         <Row id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
             <Col style={{flex:"2 1 auto"}}>
                 <h5 style={{textAlign: "left", fontWeight: "bold"}}>  
@@ -148,7 +149,7 @@ const PropertyCard = (props) => {
             {(typeof(props.address.route_position) === "number") ?  
                 <>
                     <p style={{...statusStyle}}>{status}</p>   
-                    {props.admin ? <Button style={activeStyle} onClick={toggleActive}>{props.address.active === true ? 'Active' : 'Inactive'}</Button> : null} 
+                    {props.admin ? <Button style={activeStyle} onClick={props.toggleActive}>{props.address.active === true ? 'Active' : 'Inactive'}</Button> : null} 
                 </>     
                     : <p></p>
                 } 

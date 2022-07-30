@@ -22,7 +22,7 @@ const CustomerEditor = (props) => {
     const [newTagName, setNewTagName] = useState('')
     const [sameAddress, setSameAddress] = useState(false)
 
-    useEffect(() => { 
+    useEffect(() => {
         setApi(customer ? "editproperty" : "newproperty")
         setSameAddress(false)
         getTags()
@@ -31,7 +31,7 @@ const CustomerEditor = (props) => {
     const getTags = () => {
         fetch(`${process.env.REACT_APP_API_URL}/alltags`)
         .then(res => res.json())
-        .then(tags => setAllTags(tags)) 
+        .then(tags => setAllTags(tags))
         .catch(err => console.log(err))
     }
 
@@ -45,10 +45,10 @@ const CustomerEditor = (props) => {
             tagsArray.push(name)
         }
         let tags = tagsArray.join()
-        dispatch(setTempItem({...customer, tags: tags})) 
+        dispatch(setTempItem({...customer, tags: tags}))
     }
 
-    const saveNewTag = () => {     
+    const saveNewTag = () => {
         axios.post(`${process.env.REACT_APP_API_URL}/newtag`, { tag_name: newTagName})
         .then(tag => setAllTags([...allTags, tag.data])) 
         .catch(err => console.log(err))
@@ -434,7 +434,7 @@ const CustomerEditor = (props) => {
                 </p>
                 <hr />
                 <div className="d-flex justify-content-end">
-                <Button onClick={props.onDelete} variant="outline-success">
+                <Button onClick={() => props.onDelete(customer)} variant="outline-success">
                     Permanently Delete This Property
                 </Button>
                 </div>

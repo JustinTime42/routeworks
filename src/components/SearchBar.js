@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormControl, ListGroup } from 'react-bootstrap'
 import { setActiveProperty, filterProperties } from '../actions'
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from '../firebase' 
+import { UPDATE_ADDRESSES_SUCCESS } from '../constants';
 
 const SearchBar = () => {
 
@@ -25,6 +28,16 @@ const SearchBar = () => {
         setMatches([])
         setSearchValue('')
     }
+
+    // get all customers
+    useEffect(() => {
+        const unsub = onSnapshot(collection(db, `driver/driver_lists/customer`), (querySnapshot) => {
+            dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+        })
+        return () => {
+            unsub()
+        }
+    },[])
 
     const listStyle = {
         position: "absolute", 
@@ -53,11 +66,10 @@ const SearchBar = () => {
     }
 
     const onSetMatches = () => {
-        if (searchValue.length > 1 ) {
+        if (searchValue.length > 0 ) {
             const filteredCustomers = allCustomers.filter(customer => {
                 if(customer.cust_name?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                customer.address?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                customer.cust_phone?.includes(searchValue)) return true
+                customer.address?.toLowerCase().includes(searchValue.toLowerCase())) return true
             })
             setMatches(filteredCustomers)
             dispatch(filterProperties(filteredCustomers))
@@ -76,7 +88,7 @@ const SearchBar = () => {
             <ListGroup  style={listStyle} as="ul">
             {
                 matches.map(customer => (
-                        <ListGroup.Item style={itemStyle} key={customer.key} action onClick={() => selectCustomer(customer)}>
+                        <ListGroup.Item style={itemStyle} key={customer.id} action onClick={() => selectCustomer(customer)}>
                         {customer.cust_name} | {customer.address} | {customer.cust_phone}
                         </ListGroup.Item> 
                     )

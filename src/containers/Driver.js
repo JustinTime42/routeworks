@@ -7,7 +7,8 @@ import { addDoc, collection } from 'firebase/firestore';
 import { app, auth, logout, functions, db } from '../firebase'
 
 import DisplayRoute from "./DisplayRoute"
-import EditRoute from "./EditRoute"
+//import EditRoute from "./EditRoute"
+import RouteBuilder from './route_builder/RouteBuilder';
 import AdminDropdown from "./AdminDropdown"
 import Spinner from "../components/Spinner"
 import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, getWorkTypes, setTempItem, showModal, setActiveItem} from "../actions"
@@ -179,7 +180,7 @@ const Driver = () => {
                 <Button variant="primary" size="sm" onClick={refreshData}>Refresh</Button>
             </div>
             { 
-            showRouteEditor ? <EditRoute /> : 
+            showRouteEditor ? <RouteBuilder /> : 
             activeTractor.name && (activeDriver.key !== '')  && activeWorkType.name ? <DisplayRoute /> :
             <Alert variant="warning">Please select route, driver, vehicle, and work type to begin.</Alert>                              
             }             

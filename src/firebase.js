@@ -44,7 +44,6 @@ const logInWithEmailAndPassword = async (email, password) => {
     }
 }
 
-            // move this to its own folder of functions 
   const getAdminItem = async(item, collection) => {
     console.log("getAdminItem", item)
     try {

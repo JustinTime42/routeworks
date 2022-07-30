@@ -13,9 +13,11 @@ else
 maintain two lists: 
     routeProperties
         all the properties currently on the route
-        this updates live - sends to server during onDrop
+        this updates live - sends to server during onDragEnd
     otherProperties
-        all properties except the current route properties
+        all properties that fulfil the search except the current route properties
+        *NOTE
+            If the searchField has 0 results, search the routelist and scroll to result and activate
 
 For state management, we'll use local state synced with firestore subscription like the dropdowns
 */
@@ -73,16 +75,18 @@ For state management, we'll use local state synced with firestore subscription l
             customer_id:
             cust_name:
             service_address:
-            routes_assigned:
             contract_type
             service_level
-            route_position:
+            route_position: ? // or maybe just use the position in the array?
             Priority:
             active:
             status:
         },
     ]
-    this will cap routes at 180 customers per route, but that should be plenty and will greatly reduce writes
+
+    add routes_assigned to the customers table, and that will have to be written to when adding or removing a property?
+
+    this will cap routes at 200 customers per route, but that should be plenty and will greatly reduce writes
 
     then, when driver hits done, it writes to this document and do the service log
     */ 
@@ -90,38 +94,37 @@ For state management, we'll use local state synced with firestore subscription l
     
 
 import React, {useState, useEffect} from 'react'
-import { useDispatch, useSelector } from "react-redux";
-import * as styles from './route-builder-styles'
-import * as dnd from './drag-functions'
-import {UPDATE_ADDRESSES_SUCCESS, GET_ROUTE_SUCCESS, SET_ACTIVE_ROUTE} from '../../constants'
+import { useDispatch, useSelector } from "react-redux"
+import { collection, query, onSnapshot } from "firebase/firestore"
+import {db } from '../../firebase'
+import { getItemStyle, getListStyle} from './route-builder-styles'
+import { onDragEnd } from './drag-functions'
+import {REQUEST_ROUTES_SUCCESS, GET_ROUTE_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS} from '../../constants'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-import { editItem, requestAllAddresses, filterRouteProperties, saveRoute, setActiveProperty, saveNewProperty, editProperty, deleteProperty, getRouteData, createItem, setTempItem } from "../../actions"
-
+import { Button } from 'react-bootstrap'
+import PropertyCard from '../../components/PropertyCard'
+import { editItem, deleteItem, requestAllAddresses, filterRouteProperties, saveRoute, setActiveItem, saveNewProperty, editProperty, deleteProperty, getRouteData, createItem, setTempItem, showModal, hideModal } from "../../actions"
+import CustomerEditor from '../../components/editor_panels/CustomerEditor'
 
 const RouteBuilder = () => {
     const modals = useSelector(state => state.whichModals.modals)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
+    const routes = useSelector(state => state.requestRoutes.routes)
     const activeCustomer = useSelector(state => state.setActiveProperty.activeProperty)
-    //const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
-    const routeProperties = useSelector(state => state.getRouteProperties.addresses)
+    const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
+    const filteredProperties = useSelector(state => state.filterProperties.customers)
+   // const routeProperties = useSelector(state => state.getRouteProperties.addresses)
     const routeData = useSelector(state => state.getRouteData.routeData)
     const dispatch = useDispatch()
 
     const [offRouteList, setOffRouteList] = useState([])
     //const [allCustomers, setAllCustomers] = useState([])
     const [scrollPosition, setScrollPosition] = useState(0)
-    const [searchField, setSearchField] = useState('')
-    
-    useEffect(() => {
-        const unsub = onSnapshot(collection(db, `admin/admin_lists/customer`), (querySnapshot) => {
-            dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
-        })
-        return () => {
-            unsub()
-        }
-    },[])
+    const [searchField, setSearchField] = useState('')   
+
 
     useEffect(() => {
+        console.log(filteredProperties)
         const unsub = onSnapshot(collection(db, 'route_data'), (querySnapshot) => {
             dispatch({type: GET_ROUTE_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
@@ -131,21 +134,61 @@ const RouteBuilder = () => {
     },[])
 
     const onInitRoute = () => {
-        dispatch(editItem(routeProperties.map(i => i.status = "Waiting"), [], 'route_data', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS)   )
-        routeProperties.map(i => i.status === 'Waiting')
+        dispatch(editItem(activeRoute.customers.map(i => i.status = "Waiting"), routes, 'route_data', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
+    const onNewPropertyClick = () => {
+        dispatch(setTempItem({}))
+    }
+
+    const onDetailsPropertyClick = (customer) => {
+        dispatch(showModal('Customer'))
+        dispatch(setTempItem({...customer}))
+    }
+
+    const handlePropertyClick = (customer) => {
+        dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
+    }
+
+    const toggleActive = (customer, route) => { 
+        let newRoute = ({...route})      
+        const routeIndex =  activeRoute.customers.findIndex(item => item.id = customer.id)
+        newRoute[routeIndex].active = !newRoute[routeIndex].active
+        dispatch(editItem(newRoute, routes, 'route_data', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+    }
+
+    const onPropertySave = (newDetails) => {
+        //make sure newDetails includes ID
+        if (newDetails.id) {
+            dispatch(editItem(newDetails, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+        } else {
+            dispatch(createItem(newDetails, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+        }
+        dispatch(hideModal('Customer'))
+        // check if the below is really necessary
+        // setScrollPosition(document.getElementById('droppable2scroll').scrollTop)
+    }
+
+    const onDelete = (customer) => {
+        dispatch(deleteItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+    }
+
+    const onCloseClick = () => {
+        dispatch(hideModal('Customer'))
+    }
+
+
     return (
-        this.props.isAllPending || this.props.isRoutePending ?
+        !activeRoute.customers ?
         <h1></h1> :(
         <>
         <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
             {/* <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.refreshData}>Refresh Data</Button> */}
             <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={onInitRoute}>Initialize Route</Button>
-            <Button variant="primary" size="sm" onClick={this.onNewPropertyClick}>New</Button>
+            <Button variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
         </div>
         <div className="adminGridContainer">
-        <DragDropContext onDragEnd={dnd.onDragEnd}>
+        <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppable2">                    
                 {(provided, snapshot) => (
                     <div
@@ -153,10 +196,10 @@ const RouteBuilder = () => {
                         id="droppable2scroll"
                         ref={provided.innerRef}
                         style={getListStyle(snapshot.isDraggingOver)}>
-                        {routeProperties.map((item, index) => (
+                        {activeRoute.customers.map((item, index) => (
                             <Draggable
                                 key={item.id}
-                                draggableId={`L${item.id.toString()}`}
+                                draggableId={item.id.toString()}
                                 index={index}>
                                 {(provided, snapshot) => (
                                     <div
@@ -170,14 +213,14 @@ const RouteBuilder = () => {
                                         )}>
                                         <PropertyCard 
                                             i={index} 
-                                            route={this.props.activeRoute}
-                                            key={item.key} 
+                                            route={activeRoute}
+                                            key={item.id} 
                                             address={item} 
                                             admin={true} 
-                                            detailsClick={this.onDetailsPropertyClick} 
-                                            handleClick={this.handlePropertyClick}
-                                            refreshData={this.refreshData}
-                                            activeProperty={this.props.activeProperty}
+                                            detailsClick={onDetailsPropertyClick} 
+                                            handleClick={handlePropertyClick}
+                                            toggleActive={toggleActive}
+                                            activeProperty={activeCustomer}
                                         />
                                     </div>
                                 )}
@@ -194,45 +237,50 @@ const RouteBuilder = () => {
                         ref={provided.innerRef}
                         className="rightSide, scrollable"
                         style={getListStyle(snapshot.isDraggingOver)}>
-                        {this.state.filteredItems.map((item, index) => (
-                            <Draggable
-                                key={item.key}
-                                draggableId={`R${item.key.toString()}`}
-                                index={index}>
-                                {(provided, snapshot) => (
-                                    <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        style={getItemStyle(
-                                            snapshot.isDragging,
-                                            provided.draggableProps.style
-                                        )}>
-                                        <PropertyCard 
-                                            route={this.props.activeRoute} 
-                                            key={item.key} 
-                                            address={item} 
-                                            admin={true} 
-                                            detailsClick={this.onDetailsPropertyClick} 
-                                            handleClick={this.handlePropertyClick}
-                                            activeProperty={this.props.activeProperty}
-                                        />
-                                            
-                                    </div>
-                                )}
-                            </Draggable>
-                        ))}
+                        {filteredProperties.map((item, index) => {
+                            if (!activeRoute.customers.includes(i => item.id === i.id)) {
+                                return (
+                                    <Draggable
+                                        key={item.id}
+                                        draggableId={`R${item.id.toString()}`}
+                                        index={index}>
+                                        {(provided, snapshot) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                style={getItemStyle(
+                                                    snapshot.isDragging,
+                                                    provided.draggableProps.style
+                                                )}>
+                                                <PropertyCard 
+                                                    i={index} 
+                                                    route={activeRoute}
+                                                    key={item.id} 
+                                                    address={item} 
+                                                    admin={true} 
+                                                    detailsClick={onDetailsPropertyClick} 
+                                                    handleClick={handlePropertyClick}
+                                                    toggleActive={toggleActive}
+                                                    activeProperty={activeCustomer}
+                                                />                                                    
+                                            </div>
+                                        )}
+                                    </Draggable>
+                                )
+                            } else return null
+                            })
+                        } 
                         {provided.placeholder}
                     </div>
                 )}
             </Droppable>
         </DragDropContext>
             <CustomerEditor 
-                activeProperty={this.props.activeProperty} 
-                onSave={this.onPropertySave}
-                show={this.state.showModal}
-                close={this.onCloseClick}
-                onDelete={this.onDelete}
+                activeProperty={activeCustomer} 
+                onSave={onPropertySave}
+                close={onCloseClick}
+                onDelete={onDelete}
             />
         </div>
         </>  
