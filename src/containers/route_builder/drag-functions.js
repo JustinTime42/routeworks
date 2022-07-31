@@ -1,11 +1,6 @@
 
 
- const id2List = {
-    droppable: 'filteredItems',
-    droppable2: 'selected'
-}
 
-const getList = id => this.state[this.id2List[id]]
 
 const move = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source)
@@ -25,12 +20,18 @@ const reorder = (list, startIndex, endIndex) => {
     return result
 }
 
-export const onDragEnd = result => {
+export const onDragEnd = (result, onList, offList) => {
     console.log(result)
-    const { source, destination } = result
+    const { source, destination, draggableId } = result
+
+    const id2List = {
+        droppable: offList,
+        droppable2: onList
+    }
+
+    const getList = id => id2List[id]
 
     //moving the below to the parent function
-    // this.props.onSetActiveProperty(this.props.addresses.find(property => property.key === parseInt(result.draggableId.slice(1))))
     const newList = move(
         getList(source.droppableId),
         getList(destination.droppableId),
@@ -38,9 +39,11 @@ export const onDragEnd = result => {
         destination
     )
 
-    // we're only ever going to care about the dropped card if it's dropped on the active route
-    let droppedCard = newList.droppable2.find(item => item.key === parseInt(result.draggableId.slice(1)))
-
+    console.log(newList)
+        console.log(newList.droppable2)
+        console.log(draggableId)
+    // // we're only ever going to care about the dropped card if it's dropped on the active route
+     let droppedCard = newList.droppable2.find(item => item.id === draggableId)
     if (!destination) {
         return;
     }
@@ -54,13 +57,14 @@ export const onDragEnd = result => {
                 source.index,
                 destination.index
             )
+            console.log(orderedItems)
             // I'm attempting to use array index instead of route_position
             // orderedItems.forEach((item, i) => {
             //     item.route_position = i
             // })
             return (
                 {
-                    newRouteList: orderedItems,
+                    newRoute: orderedItems,
                     scrollPosition: document.getElementById('droppable2scroll').scrollTop,
                     card: droppedCard, 
                     whereTo: 'same',
@@ -100,7 +104,7 @@ export const onDragEnd = result => {
             // }
         }      
         else if (destination.droppableId === "droppable") {  // removing from route
-            let droppedCard = newList.droppable.find(item => item.key === parseInt(result.draggableId.slice(1))) 
+            let droppedCard = newList.droppable.find(item => item.id === parseInt(result.draggableId.slice(1))) 
             return (
                 {
                     newRoute: newList.droppable2,

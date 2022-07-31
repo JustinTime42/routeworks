@@ -72,10 +72,16 @@ const SearchBar = () => {
                 customer.address?.toLowerCase().includes(searchValue.toLowerCase())) return true
             })
             setMatches(filteredCustomers)
-            dispatch(filterProperties(filteredCustomers))
+            let offRouteResults = [] 
+            filteredCustomers.forEach(item => {
+                if (!activeRoute.customers.find(i => i.id === item.id)) {
+                    offRouteResults.push(item)
+                }
+            })
+            dispatch(filterProperties(offRouteResults))
         } else {
             setMatches([])  
-            dispatch(filterProperties([]))          
+            dispatch(filterProperties([]))
         }
     }
 

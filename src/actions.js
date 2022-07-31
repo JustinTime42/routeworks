@@ -309,6 +309,7 @@ export const editItem = (item, itemList, className, activeActionType, listAction
         tempList[tempList.findIndex(i => i.admin_key === item.id)] = item.nonAdminFields
         dispatch({type: listAction, payload: tempList})
     }    
+    console.log(item)
     const {id, ...itemDetails} = item
     const itemRef = doc(db, className, item.id)    
     const sendToDB = async() => {

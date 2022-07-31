@@ -11,8 +11,8 @@ const mapStateToProps = state => {
         activeProperty: state.setActiveProperty.activeProperty,
         activeRoute: state.setActiveRoute.activeRoute,
         driver: state.setActiveDriver.name,
-        routeData: state.getRouteData.routeData,
-        addresses: state.requestAllAddresses.addresses,
+       // routeData: state.getRouteData.routeData,
+       // addresses: state.requestAllAddresses.addresses,
     }
 }
 
@@ -26,7 +26,7 @@ class DisplayRoute extends Component {
     constructor(props){
         super(props)
         this.state = { 
-            routeProperties: this.getRouteProperties(),
+            //routeProperties: this.getRouteProperties(),
             activeProperty: this.props.activeProperty  
         }
     }
@@ -35,23 +35,23 @@ class DisplayRoute extends Component {
         if(prevProps !== this.props){
           this.setState({
             activeProperty: this.props.activeProperty,
-            routeProperties: this.getRouteProperties(),
+           // routeProperties: this.getRouteProperties(),
         }, console.log(this.state))
       }
     }
 
-    getRouteProperties = () => {
-        let routeProperties = []
-        console.log("active Route: ", this.props.activeRoute)
-        this.props.routeData.forEach(routeEntry => {
-            if (routeEntry.route_name === this.props.activeRoute.name) {
-                let customer = this.props.addresses.find(property => property.key === routeEntry.property_key)
-                routeProperties.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status, active: routeEntry.active })
-            }
-        })
-        console.log('route properties: ', routeProperties)
-        return routeProperties.filter(item => !item.inactive).sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
-    }
+    // getRouteProperties = () => {
+    //     let routeProperties = []
+    //     console.log("active Route: ", this.props.activeRoute)
+    //     this.props.routeData.forEach(routeEntry => {
+    //         if (routeEntry.route_name === this.props.activeRoute.name) {
+    //             let customer = this.props.addresses.find(property => property.key === routeEntry.property_key)
+    //             routeProperties.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status, active: routeEntry.active })
+    //         }
+    //     })
+    //     console.log('route properties: ', routeProperties)
+    //     return routeProperties.filter(item => !item.inactive).sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
+    // }
 
     changeActiveProperty = (property = this.props.activeProperty, direction = '') => {
         console.log(property, direction)
@@ -78,7 +78,7 @@ class DisplayRoute extends Component {
             <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
                 <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                     {
-                        this.state.routeProperties.map((address, i )=> {
+                       this.props.activeRoute.customers.map((address, i )=> {
                             if (address.active){
                                 return (
                                     <PropertyCard                                                                    

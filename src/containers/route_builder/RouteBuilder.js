@@ -95,7 +95,7 @@ For state management, we'll use local state synced with firestore subscription l
 
 import React, {useState, useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { collection, query, onSnapshot } from "firebase/firestore"
+import { collection, onSnapshot, doc } from "firebase/firestore"
 import {db } from '../../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd } from './drag-functions'
@@ -103,7 +103,7 @@ import {REQUEST_ROUTES_SUCCESS, GET_ROUTE_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { Button } from 'react-bootstrap'
 import PropertyCard from '../../components/PropertyCard'
-import { editItem, deleteItem, requestAllAddresses, filterRouteProperties, saveRoute, setActiveItem, saveNewProperty, editProperty, deleteProperty, getRouteData, createItem, setTempItem, showModal, hideModal } from "../../actions"
+import { editItem, deleteItem, requestAllAddresses, filterRouteProperties, saveRoute, setActiveItem, saveNewProperty, editProperty, deleteProperty, getRouteData, createItem, setTempItem, showModal, hideModal, filterProperties } from "../../actions"
 import CustomerEditor from '../../components/editor_panels/CustomerEditor'
 
 const RouteBuilder = () => {
@@ -117,21 +117,25 @@ const RouteBuilder = () => {
     const routeData = useSelector(state => state.getRouteData.routeData)
     const dispatch = useDispatch()
 
-    const [offRouteList, setOffRouteList] = useState([])
+    const [offRouteList, setOffRouteList] = useState(filteredProperties.filter(item => !activeRoute.customers.includes(i => i.id === item.id)))
     //const [allCustomers, setAllCustomers] = useState([])
     const [scrollPosition, setScrollPosition] = useState(0)
     const [searchField, setSearchField] = useState('')   
 
-
     useEffect(() => {
-        console.log(filteredProperties)
-        const unsub = onSnapshot(collection(db, 'route_data'), (querySnapshot) => {
-            dispatch({type: GET_ROUTE_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+        const unsub = onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
+            console.log(doc.data())
+            dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
+            //dispatch(editItem(doc.data(), routes, 'route_data', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
         })
         return () => {
             unsub()
         }
     },[])
+
+    useEffect(() => {
+        setOffRouteList(filteredProperties)
+    },[filteredProperties])
 
     const onInitRoute = () => {
         dispatch(editItem(activeRoute.customers.map(i => i.status = "Waiting"), routes, 'route_data', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
@@ -173,6 +177,13 @@ const RouteBuilder = () => {
         dispatch(deleteItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
     }
 
+    const dragEnd = (result) => {
+        console.log(offRouteList)
+        const newLists = onDragEnd(result, activeRoute.customers, offRouteList)
+        console.log({...activeRoute, customers: newLists.newRoute})
+        dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+    }
+
     const onCloseClick = () => {
         dispatch(hideModal('Customer'))
     }
@@ -188,7 +199,7 @@ const RouteBuilder = () => {
             <Button variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
         </div>
         <div className="adminGridContainer">
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={dragEnd}>
             <Droppable droppableId="droppable2">                    
                 {(provided, snapshot) => (
                     <div
@@ -199,7 +210,7 @@ const RouteBuilder = () => {
                         {activeRoute.customers.map((item, index) => (
                             <Draggable
                                 key={item.id}
-                                draggableId={item.id.toString()}
+                                draggableId={item.id}
                                 index={index}>
                                 {(provided, snapshot) => (
                                     <div
@@ -237,12 +248,10 @@ const RouteBuilder = () => {
                         ref={provided.innerRef}
                         className="rightSide, scrollable"
                         style={getListStyle(snapshot.isDraggingOver)}>
-                        {filteredProperties.map((item, index) => {
-                            if (!activeRoute.customers.includes(i => item.id === i.id)) {
-                                return (
+                        {offRouteList.map((item, index) => (
                                     <Draggable
                                         key={item.id}
-                                        draggableId={`R${item.id.toString()}`}
+                                        draggableId={item.id}
                                         index={index}>
                                         {(provided, snapshot) => (
                                             <div
@@ -267,9 +276,7 @@ const RouteBuilder = () => {
                                             </div>
                                         )}
                                     </Draggable>
-                                )
-                            } else return null
-                            })
+                                ))
                         } 
                         {provided.placeholder}
                     </div>
