@@ -29,6 +29,11 @@ const SearchBar = () => {
         setSearchValue('')
     }
 
+    useEffect(() => {
+       setSearchValue('')
+       onSetMatches()
+    }, [activeRoute])
+
     // get all customers
     useEffect(() => {
         const unsub = onSnapshot(collection(db, `driver/driver_lists/customer`), (querySnapshot) => {
@@ -53,8 +58,7 @@ const SearchBar = () => {
    
     useEffect(() => {
         onSetMatches()
-    }, [searchValue, allCustomers]) // activeProperty?.key so it doesn't refresh the whole list for every key press. 
-                                        // trouble is, that makes it also not update after saving
+    }, [searchValue, allCustomers]) 
 
     useEffect(() => {
         updateMatches()
