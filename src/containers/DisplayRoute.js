@@ -1,67 +1,41 @@
-import React, { Component } from 'react' 
-import { connect } from "react-redux"
+import React, { useState, useEffect } from 'react' 
+import { useDispatch, useSelector } from "react-redux";
+import { onSnapshot, doc } from 'firebase/firestore';
+import { db } from '../firebase';
 import PropertyCard from "../components/PropertyCard"
 import PropertyDetails from "../components/PropertyDetails"
-import { setActiveProperty, getRouteProperties } from '../actions'
+import { setActiveProperty, getRouteProperties, setActiveItem } from '../actions'
+import { SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE } from '../constants'
 
 import '../styles/driver.css'
 
-const mapStateToProps = state => {
-    return {
-        activeProperty: state.setActiveProperty.activeProperty,
-        activeRoute: state.setActiveRoute.activeRoute,
-        driver: state.setActiveDriver.name,
-       // routeData: state.getRouteData.routeData,
-       // addresses: state.requestAllAddresses.addresses,
-    }
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        onSetActiveProperty: (property) => dispatch(setActiveProperty(property)),
-    }
-}
-
-class DisplayRoute extends Component {
-    constructor(props){
-        super(props)
-        this.state = { 
-            //routeProperties: this.getRouteProperties(),
-            activeProperty: this.props.activeProperty  
+const DisplayRoute= (props) => {
+    const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
+    const customers = useSelector(state => state.requestAllAddresses.addresses)
+    const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
+    const routes = useSelector(state => state.requestRoutes.routes)
+    const driver = useSelector(state => state.setActiveDriver.name)
+    const dispatch = useDispatch()
+      
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
+            console.log(doc.data())
+            dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
+        })
+        return () => {
+            unsub()
         }
-    }
+    },[])
 
-    componentDidUpdate(prevProps) {
-        if(prevProps !== this.props){
-          this.setState({
-            activeProperty: this.props.activeProperty,
-           // routeProperties: this.getRouteProperties(),
-        }, console.log(this.state))
-      }
-    }
-
-    // getRouteProperties = () => {
-    //     let routeProperties = []
-    //     console.log("active Route: ", this.props.activeRoute)
-    //     this.props.routeData.forEach(routeEntry => {
-    //         if (routeEntry.route_name === this.props.activeRoute.name) {
-    //             let customer = this.props.addresses.find(property => property.key === routeEntry.property_key)
-    //             routeProperties.push({...customer, routeName: routeEntry.route_name, route_position:routeEntry.route_position, status: routeEntry.status, active: routeEntry.active })
-    //         }
-    //     })
-    //     console.log('route properties: ', routeProperties)
-    //     return routeProperties.filter(item => !item.inactive).sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
-    // }
-
-    changeActiveProperty = (property = this.props.activeProperty, direction = '') => {
+    const changeActiveProperty = (property = activeProperty, direction = '') => {
         console.log(property, direction)
         if (direction) {
-            let currentPosition = this.state.routeProperties.findIndex(i => i.key === property.key)
+            let currentPosition = activeRoute.customers.findIndex(i => i.key === property.key)
             console.log(currentPosition)
             let nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
                 console.log(nextPosition)
-            if (nextPosition >= 0 && nextPosition < this.state.routeProperties.length) {
-                this.props.onSetActiveProperty(this.state.routeProperties[nextPosition])
+            if (nextPosition >= 0 && nextPosition < activeRoute.customers.length) {
+                dispatch(setActiveItem(activeRoute.customers[nextPosition], customers, SET_ACTIVE_PROPERTY))
                 if ((nextPosition - 1) > 0) {
                     document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
                 } else {
@@ -69,36 +43,33 @@ class DisplayRoute extends Component {
                 }
             }
         } else {
-            this.props.onSetActiveProperty(property)
+            dispatch(setActiveItem(property, customers, SET_ACTIVE_PROPERTY))
         }
     }
-
-    render() {        
-        return(
-            <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
-                <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
-                    {
-                       this.props.activeRoute.customers.map((address, i )=> {
-                            if (address.active){
-                                return (
-                                    <PropertyCard                                                                    
-                                        i={i}  
-                                        route={this.props.activeRoute.name}                                   
-                                        key={address.key} 
-                                        address={address}
-                                        activeProperty={this.props.activeProperty}
-                                        handleClick={this.changeActiveProperty}                             
-                                    />  
-                                )   
-                            }  else return null                          
-                                                                                     
-                        }) 
-                    }
-                </div>
-                <PropertyDetails property={this.props.activeProperty} changeProperty={this.changeActiveProperty}/>
-            </div>  
-        )
-    }
+            
+    return (
+        <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
+            <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
+                {
+                    activeRoute.customers.map((address, i )=> {
+                        if (address.active){
+                            return (
+                                <PropertyCard                                                                    
+                                    i={i}  
+                                    route={activeRoute.name}                                   
+                                    key={address.key} 
+                                    address={address}
+                                    activeProperty={activeProperty}
+                                    handleClick={changeActiveProperty}                             
+                                />  
+                            )   
+                        }  else return null                                                                                    
+                    }) 
+                }
+            </div>
+            <PropertyDetails property={activeProperty} changeProperty={changeActiveProperty}/>
+        </div>  
+    )
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DisplayRoute)
+export default DisplayRoute
