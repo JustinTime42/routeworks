@@ -1,101 +1,6 @@
-/*
-drag and drop
-if source === dest & dest === route
-    reorder route
-else 
-if dest === rightSide
-    remove from route
-else 
-    add to route
-    set status waiting
-
-
-maintain two lists: 
-    routeProperties
-        all the properties currently on the route
-        this updates live - sends to server during onDragEnd
-    otherProperties
-        all properties that fulfil the search except the current route properties
-        *NOTE
-            If the searchField has 0 results, search the routelist and scroll to result and activate
-
-For state management, we'll use local state synced with firestore subscription like the dropdowns
-*/
-
- /*
-    Things removed from DragEnd
-    onSave - maybe can be caught with a useEffect or can be re-added to onDragEnd by sending to db there
-    checking if customer is already on route (should be unnecessary)
-    setStates changed to return statements. will need to setState here, so I'll need to add some functionality here
-    The right hand list just needs to be the customers that are returned by the searchfield and aren't on the route
-    if the right hand list.length() === 0, search the left side and scroll to results
-
-    new shape of routeData stored in firebase should be:
-
-    so I could store the route_data like in heroku, then subscribe to the query: 
-        I need a way to identify the properties in the route. 
-    routeData: [{
-        customer_id:
-        routeName:
-        route_position:
-        Priority:
-        active:
-        status:        
-    }]
-    then we can subscribe to the query arrayContains(routeName:)
-
-    Each customer can have an array: routes_assigned, and I can subscribe to the query customers where
-    routes_assigned array-contains, 'routeName'
-    We'd still need a route_data collection exactly like in postgress to store the rest of the relevant route data 
-    and then merge that data into the customer data just like now
-    actually maybe there should be a collection of routes - hey there already is!
-    a document would look like this: 
-    routeName: [
-
-        or
-        customer_id: {
-            routeName:
-            route_position:
-            Priority:
-            active:
-            status:
-        }
-    ]
-
-    or, in addition to the routes_assigned field, I could also have a an array of maps within the customer document. 
-    Nope. separate document for the route makes more sense. If the route_data is stored in the customer document, then
-    when a route gets re-ordered, we'll have to do a write on every customer document on that route, rather than 
-    just on the route_data document
-
-    /driver/driver_lists/route/[routeID] will be of the shape: 
-    name:
-    active: 
-    customers: [
-        {        
-            customer_id:
-            cust_name:
-            service_address:
-            contract_type
-            service_level
-            route_position: ? // or maybe just use the position in the array?
-            Priority:
-            active:
-            status:
-        },
-    ]
-
-    add routes_assigned to the customers table, and that will have to be written to when adding or removing a property?
-
-    this will cap routes at 200 customers per route, but that should be plenty and will greatly reduce writes
-
-    then, when driver hits done, it writes to this document and do the service log
-    */ 
- 
-    
-
 import React, {useState, useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { collection, onSnapshot, doc } from "firebase/firestore"
+import { collection, onSnapshot, doc, getDoc } from "firebase/firestore"
 import {db } from '../../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd } from './drag-functions'
@@ -145,9 +50,19 @@ const RouteBuilder = () => {
         dispatch(setTempItem({}))
     }
 
-    const onDetailsPropertyClick = (customer) => {
+    const onDetailsPropertyClick = async(customer) => {
         dispatch(showModal('Customer'))
-        dispatch(setTempItem({...customer}))
+        console.log(customer.id)
+            // here we need to get the full details from the customer collection and set that as tempItem
+        const docRef = doc(db, 'driver/driver_lists/customer', customer.id)
+        const docSnap = await getDoc(docRef)
+
+        if(docSnap.exists()) {
+            console.log(docSnap.data())
+            dispatch(setTempItem({...docSnap.data(), id: docSnap.id}))
+        } else {
+            console.log(`${customer.name} not found in database`)
+        }
     }
 
     const handlePropertyClick = (customer) => {
@@ -178,7 +93,6 @@ const RouteBuilder = () => {
     }
 
     const dragEnd = (result) => {
-        console.log(offRouteList)
         const newLists = onDragEnd(result, activeRoute.customers, offRouteList)
         console.log({...activeRoute, customers: newLists.newRoute})
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))

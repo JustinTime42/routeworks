@@ -15,7 +15,7 @@ import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getT
 
 import SearchBar from "../components/SearchBar"
 import { Alert, Button, DropdownButton } from "react-bootstrap"
-import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE} from '../constants.js'
+import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
 
 import '../styles/driver.css'
 import UserEditor from '../components/editor_panels/UserEditor';
@@ -38,11 +38,14 @@ const Driver = () => {
     //     refreshData()
     // },[])
 
-    const refreshData = () => {
-        let newCustomerArray = []
-        customers.forEach(item => {
-            let newItem = {
-                nonAdminFields: {                    
+    const refreshData2 = () => {
+        fetch(`${process.env.REACT_APP_API_URL}/properties`)
+        .then(response => response.json())
+        .then(data => {
+            dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: data})
+            let newCustomerArray = []
+            data.forEach(item => {
+            let newItem = {                   
                     cust_name: item.cust_name,
                     cust_fname: item.cust_fname,
                     cust_lname: item.cust_lname,
@@ -65,8 +68,6 @@ const Driver = () => {
                     bill_zip: item.bill_zip,
                     tags: item.tags,
                     service_level: item.service_level,
-                },
-                adminFields: {
                     snow_price: item.price,
                     sand_price: item.price,
                     sweep_price: item.price,
@@ -90,20 +91,13 @@ const Driver = () => {
                     'Excavator - Small': item['Excavator - Small'],
                     'Water Truck - 2000 gal': item['Water Truck - 2000 gal'],
                     'Vibratory Roller': item['Vibratory Roller'],
-                }
             }            
-            let keysArray = Object.keys(newItem.adminFields)
+            let keysArray = Object.keys(newItem)
             keysArray.forEach(i => {
-                if (newItem.adminFields[i] === null || newItem.adminFields[i] === undefined) {
-                    delete newItem.adminFields[i]
+                if (newItem[i] === null || newItem[i] === undefined) {
+                    delete newItem[i]
                 }
-            }) 
-            keysArray = Object.keys(newItem.nonAdminFields) 
-            keysArray.forEach(i => {
-                if (newItem.nonAdminFields[i] === null || newItem.nonAdminFields[i] === undefined) {
-                    delete newItem.nonAdminFields[i]
-                }
-            }) 
+            })             
             newCustomerArray.push(newItem)
         })
         console.log(newCustomerArray)
@@ -112,6 +106,9 @@ const Driver = () => {
             
             sendToDB(item)
         })
+        } )
+        .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error}))
+        
 
         /*gonna use this temporarily to move data to new database
         old structure: {item}
@@ -130,7 +127,7 @@ const Driver = () => {
     const sendToDB = async(item) => {
         console.log(item)
         try {
-            const docRef = await addDoc(collection(db, 'admin/admin_lists/customer'), {...item})                     
+            const docRef = await addDoc(collection(db, 'driver/driver_lists/customer'), {...item})                     
        } catch (e) {
          alert("Error adding document: ", e);
        }
@@ -177,7 +174,7 @@ const Driver = () => {
                 {/* <UserEditor /> */}
                 { currentUser.admin ? <AdminDropdown /> : null }
                  
-                <Button variant="primary" size="sm" onClick={refreshData}>Refresh</Button>
+                <Button variant="primary" size="sm" onClick={refreshData2}>Refresh</Button>
             </div>
             { 
             showRouteEditor ? <RouteBuilder /> : 

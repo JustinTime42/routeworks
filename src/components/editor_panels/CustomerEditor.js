@@ -54,7 +54,7 @@ const CustomerEditor = (props) => {
         .catch(err => console.log(err))
     }
     
-    const onChange = (event, fields) => {    
+    const onChange = (event) => {    
         console.log(customer)    
         let { target: { name, value } } = event
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
@@ -63,12 +63,12 @@ const CustomerEditor = (props) => {
             value = !value ? null : Number(value)
         }
         if (value === "on") {
-            dispatch(setTempItem({...customer, [fields]: {...customer[fields], [name]: !customer[name]}}))          
+            dispatch(setTempItem({...customer, [name]: !customer[name]}))          
         } else if (name === 'newTagName') {
             setNewTagName(value)            
         }
         else {  
-            dispatch(setTempItem({...customer,  [fields]: {...customer[fields], [name]: value}}))
+            dispatch(setTempItem({...customer,  [name]: value}))
         }
     }
 
@@ -95,43 +95,43 @@ const CustomerEditor = (props) => {
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Name</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="cust_name" type="text" value={customer?.nonAdminFields?.cust_name || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                    <Form.Control name="cust_name" type="text" value={customer?.cust_name || ''} onChange={onChange}/>
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>First Name</Form.Label>
                                 <Col sm={4}>
-                                    <Form.Control name="cust_fname" type="text" value={customer?.nonAdminFields?.cust_fname || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                    <Form.Control name="cust_fname" type="text" value={customer?.cust_fname || ''} onChange={onChange}/>
                                 </Col>
                                 <Form.Label column sm={2}>Last Name</Form.Label>
                                 <Col sm={4}>
-                                    <Form.Control name="cust_lname" type="text" value={customer?.nonAdminFields?.cust_lname || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                    <Form.Control name="cust_lname" type="text" value={customer?.cust_lname || ''} onChange={onChange}/>
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Phone</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="cust_phone" type="text" value={customer?.nonAdminFields?.cust_phone || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                    <Form.Control name="cust_phone" type="text" value={customer?.cust_phone || ''} onChange={onChange}/>
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Email</Form.Label>
                                 <Col sm={10}>
-                                    <Form.Control name="cust_email" type="text" value={customer?.nonAdminFields?.cust_email || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                    <Form.Control name="cust_email" type="text" value={customer?.cust_email || ''} onChange={onChange}/>
                                 </Col>
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label column sm={2}>Email 2</Form.Label>
                                 <Col sm={6}>
-                                    <Form.Control name="cust_email2" type="text" value={customer?.nonAdminFields?.cust_email2 || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                    <Form.Control name="cust_email2" type="text" value={customer?.cust_email2 || ''} onChange={onChange}/>
                                 </Col>
                                 <Col sm={4}>
                                     <Form.Check
                                         name="include_email2"
                                         type="checkbox"
                                         label="Include Email2?"
-                                        checked = {!!customer?.nonAdminFields?.include_email2}
-                                        onChange={e => onChange(e, 'nonAdminFields')}
+                                        checked = {!!customer?.include_email2}
+                                        onChange={onChange}
                                     /> 
                                 </Col>
                             </Form.Group>                        
@@ -141,26 +141,26 @@ const CustomerEditor = (props) => {
                         <Form.Group as={Row}>
                             <Form.Label>Address</Form.Label>
                             <Col>
-                                <Form.Control name="address" type="text" value={customer?.nonAdminFields?.address || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                <Form.Control name="address" type="text" value={customer?.address || ''} onChange={onChange}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
                             <Form.Label>City</Form.Label>
                             <Col>
-                                <Form.Control name="city" type="text" value={customer?.nonAdminFields?.city || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                <Form.Control name="city" type="text" value={customer?.city || ''} onChange={onChange}/>
                             </Col>
                         </Form.Group>
                         <Row>
                         <Col>
                         <Form.Group>                                                                                                    
                             <Form.Label>State</Form.Label>   
-                            <Form.Control name="state" type="text" value={customer?.nonAdminFields?.state || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                            <Form.Control name="state" type="text" value={customer?.state || ''} onChange={onChange}/>
                         </Form.Group>
                         </Col>
                         <Col>
                         <Form.Group>
                             <Form.Label>Zip</Form.Label>                              
-                            <Form.Control name="zip" type="text" value={customer?.nonAdminFields?.zip || ''} onChange={e => onChange(e, 'nonAdminFields')}/> 
+                            <Form.Control name="zip" type="text" value={customer?.zip || ''} onChange={onChange}/> 
                         </Form.Group>
                         </Col>   
                         </Row>                                
@@ -180,26 +180,26 @@ const CustomerEditor = (props) => {
                         <Form.Group as={Row}>
                             <Form.Label>Address</Form.Label>
                             <Col>
-                                <Form.Control name="bill_address" type="text" value={customer?.nonAdminFields?.bill_address || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                <Form.Control name="bill_address" type="text" value={customer?.bill_address || ''} onChange={onChange}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
                             <Form.Label>City</Form.Label>
                             <Col>
-                                <Form.Control name="bill_city" type="text" value={customer?.nonAdminFields?.bill_city || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                <Form.Control name="bill_city" type="text" value={customer?.bill_city || ''} onChange={onChange}/>
                             </Col>
                         </Form.Group>
                         <Row>                                
                         <Col>
                         <Form.Group>                                                                                                    
                             <Form.Label>State</Form.Label>   
-                            <Form.Control name="bill_state" type="text" value={customer?.nonAdminFields?.bill_state || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                            <Form.Control name="bill_state" type="text" value={customer?.bill_state || ''} onChange={onChange}/>
                         </Form.Group>
                         </Col>
                         <Col>
                         <Form.Group>
                             <Form.Label>Zip</Form.Label>                              
-                            <Form.Control name="bill_zip" type="text" value={customer?.nonAdminFields?.bill_zip || ''} onChange={e => onChange(e, 'nonAdminFields')}/> 
+                            <Form.Control name="bill_zip" type="text" value={customer?.bill_zip || ''} onChange={onChange}/> 
                         </Form.Group>
                         </Col>   
                         </Row>
@@ -223,7 +223,7 @@ const CustomerEditor = (props) => {
                                                 <Form.Label size='sm'>{item.name} Price</Form.Label>
                                             </Col>
                                             <Col>
-                                                <Form.Control size='sm' name={item.name} type="number" value={customer.adminFields[item.name] || ''} onChange={e => onChange(e, 'adminFields')}/>
+                                                <Form.Control size='sm' name={item.name} type="number" value={customer[item.name] || ''} onChange={onChange}/>
                                             </Col>
                                         </Row>                                    
                                     </Form.Group>
@@ -236,7 +236,7 @@ const CustomerEditor = (props) => {
                                         <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
                                     </Col>
                                     <Col>
-                                        <Form.Control size='sm' name="price_per_yard" type="number" value={customer?.adminFields?.price_per_yard || ''} onChange={e => onChange(e, 'adminFields')}/>
+                                        <Form.Control size='sm' name="price_per_yard" type="number" value={customer?.price_per_yard || ''} onChange={onChange}/>
                                     </Col>
                                 </Row>
                                 </Form.Group>
@@ -252,7 +252,7 @@ const CustomerEditor = (props) => {
                                                 <Form.Label size='sm'>Snow Price</Form.Label>
                                             </Col>
                                             <Col>
-                                                <Form.Control size='sm' name="price" type="number" value={customer?.adminFields?.price || ''} onChange={e => onChange(e, 'adminFields')}/>
+                                                <Form.Control size='sm' name="price" type="number" value={customer?.price || ''} onChange={onChange}/>
                                             </Col>
                                         </Row>                                    
                                     </Form.Group>
@@ -262,7 +262,7 @@ const CustomerEditor = (props) => {
                                                 <Form.Label size='sm'>Seasonal Price</Form.Label>
                                             </Col>
                                             <Col>
-                                                <Form.Control size='sm' name="season_price" type="number" value={customer?.adminFields?.season_price || ''} onChange={e => onChange(e, 'adminFields')}/>
+                                                <Form.Control size='sm' name="season_price" type="number" value={customer?.season_price || ''} onChange={onChange}/>
                                             </Col>
                                         </Row>                                    
                                     </Form.Group>
@@ -272,7 +272,7 @@ const CustomerEditor = (props) => {
                                             <Form.Label size='sm'>Sweeping Price</Form.Label>
                                         </Col>                                    
                                         <Col>
-                                            <Form.Control size='sm' name="sweep_price" type="number" value={customer?.adminFields?.sweep_price || ''} onChange={e => onChange(e, 'adminFields')}/>
+                                            <Form.Control size='sm' name="sweep_price" type="number" value={customer?.sweep_price || ''} onChange={onChange}/>
                                         </Col>
                                     </Row>
                                     </Form.Group>
@@ -282,7 +282,7 @@ const CustomerEditor = (props) => {
                                             <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
                                         </Col>
                                         <Col>
-                                            <Form.Control size='sm' name="price_per_yard" type="number" value={customer?.adminFields?.price_per_yard || ''} onChange={e => onChange(e, 'adminFields')}/>
+                                            <Form.Control size='sm' name="price_per_yard" type="number" value={customer?.price_per_yard || ''} onChange={onChange}/>
                                         </Col>
                                     </Row>
                                     </Form.Group>
@@ -292,7 +292,7 @@ const CustomerEditor = (props) => {
                                         <Form.Label size='sm'>Value</Form.Label>
                                         </Col>
                                         <Col>
-                                            <Form.Control size='sm' name="value" type="number" value={customer?.adminFields?.value || ''} onChange={e => onChange(e, 'adminFields')}/>
+                                            <Form.Control size='sm' name="value" type="number" value={customer?.value || ''} onChange={onChange}/>
                                         </Col>
                                     </Row>
                                     </Form.Group>
@@ -301,7 +301,7 @@ const CustomerEditor = (props) => {
                             <Col>                           
                             <Form.Group>
                                 <Form.Label size='sm'>Surface Type</Form.Label>
-                                    <Form.Control size='sm' name="surface_type" as="select" value={customer?.nonAdminFields?.surface_type || ''} onChange={e => onChange(e, 'nonAdminFields')}>
+                                    <Form.Control size='sm' name="surface_type" as="select" value={customer?.surface_type || ''} onChange={onChange}>
                                         <option value="select">Select</option>
                                         <option value="paved">Paved</option>
                                         <option value="gravel">Gravel</option>
@@ -310,7 +310,7 @@ const CustomerEditor = (props) => {
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Contract Type</Form.Label>
-                                    <Form.Control name="contract_type" as="select" value={customer?.nonAdminFields?.contract_type || ''} onChange={e => onChange(e, 'nonAdminFields')}>
+                                    <Form.Control name="contract_type" as="select" value={customer?.contract_type || ''} onChange={onChange}>
                                         {
                                             contractTypes.map(type => <option key={type} value={type}>{type}</option>)
                                         }
@@ -318,7 +318,7 @@ const CustomerEditor = (props) => {
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Service Level</Form.Label>
-                                    <Form.Control name="service_level" as="select" value={customer?.nonAdminFields?.service_level || ''} onChange={e => onChange(e, 'nonAdminFields')}>
+                                    <Form.Control name="service_level" as="select" value={customer?.service_level || ''} onChange={onChange}>
                                         {
                                             serviceLevels.map((type, i) => <option key={type} value={i}>{type}</option>)
                                         }
@@ -326,7 +326,7 @@ const CustomerEditor = (props) => {
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Sanding Contract</Form.Label>
-                                    <Form.Control name="sand_contract" as="select" value={customer?.nonAdminFields?.sand_contract || ''} onChange={e => onChange(e, 'nonAdminFields')}>
+                                    <Form.Control name="sand_contract" as="select" value={customer?.sand_contract || ''} onChange={onChange}>
                                         {
                                             sandContractTypes.map(type => <option key={type} value={type}>{type}</option>)
                                         }
@@ -340,7 +340,7 @@ const CustomerEditor = (props) => {
                                         <Button size='sm' variant='primary' onClick={saveNewTag}>add tag</Button>
                                     </Col>
                                     <Col>
-                                        <Form.Control name="newTagName" type="text" placeholder={newTagName} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                        <Form.Control name="newTagName" type="text" placeholder={newTagName} onChange={onChange}/>
                                     </Col>
                                 </Row>
                                 {                                    
@@ -352,7 +352,7 @@ const CustomerEditor = (props) => {
                                                         name={tag}
                                                         type="checkbox"
                                                         label={tag}
-                                                        checked = {customer?.nonAdminFields?.tags?.includes(tag) || false}
+                                                        checked = {customer?.tags?.includes(tag) || false}
                                                         onChange={tagChange}
                                                     />  
                                                 </Col>
@@ -378,7 +378,7 @@ const CustomerEditor = (props) => {
                             <Col>
                                 <Form.Group>
                                     <Form.Label>Notes</Form.Label>
-                                    <Form.Control name="notes" as="textarea" rows="3" value={customer?.nonAdminFields?.notes || ''} onChange={e => onChange(e, 'nonAdminFields')}/>
+                                    <Form.Control name="notes" as="textarea" rows="3" value={customer?.notes || ''} onChange={onChange}/>
                                 </Form.Group>
                             </Col>
                             <Col>
@@ -386,29 +386,29 @@ const CustomerEditor = (props) => {
                                     name="is_new"
                                     type="checkbox"
                                     label="New?"
-                                    checked = {!!customer?.nonAdminFields?.is_new}
-                                    onChange={e => onChange(e, 'nonAdminFields')}
+                                    checked = {!!customer?.is_new}
+                                    onChange={onChange}
                                 />   
                                 <Form.Check 
                                     name="active"
                                     type="checkbox"
                                     label="active?"
-                                    checked = {!!customer?.nonAdminFields?.active}
-                                    onChange={e => onChange(e, 'nonAdminFields')}
+                                    checked = {!!customer?.active}
+                                    onChange={onChange}
                                 />
                                 <Form.Check
                                     name="temp"
                                     type="checkbox"
                                     label="Temporary?"
-                                    checked = {!!customer?.nonAdminFields?.temp}
-                                    onChange={e => onChange(e, 'nonAdminFields')}
+                                    checked = {!!customer?.temp}
+                                    onChange={onChange}
                                 />
                                 <Form.Check
                                     name="priority"
                                     type="checkbox"
                                     label="Priority?"
-                                    checked = {!!customer?.nonAdminFields?.priority}
-                                    onChange={e => onChange(e, 'nonAdminFields')} //not yet implemented
+                                    checked = {!!customer?.priority}
+                                    onChange={onChange} //not yet implemented
                                 />
                             </Col>
                         </Row>                        
