@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { collection, onSnapshot, doc, getDoc } from "firebase/firestore"
+import { collection, onSnapshot, doc, getDoc, where } from "firebase/firestore"
 import {db } from '../../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd } from './drag-functions'
@@ -47,6 +47,7 @@ const RouteBuilder = () => {
     }
 
     const onNewPropertyClick = () => {
+        dispatch(showModal('Customer'))
         dispatch(setTempItem({}))
     }
 
@@ -90,18 +91,26 @@ const RouteBuilder = () => {
 
     const onDelete = (customer) => {
         dispatch(deleteItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+        dispatch(hideModal('Customer'))
     }
 
     const dragEnd = (result) => {
         const newLists = onDragEnd(result, activeRoute.customers, offRouteList)
-        console.log({...activeRoute, customers: newLists.newRoute})
-        dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        console.log(newLists.whereTo)
+        const customer = {...activeCustomer}
+        if (!customer.routesAssigned) {customer.routesAssigned = []}
+        if (newLists.whereTo === 'on') {
+            customer.routesAssigned.push(activeRoute.name)
+        } else if (newLists.whereTo === 'off') {
+            customer.routesAssigned.splice(customer.routesAssigned.indexOf(activeRoute.name), 1)
+        }
+        dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
+        dispatch(editItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
     }
 
     const onCloseClick = () => {
         dispatch(hideModal('Customer'))
     }
-
 
     return (
         !activeRoute.customers ?

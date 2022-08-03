@@ -47,24 +47,45 @@ exports.updateUser = functions.https.onCall((data, context) => {
   })
 })
 
-exports.updateRoutesAssigned = functions.https.onCall(async(data, context) => {
-  const { custID, routeName, whereTo } = data  
-  if (whereTo === 'on') {
-    const customer = admin.collection(`driver/driver_lists/customer`).doc(custID)
-    return customer.update({
-      routes_assigned: admin.FieldValue.arrayUnion(routeName)
-    })
-    .then(res => {return(res)})
-    .catch(err => {return(err)})
-  } else if (whereTo === 'off') {
-    const customer = admin.collection(`driver/driver_lists/customer`).doc(custID)
-    return customer.update({
-      routes_assigned: admin.FieldValue.arrayRemove(routeName)
-    })
-    .then(res => {return(res)})
-    .catch(err => {return(err)})
-  } else return('no change needed')
+exports.deleteCustomer = functions.firestore
+.document('driver/driver_lists/customer/{itemID}')
+.onDelete((snap, context) => {
+  const collectionRef = db.collection('driver/driver_lists/route')
+  const {itemID} = context.params
+  const routeList = snap.data().routesAssigned
+  const getResults = async(item) => {
+    return await collectionRef.where('name', '==', item)
+  }
+  routeList.forEach(route => {
+    const routeObject = getResults(route)
+    if(routeObject.empty) {
+      return
+    }
+    routeObject[0].customers.splice(route.customers.findIndex(item => item.id === itemID), 1) 
+    //save the new routeObject to the route collection
+    admin.firestore().collection('driver/driver_lists/route').doc(routeObject.id).set({...routeObject}, {merge: true})
+  })
+  return
 })
+//below is now handled on the frontend
+// exports.updateRoutesAssigned = functions.https.onCall(async(data, context) => {
+//   const { custID, routeName, whereTo } = data  
+//   if (whereTo === 'on') {
+//     const customer = admin.collection(`driver/driver_lists/customer`).doc(custID)
+//     return customer.update({
+//       routes_assigned: admin.FieldValue.arrayUnion(routeName)
+//     })
+//     .then(res => {return(res)})
+//     .catch(err => {return(err)})
+//   } else if (whereTo === 'off') {
+//     const customer = admin.collection(`driver/driver_lists/customer`).doc(custID)
+//     return customer.update({
+//       routes_assigned: admin.FieldValue.arrayRemove(routeName)
+//     })
+//     .then(res => {return(res)})
+//     .catch(err => {return(err)})
+//   } else return('no change needed')
+// })
 
 exports.createItem = functions.firestore
   .document('admin/admin_lists/{collection}/{itemID}')

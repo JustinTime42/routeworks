@@ -3,6 +3,9 @@ import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap
 import { useDispatch, useSelector } from 'react-redux'
 import { requestAllAddresses, getRouteProperties, setTempItem } from '../../actions'
 import axios from "axios"
+import { getItem } from '../../firebase'
+import { arrayUnion, doc, onSnapshot, updateDoc } from 'firebase/firestore'
+import { db } from '../../firebase'
 import CustLogs from '../customer_panels/CustLogs'
 import '../../styles/driver.css'
 import { serviceLevels  } from '../../globals'
@@ -25,15 +28,17 @@ const CustomerEditor = (props) => {
     useEffect(() => {
         setApi(customer ? "editproperty" : "newproperty")
         setSameAddress(false)
-        getTags()
     }, [customer])
 
-    const getTags = () => {
-        fetch(`${process.env.REACT_APP_API_URL}/alltags`)
-        .then(res => res.json())
-        .then(tags => setAllTags(tags))
-        .catch(err => console.log(err))
-    }
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, `driver/`, 'tags'), (doc) => {
+            console.log(doc.data().tags)
+            setAllTags([...doc.data().tags])
+        })
+        return () => {
+            unsub()
+        }
+    }, [])
 
     const tagChange = (event) => {
         console.log(event)
@@ -48,13 +53,14 @@ const CustomerEditor = (props) => {
         dispatch(setTempItem({...customer, tags: tags}))
     }
 
-    const saveNewTag = () => {
-        axios.post(`${process.env.REACT_APP_API_URL}/newtag`, { tag_name: newTagName})
-        .then(tag => setAllTags([...allTags, tag.data])) 
-        .catch(err => console.log(err))
+    const saveNewTag = async(newTag) => {
+        const tagsRef = doc(db, 'driver', 'tags')
+        await updateDoc(tagsRef, {
+            tags: arrayUnion(newTag)
+        })
     }
     
-    const onChange = (event) => {    
+    const onChange = (event) => {
         console.log(customer)    
         let { target: { name, value } } = event
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
@@ -337,7 +343,7 @@ const CustomerEditor = (props) => {
                                 <Form.Label>Tags</Form.Label> 
                                 <Row style={{marginBottom: '1em'}}>
                                     <Col>
-                                        <Button size='sm' variant='primary' onClick={saveNewTag}>add tag</Button>
+                                        <Button size='sm' variant='primary' onClick={() => saveNewTag(newTagName)}>add tag</Button>
                                     </Col>
                                     <Col>
                                         <Form.Control name="newTagName" type="text" placeholder={newTagName} onChange={onChange}/>
@@ -361,7 +367,8 @@ const CustomerEditor = (props) => {
                                     })                                    
                                 }
                                 <Row>
-                                    <Form.Label>Routes Assigned:</Form.Label>
+                                    {/* <Form.Label>Routes Assigned:</Form.Label> */}
+                                    <p>Routes Assigned: {customer.routesAssigned?.join(', ')}</p>
                                 {
                                     routeData.map((entry, i) => {                                        
                                         if (entry.property_key === customer?.key) {

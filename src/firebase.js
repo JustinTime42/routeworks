@@ -44,22 +44,39 @@ const logInWithEmailAndPassword = async (email, password) => {
     }
 }
 
-  const getAdminItem = async(item, collection) => {
-    console.log("getAdminItem", item)
-    try {
-        const docRef = doc(db, `admin/admin_lists/${collection}`, item.admin_key);
-        const docSnap = await getDoc(docRef);
-        const id = docSnap.id
-        if (docSnap.exists()) {
-            return ({...docSnap.data(), id })  
-        } else {
-            return `couldn't find ${item.name}`
-        }
-    }
-    catch (e) {
-        alert(e)
-    }
+const getAdminItem = async(item, collection) => {
+  console.log("getAdminItem", item)
+  try {
+      const docRef = doc(db, `admin/admin_lists/${collection}`, item.admin_key);
+      const docSnap = await getDoc(docRef);
+      const id = docSnap.id
+      if (docSnap.exists()) {
+          return ({...docSnap.data(), id })  
+      } else {
+          return `couldn't find ${item.name}`
+      }
+  }
+  catch (e) {
+      alert(e)
+  }
 }
+
+const getItem = async(item, collection) => {
+  try {
+    const docRef = doc(db, collection, item);
+    const docSnap = await getDoc(docRef);
+    const id = docSnap.id
+    if (docSnap.exists()) {
+        return ({...docSnap.data(), id })  
+    } else {
+        return `couldn't find ${item.name}`
+    }
+  }
+  catch (e) {
+      alert(e)
+  }
+}
+
 
 // const createUser = async (auth, email, password) => {
 //   createUserWithEmailAndPassword(auth, email, password)
@@ -88,4 +105,5 @@ export {
   logout,
   httpsCallable,
   getAdminItem,
+  getItem,
 }

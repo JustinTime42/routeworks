@@ -19,7 +19,6 @@ const DisplayRoute= (props) => {
       
     useEffect(() => {
         const unsub = onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
-            console.log(doc.data())
             dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
         })
         return () => {

@@ -60,9 +60,9 @@ const SearchBar = () => {
         onSetMatches()
     }, [searchValue, allCustomers]) 
 
-    useEffect(() => {
-        updateMatches()
-    }, [activeProperty])
+    // useEffect(() => {
+    //     updateMatches()
+    // }, [activeProperty])
 
     const updateMatches = () => {
         let index = matches.findIndex(item => item.key === activeProperty?.key)
@@ -97,12 +97,13 @@ const SearchBar = () => {
             <FormControl size="sm" type="search" onClick={onSetMatches} onChange={changeSearchValue} placeholder="search" value={searchValue} />
             <ListGroup  style={listStyle} as="ul">
             {
+                (matches.length > 0) ?
                 matches.map(customer => (
                         <ListGroup.Item style={itemStyle} key={customer.id} action onClick={() => selectCustomer(customer)}>
                         {customer.cust_name} | {customer.address} | {customer.cust_phone}
                         </ListGroup.Item> 
                     )
-                )
+                ) : null
             }
             </ListGroup>
         </div>

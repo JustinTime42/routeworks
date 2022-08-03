@@ -1,12 +1,26 @@
 
 
-
+const removeExtraFields = (item) => {    
+    return (
+        {
+            id: item.id,
+            cust_name: item.cust_name, 
+            address: item.address,
+            service_level: item.service_level || false,
+            active: item.active,
+            priority: false,
+            status: item.status || "Waiting",
+            //maybe add temp and new here depending on Sandor's feedback
+        }
+    )
+}
 
 const move = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source)
     const destClone = Array.from(destination)
-    const [removed] = sourceClone.splice(droppableSource.index, 1)
-    destClone.splice(droppableDestination.index, 0, removed)
+    const [removed] = sourceClone.splice(droppableSource.index, 1)  
+    console.log(removeExtraFields(removed))  
+    destClone.splice(droppableDestination.index, 0, removeExtraFields(removed)  )
     const result = {}
     result[droppableSource.droppableId] = sourceClone
     result[droppableDestination.droppableId] = destClone
