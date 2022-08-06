@@ -96,12 +96,15 @@ const RouteBuilder = () => {
 
     const dragEnd = (result) => {
         const newLists = onDragEnd(result, activeRoute.customers, offRouteList)
-        console.log(newLists.whereTo)
-        const customer = {...activeCustomer}
+        console.log(newLists.newRoute)
+        const customer = allCustomers.find(customer => customer.id === newLists.card.id)
+        console.log(customer)
         if (!customer.routesAssigned) {customer.routesAssigned = []}
         if (newLists.whereTo === 'on') {
+            console.log(`adding ${activeRoute.name} to routesAssigned`)
             customer.routesAssigned.push(activeRoute.name)
         } else if (newLists.whereTo === 'off') {
+            console.log(`removing ${activeRoute.name} from routesAssigned`)
             customer.routesAssigned.splice(customer.routesAssigned.indexOf(activeRoute.name), 1)
         }
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        

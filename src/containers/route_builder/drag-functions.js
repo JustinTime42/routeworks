@@ -5,9 +5,9 @@ const removeExtraFields = (item) => {
         {
             id: item.id,
             cust_name: item.cust_name, 
-            address: item.address,
+            address: item.address || '',
             service_level: item.service_level || false,
-            active: item.active,
+            active: true,
             priority: false,
             status: item.status || "Waiting",
             //maybe add temp and new here depending on Sandor's feedback
@@ -53,11 +53,10 @@ export const onDragEnd = (result, onList, offList) => {
         destination
     )
 
-    console.log(newList)
-        console.log(newList.droppable2)
-        console.log(draggableId)
-    // // we're only ever going to care about the dropped card if it's dropped on the active route
-     let droppedCard = newList.droppable2.find(item => item.id === draggableId)
+
+    // // we're only ever going to care about the dropped card if it's dropped on the active route < not true...
+     let droppedCard = newList[destination.droppableId].find(item => item.id === draggableId)
+     console.log(droppedCard)
     if (!destination) {
         return;
     }
@@ -118,7 +117,7 @@ export const onDragEnd = (result, onList, offList) => {
             // }
         }      
         else if (destination.droppableId === "droppable") {  // removing from route
-            let droppedCard = newList.droppable.find(item => item.id === parseInt(result.draggableId.slice(1))) 
+           // let droppedCard = newList.droppable.find(item => item.id === parseInt(result.draggableId.slice(1))) 
             return (
                 {
                     newRoute: newList.droppable2,

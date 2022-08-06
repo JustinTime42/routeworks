@@ -49,24 +49,40 @@ exports.updateUser = functions.https.onCall((data, context) => {
 
 exports.deleteCustomer = functions.firestore
 .document('driver/driver_lists/customer/{itemID}')
-.onDelete((snap, context) => {
-  const collectionRef = db.collection('driver/driver_lists/route')
+.onDelete(async(snap, context) => {
+  const collectionRef = admin.firestore().collection('driver/driver_lists/route')
   const {itemID} = context.params
   const routeList = snap.data().routesAssigned
-  const getResults = async(item) => {
-    return await collectionRef.where('name', '==', item)
-  }
-  routeList.forEach(route => {
-    const routeObject = getResults(route)
-    if(routeObject.empty) {
-      return
-    }
-    routeObject[0].customers.splice(route.customers.findIndex(item => item.id === itemID), 1) 
-    //save the new routeObject to the route collection
-    admin.firestore().collection('driver/driver_lists/route').doc(routeObject.id).set({...routeObject}, {merge: true})
+  routeList.forEach((route) => {
+    return collectionRef.where('name', '==', route).get()  
+    .then((snapshot) => {
+      if(snapshot.empty) {
+        functions.logger.log('empty route object')
+        return ('empty route object')
+      }
+      snapshot.forEach(route => {
+        let thisRoute = {...route.data()}
+        thisRoute.customers.splice(thisRoute.customers.findIndex(item => item.id === itemID), 1)
+        return admin.firestore().collection('driver/driver_lists/route').doc(route.id).set(thisRoute, {merge: true})
+        .then(() => {
+          functions.logger.log('successfully changed', thisRoute.customers) 
+        })  
+      })
+    })
   })
-  return
 })
+
+exports.updateItem = functions.firestore
+  .document('admin/admin_lists/{collection}/{itemID}')
+  .onUpdate(async(change, context) => {
+    const { collection, itemID} = context.params
+    const updatedItem = change.after.data()
+    const ref = admin.firestore().collection(`driver/driver_lists/${collection}`)
+    const snapshot = await ref.where('admin_key', '==', itemID).get()
+    snapshot.forEach(item => {
+      admin.firestore().collection(`driver/driver_lists/${collection}`).doc(item.id).set({...updatedItem.nonAdminFields}, { merge: true })    
+    })
+  }) 
 //below is now handled on the frontend
 // exports.updateRoutesAssigned = functions.https.onCall(async(data, context) => {
 //   const { custID, routeName, whereTo } = data  
