@@ -47,30 +47,30 @@ exports.updateUser = functions.https.onCall((data, context) => {
   })
 })
 
-exports.deleteCustomer = functions.firestore
-.document('driver/driver_lists/customer/{itemID}')
-.onDelete(async(snap, context) => {
-  const collectionRef = admin.firestore().collection('driver/driver_lists/route')
-  const {itemID} = context.params
-  const routeList = snap.data().routesAssigned
-  routeList.forEach((route) => {
-    return collectionRef.where('name', '==', route).get()  
-    .then((snapshot) => {
-      if(snapshot.empty) {
-        functions.logger.log('empty route object')
-        return ('empty route object')
-      }
-      snapshot.forEach(route => {
-        let thisRoute = {...route.data()}
-        thisRoute.customers.splice(thisRoute.customers.findIndex(item => item.id === itemID), 1)
-        return admin.firestore().collection('driver/driver_lists/route').doc(route.id).set(thisRoute, {merge: true})
-        .then(() => {
-          functions.logger.log('successfully changed', thisRoute.customers) 
-        })  
-      })
-    })
-  })
-})
+// exports.deleteCustomer = functions.firestore
+// .document('driver/driver_lists/customer/{itemID}')
+// .onDelete(async(snap, context) => {
+//   const collectionRef = admin.firestore().collection('driver/driver_lists/route')
+//   const {itemID} = context.params
+//   const routeList = snap.data().routesAssigned
+//   routeList.forEach((route) => {
+//     return collectionRef.where('name', '==', route).get()  
+//     .then((snapshot) => {
+//       if(snapshot.empty) {
+//         functions.logger.log('empty route object')
+//         return ('empty route object')
+//       }
+//       snapshot.forEach(route => {
+//         let thisRoute = {...route.data()}
+//         thisRoute.customers.splice(thisRoute.customers.findIndex(item => item.id === itemID), 1)
+//         return admin.firestore().collection('driver/driver_lists/route').doc(route.id).set(thisRoute, {merge: true})
+//         .then(() => {
+//           functions.logger.log('successfully changed', thisRoute.customers) 
+//         })  
+//       })
+//     })
+//   })
+// })
 
 exports.updateItem = functions.firestore
   .document('admin/admin_lists/{collection}/{itemID}')

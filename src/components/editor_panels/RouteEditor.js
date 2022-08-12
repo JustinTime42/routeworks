@@ -1,13 +1,14 @@
 
     import React, {  useEffect, useState } from "react"
     import { useDispatch, useSelector } from "react-redux";
-    import {Button, Alert, Modal, Form, Row, Col } from "react-bootstrap"
+    import { Button, Alert, Modal, Form, Row, Col } from "react-bootstrap"
     import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
-    import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE} from '../../constants.js'
+    import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_SUCCESS } from '../../constants.js'
     
     const RouteEditor = (props) => {
         const [deleteAlert, setDeleteAlert] = useState('')
         const routes = useSelector(state => state.requestRoutes.routes)
+        const customers = useSelector(state => state.requestAllAddresses.addresses)
         const modals = useSelector(state => state.whichModals.modals)
         const tempItem = useSelector(state => state.setTempItem.item)
         const dispatch = useDispatch()
@@ -36,6 +37,13 @@
         }
 
         const onDelete = () => {
+            // go through route customers and delete the routesAssigned on that customer document
+            tempItem.customers.map(customer => {
+                let newCustomer = customers.find(item => item.id === customer.id)
+                let newRoutesAssigned = newCustomer.routesAssigned.filter(item => item !== tempItem.name)
+                newCustomer.routesAssigned = newRoutesAssigned
+                dispatch(editItem(newCustomer, customers, 'driver/driver_lists/customer', null, UPDATE_ADDRESSES_SUCCESS))
+            })
             dispatch(deleteItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             dispatch(hideModal('Route'))                 
         }

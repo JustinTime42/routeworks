@@ -1,6 +1,6 @@
 
 
-const removeExtraFields = (item) => {    
+export const removeExtraFields = (item) => {    
     return (
         {
             id: item.id,

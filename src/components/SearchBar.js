@@ -77,11 +77,15 @@ const SearchBar = () => {
             })
             setMatches(filteredCustomers)
             let offRouteResults = [] 
-            filteredCustomers.forEach(item => {
-                if (!activeRoute.customers.find(i => i.id === item.id)) {
-                    offRouteResults.push(item)
-                }
-            })
+            if (!activeRoute.name) {
+                offRouteResults = [...filteredCustomers]
+            } else {
+                filteredCustomers.forEach(item => {
+                    if (!activeRoute?.customers?.find(i => i.id === item.id)) {
+                        offRouteResults.push(item)
+                    }
+                })
+            }
             dispatch(filterProperties(offRouteResults))
         } else {
             setMatches([])  

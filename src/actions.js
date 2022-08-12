@@ -294,7 +294,16 @@ export const createItem = (item, itemList, className, activeActionType, listActi
     }
     const sendToDB = async() => {
         try {
-            const docRef = await addDoc(collection(db, className), {...item})                     
+           // const docRef = await addDoc(collection(db, className), {...item})  
+            addDoc(collection(db, className), {...item}) 
+            .then(result => {
+                console.log(result.id)
+                dispatch({
+                    type: activeActionType,                     
+                    payload: item.nonAdminFields ? {...item.nonAdminFields, id: result.id} : {...item, id: result.id}
+                }) 
+            })
+                              
        } catch (e) {
          alert("Error adding document: ", e);
        }
@@ -302,7 +311,7 @@ export const createItem = (item, itemList, className, activeActionType, listActi
     sendToDB()
 }
 
-export const editItem = (item, itemList, className, activeActionType, listAction) => (dispatch) => {
+export const editItem = (item, itemList, className, activeActionType = null, listAction = null) => (dispatch) => {
     dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})    
     if (item.adminFields) {
         let tempList = [...itemList]
