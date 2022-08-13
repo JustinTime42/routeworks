@@ -85,7 +85,7 @@ export const onDragEnd = (result, onList, offList) => {
             )
             // this.setState({selected: orderedItems, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
             // this.onSave(orderedItems)
-        }   
+        }   else return
     } else {   //if  moving from one list to another
        // newList.droppable2.forEach((item, i) => item.route_position = i) // removed to use array index instead of a separate field
         if ((destination.droppableId === "droppable2")) { //If adding to route

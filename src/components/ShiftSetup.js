@@ -76,13 +76,14 @@ const ShiftSetup = () => {
         dispatch(showModal(whichModal))
     }
 
-    const onEditAdmin = (item, whichModal, collection) => {
-        getAdminItem(item, collection)
-        .then(item => {
-            dispatch(setTempItem(item))
-        })        
-        dispatch(showModal(whichModal))
-    }
+    // const onEditAdmin = (item, whichModal, collection) => {
+    //     getAdminItem(item, collection)
+    //     .then(item => {
+    //         dispatch(setTempItem(item))
+    //     })        
+    //     dispatch(showModal(whichModal))
+    // }
+
     const onEdit = (item, whichModal) => {
         dispatch(setTempItem(item))
         dispatch(showModal(whichModal))
@@ -125,7 +126,7 @@ const ShiftSetup = () => {
                     whichModal="Driver"
                     setActiveAction={SET_ACTIVE_DRIVER}
                     onCreate={onCreate}
-                    onEdit={onEditAdmin}
+                    onEdit={onEdit}
                     onSelect={onSelect}
                 />
                 <SimpleSelector  

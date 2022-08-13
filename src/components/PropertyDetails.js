@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { Tabs, Tab, Card, Col, Row, Button, Form, Alert, Modal } from 'react-bootstrap'
 import axios from 'axios'
-import { getRouteData, } from "../actions"
+import { getRouteData, createItem, editItem} from "../actions"
+import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE } from '../constants';
 import CustLogs from './customer_panels/CustLogs'
 import SkipDetails from './customer_panels/SkipDetails'
 import TimeTracker from './customer_panels/TimeTracker'
@@ -31,9 +32,10 @@ const PropertyDetails = (props) => {
 
     const driver = useSelector(state => state.setActiveDriver.driver)
     const tractor = useSelector(state => state.setActiveTractor.activeTractor)
-    const tractorType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
+    const tractorType = useSelector(state => state.setActiveTractor.type)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routePending = useSelector(state => state.getRouteProperties.isPending)
+    const routes = useSelector(state => state.requestRoutes.routes)
     const workType = useSelector(state => state.setActiveWorkType.workType)
     const dispatch = useDispatch()
 
@@ -83,68 +85,107 @@ const PropertyDetails = (props) => {
     }
 
     const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {
-        let status = newStatus
-        console.log("times: ", startTime, endTime)
-
-        // round down to the nearest minute. and then up to the nearest quarter hour
-        let timeLogged = Math.ceil(Math.floor((endTime - startTime) / 60000) / 15) / 4        
+        console.log(tractor)
         setState(prevState => ({...prevState, disabled: disabled}))
         let property = {...props.property}
-        let driverEarning = driver.percentage * .01 * property.value
+        let newRecordObject = {}
+        newRecordObject.status = newStatus
+        newRecordObject.price = property.price
+        let month = new Date().getMonth() + 1
+        let year = new Date().getFullYear().toString().substr(-2)
+        // round down to the nearest minute. and then up to the nearest quarter hour
+        let timeLogged = Math.ceil(Math.floor((endTime - startTime) / 60000) / 15) / 4
+        
+        newRecordObject.driverEarning = driver.percentage * .01 * property.value
+        let yardString = (yards !== 0) ? ": " + yards + " yds" : ""
         if (property.contract_type === 'Hourly') {
-            driverEarning = timeLogged * driver.hourly
+            newRecordObject.driverEarning = timeLogged * driver.hourly
         }
-        if (workType.name === 'Sanding') {
-            (property.sand_contract === "Per Yard" || property.contract_type === "Hourly") ? property.price = property.price_per_yard * yards : property.price = property.price_per_yard
+        if (workType.name === 'Sanding') {            
+            (property.sand_contract === "Per Yard" || property.contract_type === "Hourly") ? newRecordObject.price = property.price_per_yard * yards : newRecordObject.price = property.price_per_yard
         } else if (property.contract_type === 'Hourly') {
-            property.price = timeLogged * property[tractorType.name]
-            console.log(property.price)
+            newRecordObject.price = timeLogged * property[tractor.type]
         } else if (workType.name === 'Sweeping') {
-            property.price = property.sweep_price
+            newRecordObject.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (workType.name === 'Snow Removal')) {            
-            property.price = 0  
+            newRecordObject.price = 0  
         }
         if (property.contract_type === "Hourly") { 
-            status = 'Hourly'
+            newRecordObject.status = 'Hourly'
         }
+        
+        newRecordObject.cust_id = property.id
+        newRecordObject.reference = property.address
+        newRecordObject.address = property.address
+        newRecordObject.cust_name = property.cust_name
+        newRecordObject.driver = driver.name
+        newRecordObject.notes = newRecordObject.status === 'Skipped' ? noteField + ' ' + skipDetails : noteField
+        newRecordObject.tractor = tractor.name
+        newRecordObject.vehicle_type = tractor.type
+        newRecordObject.work_type = workType.name
+        newRecordObject.price = property.price
+        if (yards) {newRecordObject.yards = (yards !== 0) ? ": " + yards + " yds" : ""}
+        if (startTime) {newRecordObject.startTime = startTime}
+        if (endTime) {newRecordObject.endTime = endTime} 
+        newRecordObject.description = newRecordObject.status === 'Skipped' ? '' : workType.name + yardString
+        newRecordObject.invoice_number = `${property.id.substring(0,5)}A${year}${month}`
+        if (property.price_per_yard) {newRecordObject.price_per_yard = property.price_per_yard}
+        if (property[tractor.type]) {newRecordObject.hourly_rate = property[tractor.type]} 
+        const newRoute = {...activeRoute}
+        newRoute.customers[newRoute.customers.findIndex(i => i.id === property.id)].status = newStatus
+        console.log(newRecordObject.driverEarning)
+        dispatch(createItem(newRecordObject, null, 'service_logs', null, null))
 
-        axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
-            {
-                property: property,    
-                status: status,
-                driver: driver,
-                route: activeRoute.name,
-                noteField: status === 'Skipped' ? noteField + ' ' + skipDetails : noteField,
-                tractor: tractor.name,
-                vehicle_type: tractorType.name, 
-                work_type: workType.name,
-                yards: yards,
-                startTime: startTime, 
-                endTime: endTime,
-                earning: driverEarning,
-                price_per_yard: property.price_per_yard,
-                hourly_rate: property[tractorType.name]
-            }
-        )
-        .then(res => {
-            dispatch(getRouteData())
-            console.log(res.data)
-            console.log(res.data.serviceLog[0][0].key)
-            let confirmedStatus = res.data.serviceLog[0][0].status
-            // get confirmedPriorty = res.data.property.priority....?
-            // then insert priority into the aproperty within alladdresses... will need to make sure that updates the route properties
-            //  
-            if (confirmedStatus === status) {
-                setState(prevState => ({...prevState, done_label: (confirmedStatus === "Waiting" || property.contract_type === "Hourly") ? "hidden" : "visible", status:confirmedStatus, showSkipConfirmation: false, currentLogEntry: res.data.serviceLog[0][0].key}))
-            } else alert("confirmed status error: ", confirmedStatus)
-            if (res.data.err.length > 0) {
-                alert("prop details ln134 error: ", res.data.err[0])
-            }
-        })
-        .catch(err => {
-            console.log("prop details ln138 error:", err)
-            alert(err)
-        })
+        // editItem to make change status on current route
+        dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+
+        // axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
+        //     {
+        //         cust_id: property.id,
+        //         reference: property.address,
+        //         address: property.address, 
+        //         cust_name: property.cust_name,   
+        //         status: status,
+        //         driver: driver.name,
+        //         notes: status === 'Skipped' ? noteField + ' ' + skipDetails : noteField,
+        //         tractor: tractor.name,
+        //         vehicle_type: tractorType.name, 
+        //         work_type: workType.name,
+        //         price: property.price,
+        //         yards: (yards !== 0) ? ": " + yards + " yds" : "",
+        //         startTime: startTime, 
+        //         endTime: endTime,
+        //         driver_earning: driverEarning,
+        //         description: status === 'Skipped' ? '' : work_type + yardString,
+        //         invoice_number: `A${property.key}${year}${month}`,
+        //         price_per_yard: property.price_per_yard,
+        //         hourly_rate: property[tractorType.name]
+        //     }
+        // )
+        // .then(res => {
+        //     dispatch(getRouteData())
+        //     console.log(res.data)
+        //     console.log(res.data.serviceLog[0][0].key)
+        //     let confirmedStatus = res.data.serviceLog[0][0].status
+        //     // get confirmedPriorty = res.data.property.priority....?
+        //     // then insert priority into the aproperty within alladdresses... will need to make sure that updates the route properties
+        //     //  
+        //     if (confirmedStatus === status) {
+                setState(prevState => ({
+                    ...prevState, 
+                    done_label: (confirmedStatus === "Waiting" || property.contract_type === "Hourly") ? "hidden" : "visible", 
+                    status:confirmedStatus, 
+                    showSkipConfirmation: false, 
+                    currentLogEntry: res.data.serviceLog[0][0].key}))
+        //     } else alert("confirmed status error: ", confirmedStatus)
+        //     if (res.data.err.length > 0) {
+        //         alert("prop details ln134 error: ", res.data.err[0])
+        //     }
+        // })
+        // .catch(err => {
+        //     console.log("prop details ln138 error:", err)
+        //     alert(err)
+        // })
     }
 
     const property = props.property

@@ -7,7 +7,7 @@ import { UPDATE_ADDRESSES_SUCCESS, ROUTE_DATA_SUCCESS, ROUTE_DATA_PENDING, GET_R
 
 const PropertyCard = (props) => {
 
-    const routeData = useSelector(state => state.getRouteData.routeData)
+    const routeData = useSelector(state => state.setActiveRoute.activeRoute)
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const dispatch = useDispatch()
 
@@ -147,13 +147,12 @@ const PropertyCard = (props) => {
             </Col>
             <ServiceLevel />
             <Col style={{flex:"1 1 75px"}}>
-            {(typeof(props.address.route_position) === "number") ?  
+             
                 <>
                     <p style={{...statusStyle}}>{status}</p>   
                     {props.admin ? <Button style={activeStyle} onClick={props.toggleActive}>{props.address.active === true ? 'Active' : 'Inactive'}</Button> : null} 
                 </>     
-                    : <p></p>
-                } 
+                    
                 {props.admin ? <p style={editStyle}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : null } 
             </Col>      
         </Row>

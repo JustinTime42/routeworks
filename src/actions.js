@@ -285,13 +285,14 @@ export const getWorkTypes = () => (dispatch) => {
     .catch(err => dispatch({type: GET_WORK_TYPES_FAILED, payload: err}))
 }
 
-export const createItem = (item, itemList, className, activeActionType, listAction) => (dispatch) => {
-    dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})
-    if (item.adminFields) {
-        let tempList = [...itemList]            
-        tempList.push(item.nonAdminFields ? item.nonAdminFields : item)
-        dispatch({type: listAction, payload: tempList})
-    }
+export const createItem = (item, itemList = null, className, activeActionType = null, listAction = null) => (dispatch) => {
+    console.log(item)
+    dispatch({type: activeActionType, payload: item})
+    // if (item.adminFields) {
+    //     let tempList = [...itemList]            
+    //     tempList.push(item.nonAdminFields ? item.nonAdminFields : item)
+    //     dispatch({type: listAction, payload: tempList})
+    // }
     const sendToDB = async() => {
         try {
            // const docRef = await addDoc(collection(db, className), {...item})  
@@ -300,7 +301,7 @@ export const createItem = (item, itemList, className, activeActionType, listActi
                 console.log(result.id)
                 dispatch({
                     type: activeActionType,                     
-                    payload: item.nonAdminFields ? {...item.nonAdminFields, id: result.id} : {...item, id: result.id}
+                    payload: {...item, id: result.id}
                 }) 
             })
                               
