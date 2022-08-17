@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FormControl, ListGroup } from 'react-bootstrap'
-import { setActiveProperty, filterProperties } from '../actions'
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from '../firebase' 
-import { UPDATE_ADDRESSES_SUCCESS } from '../constants';
+import { setActiveItem, filterProperties } from '../actions'
+import { SET_ACTIVE_PROPERTY } from '../constants'
 
 const SearchBar = () => {
 
@@ -24,7 +22,7 @@ const SearchBar = () => {
         let cardId = isOnRoute ? isOnRoute.route_position : customer.key
         let found = document.getElementById(`card${cardId}`)
         if (found) found.scrollIntoView(true)
-        dispatch(setActiveProperty(customer))
+        dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
         setMatches([])
         setSearchValue('')
     }
@@ -33,16 +31,6 @@ const SearchBar = () => {
        setSearchValue('')
        onSetMatches()
     }, [activeRoute])
-
-    // get all customers
-    useEffect(() => {
-        const unsub = onSnapshot(collection(db, `driver/driver_lists/customer`), (querySnapshot) => {
-            dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
-        })
-        return () => {
-            unsub()
-        }
-    },[])
 
     const listStyle = {
         position: "absolute", 
@@ -59,10 +47,6 @@ const SearchBar = () => {
     useEffect(() => {
         onSetMatches()
     }, [searchValue, allCustomers]) 
-
-    // useEffect(() => {
-    //     updateMatches()
-    // }, [activeProperty])
 
     const updateMatches = () => {
         let index = matches.findIndex(item => item.key === activeProperty?.key)

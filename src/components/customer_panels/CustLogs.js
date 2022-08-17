@@ -1,31 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Table, Button} from 'react-bootstrap'
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from '../../firebase'
 
 const CustLogs = (props) => {
     const [entries, setEntries] = useState([])
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
 
-    useEffect(() => {
-        if(activeProperty?.key) getLogs()
-    }, [activeProperty])
-
-    const getLogs = () => {
-        const offset = new Date().getTimezoneOffset() * 60000
-        fetch(`${process.env.REACT_APP_API_URL}/getlogs/${activeProperty.key}`)
-        .then(response => response.json())
-        .then(data => {
-            let logs = []
-            data.forEach(item => {                
-                item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
-                item.start_time = item.start_time ? new Date(item.start_time).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
-                item.end_time = item.end_time ? new Date(item.end_time).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
-                logs.push([item.timestamp, item.status, item.notes, item.description, item.user_name, item.tractor, item.start_time, item.end_time])
-            })
-            setEntries(logs)
-            console.log(logs)
-        }) 
-        .catch(error => alert(error))
+    const getLogs = async() => {
+        const q = query(collection(db, 'service_logs'), where('cust_id', '==', activeProperty.id))
+        const querySnapshot = await getDocs(q);
+        let logs = []
+        querySnapshot.forEach((doc) => {
+            let item = {...doc.data(), id: doc.id}
+            item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
+            item.startTime = item.startTime ? new Date(item.startTime * 1000).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
+            item.endTime = item.endTime ? new Date(item.endTime * 1000).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
+            logs.push([item.timestamp, item.status, item.notes, item.description, item.driver, item.tractor, item.startTime, item.endTime])        
+        })
+        console.log(logs)
+        setEntries(logs.sort((a,b) => a.timestamp - b.timestamp))
     }
 
     return (
@@ -58,8 +53,6 @@ const CustLogs = (props) => {
         </Table>      
         </>
     )
-
-    
 }
 
 export default CustLogs

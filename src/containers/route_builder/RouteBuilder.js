@@ -1,14 +1,14 @@
 import React, { useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { collection, onSnapshot, doc, getDoc, where } from "firebase/firestore"
+import { collection, onSnapshot, doc, getDoc } from "firebase/firestore"
 import {db } from '../../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd, removeExtraFields } from './drag-functions'
-import {REQUEST_ROUTES_SUCCESS, GET_ROUTE_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS} from '../../constants'
+import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS} from '../../constants'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { Button } from 'react-bootstrap'
 import PropertyCard from '../../components/PropertyCard'
-import { editItem, deleteItem, requestAllAddresses, filterRouteProperties, saveRoute, setActiveItem, saveNewProperty, editProperty, deleteProperty, getRouteData, createItem, setTempItem, showModal, hideModal, filterProperties } from "../../actions"
+import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../../actions"
 import CustomerEditor from '../../components/editor_panels/CustomerEditor'
 
 const RouteBuilder = () => {
@@ -20,24 +20,30 @@ const RouteBuilder = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        console.log(filteredProperties)
         const unsub = () => {
             if (activeRoute.name) {
                 return onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
                     dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
                 })
-            } else {
-                return 
-            }
+            } else return 
         } 
         return () => {
             unsub()            
         }
     },[])
 
-    useEffect(() => { 
+    useEffect(() => {         
         const unsub = onSnapshot(collection(db, `driver/driver_lists/customer/`), (querySnapshot) => {
             dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+        })
+        return () => {
+            unsub()
+        }
+    },[])
+
+    useEffect(() => {
+        const unsub = onSnapshot(collection(db, `driver/driver_lists/vehicle_type`), (querySnapshot) => {
+            dispatch({type: GET_VEHICLE_TYPES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
         return () => {
             unsub()
@@ -49,7 +55,8 @@ const RouteBuilder = () => {
     }, [activeRoute.name])
 
     const onInitRoute = () => {
-        dispatch(editItem(activeRoute.customers.map(i => i.status = "Waiting"), routes, 'route_data', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        const newRouteCustomers = activeRoute.customers.map(i => ({...i, status: "Waiting"}))
+        dispatch(editItem({...activeRoute, customers: newRouteCustomers}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
     const onNewPropertyClick = () => {
@@ -76,10 +83,13 @@ const RouteBuilder = () => {
     }
 
     const toggleActive = (customer, route) => { 
-        let newRoute = ({...route})      
-        const routeIndex =  activeRoute.customers.findIndex(item => item.id = customer.id)
-        newRoute[routeIndex].active = !newRoute[routeIndex].active
-        dispatch(editItem(newRoute, routes, 'route_data', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        let newRoute = ({...route})  
+        console.log(customer)
+        console.log(newRoute)
+        const routeIndex = activeRoute.customers.findIndex(item => item.id === customer.id)
+        console.log(newRoute.customers[routeIndex])
+        newRoute.customers[routeIndex].active = !newRoute.customers[routeIndex].active
+        dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
     const onPropertySave = (newDetails) => {

@@ -1,21 +1,21 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import SimpleSelector from "../components/SimpleSelector"
 import ShiftSetup from '../components/ShiftSetup';
 import RouteEditor from '../components/editor_panels/RouteEditor';
-import { addDoc, collection } from 'firebase/firestore';
-import { app, auth, logout, functions, db } from '../firebase'
+import { addDoc, collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase'
 
 import DisplayRoute from "./DisplayRoute"
 //import EditRoute from "./EditRoute"
 import RouteBuilder from './route_builder/RouteBuilder';
 import AdminDropdown from "./AdminDropdown"
 import Spinner from "../components/Spinner"
-import { getRouteData, requestAllAddresses, requestRoutes, getTractorTypes, getTractors, getDrivers, getWorkTypes, setTempItem, showModal, setActiveItem} from "../actions"
+import {  setTempItem, showModal, setActiveItem} from "../actions"
 
 import SearchBar from "../components/SearchBar"
-import { Alert, Button, DropdownButton } from "react-bootstrap"
-import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
+import { Alert, Button } from "react-bootstrap"
+import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
 
 import '../styles/driver.css'
 import UserEditor from '../components/editor_panels/UserEditor';
@@ -25,7 +25,6 @@ const Driver = () => {
     const isRoutePending = useSelector(state => state.getRouteProperties.isPending)
     const isAllPending = useSelector(state => state.requestAllAddresses.isPending)
     const activeDriver = useSelector(state => state.setActiveDriver.driver)
-    const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)
     const routesPending = useSelector(state => state.requestRoutes.isPending)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
@@ -37,6 +36,17 @@ const Driver = () => {
     // useEffect(() => {
     //     refreshData()
     // },[])
+
+    
+    // get all customers
+    useEffect(() => {
+        const unsub = onSnapshot(collection(db, `driver/driver_lists/customer`), (querySnapshot) => {
+            dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+        })
+        return () => {
+            unsub()
+        }
+    },[])
 
     const refreshData2 = () => {
         fetch(`${process.env.REACT_APP_API_URL}/properties`)

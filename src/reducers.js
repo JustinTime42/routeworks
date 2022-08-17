@@ -44,7 +44,8 @@ import { SET_ACTIVE_ROUTE,
     SET_WORK_TYPE,
     SHOW_MODAL,
     HIDE_MODAL,
-    TEMP_ITEM  
+    TEMP_ITEM,
+    ACTIVE_LOG_ENTRY,  
 } from './constants.js'
 
 const initialStateCurrentUser = {
@@ -99,8 +100,21 @@ const initialStateActiveProperty = {
 export const setActiveProperty = (state=initialStateActiveProperty, action={}) => {
     switch(action.type) {
         case SET_ACTIVE_PROPERTY: 
-            return{...state, activeProperty: action.payload }
+            return {...state, activeProperty: action.payload }
         default:
+            return state
+    }
+}
+
+const initialStateActiveLogEntry = {
+    entry: {}
+}
+
+export const setActiveLogEntry = (state = initialStateActiveLogEntry, action={}) => {
+    switch(action.type) {
+        case ACTIVE_LOG_ENTRY:
+            return {...state, entry: action.payload}
+        default: 
             return state
     }
 }

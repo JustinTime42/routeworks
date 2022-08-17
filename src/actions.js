@@ -53,12 +53,12 @@ export const setCurrentUser = (currentUser) => {
     }
 }
 
-export const setActiveRoute = (route) => {
-    return {
-        type: SET_ACTIVE_ROUTE,
-        payload: route
-    }      
-}
+// export const setActiveRoute = (route) => {
+//     return {
+//         type: SET_ACTIVE_ROUTE,
+//         payload: route
+//     }      
+// }
 
 export const setTimerIsRunning = (isRunning) => {
     return {
@@ -67,47 +67,35 @@ export const setTimerIsRunning = (isRunning) => {
     }
 }
 
-export const setActiveProperty = (property) => (dispatch) => {
-    if (!property) {
-        console.log(property)
-        dispatch({type: SET_ACTIVE_PROPERTY, payload: property })
-    } else {
-        console.log(property)
-        dispatch({ type: SET_ACTIVE_PROPERTY, payload: property })
-        // fetch(`${process.env.REACT_APP_API_URL}/custdetail/${property.key}`)
-        // .then(res => res.json())
-        // .then(details => {
-        //     let temp = {...property, ...details[0]}
-        //     dispatch({type: SET_ACTIVE_PROPERTY, payload: temp })
-        // })
-        // .catch(error => console.log(error))
-    }
-}
+// export const setActiveProperty = (property) => (dispatch) => {
+//     if (!property) {
+//         console.log(property)
+//         dispatch({type: SET_ACTIVE_PROPERTY, payload: property })
+//     } else {
+//         console.log(property)
+//         dispatch({ type: SET_ACTIVE_PROPERTY, payload: property })
+//         // fetch(`${process.env.REACT_APP_API_URL}/custdetail/${property.key}`)
+//         // .then(res => res.json())
+//         // .then(details => {
+//         //     let temp = {...property, ...details[0]}
+//         //     dispatch({type: SET_ACTIVE_PROPERTY, payload: temp })
+//         // })
+//         // .catch(error => console.log(error))
+//     }
+// }
 
-//deprecated see SimpleSelector
-export const requestRoutes = (results) => (dispatch) => {
-    dispatch({ type: REQUEST_ROUTES_PENDING })
-    return {
-        type: REQUEST_ROUTES_SUCCESS,
-        payload: results
-    }
-    // fetch(`${process.env.REACT_APP_API_URL}/routelist`)
-    // .then(response => response.json())
-    // .then(data => dispatch({ type: REQUEST_ROUTES_SUCCESS, payload: data }))
-    // .catch(error => dispatch({ type: REQUEST_ROUTES_FAILED, payload: error }))
-}
 
-export const deleteRoute = (route) => (dispatch) => {
-    console.log(route)
-    dispatch({ type: REQUEST_ROUTES_PENDING })
-    fetch(`${process.env.REACT_APP_API_URL}/delroute`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },           
-        body: JSON.stringify(route)
-    })
-}
+// export const deleteRoute = (route) => (dispatch) => {
+//     console.log(route)
+//     dispatch({ type: REQUEST_ROUTES_PENDING })
+//     fetch(`${process.env.REACT_APP_API_URL}/delroute`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },           
+//         body: JSON.stringify(route)
+//     })
+// }
 
 export const getRouteData = () => (dispatch) => {
     dispatch({ type: ROUTE_DATA_PENDING })
@@ -118,28 +106,28 @@ export const getRouteData = () => (dispatch) => {
 }
 
 // actually let's not use that for now...
-export const getRouteProperties = (addresses, routeData, activeRoute) => (dispatch) => {
-    let routeProperties = []
-    dispatch({ type: GET_ROUTE_PENDING})
-    routeData.forEach(routeEntry => {
-        if (routeEntry.route_name === activeRoute) {
-            let customer = addresses.find(property => property.key === routeEntry.property_key)
-            routeProperties.push({...customer, route_position: routeEntry.route_position})
-        }
-    })
-    routeProperties.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
-    dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })    
+// export const getRouteProperties = (addresses, routeData, activeRoute) => (dispatch) => {
+//     let routeProperties = []
+//     dispatch({ type: GET_ROUTE_PENDING})
+//     routeData.forEach(routeEntry => {
+//         if (routeEntry.route_name === activeRoute) {
+//             let customer = addresses.find(property => property.key === routeEntry.property_key)
+//             routeProperties.push({...customer, route_position: routeEntry.route_position})
+//         }
+//     })
+//     routeProperties.sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
+//     dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })    
     
-    // dispatch({ type: GET_ROUTE_PENDING})
-    // fetch(`${process.env.REACT_APP_API_URL}/getroute/${activeRoute}`)
-    // .then(response => response.json())
-    // .then(data => {
-    //     const routeProperties = data.filter(item => !item.inactive)
-    //         .sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
-    //     dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })
-    // })
-    // .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
-}
+//     // dispatch({ type: GET_ROUTE_PENDING})
+//     // fetch(`${process.env.REACT_APP_API_URL}/getroute/${activeRoute}`)
+//     // .then(response => response.json())
+//     // .then(data => {
+//     //     const routeProperties = data.filter(item => !item.inactive)
+//     //         .sort((a, b) => a.route_position > b.route_position ? 1 : -1) 
+//     //     dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties })
+//     // })
+//     // .catch(error => dispatch({ type: GET_ROUTE_FAILED, payload: error }))
+// }
 
 export const filterRouteProperties = (allAddresses, routeName, filter = '') => (dispatch) => {
     dispatch({ type: GET_ROUTE_PENDING})
@@ -157,89 +145,89 @@ export const filterProperties = (matches) => {
 
 
 
-export const saveNewProperty = (property, allAddresses) => (dispatch) => {
-    dispatch({ type: UPDATE_ADDRESSES_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/newproperty`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },   
-        body: JSON.stringify(property)
-    })
-    .then(response => response.json())
-    .then(res => {
-        console.log(res)
-        allAddresses.push(res[0])
-        dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
-    })
-    .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error }))
-}
+// export const saveNewProperty = (property, allAddresses) => (dispatch) => {
+//     dispatch({ type: UPDATE_ADDRESSES_PENDING})
+//     fetch(`${process.env.REACT_APP_API_URL}/newproperty`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },   
+//         body: JSON.stringify(property)
+//     })
+//     .then(response => response.json())
+//     .then(res => {
+//         console.log(res)
+//         allAddresses.push(res[0])
+//         dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
+//     })
+//     .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error }))
+// }
 
-export const deleteProperty = (property, allAddresses, routeData, routeName = null) => (dispatch) => {
-    dispatch({ type: UPDATE_ADDRESSES_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/deleteproperty`, {
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(property)
-    })
-    .then(res => res.json())
-    .then(deleted => {
-        let newAddresses = [...allAddresses]
-        newAddresses.splice(newAddresses.findIndex(item => item.key === deleted.key), 1)
-        let newRouteData = routeData.filter(entry => entry.property_key !== property.key)
-        console.log(newRouteData)
-        dispatch({ type: ROUTE_DATA_SUCCESS, payload: newRouteData })
-        dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: newAddresses})
-        if (routeName) {
-            dispatch(filterRouteProperties(newAddresses, routeName))
-        }
-    })
-    .catch(err => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: err}))
-}
+// export const deleteProperty = (property, allAddresses, routeData, routeName = null) => (dispatch) => {
+//     dispatch({ type: UPDATE_ADDRESSES_PENDING})
+//     fetch(`${process.env.REACT_APP_API_URL}/deleteproperty`, {
+//         method: 'POST', 
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(property)
+//     })
+//     .then(res => res.json())
+//     .then(deleted => {
+//         let newAddresses = [...allAddresses]
+//         newAddresses.splice(newAddresses.findIndex(item => item.key === deleted.key), 1)
+//         let newRouteData = routeData.filter(entry => entry.property_key !== property.key)
+//         console.log(newRouteData)
+//         dispatch({ type: ROUTE_DATA_SUCCESS, payload: newRouteData })
+//         dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: newAddresses})
+//         if (routeName) {
+//             dispatch(filterRouteProperties(newAddresses, routeName))
+//         }
+//     })
+//     .catch(err => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: err}))
+// }
 
-export const editProperty = (property, allAddresses) => (dispatch) => {
-    console.log(property)
-    dispatch({ type: UPDATE_ADDRESSES_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/editproperty`, {
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(property)
-    })
-    .then(res => res.json())
-    .then(editted => {
-        console.log(editted)
-        let index = allAddresses.findIndex(item => item.key === editted.key)
-        allAddresses[index] = editted
-        dispatch({ type: SET_ACTIVE_PROPERTY, payload: allAddresses[index]})
-        dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
-        console.log("new property in address store: ", allAddresses[index])
-    })
-    .catch(err => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: err}))
-}
+// export const editProperty = (property, allAddresses) => (dispatch) => {
+//     console.log(property)
+//     dispatch({ type: UPDATE_ADDRESSES_PENDING})
+//     fetch(`${process.env.REACT_APP_API_URL}/editproperty`, {
+//         method: 'POST', 
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(property)
+//     })
+//     .then(res => res.json())
+//     .then(editted => {
+//         console.log(editted)
+//         let index = allAddresses.findIndex(item => item.key === editted.key)
+//         allAddresses[index] = editted
+//         dispatch({ type: SET_ACTIVE_PROPERTY, payload: allAddresses[index]})
+//         dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: allAddresses})
+//         console.log("new property in address store: ", allAddresses[index])
+//     })
+//     .catch(err => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: err}))
+// }
 
-//currently not in use. refactor routeEditor.onSave to use
-export const saveRoute = (newRoute) => (dispatch) => {
-    dispatch({ type: SAVE_ROUTE_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/saveroute`, {
-        method: 'POST',     
-        body: JSON.stringify({newRoute})
-    })
-    .then(response => response.json())
-    .then(data => dispatch({ type: SAVE_ROUTE_SUCCESS, payload: data }))
-    .catch(error => dispatch({ type: SAVE_ROUTE_FAILED, payload: error }))
-}
+// //currently not in use. refactor routeEditor.onSave to use
+// export const saveRoute = (newRoute) => (dispatch) => {
+//     dispatch({ type: SAVE_ROUTE_PENDING})
+//     fetch(`${process.env.REACT_APP_API_URL}/saveroute`, {
+//         method: 'POST',     
+//         body: JSON.stringify({newRoute})
+//     })
+//     .then(response => response.json())
+//     .then(data => dispatch({ type: SAVE_ROUTE_SUCCESS, payload: data }))
+//     .catch(error => dispatch({ type: SAVE_ROUTE_FAILED, payload: error }))
+// }
 
-export const getDrivers = () => (dispatch) => {
-    dispatch({ type: GET_DRIVERS_PENDING })
-    fetch(`${process.env.REACT_APP_API_URL}/drivers`)
-    .then(res => res.json())
-    .then(data => dispatch({ type: GET_DRIVERS_SUCCESS, payload: data}))
-    .catch(err => dispatch({ type: GET_DRIVERS_FAILED, payload: err}))
-}
+// export const getDrivers = () => (dispatch) => {
+//     dispatch({ type: GET_DRIVERS_PENDING })
+//     fetch(`${process.env.REACT_APP_API_URL}/drivers`)
+//     .then(res => res.json())
+//     .then(data => dispatch({ type: GET_DRIVERS_SUCCESS, payload: data}))
+//     .catch(err => dispatch({ type: GET_DRIVERS_FAILED, payload: err}))
+// }
 
 // export const setActiveDriver = (driver) => {    
 //     console.log(driver)
@@ -258,32 +246,32 @@ export const getDrivers = () => (dispatch) => {
 //     }
 // }
 
-export const getTractors = () => (dispatch) => {
-    dispatch({ type: GET_ITEMS_PENDING })
-    fetch(`${process.env.REACT_APP_API_URL}/vehicles`)
-    .then(response => response.json())
-    .then(data => {
-        console.log("tractors", data)
-        dispatch({ type: GET_TRACTORS_SUCCESS, payload: data })
-    }) 
-    .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
-}
+// export const getTractors = () => (dispatch) => {
+//     dispatch({ type: GET_ITEMS_PENDING })
+//     fetch(`${process.env.REACT_APP_API_URL}/vehicles`)
+//     .then(response => response.json())
+//     .then(data => {
+//         console.log("tractors", data)
+//         dispatch({ type: GET_TRACTORS_SUCCESS, payload: data })
+//     }) 
+//     .catch(error => dispatch({ type: GET_ITEMS_FAILED, payload: error }))
+// }
 
-export const getTractorTypes = () => (dispatch) => {
-    dispatch({type: GET_VEHICLE_TYPES_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/vehicletypes`)
-    .then(res => res.json())
-    .then(data => dispatch({type: GET_VEHICLE_TYPES_SUCCESS, payload: data}))
-    .catch(err => dispatch({type: GET_VEHICLE_TYPES_FAILED, payload: err}))
-}
+// export const getTractorTypes = () => (dispatch) => {
+//     dispatch({type: GET_VEHICLE_TYPES_PENDING})
+//     fetch(`${process.env.REACT_APP_API_URL}/vehicletypes`)
+//     .then(res => res.json())
+//     .then(data => dispatch({type: GET_VEHICLE_TYPES_SUCCESS, payload: data}))
+//     .catch(err => dispatch({type: GET_VEHICLE_TYPES_FAILED, payload: err}))
+// }
 
-export const getWorkTypes = () => (dispatch) => {
-    dispatch({type: GET_WORK_TYPES_PENDING})
-    fetch(`${process.env.REACT_APP_API_URL}/worktypes`)
-    .then(res => res.json())
-    .then(data => dispatch({type: GET_WORK_TYPES_SUCCESS, payload: data}))
-    .catch(err => dispatch({type: GET_WORK_TYPES_FAILED, payload: err}))
-}
+// export const getWorkTypes = () => (dispatch) => {
+//     dispatch({type: GET_WORK_TYPES_PENDING})
+//     fetch(`${process.env.REACT_APP_API_URL}/worktypes`)
+//     .then(res => res.json())
+//     .then(data => dispatch({type: GET_WORK_TYPES_SUCCESS, payload: data}))
+//     .catch(err => dispatch({type: GET_WORK_TYPES_FAILED, payload: err}))
+// }
 
 export const createItem = (item, itemList = null, className, activeActionType = null, listAction = null) => (dispatch) => {
     console.log(item)
@@ -362,13 +350,13 @@ export const setActiveItem = (item, itemArray, actionType) => {
 
 }
 
-export const requestAllAddresses = () => (dispatch) => {
-    dispatch({ type: UPDATE_ADDRESSES_PENDING })
-    fetch(`${process.env.REACT_APP_API_URL}/properties`)
-    .then(response => response.json())
-    .then(data => dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: data}))
-    .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error}))
-}
+// export const requestAllAddresses = () => (dispatch) => {
+//     dispatch({ type: UPDATE_ADDRESSES_PENDING })
+//     fetch(`${process.env.REACT_APP_API_URL}/properties`)
+//     .then(response => response.json())
+//     .then(data => dispatch({ type: UPDATE_ADDRESSES_SUCCESS, payload: data}))
+//     .catch(error => dispatch({ type: UPDATE_ADDRESSES_FAILED, payload: error}))
+// }
 
 export const showRouteEditor = (show) => {
     return {

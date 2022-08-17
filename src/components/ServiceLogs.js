@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Dropdown, DropdownButton, Modal, Form, Row, Col } from 'react-bootstrap'
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from '../firebase'
 import { CSVLink } from "react-csv";
 
 const ServiceLogs = (props) => {
@@ -48,10 +50,10 @@ const ServiceLogs = (props) => {
                 { label: "Work Type", key: "work_type"},
                 { label: "Service Address", key: "address"},
                 { label: "Status", key: "status"},
-                { label: "Driver Name", key: "user_name"},
+                { label: "Driver Name", key: "driver"},
                 { label: "Vehicle", key: "tractor"},
                 { label: "Vehicle Type", key: "vehicle_type"},
-                { label: "Driver Earning", key: "driver_earning"},
+                { label: "Driver Earning", key: "driverEarning"},
                 { label: "Property Value", key: "value"},
                 { label: "Start Time", key: "start_time"},
                 { label: "End Time", key: "end_time"},
@@ -76,7 +78,7 @@ const ServiceLogs = (props) => {
                 { label: "Time", key: "time" },
                 { label: "Notes", key: "notes" },
                 { label: "Work Type", key: "work_type"},
-                { label: "Driver Name", key: "user_name"},
+                { label: "Driver Name", key: "driver"},
                 { label: "Vehicle", key: "tractor"},
                 { label: "Vehicle Type", key: "vehicle_type"},
                 { label: "Description", key: "description" },
@@ -97,48 +99,50 @@ const ServiceLogs = (props) => {
         props.onClose()
     }
 
-    const onDownload = () => {
+    const onDownload = async() => {
         setShowDownloadLink(false)
         const offset = new Date().getTimezoneOffset() * 60000
         const start = new Date(new Date(startDate).getTime() + offset).toISOString()
         let end = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
-        fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=${logType}&start=${start}&end=${end}`)
-        .then(response => response.json())
-        .then(logs => {
 
-            if (logType === 'xero') {
-                logs.forEach(entry => {
-                    entry.invoiceDate = invoiceDate
-                    entry.dueDate = dueDate
-                    entry.quantity = 1
-                    entry.accountCode = 4000
-                    entry.taxType = 'Tax Exempt (0%)'
-                    entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
-                    entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
-                    entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                    entry.start_time = (entry.start_time === null) ? null : new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                    entry.end_time = (entry.end_time === null) ? null : new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                })
-            } else if (logType === 'hourly') {
-                logs.forEach(entry => {
-                    console.log(entry.end_time)
-                    entry.elapsed = (new Date(entry.end_time) - new Date(entry.start_time)) / 3600000 // elapsed time as decimal hours
-                    entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes                
-                    console.log(`${entry.cust_name}: Elapsed time: ${entry.elapsed}. Rounded up to 15 minutes: ${entry.elapsed_rounded}`)
-                    entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
-                    entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
-                    entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                    entry.start_time = (entry.start_time === null) ? null : new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                    entry.end_time = (entry.end_time === null) ? null : new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                })                
-            }
-            if (logType === 'hourly') {
+        console.log(start)
+        const q = query(collection(db, 'service_logs'))
+        const querySnapshot = await getDocs(q);
+        let logs = []
+        if (logType === 'xero') {
+            querySnapshot.forEach((doc) => {
+                let entry = {...doc.data(), id: doc.id}
+                console.log(entry)
+                entry.invoiceDate = invoiceDate
+                entry.dueDate = dueDate
+                entry.quantity = 1
+                entry.accountCode = 4000
+                entry.taxType = 'Tax Exempt (0%)'
+                entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
+                entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+                entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                entry.startTime = (entry.startTime === null) ? null : new Date(entry.startTime).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                entry.endTime = (entry.endTime === null) ? null : new Date(entry.endTime).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                logs.push(entry)
+            })
+        } else if (logType === 'hourly') {
+            querySnapshot.forEach((doc) => {
+                let entry = {...doc.data(), id: doc.id}
+                entry.elapsed = (new Date(entry.end_time) - new Date(entry.start_time)) / 3600000 // elapsed time as decimal hours
+                entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes                
+                console.log(`${entry.cust_name}: Elapsed time: ${entry.elapsed}. Rounded up to 15 minutes: ${entry.elapsed_rounded}`)
+                entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
+                entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+                entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                entry.start_time = (entry.start_time === null) ? null : new Date(entry.start_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                entry.end_time = (entry.end_time === null) ? null : new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                logs.push(entry)
+            })            
+        }
 
-            }
-            setLogs(logs)
-            setShowDownloadLink(true)
-        })
-        .catch(error => console.log(error))
+        console.log(logs)
+        setLogs(logs.sort((a,b) => a.timestamp - b.timestamp))
+        setShowDownloadLink(true)
     } 
 
     return (

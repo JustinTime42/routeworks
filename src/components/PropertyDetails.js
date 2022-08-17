@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { Tabs, Tab, Card, Col, Row, Button, Form, Alert, Modal } from 'react-bootstrap'
-import axios from 'axios'
-import { getRouteData, createItem, editItem} from "../actions"
-import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE } from '../constants';
+import { deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../firebase'
+import { getRouteData, createItem, editItem, setActiveItem, } from "../actions"
+import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY } from '../constants';
 import CustLogs from './customer_panels/CustLogs'
 import SkipDetails from './customer_panels/SkipDetails'
 import TimeTracker from './customer_panels/TimeTracker'
@@ -15,7 +16,6 @@ const initialState = {
     disabled: false,
     yards: 0,
     done_label: "hidden",
-    newStatus: '',
     showSkipConfirmation: false,
     currentLogEntry: null,
     showUndoConfirmation: false,
@@ -26,26 +26,31 @@ const initialState = {
 const PropertyDetails = (props) => {
 
     const [
-        {noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, currentLogEntry, showUndoConfirmation, showModal, isRunning},
+        {noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, showModal, isRunning},
         setState
     ] = useState(initialState)
 
+    const customers = useSelector(state => state.requestAllAddresses.addresses)
     const driver = useSelector(state => state.setActiveDriver.driver)
     const tractor = useSelector(state => state.setActiveTractor.activeTractor)
-    const tractorType = useSelector(state => state.setActiveTractor.type)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routePending = useSelector(state => state.getRouteProperties.isPending)
     const routes = useSelector(state => state.requestRoutes.routes)
     const workType = useSelector(state => state.setActiveWorkType.workType)
+    const property = useSelector(state => state.setActiveProperty.activeProperty)
+    const currentLogEntry = useSelector(state => state.setActiveLogEntry.entry)
     const dispatch = useDispatch()
 
     useEffect(() => {
-        console.log("active property: ", props.property)
-        if (props.property?.contract_type === "Hourly") { 
+        console.log("active property: ", property)
+        if (property?.contract_type === "Hourly") { 
             console.log("active property is hourly")
             setState(() => ({...initialState, disabled: true, showModal: true})) 
-        } else setState(initialState)
-    }, [props.property, activeRoute])
+        } else {
+            console.log('returning to intial state')
+            setState(initialState)
+        } 
+    }, [property.id, activeRoute.id])
 
     useEffect(() => {
         if (showModal) {
@@ -75,19 +80,22 @@ const PropertyDetails = (props) => {
     const setIsRunning = (isRunning) => setState(prevState => ({...prevState, isRunning:isRunning}))
     
     const undoStatus = () => {
-        axios.delete(`${process.env.REACT_APP_API_URL}/undo/${currentLogEntry}`)
-        .then(res => {
-            console.log(res)
-            setState(prevState => ({...prevState, showUndoConfirmation: false, currentLogEntry: null, done_label: "hidden", disabled: false}))
-           dispatch(getRouteData())
+        deleteDoc(doc(db, 'service_logs', currentLogEntry.id))
+        .then(() => {
+            setState(prevState => ({...prevState, showUndoConfirmation: false, done_label: "hidden", disabled: false}))
+            dispatch(getRouteData())
+            dispatch(setActiveItem(null, [], ACTIVE_LOG_ENTRY))
         })
         .catch(err => alert(err))
+        let newRouteCustomers = [...activeRoute.customers]
+        console.log(newRouteCustomers)
+        newRouteCustomers[newRouteCustomers.findIndex(i => i.id === property.id)].status = "Waiting"
+        dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
-    const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {
-        console.log(tractor)
-        setState(prevState => ({...prevState, disabled: disabled}))
-        let property = {...props.property}
+    const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {        
+        setState(prevState => ({...prevState, disabled: disabled}))        
+        console.log(property)
         let newRecordObject = {}
         newRecordObject.status = newStatus
         newRecordObject.price = property.price
@@ -95,6 +103,7 @@ const PropertyDetails = (props) => {
         let year = new Date().getFullYear().toString().substr(-2)
         // round down to the nearest minute. and then up to the nearest quarter hour
         let timeLogged = Math.ceil(Math.floor((endTime - startTime) / 60000) / 15) / 4
+        console.log("time logged", timeLogged)
         
         newRecordObject.driverEarning = driver.percentage * .01 * property.value
         let yardString = (yards !== 0) ? ": " + yards + " yds" : ""
@@ -114,81 +123,41 @@ const PropertyDetails = (props) => {
             newRecordObject.status = 'Hourly'
         }
         
+        newRecordObject.timestamp = Date.now()
+        newRecordObject.contract_type = property.contract_type
         newRecordObject.cust_id = property.id
         newRecordObject.reference = property.address
         newRecordObject.address = property.address
         newRecordObject.cust_name = property.cust_name
+        newRecordObject.value = property.value
         newRecordObject.driver = driver.name
         newRecordObject.notes = newRecordObject.status === 'Skipped' ? noteField + ' ' + skipDetails : noteField
         newRecordObject.tractor = tractor.name
         newRecordObject.vehicle_type = tractor.type
         newRecordObject.work_type = workType.name
-        newRecordObject.price = property.price
         if (yards) {newRecordObject.yards = (yards !== 0) ? ": " + yards + " yds" : ""}
         if (startTime) {newRecordObject.startTime = startTime}
         if (endTime) {newRecordObject.endTime = endTime} 
         newRecordObject.description = newRecordObject.status === 'Skipped' ? '' : workType.name + yardString
-        newRecordObject.invoice_number = `${property.id.substring(0,5)}A${year}${month}`
+        newRecordObject.invoice_number = `A${property.id.substring(0,5)}${year}${month}`
         if (property.price_per_yard) {newRecordObject.price_per_yard = property.price_per_yard}
         if (property[tractor.type]) {newRecordObject.hourly_rate = property[tractor.type]} 
         const newRoute = {...activeRoute}
         newRoute.customers[newRoute.customers.findIndex(i => i.id === property.id)].status = newStatus
         console.log(newRecordObject.driverEarning)
-        dispatch(createItem(newRecordObject, null, 'service_logs', null, null))
+        dispatch(createItem(newRecordObject, null, 'service_logs', ACTIVE_LOG_ENTRY, null))
 
         // editItem to make change status on current route
         dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
 
-        // axios.post(`${process.env.REACT_APP_API_URL}/setstatus`, 
-        //     {
-        //         cust_id: property.id,
-        //         reference: property.address,
-        //         address: property.address, 
-        //         cust_name: property.cust_name,   
-        //         status: status,
-        //         driver: driver.name,
-        //         notes: status === 'Skipped' ? noteField + ' ' + skipDetails : noteField,
-        //         tractor: tractor.name,
-        //         vehicle_type: tractorType.name, 
-        //         work_type: workType.name,
-        //         price: property.price,
-        //         yards: (yards !== 0) ? ": " + yards + " yds" : "",
-        //         startTime: startTime, 
-        //         endTime: endTime,
-        //         driver_earning: driverEarning,
-        //         description: status === 'Skipped' ? '' : work_type + yardString,
-        //         invoice_number: `A${property.key}${year}${month}`,
-        //         price_per_yard: property.price_per_yard,
-        //         hourly_rate: property[tractorType.name]
-        //     }
-        // )
-        // .then(res => {
-        //     dispatch(getRouteData())
-        //     console.log(res.data)
-        //     console.log(res.data.serviceLog[0][0].key)
-        //     let confirmedStatus = res.data.serviceLog[0][0].status
-        //     // get confirmedPriorty = res.data.property.priority....?
-        //     // then insert priority into the aproperty within alladdresses... will need to make sure that updates the route properties
-        //     //  
-        //     if (confirmedStatus === status) {
-                setState(prevState => ({
-                    ...prevState, 
-                    done_label: (confirmedStatus === "Waiting" || property.contract_type === "Hourly") ? "hidden" : "visible", 
-                    status:confirmedStatus, 
-                    showSkipConfirmation: false, 
-                    currentLogEntry: res.data.serviceLog[0][0].key}))
-        //     } else alert("confirmed status error: ", confirmedStatus)
-        //     if (res.data.err.length > 0) {
-        //         alert("prop details ln134 error: ", res.data.err[0])
-        //     }
-        // })
-        // .catch(err => {
-        //     console.log("prop details ln138 error:", err)
-        //     alert(err)
-        // })
+        const confirmedStatus = currentLogEntry.status
+        setState(prevState => ({
+            ...prevState, 
+            done_label: (confirmedStatus === "Waiting" || property.contract_type === "Hourly") ? "hidden" : "visible", 
+            showSkipConfirmation: false, 
+        }))
     }
 
-    const property = props.property
     return (
         property ? 
             <DetailsPanel property={property} showModal={showModal} onCloseClick={onCloseClick}>
@@ -226,7 +195,7 @@ const PropertyDetails = (props) => {
                             property.contract_type === "Hourly" ? <TimeTracker yards={yards} workType={workType} onStatusChange={onStatusChange} isRunning={isRunning} setIsRunning={setIsRunning}/> : null 
                         }
                         <Card.Body className='buttonRowStyle'>
-                            <Button variant="primary" size="lg" disabled={!property.routeName || isRunning} onClick={() => props.changeProperty(property, "prev")} >Prev</Button>
+                            <Button variant="primary" size="lg" disabled={isRunning} onClick={() => props.changeProperty(property, "prev")} >Prev</Button>
                             <Button variant="danger" size="lg" disabled={routePending || disabled || isRunning} onClick={toggleShowSkip}>Skip</Button>
                                 <div style={{visibility: done_label, fontSize: "large"}}>                                    
                                     <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
@@ -239,7 +208,7 @@ const PropertyDetails = (props) => {
                                 onClick={() => onStatusChange('Done')}>
                                     Done
                             </Button>
-                            <Button variant="primary" size="lg" disabled={!property.routeName || isRunning} onClick={() => props.changeProperty(property, "next")} >Next</Button>
+                            <Button variant="primary" size="lg" disabled={isRunning} onClick={() => props.changeProperty(property, "next")} >Next</Button>
                         </Card.Body>
                         <Card.Body>
                             <SkipDetails

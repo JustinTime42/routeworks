@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react' 
+import React, { useEffect } from 'react' 
 import { useDispatch, useSelector } from "react-redux";
 import { onSnapshot, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import PropertyCard from "../components/PropertyCard"
 import PropertyDetails from "../components/PropertyDetails"
-import { setActiveProperty, getRouteProperties, setActiveItem } from '../actions'
+import { setActiveItem } from '../actions'
 import { SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE } from '../constants'
 
 import '../styles/driver.css'
@@ -14,7 +14,6 @@ const DisplayRoute= (props) => {
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
-    const driver = useSelector(state => state.setActiveDriver.name)
     const dispatch = useDispatch()
       
     useEffect(() => {
@@ -27,14 +26,17 @@ const DisplayRoute= (props) => {
     },[])
 
     const changeActiveProperty = (property = activeProperty, direction = '') => {
+        const custDetails = (customer) => {
+            return customers.find(i => i.id === customer.id)
+        }
         console.log(property, direction)
         if (direction) {
-            let currentPosition = activeRoute.customers.findIndex(i => i.key === property.key)
+            let currentPosition = activeRoute.customers.findIndex(i => i.id === property.id)
             console.log(currentPosition)
             let nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
                 console.log(nextPosition)
             if (nextPosition >= 0 && nextPosition < activeRoute.customers.length) {
-                dispatch(setActiveItem(activeRoute.customers[nextPosition], customers, SET_ACTIVE_PROPERTY))
+                dispatch(setActiveItem(custDetails(activeRoute.customers[nextPosition]), customers, SET_ACTIVE_PROPERTY))
                 if ((nextPosition - 1) > 0) {
                     document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
                 } else {
@@ -42,7 +44,7 @@ const DisplayRoute= (props) => {
                 }
             }
         } else {
-            dispatch(setActiveItem(property, customers, SET_ACTIVE_PROPERTY))
+            dispatch(setActiveItem(custDetails(property), customers, SET_ACTIVE_PROPERTY))
         }
     }
             
@@ -56,7 +58,7 @@ const DisplayRoute= (props) => {
                                 <PropertyCard                                                                    
                                     i={i}  
                                     route={activeRoute.name}                                   
-                                    key={address.key} 
+                                    key={address.id} 
                                     address={address}
                                     activeProperty={activeProperty}
                                     handleClick={changeActiveProperty}                             
@@ -66,7 +68,7 @@ const DisplayRoute= (props) => {
                     }) 
                 }
             </div>
-            <PropertyDetails property={activeProperty} changeProperty={changeActiveProperty}/>
+            <PropertyDetails changeProperty={changeActiveProperty}/>
         </div>  
     )
 }

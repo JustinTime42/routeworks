@@ -67,3 +67,5 @@ export const SHOW_MODAL = "SHOW_MODAL"
 export const HIDE_MODAL = "HIDE_MODAL"
 
 export const TEMP_ITEM = "TEMP_ITEM"
+
+export const ACTIVE_LOG_ENTRY = "ACTIVE_LOG_ENTRY"
