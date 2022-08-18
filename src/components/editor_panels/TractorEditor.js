@@ -46,6 +46,11 @@ const TractorEditor = (props) => {
         setVehicleType({...vehicleType, active: !vehicleType.active})
     }
 
+    const onClose = () => {
+        dispatch(hideModal('Vehicle'))
+        setDeleteAlert(false)
+    }
+
     const onSave = () => {
         if (!activeVehicleType.id) {alert('please enter vehicle type')}
         else {
@@ -99,7 +104,7 @@ const TractorEditor = (props) => {
 
     return (
         <>
-        <Modal show={modals.includes('Vehicle')} onHide={() => dispatch(hideModal('Vehicle'))}>
+        <Modal show={modals.includes('Vehicle')} onHide={onClose}>
             <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "center"}}>
                 <FormControl style={{width: '50%', margin: "3px"}} size="sm" name="name" type="text" onChange={onChangeName} value={tempItem?.name || ''} />
                 <SimpleSelector
@@ -129,7 +134,7 @@ const TractorEditor = (props) => {
                 <div className="flex justify-content-around">
                     <Button variant="danger" style={{visibility: ((deleteAlert !== tempItem?.name) && tempItem) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(tempItem)}>Delete</Button>
                     <Button disabled={!tempItem} style={{margin: "3px"}} onClick={onSave}>Save</Button>   
-                    <Button style={{margin: "3px"}} variant="secondary" onClick={() => dispatch(hideModal('Vehicle'))}>Close</Button>
+                    <Button style={{margin: "3px"}} variant="secondary" onClick={onClose}>Close</Button>
                 </div>
                 <Alert className="d-flex justify-content-around mb-3" show={deleteAlert === tempItem}>
                     <Button onClick={() => onDelete(tempItem)} variant="danger">

@@ -79,7 +79,8 @@ export const setTimerIsRunning = (state=initialStateTimerIsRunning, action={}) =
 
 const initialStateActiveRoute = {
     activeRoute: {
-        name: ''
+        name: '',
+        customers: [],
     }
 }
 

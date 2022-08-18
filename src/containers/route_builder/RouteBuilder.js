@@ -20,15 +20,11 @@ const RouteBuilder = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        const unsub = () => {
-            if (activeRoute.name) {
-                return onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
-                    dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
-                })
-            } else return 
-        } 
+        const unsub = onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
+            dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
+        })
         return () => {
-            unsub()            
+            unsub()
         }
     },[])
 
@@ -137,6 +133,7 @@ const RouteBuilder = () => {
     }
 
     return (
+        activeRoute.name ? 
         <>
         <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
             {/* <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.refreshData}>Refresh Data</Button> */}
@@ -235,7 +232,7 @@ const RouteBuilder = () => {
                 onDelete={onDelete}
             />
         </div>
-        </>  
+        </>  :null
    )    
 }
 

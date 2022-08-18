@@ -49,6 +49,7 @@ const DisplayRoute= (props) => {
     }
             
     return (
+        activeRoute.name ?
         <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
             <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                 {
@@ -69,7 +70,7 @@ const DisplayRoute= (props) => {
                 }
             </div>
             <PropertyDetails changeProperty={changeActiveProperty}/>
-        </div>  
+        </div> : null 
     )
 }
 

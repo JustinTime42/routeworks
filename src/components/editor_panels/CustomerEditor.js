@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { requestAllAddresses, getRouteProperties, setTempItem } from '../../actions'
-import axios from "axios"
-import { getItem } from '../../firebase'
+import { setTempItem } from '../../actions'
+import PlacesAutocomplete, { geocodeByPlaceId, geocodeByAddress, getLatLng } from 'react-places-autocomplete'
 import { arrayUnion, doc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import CustLogs from '../customer_panels/CustLogs'
@@ -19,15 +18,15 @@ const CustomerEditor = (props) => {
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
-    const [api, setApi] = useState([customer ? "editproperty" : "newproperty"])
     const [deleteAlert, setDeleteAlert] = useState(false)
     const [allTags, setAllTags] = useState([])
     const [newTagName, setNewTagName] = useState('')
     const [sameAddress, setSameAddress] = useState(false)
+    const [search, setSearch] = useState('')
 
     useEffect(() => {
-        setApi(customer ? "editproperty" : "newproperty")
         setSameAddress(false)
+        setDeleteAlert(false)
     }, [customer])
 
     useEffect(() => {
@@ -91,6 +90,26 @@ const CustomerEditor = (props) => {
         setSameAddress(!sameAddress)
     }
 
+    const handleSelectPlace = async(address, placeId) => {
+        const [place] = await geocodeByPlaceId(placeId);
+        const {long_name:postalCode = ''} = place.address_components.find( c => c.types.includes('postal_code')) || {};
+        let addressArray = address.split(',')
+        dispatch(setTempItem(
+            {
+                ...customer, 
+                address: addressArray[0],
+                city: addressArray[1],
+                state: addressArray[2],
+                zip: postalCode
+
+            }
+        ))
+    }
+
+    const onChangeSearch = (address) => {
+        setSearch(address)
+    }
+
     return (      
            <Modal className="scrollable" style={editorSize} show={modals.includes('Customer')} onHide={props.close} size='lg'>
             <Modal.Header>Customer Editor</Modal.Header>
@@ -143,7 +162,39 @@ const CustomerEditor = (props) => {
                             </Form.Group>                        
                         <Row>
                     <Col>
-                        <Form.Label>Job Location</Form.Label>                  
+                        <Form.Label>Job Location</Form.Label> 
+                        <PlacesAutocomplete
+                            value={search}
+                            onChange={onChangeSearch}
+                            onSelect={handleSelectPlace}
+                            shouldFetchSuggestions={search.length > 3}
+                        >
+                            {({ getInputProps, suggestions, getSuggestionItemProps }) => (
+                            <div>
+                                <input 
+                                {...getInputProps({
+                                    placeholder: 'Search Places ...',
+                                    className: 'location-search-input'
+                                })}
+                                />
+                                <div className="autocomplete-dropdown-container">
+                                {suggestions.map(suggestion => {
+                                    console.log(suggestion)
+                                    const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
+                                    // inline style for demonstration purpose
+                                    const style = suggestion.active
+                                                ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                                                : { backgroundColor: '#ffffff', cursor: 'pointer' };
+                                    return (
+                                    <div key={suggestion.description} {...getSuggestionItemProps(suggestion)}>
+                                        <span>{suggestion.description}</span>
+                                    </div>
+                                    )
+                                })}
+                                </div>
+                            </div>
+                            )}
+                        </PlacesAutocomplete>                 
                         <Form.Group as={Row}>
                             <Form.Label>Address</Form.Label>
                             <Col>
@@ -317,6 +368,7 @@ const CustomerEditor = (props) => {
                             <Form.Group>
                                 <Form.Label>Contract Type</Form.Label>
                                     <Form.Control name="contract_type" as="select" value={customer?.contract_type || ''} onChange={onChange}>
+                                        <option value="select">Select</option>
                                         {
                                             contractTypes.map(type => <option key={type} value={type}>{type}</option>)
                                         }

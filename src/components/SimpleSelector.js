@@ -19,6 +19,10 @@ const SimpleSelector = (props) => {
         }
     },[])
 
+    useEffect(() => {
+        setShowEdit(false)
+    },[props.selectedItem])
+
     const toggleEdit = () => {
         setShowEdit(!showEdit)
     }

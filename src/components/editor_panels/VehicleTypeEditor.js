@@ -19,10 +19,13 @@ const VehicleTypeEditor = (props) => {
 
     },[props.vehicleType])
 
-    const onHide = () => dispatch(hideModal('VehicleType'))
+    const onClose = () => {
+        dispatch(hideModal('VehicleType'))
+        setDeleteAlert(false)
+    }
 
     return (
-        <Modal show={modals.includes('VehicleType')} onHide={onHide}>
+        <Modal show={modals.includes('VehicleType')} onHide={onClose}>
             <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "space-between"}}>
                 <Form.Group as={Row}>
                     <Form.Label column sm={2}>Name</Form.Label>
@@ -45,7 +48,7 @@ const VehicleTypeEditor = (props) => {
                 <div className="flex justify-content-around">
                     <Button variant="danger" style={{visibility: ((deleteAlert !== props.vehicleType?.name) && props.vehicleType) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(props.vehicleType)}>Delete</Button>
                     <Button disabled={!props.vehicleType} style={{margin: "3px"}} onClick={props.onSaveType}>Save</Button>   
-                    <Button style={{margin: "3px"}} variant="secondary" onClick={onHide}>Close</Button>
+                    <Button style={{margin: "3px"}} variant="secondary" onClick={onClose}>Close</Button>
                 </div>
                 <Alert className="d-flex justify-content-around mb-3" show={deleteAlert === props.vehicleType}>
                     <Button onClick={() => props.onDeleteType(props.vehicleType)} variant="danger">

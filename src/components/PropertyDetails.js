@@ -142,13 +142,17 @@ const PropertyDetails = (props) => {
         newRecordObject.invoice_number = `A${property.id.substring(0,5)}${year}${month}`
         if (property.price_per_yard) {newRecordObject.price_per_yard = property.price_per_yard}
         if (property[tractor.type]) {newRecordObject.hourly_rate = property[tractor.type]} 
-        const newRoute = {...activeRoute}
-        newRoute.customers[newRoute.customers.findIndex(i => i.id === property.id)].status = newStatus
+
+        // editItem to make change status on current route
+        if (activeRoute.customers.find(i => i.id === property.id)) {
+            const newRoute = {...activeRoute}
+            newRoute.customers[newRoute.customers.findIndex(i => i.id === property.id)].status = newStatus            
+            dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        }
         console.log(newRecordObject.driverEarning)
         dispatch(createItem(newRecordObject, null, 'service_logs', ACTIVE_LOG_ENTRY, null))
 
-        // editItem to make change status on current route
-        dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+
 
         const confirmedStatus = currentLogEntry.status
         setState(prevState => ({

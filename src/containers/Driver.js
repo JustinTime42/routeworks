@@ -184,11 +184,11 @@ const Driver = () => {
                 {/* <UserEditor /> */}
                 { currentUser.admin ? <AdminDropdown /> : null }
                  
-                <Button variant="primary" size="sm" onClick={refreshData2}>Refresh</Button>
+                {/* <Button variant="primary" size="sm" onClick={refreshData2}>Refresh</Button> */}
             </div>
             { 
-            showRouteEditor ? <RouteBuilder /> : 
-            activeTractor.name && (activeDriver.key !== '')  && activeWorkType.name ? <DisplayRoute /> :
+            showRouteEditor && activeRoute.id ? <RouteBuilder /> : 
+            activeTractor.name && (activeDriver.key !== '')  && activeWorkType.name && activeRoute.id ? <DisplayRoute /> :
             <Alert variant="warning">Please select route, driver, vehicle, and work type to begin.</Alert>                              
             }             
         </div>            
