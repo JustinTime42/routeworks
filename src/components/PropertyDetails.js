@@ -146,7 +146,9 @@ const PropertyDetails = (props) => {
         // editItem to make change status on current route
         if (activeRoute.customers.find(i => i.id === property.id)) {
             const newRoute = {...activeRoute}
-            newRoute.customers[newRoute.customers.findIndex(i => i.id === property.id)].status = newStatus            
+            const newIndex = newRoute.customers.findIndex(i => i.id === property.id)
+            newRoute.customers[newIndex].status = newStatus     
+            newRoute.customers[newIndex].priority = false     
             dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
         }
         console.log(newRecordObject.driverEarning)

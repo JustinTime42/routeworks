@@ -1,6 +1,6 @@
 import React from "react"
 import { useSelector } from "react-redux";
-import { Button, Col, Row } from 'react-bootstrap'
+import { Button, Col, Row, Dropdown } from 'react-bootstrap'
 import { serviceLevels } from '../globals.js'
 
 const PropertyCard = (props) => {
@@ -100,7 +100,17 @@ const PropertyCard = (props) => {
             <Col style={{flex:"1 1 75px"}}>             
                 <>
                     <p style={{...statusStyle}}>{status}</p>   
-                    {props.admin ? <Button style={activeStyle} onClick={() => props.toggleActive(props.address, routeData)}>{props.address.active === true ? 'Active' : 'Inactive'}</Button> : null} 
+                    {props.admin && props.toggleField ? 
+                        <Dropdown size="sm" >
+                            <Dropdown.Item>
+                                <Button style={activeStyle} onClick={() => props.toggleField(props.address, routeData, 'active')}>{props.address.active === true ? 'Active' : 'Inactive'}</Button>  
+                            </Dropdown.Item>
+                            <Dropdown.Item>
+                                <Button style={activeStyle} onClick={() => props.toggleField(props.address, routeData, 'priority')}>{props.address.priority === true ? 'Priority' : 'Normal'}</Button> 
+                            </Dropdown.Item>
+                        </Dropdown>
+                    : null}
+                    
                 </> 
                 {props.admin ? <p style={editStyle}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : null } 
             </Col>      

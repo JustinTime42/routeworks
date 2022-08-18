@@ -78,13 +78,10 @@ const RouteBuilder = () => {
         dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
     }
 
-    const toggleActive = (customer, route) => { 
+    const toggleField = (customer, route, field) => { 
         let newRoute = ({...route})  
-        console.log(customer)
-        console.log(newRoute)
         const routeIndex = activeRoute.customers.findIndex(item => item.id === customer.id)
-        console.log(newRoute.customers[routeIndex])
-        newRoute.customers[routeIndex].active = !newRoute.customers[routeIndex].active
+        newRoute.customers[routeIndex][field] = !newRoute.customers[routeIndex][field]
         dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
@@ -172,7 +169,7 @@ const RouteBuilder = () => {
                                             admin={true} 
                                             detailsClick={onDetailsPropertyClick} 
                                             handleClick={handlePropertyClick}
-                                            toggleActive={toggleActive}
+                                            toggleField={toggleField}
                                             activeProperty={activeCustomer}
                                         />
                                     </div>
@@ -212,7 +209,6 @@ const RouteBuilder = () => {
                                             admin={true} 
                                             detailsClick={onDetailsPropertyClick} 
                                             handleClick={handlePropertyClick}
-                                            toggleActive={toggleActive}
                                             activeProperty={activeCustomer}
                                         />                                                    
                                     </div>
