@@ -474,7 +474,7 @@ const CustomerEditor = (props) => {
                     </Form> 
                     </Tab>
                     {
-                        customer?.key ?
+                        customer?.id ?
                         <Tab eventKey='logs' title='Service Logs'>
                             <CustLogs height="50vh"/>
                         </Tab> : null

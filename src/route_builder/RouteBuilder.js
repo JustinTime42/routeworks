@@ -1,15 +1,15 @@
 import React, { useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc } from "firebase/firestore"
-import {db } from '../../firebase'
+import {db } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd, removeExtraFields } from './drag-functions'
-import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS} from '../../constants'
+import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS} from '../constants'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { Button } from 'react-bootstrap'
-import PropertyCard from '../../components/PropertyCard'
-import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../../actions"
-import CustomerEditor from '../../components/editor_panels/CustomerEditor'
+import PropertyCard from '../components/PropertyCard'
+import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../actions"
+import CustomerEditor from '../components/editor_panels/CustomerEditor'
 
 const RouteBuilder = () => {
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
@@ -20,9 +20,9 @@ const RouteBuilder = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        const unsub = onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
+        const unsub = activeRoute.id ? onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
             dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
-        })
+        }) : () => null
         return () => {
             unsub()
         }
@@ -130,7 +130,6 @@ const RouteBuilder = () => {
     }
 
     return (
-        activeRoute.name ? 
         <>
         <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
             {/* <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.refreshData}>Refresh Data</Button> */}
@@ -228,7 +227,7 @@ const RouteBuilder = () => {
                 onDelete={onDelete}
             />
         </div>
-        </>  :null
+        </> 
    )    
 }
 

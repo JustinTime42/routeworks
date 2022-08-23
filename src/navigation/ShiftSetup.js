@@ -4,11 +4,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 //import firebase from 'firebase/compat'
 import {logout, auth} from '../firebase'
 import {Form, Col, Row, Modal, Button } from 'react-bootstrap'
-import SimpleSelector from './SimpleSelector'
-import DriverEditor from './editor_panels/DriverEditor'
-import TractorEditor from './editor_panels/TractorEditor'
+import SimpleSelector from '../components/SimpleSelector'
+import DriverEditor from '../components/editor_panels/DriverEditor'
+import TractorEditor from '../components/editor_panels/TractorEditor'
 import {getAdminItem} from '../firebase'
-import WorkTypeEditor from './editor_panels/WorkTypeEditor'
+import WorkTypeEditor from '../components/editor_panels/WorkTypeEditor'
 import { setActiveItem, showModal, hideModal, setTempItem, setCurrentUser } from "../actions"
 
 import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY} from '../constants.js'

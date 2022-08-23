@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import { connect } from "react-redux"
 import {showRouteEditor} from "../actions"
 import ServiceLogs from "../components/ServiceLogs"
@@ -50,8 +51,10 @@ class AdminDropdown extends Component {
             return (
                 <>                        
                         <DropdownButton size="sm" title="Admin" onSelect={this.onSelect}>        
-                            <Dropdown.Item key="editor" eventKey="editor">                                
-                                {this.props.showEditor ? "Show Route" : "Show Editor"}                               
+                            <Dropdown.Item key="editor" eventKey="editor">   
+                           
+                            <Link to={this.props.showEditor ? "/" : "/routebuilder" }>{this.props.showEditor ? "Show Route" : "Show Editor"} </Link>                             
+                                                              
                             </Dropdown.Item>
                             <Dropdown.Item key="logs" eventKey="logs">                                
                                 Show Logs                            

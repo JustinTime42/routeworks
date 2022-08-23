@@ -42,10 +42,8 @@ const PropertyCard = (props) => {
 
     const activeStyle = {
         textAlign: "center",
-        padding: "1px",
         borderRadius: "10px",
         width: "75px",
-        marginBottom: '1em',
         backgroundColor: cardBg(),
     }
 
@@ -99,20 +97,20 @@ const PropertyCard = (props) => {
             <ServiceLevel />
             <Col style={{flex:"1 1 75px"}}>             
                 <>
-                    <p style={{...statusStyle}}>{status}</p>   
+                    <p style={{...statusStyle, ...rightStyle}}>{status}</p>   
                     {props.admin && props.toggleField ? 
                         <Dropdown size="sm" >
                             <Dropdown.Item>
                                 <Button style={activeStyle} onClick={() => props.toggleField(props.address, routeData, 'active')}>{props.address.active === true ? 'Active' : 'Inactive'}</Button>  
                             </Dropdown.Item>
                             <Dropdown.Item>
-                                <Button style={activeStyle} onClick={() => props.toggleField(props.address, routeData, 'priority')}>{props.address.priority === true ? 'Priority' : 'Normal'}</Button> 
+                                <Button style={activeStyle} onClick={() => props.toggleField(props.address, routeData, 'priority')}>Priority</Button> 
                             </Dropdown.Item>
                         </Dropdown>
                     : null}
                     
                 </> 
-                {props.admin ? <p style={editStyle}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : null } 
+                {props.admin ? <p style={{...editStyle, ...rightStyle}}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : null } 
             </Col>      
         </Row>
     )

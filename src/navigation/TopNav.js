@@ -1,35 +1,30 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import SimpleSelector from "../components/SimpleSelector"
-import ShiftSetup from '../components/ShiftSetup';
+import ShiftSetup from './ShiftSetup';
 import RouteEditor from '../components/editor_panels/RouteEditor';
 import { addDoc, collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase'
 
-import DisplayRoute from "./DisplayRoute"
-//import EditRoute from "./EditRoute"
-import RouteBuilder from './route_builder/RouteBuilder';
 import AdminDropdown from "./AdminDropdown"
 import Spinner from "../components/Spinner"
 import {  setTempItem, showModal, setActiveItem} from "../actions"
 
-import SearchBar from "../components/SearchBar"
+import SearchBar from "./SearchBar"
 import { Alert, Button } from "react-bootstrap"
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
 
 import '../styles/driver.css'
 import UserEditor from '../components/editor_panels/UserEditor';
 
-const Driver = () => {
+const TopNav = () => {
     const showRouteEditor = useSelector(state => state.showRouteEditor.showEditor)
     const isRoutePending = useSelector(state => state.getRouteProperties.isPending)
     const isAllPending = useSelector(state => state.requestAllAddresses.isPending)
-    const activeDriver = useSelector(state => state.setActiveDriver.driver)
-    const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)
+
     const routesPending = useSelector(state => state.requestRoutes.isPending)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
-    const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
 
@@ -186,13 +181,8 @@ const Driver = () => {
                  
                 {/* <Button variant="primary" size="sm" onClick={refreshData2}>Refresh</Button> */}
             </div>
-            { 
-            showRouteEditor && activeRoute.id ? <RouteBuilder /> : 
-            activeTractor.name && (activeDriver.key !== '')  && activeWorkType.name && activeRoute.id ? <DisplayRoute /> :
-            <Alert variant="warning">Please select route, driver, vehicle, and work type to begin.</Alert>                              
-            }             
         </div>            
     )
 }
 
-export default Driver
+export default TopNav

@@ -1,29 +1,33 @@
 import React, { useEffect } from 'react' 
 import { useDispatch, useSelector } from "react-redux";
 import { onSnapshot, doc } from 'firebase/firestore';
-import { db } from '../firebase';
-import PropertyCard from "../components/PropertyCard"
-import PropertyDetails from "../components/PropertyDetails"
-import { setActiveItem } from '../actions'
-import { SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE } from '../constants'
+import { db } from './firebase';
+import PropertyCard from "./components/PropertyCard"
+import PropertyDetails from "./components/PropertyDetails"
+import { Alert } from 'react-bootstrap';
+import { setActiveItem } from './actions'
+import { SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE } from './constants'
 
-import '../styles/driver.css'
+import './styles/driver.css'
 
 const DisplayRoute= (props) => {
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
+    const activeDriver = useSelector(state => state.setActiveDriver.driver)
+    const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
+    const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const dispatch = useDispatch()
       
     useEffect(() => {
-        const unsub = onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
+        const unsub = activeRoute.id ? onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
             dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
-        })
+        }) : () => null
         return () => {
             unsub()
         }
-    },[])
+    },[activeRoute.id])
 
     const changeActiveProperty = (property = activeProperty, direction = '') => {
         const custDetails = (customer) => {
@@ -49,7 +53,7 @@ const DisplayRoute= (props) => {
     }
             
     return (
-        activeRoute.name ?
+        activeRoute.id && activeDriver.id && activeTractor.id && activeWorkType.id ?
         <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
             <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                 {
@@ -70,7 +74,8 @@ const DisplayRoute= (props) => {
                 }
             </div>
             <PropertyDetails changeProperty={changeActiveProperty}/>
-        </div> : null 
+        </div> : <Alert variant="warning">Please select route, driver, vehicle, and work type to begin.</Alert>   
+
     )
 }
 
