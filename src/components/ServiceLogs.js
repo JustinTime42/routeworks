@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
 import { Button, Dropdown, DropdownButton, Modal, Form, Row, Col } from 'react-bootstrap'
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { AgGridReact } from 'ag-grid-react';
 import { db } from '../firebase'
 import { CSVLink } from "react-csv";
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
 
 const ServiceLogs = (props) => {
     const [showDownloadLink, setShowDownloadLink ] = useState(false)
@@ -12,7 +15,91 @@ const ServiceLogs = (props) => {
     const [logType, setLogType ] = useState('')
     const [invoiceDate, setInvoiceDate ] = useState('')
     const [dueDate, setDueDate ] = useState('')
+    const [columnnDefs, setColumnDefs] = useState([])
 
+    const xeroHeaders =  [
+        { headerName: "Contract Type", field: "contract_type"},
+        { headerName: "ContactName", field: "cust_name" },
+        { headerName: "Date", field: "date" },
+        { headerName: "Time", field: "time" },
+        { headerName: "Notes", field: "notes" },
+        { headerName: "Description", field: "description" },
+        { headerName: "InvoiceNumber", field: "invoice_number" },
+        { headerName: "Reference", field: "reference" },
+        { headerName: "InvoiceDate", field: "invoiceDate" },
+        { headerName: "DueDate", field: "dueDate" }, 
+        { headerName: "UnitAmount", field: "price" },
+        { headerName: "Work Type", field: "work_type"},
+        { headerName: "Service Address", field: "address"},
+        { headerName: "Status", field: "status"},
+        { headerName: "Driver Name", field: "driver"},
+        { headerName: "Vehicle", field: "tractor"},
+        { headerName: "Vehicle Type", field: "vehicle_type"},
+        { headerName: "Driver Earning", field: "driverEarning"},
+        { headerName: "Property Value", field: "value"},
+        { headerName: "Start Time", field: "start_time"},
+        { headerName: "End Time", field: "end_time"},
+        { headerName: "Yardage Rate", field: "price_per_yard"},
+        { headerName: "Yards", field: "yards"},
+        { headerName: "Elapsed Precise", field: "elapsed"},
+        { headerName: "Elapsed Rounded", field: "elapsed_rounded"},
+        { headerName: "Hourly Rate", field: "hourly_rate"},
+        { headerName: "Quantity", field: "quantity" },
+        { headerName: "AccountCode", field: "accountCode" },
+        { headerName: "TaxType", field: "taxType" },
+        { headerName: "EmailAddress", field: "cust_email" },
+        { headerName: "POAddressLine1", field: "bill_address" },
+        { headerName: "POCity", field: "bill_city" },
+        { headerName: "PORegion", field: "bill_state" },
+        { headerName: "POPostalCode", field: "bill_zip" },
+    ]
+
+    const hourlyHeaders = [
+        { headerName: "ContactName", field: "cust_name" },
+        { headerName: "Date", field: "date" },
+        { headerName: "Time", field: "time" },
+        { headerName: "Notes", field: "notes" },
+        { headerName: "Work Type", field: "work_type"},
+        { headerName: "Driver Name", field: "driver"},
+        { headerName: "Vehicle", field: "tractor"},
+        { headerName: "Vehicle Type", field: "vehicle_type"},
+        { headerName: "Description", field: "description" },
+        { headerName: "UnitAmount", field: "price" },
+        { headerName: "Start Time", field: "start_time"},
+        { headerName: "End Time", field: "end_time"},
+        { headerName: "Elapsed Precise", field: "elapsed"},
+        { headerName: "Elapsed Rounded", field: "elapsed_rounded"},
+        { headerName: "Hourly Rate", field: "hourly_rate"},
+        { headerName: "Yardage Rate", field: "price_per_yard"},
+        { headerName: "Yards", field: "yards"},
+    ]
+
+    const rawHeaders = [
+        { headerName: "Service Address", field: "address"},
+        { headerName: "Contract Type", field: "contract_type"},
+        { headerName: "Customer Name", field: "cust_name" },
+        { headerName: "Description", field: "description" },
+        { headerName: "Driver Name", field: "driver"},
+        { headerName: "Driver Earning", field: "driverEarning"},
+        { headerName: "InvoiceNumber", field: "invoice_number" },
+        { headerName: "Notes", field: "notes" },
+        { headerName: "Price", field: "price" },
+        { headerName: "Yards", field: "yards"},
+        { headerName: "Yardage Rate", field: "price_per_yard"},
+        { headerName: "Elapsed Precise", field: "elapsed"},
+        { headerName: "Elapsed Rounded", field: "elapsed_rounded"},
+        { headerName: "Hourly Rate", field: "hourly_rate"},
+        { label: "Reference", key: "reference" },
+        { headerName: "Status", field: "status"},
+        { label: "Timestamp", key: "timestamp" },
+        { headerName: "Vehicle", field: "tractor"},
+        { headerName: "Vehicle Type", field: "vehicle_type"},
+        { headerName: "Value", field: "value"},
+        { headerName: "Work Type", field: "work_type"},
+
+
+
+    ]
     const headers = () => {
         let headers = []
         if (logType === "raw"){
@@ -94,6 +181,9 @@ const ServiceLogs = (props) => {
         }
         return headers        
     }  
+
+
+    
     const onClose = () => {
         setShowDownloadLink(false)
         props.onClose()
@@ -138,6 +228,10 @@ const ServiceLogs = (props) => {
                 entry.end_time = (entry.end_time === null) ? null : new Date(entry.end_time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                 logs.push(entry)
             })            
+        } else if (logType === 'raw') {
+            querySnapshot.forEach(doc => {
+                logs.push({...doc.data(), id: doc.id})
+            })
         }
 
         console.log(logs)
