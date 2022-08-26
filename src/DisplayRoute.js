@@ -74,8 +74,7 @@ const DisplayRoute= (props) => {
                 }
             </div>
             <PropertyDetails changeProperty={changeActiveProperty}/>
-        </div> : <Alert variant="warning">Please select route, driver, vehicle, and work type to begin.</Alert>   
-
+        </div> : <Alert variant="warning">Please select route, driver, vehicle, and work type to begin.</Alert>  
     )
 }
 

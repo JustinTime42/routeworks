@@ -26,7 +26,7 @@ const RouteBuilder = () => {
         return () => {
             unsub()
         }
-    },[])
+    },[activeRoute.id])
 
     useEffect(() => {         
         const unsub = onSnapshot(collection(db, `driver/driver_lists/customer/`), (querySnapshot) => {

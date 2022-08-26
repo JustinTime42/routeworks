@@ -9,6 +9,7 @@ import { setCurrentUser } from './actions'
 import { useDispatch } from 'react-redux';
 import RouteBuilder from './route_builder/RouteBuilder';
 import DisplayRoute from './DisplayRoute'
+import ServiceLogs from './components/ServiceLogs';
 
 const App = (props) => { 
    const [user] = useAuthState(auth);
@@ -30,6 +31,7 @@ const App = (props) => {
       <Routes>
         <Route path="/" element={<DisplayRoute />} />
         <Route path="routebuilder" element={<RouteBuilder />} />
+        <Route path="logs" element={<ServiceLogs />} />
 
       </Routes>
       </>

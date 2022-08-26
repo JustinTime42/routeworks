@@ -182,8 +182,6 @@ const ServiceLogs = (props) => {
         return headers        
     }  
 
-
-    
     const onClose = () => {
         setShowDownloadLink(false)
         props.onClose()
@@ -240,50 +238,46 @@ const ServiceLogs = (props) => {
     } 
 
     return (
-        <Modal show={props.show} onHide={props.onClose}>
-            <Modal.Header>Download Service Logs</Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group>                                    
-                        <Form.Label>Start Date</Form.Label>
-                        <Form.Control name="startDate" type="date" onChange={event => setStartDate(event.target.value)}/> 
-                        <Form.Label>End Date</Form.Label>
-                        <Form.Control name="endDate" type="date" onChange={event => setEndDate(event.target.value)}/>                                               
-                        <Row>
-                            <Col>
-                                <DropdownButton title={logType || "Type"} onSelect={event => setLogType(event)}>        
-                                    <Dropdown.Item key="xero" eventKey="xero">                                
-                                            Xero                             
-                                    </Dropdown.Item>
-                                    <Dropdown.Item key="hourly" eventKey="hourly">                                
-                                            Hourly                        
-                                    </Dropdown.Item> 
-                                    <Dropdown.Item key="raw" eventKey="raw">                                
-                                            Raw                          
-                                    </Dropdown.Item> 
-                                </DropdownButton> 
-                            </Col>
-                            <Col>
-                                <Form.Label>Invoice Date</Form.Label>
-                                <Form.Control name="invoiceDate" type="date" onChange={event => setInvoiceDate(event.target.value)}/> 
-                                <Form.Label>Due Date</Form.Label>
-                                <Form.Control name="dueDate" type="date" onChange={event => setDueDate(event.target.value)}/>  
-                            </Col>
-                        </Row>  
-                    </Form.Group>
-                    {
-                        showDownloadLink ?
-                        <CSVLink data={logs} headers={headers()} filename={`servicelogs_${startDate}-${endDate}_${logType}.csv`}>
-                        Download
-                        </CSVLink> : <></>
-                    } 
-                </Form>                              
-            </Modal.Body>
-            <Modal.Footer>
+        <Form>
+            <Form.Group>                                    
+                <Form.Label>Start Date</Form.Label>
+                <Form.Control name="startDate" type="date" onChange={event => setStartDate(event.target.value)}/> 
+                <Form.Label>End Date</Form.Label>
+                <Form.Control name="endDate" type="date" onChange={event => setEndDate(event.target.value)}/>
                 <Button variant="primary" onClick={onDownload}>Create File</Button>
-                <Button variant="secondary" onClick={onClose}>Close</Button>
-            </Modal.Footer>
-        </Modal>
+                <Button variant="secondary" onClick={onClose}>Close</Button>                                               
+                <Row>
+                    <Col>
+                        <DropdownButton title={logType || "Type"} onSelect={event => setLogType(event)}>        
+                            <Dropdown.Item key="xero" eventKey="xero">                                
+                                    Xero                             
+                            </Dropdown.Item>
+                            <Dropdown.Item key="hourly" eventKey="hourly">                                
+                                    Hourly                        
+                            </Dropdown.Item> 
+                            <Dropdown.Item key="raw" eventKey="raw">                                
+                                    Raw                          
+                            </Dropdown.Item> 
+                        </DropdownButton> 
+                    </Col>
+                    <Col>
+                        <Form.Label>Invoice Date</Form.Label>
+                        <Form.Control name="invoiceDate" type="date" onChange={event => setInvoiceDate(event.target.value)}/> 
+                        <Form.Label>Due Date</Form.Label>
+                        <Form.Control name="dueDate" type="date" onChange={event => setDueDate(event.target.value)}/>  
+                    </Col>
+                </Row>  
+            </Form.Group>
+            {
+                showDownloadLink ?
+                <CSVLink data={logs} headers={headers()} filename={`servicelogs_${startDate}-${endDate}_${logType}.csv`}>
+                Download
+                </CSVLink> : <></>
+            } 
+        </Form>                              
+
+
+
     )    
 }
 

@@ -1,6 +1,6 @@
 import React from "react"
 import { useSelector } from "react-redux";
-import { Button, Col, Row, Dropdown } from 'react-bootstrap'
+import { Button, Col, Row, Dropdown, DropdownButton } from 'react-bootstrap'
 import { serviceLevels } from '../globals.js'
 
 const PropertyCard = (props) => {
@@ -98,19 +98,22 @@ const PropertyCard = (props) => {
             <Col style={{flex:"1 1 75px"}}>             
                 <>
                     <p style={{...statusStyle, ...rightStyle}}>{status}</p>   
-                    {props.admin && props.toggleField ? 
-                        <Dropdown size="sm" >
+                        {props.admin ? 
+                        <DropdownButton size="sm" title="Edit">
+                            {props.admin && props.toggleField ?
+                            <>
                             <Dropdown.Item>
-                                <Button style={activeStyle} onClick={() => props.toggleField(props.address, routeData, 'active')}>{props.address.active === true ? 'Active' : 'Inactive'}</Button>  
+                                <Button onClick={() => props.toggleField(props.address, routeData, 'active')}>{props.address.active === true ? 'Active' : 'Inactive'}</Button>  
                             </Dropdown.Item>
                             <Dropdown.Item>
-                                <Button style={activeStyle} onClick={() => props.toggleField(props.address, routeData, 'priority')}>Priority</Button> 
+                                <Button onClick={() => props.toggleField(props.address, routeData, 'priority')}>Priority</Button> 
                             </Dropdown.Item>
-                        </Dropdown>
-                    : null}
-                    
+                            </> : null}                            
+                                <Dropdown.Item>
+                                    <Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button>
+                                </Dropdown.Item>                             
+                    </DropdownButton> : null }
                 </> 
-                {props.admin ? <p style={{...editStyle, ...rightStyle}}><Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button></p>  : null } 
             </Col>      
         </Row>
     )
