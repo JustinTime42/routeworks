@@ -3,7 +3,7 @@ import { Dropdown, DropdownButton } from 'react-bootstrap'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux"
 import {showRouteEditor} from "../actions"
-import ServiceLogs from "../components/ServiceLogs"
+import ServiceLogs from "../components/service_logs/ServiceLogs"
 import CustomerContact from '../components/CustomerContact'
 import RawCustomerData from '../components/RawCustomerData'
 // import UserEditor from '../components/editor_panels/UserEditor'
@@ -15,7 +15,6 @@ const AdminDropdown = () => {
     const [showContactsMenu, setShowContactsMenu] = useState(false)
     const [showRawTableModal, setShowRawTableModal] = useState(false)
     const [lastLocation, setLastLocation] = useState(location)
-    const showEditor = useSelector(state => state.showRouteEditor.showEditor)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
     
@@ -26,8 +25,7 @@ const AdminDropdown = () => {
 
     const onSelect = (event) => {
         switch(event) {
-            case "editor": return showEditor ? dispatch(showRouteEditor(false)) : dispatch(showRouteEditor(true))
-            case "logs": return setShowLogsMenu({showLogsMenu: true})
+            //case "logs": return setShowLogsMenu({showLogsMenu: true})
             case "contact": return setShowContactsMenu({showContactsMenu: true})
             case "rawTable": return setShowRawTableModal({showRawTableModal: true})
             // case "userEditor": return this.setState({showUserEditor: true})
@@ -47,11 +45,14 @@ const AdminDropdown = () => {
     return (
         <>                        
             <DropdownButton size="sm" title="Admin" onSelect={onSelect}>        
-                <Dropdown.Item key="editor" eventKey="editor">                              
-                    <Link to={showEditor ? "/" : "/routebuilder"}>{showEditor ? "Show Route" : "Show Editor"} </Link>  
+                <Dropdown.Item as={Link} to="/" key="route" eventKey="route">                              
+                    Driver View
                 </Dropdown.Item>
-                <Dropdown.Item key="logs" eventKey="logs">                                
-                    <Link to={'/logs'}>Service Logs</Link>                          
+                <Dropdown.Item as={Link} to="/routebuilder" key="routebuilder" eventKey="routebuilder">                              
+                    Editor View
+                </Dropdown.Item>
+                <Dropdown.Item as={Link} to={'/logs'} key="logs" eventKey="logs">                                
+                    Service Logs                          
                 </Dropdown.Item>
                 <Dropdown.Item key="contact" eventKey="contact">
                     Customer Contact 

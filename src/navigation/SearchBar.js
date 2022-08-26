@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 import { FormControl, ListGroup } from 'react-bootstrap'
 import { setActiveItem, filterProperties } from '../actions'
 import { SET_ACTIVE_PROPERTY } from '../constants'
@@ -8,12 +9,12 @@ const SearchBar = () => {
 
     const [searchValue, setSearchValue] = useState('')
     const [matches, setMatches] = useState([])
-    const isAdmin = useSelector(state => state.showRouteEditor.showEditor)
     const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
     const routeData = useSelector(state => state.getRouteData.routeData)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const dispatch = useDispatch()
+    let location = useLocation()
 
     const selectCustomer = (customer) => {
         // Find out if the customer is on current route
@@ -37,7 +38,7 @@ const SearchBar = () => {
        // height: "200px",
         overflow: "scroll",
         zIndex: "99",
-        visibility: ((matches.length > 0) && !isAdmin) ? "visible" : "hidden"
+        visibility: ((matches.length > 0) && !(location.pathname ==='/routebuilder')) ? "visible" : "hidden"
     }
 
     const itemStyle = {

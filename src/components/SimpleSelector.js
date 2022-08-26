@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { useLocation } from 'react-router-dom'
 import {useSelector, useDispatch} from "react-redux"
 import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase' 
@@ -6,9 +7,9 @@ import { Dropdown, Button, } from "react-bootstrap"
 
 const SimpleSelector = (props) => {    
     const [showEdit, setShowEdit] = useState(false)
-    const isEditor = useSelector(state => state.showRouteEditor.showEditor)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
+    let location = useLocation()
   
     useEffect(() => { 
         const unsub = onSnapshot(collection(db, `${props.collectionPath}${props.collection}`), (querySnapshot) => {
@@ -64,7 +65,7 @@ const SimpleSelector = (props) => {
                     : null
             }             
             {
-                isEditor && props.itemArray ? 
+                (location.pathname === '/routebuilder') && props.itemArray ? 
                     props.itemArray.filter(item => !item.active).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => { 
                         return (
                             <div key={i} style={{display: "flex", backgroundColor:"rgba(231, 76, 60, 0.2)"}}>                        

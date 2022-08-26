@@ -9,7 +9,7 @@ import { setCurrentUser } from './actions'
 import { useDispatch } from 'react-redux';
 import RouteBuilder from './route_builder/RouteBuilder';
 import DisplayRoute from './DisplayRoute'
-import ServiceLogs from './components/ServiceLogs';
+import ServiceLogs from './components/service_logs/ServiceLogs';
 
 const App = (props) => { 
    const [user] = useAuthState(auth);

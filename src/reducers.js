@@ -45,7 +45,8 @@ import { SET_ACTIVE_ROUTE,
     SHOW_MODAL,
     HIDE_MODAL,
     TEMP_ITEM,
-    ACTIVE_LOG_ENTRY,  
+    ACTIVE_LOG_ENTRY, 
+    SET_LOG_ENTRIES 
 } from './constants.js'
 
 const initialStateCurrentUser = {
@@ -104,6 +105,18 @@ export const setActiveProperty = (state=initialStateActiveProperty, action={}) =
             return {...state, activeProperty: action.payload }
         default:
             return state
+    }
+}
+
+const initialStateLogs = {
+    entries: [],
+}
+
+export const setLogs = (state = initialStateLogs, action={}) => {
+    switch (action.type) {
+        case SET_LOG_ENTRIES: 
+            return {...state, entries: action.payload}
+        default: return state
     }
 }
 
@@ -369,19 +382,6 @@ export const saveRoute = (state = initialStateSaveRoute, action={}) => {
         default: 
             return state
     }
-}
-
-export const initialStateShowRouteEditor = {
-    showEditor: false
-}
-
-export const showRouteEditor = (state = initialStateShowRouteEditor, action={}) => {
-    switch(action.type) {
-        case SHOW_ROUTE_EDITOR:
-            return {...state, showEditor: action.payload}
-        default: 
-            return state
-    }    
 }
 
 export const initialStateShowRoute = {

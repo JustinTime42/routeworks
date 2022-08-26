@@ -18,10 +18,8 @@ import '../styles/driver.css'
 import UserEditor from '../components/editor_panels/UserEditor';
 
 const TopNav = () => {
-    const showRouteEditor = useSelector(state => state.showRouteEditor.showEditor)
     const isRoutePending = useSelector(state => state.getRouteProperties.isPending)
     const isAllPending = useSelector(state => state.requestAllAddresses.isPending)
-
     const routesPending = useSelector(state => state.requestRoutes.isPending)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
