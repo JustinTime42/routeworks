@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Dropdown, DropdownButton, Modal, Form, Row, Col } from 'react-bootstrap'
-import { collection, query, where, getDocs, onSnapshot, doc } from "firebase/firestore";
-import { AgGridReact } from 'ag-grid-react';
+import { Button, Dropdown, DropdownButton, Form, } from 'react-bootstrap'
+import { collection, query, where, getDocs} from "firebase/firestore";
 import { db } from '../../firebase'
-import { CSVLink } from "react-csv";
-import { getColumnDefs, getCSVHeaders } from './headers';
 import LogsTable from './LogsTable';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
@@ -41,8 +38,8 @@ const ServiceLogs = (props) => {
                 entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
                 entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                 entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                entry.startTime = (entry.startTime === null) ? null : entry.startTime.toDate().toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                entry.endTime = (entry.endTime === null) ? null : entry.endTime.toDate().toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() //.toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                entry.endTime = (!entry.endTime) ? null : entry.endTime.toDate() //.toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                logs.push(entry)
             })
         } else if (logType === 'hourly') {

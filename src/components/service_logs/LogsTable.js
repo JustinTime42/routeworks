@@ -29,7 +29,10 @@ const LogsTable = (props) => {
         editable: props.editable,
     }))
 
-
+    const numberParser = (params) => {
+        console.log(params.newValue)
+        return Number(params.newValue) 
+    }
 
     const buttonListener = useCallback(() => {
         gridRef.current.api.exportDataAsCsv();
