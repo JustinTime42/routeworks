@@ -1,13 +1,13 @@
-import { DateTimePicker } from "./DateTimePicker"
+import { DateTimeEditor, DateTimeRenderer } from "./DateTimePicker"
 
 const xeroHeaders =  [
-    { headerName: "Contract Type", field: "contract_type", editable: false},
-    { headerName: "ContactName", field: "cust_name", editable: false },
-    { headerName: "Date", field: "date", cellEditor: DateTimePicker},
+    { headerName: "Contract Type", field: "contract_type"},
+    { headerName: "ContactName", field: "cust_name"},
+    { headerName: "Timestamp", field: "timestamp"},
     { headerName: "Time", field: "time" },
     { headerName: "Notes", field: "notes" },
-    { headerName: "Description", field: "description", editable: false },
-    { headerName: "InvoiceNumber", field: "invoice_number", editable: false },
+    { headerName: "Description", field: "description"},
+    { headerName: "InvoiceNumber", field: "invoice_number"},
     { headerName: "Reference", field: "reference" },
     { headerName: "InvoiceDate", field: "invoiceDate"},
     { headerName: "DueDate", field: "dueDate"}, 
@@ -20,7 +20,7 @@ const xeroHeaders =  [
     { headerName: "Vehicle Type", field: "vehicle_type"},
     { headerName: "Driver Earning", field: "driverEarning", valueParser: params => Number(params.newValue)},
     { headerName: "Property Value", field: "value", valueParser: params => Number(params.newValue)},
-    { headerName: "Start Time", field: "start_time", type: 'datetime-local'},
+    { headerName: "Start Time", field: "start_time"},
     { headerName: "End Time", field: "endTime"},
     { headerName: "Yardage Rate", field: "price_per_yard", valueParser: params => Number(params.newValue)},
     { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
@@ -28,8 +28,8 @@ const xeroHeaders =  [
     { headerName: "Elapsed Rounded", field: "elapsed_rounded"},
     { headerName: "Hourly Rate", field: "hourly_rate", valueParser: params => Number(params.newValue)},
     { headerName: "Quantity", field: "quantity", valueParser: params => Number(params.newValue) },
-    { headerName: "AccountCode", field: "accountCode", editable: false},
-    { headerName: "TaxType", field: "taxType", editable: false},
+    { headerName: "AccountCode", field: "accountCode"},
+    { headerName: "TaxType", field: "taxType"},
     { headerName: "EmailAddress", field: "cust_email" },
     { headerName: "POAddressLine1", field: "bill_address" },
     { headerName: "POCity", field: "bill_city" },
@@ -38,7 +38,7 @@ const xeroHeaders =  [
 ]
 
 const hourlyHeaders = [
-    { headerName: "ContactName", field: "cust_name", editable: false },
+    { headerName: "ContactName", field: "cust_name"},
     { headerName: "Date", field: "date" },
     { headerName: "Time", field: "time" },
     { headerName: "Notes", field: "notes" },
@@ -46,7 +46,7 @@ const hourlyHeaders = [
     { headerName: "Driver Name", field: "driver"},
     { headerName: "Vehicle", field: "tractor"},
     { headerName: "Vehicle Type", field: "vehicle_type"},
-    { headerName: "Description", field: "description", editable: false },
+    { headerName: "Description", field: "description"},
     { headerName: "UnitAmount", field: "price", valueParser: params => Number(params.newValue) },
     { headerName: "Start Time", field: "startTime"},
     { headerName: "End Time", field: "endTime"},
@@ -58,30 +58,27 @@ const hourlyHeaders = [
 ]
 
 const rawHeaders = [
-    { headerName: "Service Address", field: "address", editable: false},
-    { headerName: "Contract Type", field: "contract_type", editable: false},
-    { headerName: "Customer Name", field: "cust_name", editable: false },
-    { headerName: "Description", field: "description", editable: false },
+    { headerName: "Service Address", field: "address"},
+    { headerName: "Contract Type", field: "contract_type"},
+    { headerName: "Customer Name", field: "cust_name"},
+    { headerName: "Description", field: "description"},
     { headerName: "Driver Name", field: "driver"},
     { headerName: "Driver Earning", field: "driverEarning", valueParser: params => Number(params.newValue)},
     { headerName: "InvoiceNumber", field: "invoice_number", editable: false },
-    { headerName: "Notes", field: "notes" },
+    { headerName: "Notes", field: "notes", editable: true },
     { headerName: "Price", field: "price", valueParser: params => Number(params.newValue) },
     { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
     { headerName: "Yardage Rate", field: "price_per_yard", valueParser: params => Number(params.newValue)},
-    { headerName: "Elapsed Precise", field: "elapsed"},
-    { headerName: "Elapsed Rounded", field: "elapsed_rounded"},
+    { headerName: "Elapsed Precise", field: "elapsed", editable: false },
+    { headerName: "Elapsed Rounded", field: "elapsed_rounded", editable: false },
     { headerName: "Hourly Rate", field: "hourly_rate"},
     { headerName: "Reference", field: "reference" },
     { headerName: "Status", field: "status"},
-    { headerName: "Timestamp", field: "timestamp" },
+    { headerName: "Timestamp", field: "timestamp", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
     { headerName: "Vehicle", field: "tractor"},
     { headerName: "Vehicle Type", field: "vehicle_type"},
     { headerName: "Value", field: "value", valueParser: params => Number(params.newValue)},
     { headerName: "Work Type", field: "work_type"},
-
-
-
 ]
 // export const getCSVHeaders = (logType) => {
 //     let headers = []

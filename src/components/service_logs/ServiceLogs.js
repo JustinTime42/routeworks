@@ -21,8 +21,9 @@ const ServiceLogs = (props) => {
 
     const onDownload = async() => {
         const offset = new Date().getTimezoneOffset() * 60000
-        const start = Date.parse(startDate) + offset
-        let end = Date.parse(endDate) + offset + 86400000// new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
+        const start = new Date(Date.parse(startDate) + offset)
+        console.log(start)
+        let end = new Date(Date.parse(endDate) + offset + 86400000)// new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
         
         const q = query(collection(db, 'service_logs'), where('timestamp', '>', start), where('timestamp', '<=', end))
         const querySnapshot = await getDocs(q);
@@ -31,6 +32,7 @@ const ServiceLogs = (props) => {
             querySnapshot.forEach((doc) => {
                 let entry = {...doc.data(), id: doc.id}
                 entry.invoiceDate = invoiceDate
+                entry.timestamp = entry.timestamp.toDate()
                 entry.dueDate = dueDate
                 entry.quantity = 1
                 entry.accountCode = 4000
@@ -45,6 +47,7 @@ const ServiceLogs = (props) => {
         } else if (logType === 'hourly') {
             querySnapshot.forEach((doc) => {                
                 let entry = {...doc.data(), id: doc.id}
+                entry.timestamp = entry.timestamp.toDate()
                 entry.elapsed = Math.round(((entry.endTime?.seconds) - (entry.startTime?.seconds)) / 36) / 100  // elapsed time as decimal hours
                 entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes                
                 console.log(`${entry.cust_name}: Elapsed time: ${entry.elapsed}. Rounded up to 15 minutes: ${entry.elapsed_rounded}`)
@@ -59,9 +62,13 @@ const ServiceLogs = (props) => {
             })            
         } else if (logType === 'raw') {
             querySnapshot.forEach(doc => {
-                logs.push({...doc.data(), id: doc.id})
+                let entry = {...doc.data(), id: doc.id}
+                entry.timestamp = entry.timestamp.toDate()
+                console.log(entry.timestamp)
+                logs.push(entry)
             })
         }
+        console.log(logs)
         dispatch(setLogs(logs.sort((a,b) => a.timestamp - b.timestamp)))
     } 
 
@@ -101,7 +108,7 @@ const ServiceLogs = (props) => {
                     </Form.Group> 
                 </Form.Group>
                 
-                <Button style={{visibility: logs.length ? 'visible' : 'hidden'}} onClick={() => setEditable(!editable)}>
+                <Button style={{visibility: logs.length && (logType === 'raw') ? 'visible' : 'hidden'}} onClick={() => setEditable(!editable)}>
                     {!editable ? "Start Editing" : "Stop Editing"}
                 </Button>
             </Form.Group>

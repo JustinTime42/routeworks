@@ -1,57 +1,61 @@
 import React, {
-    forwardRef,
-    memo,
     useEffect,
-    useImperativeHandle,
-    useMemo,
-    useRef,
     useState,
+    Component,
+    createRef
   } from 'react';
 
-export const DateTimePicker = forwardRef((props, ref) => {
-    const [value, setValue] = useState(parseInt(props.value));
-    const refInput = useRef(null);
+ export const DateTimeRenderer = (props) =>  {
+    const getValueToDisplay = (params) => {
+        return params.valueFormatted ? params.valueFormatted : params.value;
+    }
+    const [cellValue, setCellValue] = useState(getValueToDisplay(props))
  
     useEffect(() => {
-        // focus on the input
-        refInput.current.focus();
-    }, []);
- 
-    /* Component Editor Lifecycle methods */
-    useImperativeHandle(ref, () => {
-        return {
-            // the final value to send to the grid, on completion of editing
-            getValue() {
-                // this simple editor doubles any value entered into the input
-                return value;
-            },
- 
-            // Gets called once before editing starts, to give editor a chance to
-            // cancel the editing before it even starts.
-            isCancelBeforeStart() {
-                return false;
-            },
- 
-            // Gets called once when editing is finished (eg if Enter is pressed).
-            // If you return true, then the result of the edit will be ignored.
-            isCancelAfterEnd() {
-                // our editor will reject any value greater than 1000
-                return value ;
-            }
-        };
-    })
-
-    const handleChange = (event) => {
-        console.log(event.target.value)
-        setValue(event.target.value)
-    }
+        setCellValue(getValueToDisplay(props))
+    }, [props])
  
     return (
-        <input type="datetime-local"
-               ref={refInput}
-               value={value}
-               onChange={handleChange}
-               style={{width: "100%"}}
-        />
-    );
- });
+        <div>{cellValue.toLocaleString()}</div>
+    )
+ }
+
+ export class DateTimeEditor extends Component {
+    constructor(props) {
+        super(props) 
+        this.inputRef = createRef() 
+        this.state = {
+            value: props.value
+        }
+    }
+ 
+    componentDidMount() {
+        this.inputRef.current.focus();
+    }
+ 
+    // the final value to send to the grid, on completion of editing
+    getValue() {
+        return new Date(this.state.value)
+    }
+ 
+    isCancelBeforeStart() {
+        return false;
+    }
+
+    handleChange(event) {
+        this.setState({value: event.target.value})
+    }
+ 
+    render() {
+        const offset = new Date().getTimezoneOffset() * 60000
+        return (
+            <input
+                type='datetime-local'
+                ref={this.inputRef}
+                value={(new Date((Date.parse(this.state.value)) - offset)).toISOString().substring(0, 16)}
+                onChange={event => this.handleChange(event)}
+                style={{width: "100%"}}
+            />
+        )
+    }
+ }

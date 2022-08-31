@@ -9,6 +9,7 @@ import { deleteItem, editItem } from '../../actions'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { SET_LOG_ENTRIES } from '../../constants'
+import { DateTimeEditor, DateTimeRenderer } from './DateTimePicker'
 
 const LogsTable = (props) => {
     const [columnDefs, setColumnDefs] = useState(getColumnDefs(props.logType))
@@ -22,11 +23,10 @@ const LogsTable = (props) => {
     }, [props.logType])
     const gridRef = useRef()
 
-
     const defaultColDef = useMemo( ()=> ({
         sortable: true,
         resizable: true,
-        editable: props.editable,
+        editable: props.editable && (props.logType === 'raw'),
     }))
 
     const numberParser = (params) => {
@@ -43,6 +43,10 @@ const LogsTable = (props) => {
         dispatch(editItem(e.data, logs, 'service_logs', null, SET_LOG_ENTRIES))
     }, [])
 
+    const onStopped = useCallback(e => { 
+        console.log(e)
+    })
+
     return (
         <div className="ag-theme-alpine-dark" style={{width: '90%', height: '70vh', marginRight: 'auto', marginLeft: 'auto'}}>
             <Button style={{visibility: logs.length ? 'visible' : 'hidden'}} onClick={buttonListener}>Download CSV</Button>
@@ -54,6 +58,7 @@ const LogsTable = (props) => {
                 defaultColDef={defaultColDef}
                 rowSelection='multiple'                
                 onCellValueChanged={cellValueChangedListener}
+                onCellEditingStopped={onStopped}
             />
         </div>
     )

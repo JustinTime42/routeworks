@@ -14,7 +14,7 @@ const CustLogs = (props) => {
         let logs = []
         querySnapshot.forEach((doc) => {
             let item = {...doc.data(), id: doc.id}
-            item.timestamp = new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
+            item.timestamp = item.timestamp.toDate() //new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
             item.startTime = item.startTime ? new Date(item.startTime * 1000).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
             item.endTime = item.endTime ? new Date(item.endTime * 1000).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
             logs.push([item.timestamp, item.status, item.notes, item.description, item.driver, item.tractor, item.startTime, item.endTime])        

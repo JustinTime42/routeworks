@@ -123,7 +123,7 @@ const PropertyDetails = (props) => {
             newRecordObject.status = 'Hourly'
         }
         
-        newRecordObject.timestamp = Date.now()
+        newRecordObject.timestamp = new Date(Date.now())
         newRecordObject.contract_type = property.contract_type
         newRecordObject.cust_id = property.id
         newRecordObject.reference = property.address
