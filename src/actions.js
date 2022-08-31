@@ -135,12 +135,14 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
 }
 
 export const deleteItem = (item, itemList, className, activeActionType, listAction) => (dispatch) => {
-    dispatch({type: activeActionType, payload: null})    
-    if (item.adminFields) {
-        let tempList = [...itemList]
+    dispatch({type: activeActionType, payload: null}) 
+    let tempList = [...itemList]   
+    if (item.adminFields) {        
         tempList.splice(tempList.findIndex(i => i.admin_key === item.id), 1)
         dispatch({type: listAction, payload: tempList}) 
     }     
+    tempList.splice(tempList.findIndex(i => i.id === item.id), 1)
+    dispatch({type: listAction, payload: tempList})
     deleteDoc(doc(db, className, item.id))
     .then(() => dispatch({type: activeActionType, payload: null}))
     .catch(err => console.log(err))

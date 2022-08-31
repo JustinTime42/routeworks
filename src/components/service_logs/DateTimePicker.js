@@ -1,13 +1,33 @@
+import { SET_LOG_ENTRIES } from '../../constants'
 import React, {
     useEffect,
     useState,
     Component,
     createRef
-  } from 'react';
+  } from 'react'
+  import { useDispatch, useSelector } from 'react-redux'
+import { Button } from 'react-bootstrap'
+import { deleteItem } from '../../actions'
 
- export const DateTimeRenderer = (props) =>  {
+const offset = new Date().getTimezoneOffset() * 60000
+
+export const DeleteLogRenderer = (props) => {
+    const logs = useSelector(state => state.setLogs.entries)
+    const dispatch = useDispatch()
+    const handleClick = () => {
+        console.log(props)
+        dispatch(deleteItem(props.data, logs, 'service_logs', null, SET_LOG_ENTRIES))
+    }
+    
+    
+    return (
+        <Button onClick={handleClick}>Delete</Button>
+    )
+}
+
+export const DateTimeRenderer = (props) =>  {    
     const getValueToDisplay = (params) => {
-        return params.valueFormatted ? params.valueFormatted : params.value;
+        return params.valueFormatted ? params.valueFormatted : params.value
     }
     const [cellValue, setCellValue] = useState(getValueToDisplay(props))
  
@@ -16,21 +36,21 @@ import React, {
     }, [props])
  
     return (
-        <div>{cellValue.toLocaleString()}</div>
+        <div>{cellValue?.toLocaleString()}</div>
     )
- }
+}
 
- export class DateTimeEditor extends Component {
+export class DateTimeEditor extends Component {
     constructor(props) {
         super(props) 
         this.inputRef = createRef() 
         this.state = {
-            value: props.value
+            value: props.value || new Date(Date.now() - offset).toISOString().substring(0, 16)
         }
     }
  
     componentDidMount() {
-        this.inputRef.current.focus();
+        this.inputRef.current.focus()
     }
  
     // the final value to send to the grid, on completion of editing
@@ -46,8 +66,7 @@ import React, {
         this.setState({value: event.target.value})
     }
  
-    render() {
-        const offset = new Date().getTimezoneOffset() * 60000
+    render() {        
         return (
             <input
                 type='datetime-local'
@@ -58,4 +77,4 @@ import React, {
             />
         )
     }
- }
+}

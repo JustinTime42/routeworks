@@ -1,4 +1,5 @@
-import { DateTimeEditor, DateTimeRenderer } from "./DateTimePicker"
+import { editItem } from "../../actions"
+import { DateTimeEditor, DateTimeRenderer, DeleteLogRenderer } from "./DateTimePicker"
 
 const xeroHeaders =  [
     { headerName: "Contract Type", field: "contract_type"},
@@ -58,6 +59,7 @@ const hourlyHeaders = [
 ]
 
 const rawHeaders = [
+    {headerName: 'Delete', cellRenderer:DeleteLogRenderer},
     { headerName: "Service Address", field: "address"},
     { headerName: "Contract Type", field: "contract_type"},
     { headerName: "Customer Name", field: "cust_name"},
@@ -69,8 +71,8 @@ const rawHeaders = [
     { headerName: "Price", field: "price", valueParser: params => Number(params.newValue) },
     { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
     { headerName: "Yardage Rate", field: "price_per_yard", valueParser: params => Number(params.newValue)},
-    { headerName: "Elapsed Precise", field: "elapsed", editable: false },
-    { headerName: "Elapsed Rounded", field: "elapsed_rounded", editable: false },
+    { headerName: "Start Time", field: "startTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
+    { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
     { headerName: "Hourly Rate", field: "hourly_rate"},
     { headerName: "Reference", field: "reference" },
     { headerName: "Status", field: "status"},
@@ -162,11 +164,15 @@ const rawHeaders = [
 //     return headers        
 // }  
 
-export const getColumnDefs = (type) => {
-    console.log(type)
-    switch (type) {
-        case 'xero': return xeroHeaders
-        case 'hourly': return hourlyHeaders
-        case 'raw': return rawHeaders
+export const getColumnDefs = (logType, isEditting) => {
+    console.log('isEditting', isEditting)
+    if (logType === 'xero') return xeroHeaders
+    else if (logType === 'hourly') return hourlyHeaders
+    else {
+        if (isEditting) return rawHeaders
+        else {
+            return rawHeaders.filter(i => i.headerName !== 'Delete')
+        }  
     }
+
 }

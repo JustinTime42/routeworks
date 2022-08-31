@@ -19,6 +19,12 @@ const ServiceLogs = (props) => {
 
     const dispatch = useDispatch()
 
+    const handleSelect = (event) => {
+        setLogType(event)
+        setEditable(false)
+        dispatch(setLogs([]))
+    }
+
     const onDownload = async() => {
         const offset = new Date().getTimezoneOffset() * 60000
         const start = new Date(Date.parse(startDate) + offset)
@@ -26,7 +32,7 @@ const ServiceLogs = (props) => {
         let end = new Date(Date.parse(endDate) + offset + 86400000)// new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
         
         const q = query(collection(db, 'service_logs'), where('timestamp', '>', start), where('timestamp', '<=', end))
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(q)
         let logs = []
         if (logType === 'xero') {
             querySnapshot.forEach((doc) => {
@@ -40,35 +46,37 @@ const ServiceLogs = (props) => {
                 entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
                 entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                 entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() //.toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                entry.endTime = (!entry.endTime) ? null : entry.endTime.toDate() //.toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() 
+                entry.endTime = (!entry.endTime) ? null : entry.endTime.toDate() 
                logs.push(entry)
             })
         } else if (logType === 'hourly') {
             querySnapshot.forEach((doc) => {                
                 let entry = {...doc.data(), id: doc.id}
-                entry.timestamp = entry.timestamp.toDate()
-                entry.elapsed = Math.round(((entry.endTime?.seconds) - (entry.startTime?.seconds)) / 36) / 100  // elapsed time as decimal hours
-                entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes                
-                console.log(`${entry.cust_name}: Elapsed time: ${entry.elapsed}. Rounded up to 15 minutes: ${entry.elapsed_rounded}`)
-                entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
-                entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
-                entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() //.toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                entry.endTime = (!entry.endTime || !entry.startTime) ? null : entry.endTime.toDate() //.toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                logs.push(entry)
-                console.log(entry.elapsed)
-                
+                if (entry.contract_type === 'Hourly') {
+                    entry.timestamp = entry.timestamp.toDate()    
+                    entry.elapsed = Math.round(((entry.endTime?.seconds) - (entry.startTime?.seconds)) / 36) / 100 // elapsed time as decimal hours
+                    entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes           
+                    
+                    entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
+                    entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
+                    entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+                    entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() 
+                    entry.endTime = (!entry.endTime || !entry.startTime) ? null : entry.endTime.toDate() 
+                    logs.push(entry)
+                }                
             })            
         } else if (logType === 'raw') {
             querySnapshot.forEach(doc => {
-                let entry = {...doc.data(), id: doc.id}
-                entry.timestamp = entry.timestamp.toDate()
-                console.log(entry.timestamp)
-                logs.push(entry)
+                let entry = {...doc.data(), id: doc.id}  
+                logs.push({
+                    ...entry,
+                    timestamp: entry.timestamp.toDate(),
+                    ...(!!entry.startTime) && {startTime: entry.startTime.toDate()},
+                    ...(!!entry.endTime) && {endTime: entry.endTime.toDate()},
+                })
             })
         }
-        console.log(logs)
         dispatch(setLogs(logs.sort((a,b) => a.timestamp - b.timestamp)))
     } 
 
@@ -83,10 +91,9 @@ const ServiceLogs = (props) => {
                 <Form.Group>
                     <Form.Label>End Date</Form.Label>
                     <Form.Control name="endDate" type="date" onChange={event => setEndDate(event.target.value)}/>
-                </Form.Group>
-                
+                </Form.Group>                
                 <Button variant="primary" onClick={onDownload}>Create File</Button>
-                <DropdownButton title={logType || "Type"} onSelect={event => setLogType(event)}>        
+                <DropdownButton title={logType || "Type"} onSelect={event => handleSelect(event)}>        
                     <Dropdown.Item key="xero" eventKey="xero">                                
                             Xero                             
                     </Dropdown.Item>

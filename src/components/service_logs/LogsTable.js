@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Button } from 'react-bootstrap'
-import { render } from 'react-dom'
 import { AgGridReact } from 'ag-grid-react'
 import { getColumnDefs } from './headers'
 import { deleteItem, editItem } from '../../actions'
@@ -17,10 +16,11 @@ const LogsTable = (props) => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        setColumnDefs(getColumnDefs(props.logType))
-        console.log(props.logs)
+        setColumnDefs(getColumnDefs(props.logType, props.editable))
+        console.log(props.editable)
         console.log(props.logType)
-    }, [props.logType])
+    }, [props.logType, props.editable])
+
     const gridRef = useRef()
 
     const defaultColDef = useMemo( ()=> ({
