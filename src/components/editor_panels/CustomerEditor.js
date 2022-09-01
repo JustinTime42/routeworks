@@ -23,10 +23,28 @@ const CustomerEditor = (props) => {
     const [newTagName, setNewTagName] = useState('')
     const [sameAddress, setSameAddress] = useState(false)
     const [search, setSearch] = useState('')
+    const [bounds, setBounds] = useState({})
 
     useEffect(() => {
         setSameAddress(false)
         setDeleteAlert(false)
+    }, [customer])
+
+    useEffect(() => {
+        let center = {lat: 0, lng: 0}
+        const getPosition = async() => {
+            await navigator.geolocation.getCurrentPosition((position) => {
+                center.lat = position.coords.latitude
+                center.lng = position.coords.longitude
+                setBounds({
+                    north: center.lat + 1,
+                    south: center.lat - 1,
+                    east: center.lng + 1,
+                    west: center.lng - 1,
+                })
+            })
+        }
+        getPosition()       
     }, [customer])
 
     useEffect(() => {
@@ -110,6 +128,13 @@ const CustomerEditor = (props) => {
         setSearch(address)
     }
 
+    const searchOptions = {
+        //location: new google.maps.LatLng(-34, 151)
+        bounds: bounds,
+        radius: 2000,
+        types: ['address']
+      }
+
     return (      
            <Modal className="scrollable" style={editorSize} show={modals.includes('Customer')} onHide={props.close} size='lg'>
             <Modal.Header>Customer Editor</Modal.Header>
@@ -167,6 +192,7 @@ const CustomerEditor = (props) => {
                             value={search}
                             onChange={onChangeSearch}
                             onSelect={handleSelectPlace}
+                            searchOptions={searchOptions}
                             shouldFetchSuggestions={search.length > 3}
                         >
                             {({ getInputProps, suggestions, getSuggestionItemProps }) => (

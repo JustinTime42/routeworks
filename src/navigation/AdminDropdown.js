@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux"
-import {showRouteEditor} from "../actions"
+import {hideModal, showModal, showRouteEditor} from "../actions"
 import ServiceLogs from "../components/service_logs/ServiceLogs"
 import CustomerContact from '../components/CustomerContact'
 import RawCustomerData from '../components/RawCustomerData'
-// import UserEditor from '../components/editor_panels/UserEditor'
+import UserEditor from '../components/editor_panels/UserEditor'
 
 const AdminDropdown = () => {
     let location = useLocation()
@@ -16,6 +16,7 @@ const AdminDropdown = () => {
     const [showRawTableModal, setShowRawTableModal] = useState(false)
     const [lastLocation, setLastLocation] = useState(location)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
+    const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
     
 
@@ -27,8 +28,8 @@ const AdminDropdown = () => {
         switch(event) {
             //case "logs": return setShowLogsMenu({showLogsMenu: true})
             case "contact": return setShowContactsMenu({showContactsMenu: true})
-            case "rawTable": return setShowRawTableModal({showRawTableModal: true})
-            // case "userEditor": return this.setState({showUserEditor: true})
+            case "rawTable": return dispatch(showModal('All Customers'))
+            case "userEditor": return dispatch(showModal('User Editor'))
             default: return
         }
     }
@@ -39,6 +40,7 @@ const AdminDropdown = () => {
         setShowContactsMenu(false)
         setShowRawTableModal(false)
         navigate(lastLocation)
+        dispatch(hideModal('User Editor'))
     }
 
 // if(this.state.userRole === 'Admin') {
@@ -54,9 +56,9 @@ const AdminDropdown = () => {
                 <Dropdown.Item as={Link} to={'/logs'} key="logs" eventKey="logs">                                
                     Service Logs                          
                 </Dropdown.Item>
-                <Dropdown.Item key="contact" eventKey="contact">
+                {/* <Dropdown.Item key="contact" eventKey="contact">
                     Customer Contact 
-                </Dropdown.Item>
+                </Dropdown.Item> */}
                 <Dropdown.Item key="rawTable" eventKey="rawTable">
                     All Customer Data
                 </Dropdown.Item>
@@ -67,8 +69,11 @@ const AdminDropdown = () => {
             
             
             <CustomerContact show={showContactsMenu} onClose={onClose} />  
-            <RawCustomerData show={showRawTableModal} onClose={onClose} />
-            {/* <UserEditor show={this.state.showUserEditor} onClose={this.onClose} />                       */}
+            <RawCustomerData show={showRawTableModal} onClose={onClose} /> 
+            {
+                modals.includes('User Editor') ? <UserEditor onClose={onClose} /> : null   
+            }
+                              
         </>
     )
 //  } else return null
