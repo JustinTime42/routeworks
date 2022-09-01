@@ -95,7 +95,7 @@ const PropertyDetails = (props) => {
 
     const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {        
         setState(prevState => ({...prevState, disabled: disabled}))        
-        console.log(property)
+        const customerDetails = customers.find(i => i.id === property.id)
         let newRecordObject = {}
         newRecordObject.status = newStatus
         newRecordObject.price = property.price
@@ -135,6 +135,10 @@ const PropertyDetails = (props) => {
         newRecordObject.tractor = tractor.name
         newRecordObject.vehicle_type = tractor.type
         newRecordObject.work_type = workType.name
+        newRecordObject.bill_address = customerDetails.bill_address
+        newRecordObject.bill_city = customerDetails.bill_city
+        newRecordObject.bill_state = customerDetails.bill_state
+        newRecordObject.bill_zip = customerDetails.bill_zip
         if (yards) {newRecordObject.yards = (yards !== 0) ? ": " + yards + " yds" : ""}
         if (startTime) {newRecordObject.startTime = startTime}
         if (endTime) {newRecordObject.endTime = endTime} 

@@ -15,13 +15,16 @@ const CustLogs = (props) => {
         querySnapshot.forEach((doc) => {
             let item = {...doc.data(), id: doc.id}
             console.log(item.timestamp)
+            item.sortTime = item.timestamp.seconds
              item.timestamp = item.timestamp.toDate().toLocaleString("en-US", {timeZone: "America/Anchorage"}) //new Date(item.timestamp).toLocaleString("en-US", {timeZone: "America/Anchorage"})
             item.startTime = item.startTime ? item.startTime.toDate().toLocaleString("en-US", {timeZone: "America/Anchorage"}) :null //new Date(item.startTime * 1000).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
             item.endTime = item.endTime ? item.endTime.toDate().toLocaleString("en-US", {timeZone: "America/Anchorage"}) :null// new Date(item.endTime * 1000).toLocaleString("en-US", {timeZone: "America/Anchorage"}) : null
-            logs.push([item.timestamp, item.status, item.notes, item.description, item.driver, item.tractor, item.startTime, item.endTime])        
+            logs.push([item.timestamp, item.status, item.notes, item.description, item.driver, item.tractor, item.startTime, item.endTime, item.sortTime])        
         })
         console.log(logs)
-        setEntries(logs.sort((a,b) => a.timestamp - b.timestamp))
+        logs.sort((a,b) => b[8] - a[8])
+        console.log(logs)
+        setEntries(logs)
     }
 
     return (
