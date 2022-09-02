@@ -77,7 +77,7 @@ const ServiceLogs = (props) => {
                 })
             })
         }
-        dispatch(setLogs(logs.sort((a,b) => a.timestamp - b.timestamp)))
+        dispatch(setLogs(logs.sort((a,b) => b.timestamp - a.timestamp)))
     } 
 
     return (

@@ -76,6 +76,12 @@ const PropertyCard = (props) => {
                 }
             }
         }  
+        if (props.address.temporary) {
+            visual.push(<div key="2" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>Temp</div>)            
+        }
+        if (props.address.new) {
+            visual.push(<div key="3" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>New</div>)            
+        }
         return (
             <>
                 <Col>{levelText}{visual}</Col> 
@@ -103,10 +109,16 @@ const PropertyCard = (props) => {
                             {props.admin && props.toggleField ?
                             <>
                             <Dropdown.Item>
-                                <Button onClick={() => props.toggleField(props.address, routeData, 'active')}>{props.address.active === true ? 'Active' : 'Inactive'}</Button>  
+                                <Button onClick={() => props.toggleField(props.address, routeData, 'active')}>Active</Button>  
                             </Dropdown.Item>
                             <Dropdown.Item>
                                 <Button onClick={() => props.toggleField(props.address, routeData, 'priority')}>Priority</Button> 
+                            </Dropdown.Item>
+                            <Dropdown.Item>
+                                <Button onClick={() => props.toggleField(props.address, routeData, 'temporary')}>Temp</Button> 
+                            </Dropdown.Item>
+                            <Dropdown.Item>
+                                <Button onClick={() => props.toggleField(props.address, routeData, 'new')}>New</Button> 
                             </Dropdown.Item>
                             </> : null}                            
                                 <Dropdown.Item>

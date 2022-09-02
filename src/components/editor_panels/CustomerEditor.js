@@ -465,37 +465,7 @@ const CustomerEditor = (props) => {
                                     <Form.Label>Notes</Form.Label>
                                     <Form.Control name="notes" as="textarea" rows="3" value={customer?.notes || ''} onChange={onChange}/>
                                 </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Check
-                                    name="is_new"
-                                    type="checkbox"
-                                    label="New?"
-                                    checked = {!!customer?.is_new}
-                                    onChange={onChange}
-                                />   
-                                <Form.Check 
-                                    name="active"
-                                    type="checkbox"
-                                    label="active?"
-                                    checked = {!!customer?.active}
-                                    onChange={onChange}
-                                />
-                                <Form.Check
-                                    name="temp"
-                                    type="checkbox"
-                                    label="Temporary?"
-                                    checked = {!!customer?.temp}
-                                    onChange={onChange}
-                                />
-                                <Form.Check
-                                    name="priority"
-                                    type="checkbox"
-                                    label="Priority?"
-                                    checked = {!!customer?.priority}
-                                    onChange={onChange} //not yet implemented
-                                />
-                            </Col>
+                            </Col>                            
                         </Row>                        
                     </Form> 
                     </Tab>
