@@ -4,7 +4,7 @@ import { Tabs, Tab, Card, Col, Row, Button, Form, Alert, Modal } from 'react-boo
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase'
 import { getRouteData, createItem, editItem, setActiveItem, } from "../actions"
-import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY } from '../constants';
+import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY, SET_ACTIVE_PROPERTY } from '../constants';
 import CustLogs from './customer_panels/CustLogs'
 import SkipDetails from './customer_panels/SkipDetails'
 import TimeTracker from './customer_panels/TimeTracker'
@@ -42,15 +42,33 @@ const PropertyDetails = (props) => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        console.log("active property: ", property)
+        const listener = event => {
+            console.log(event)
+          if (event.code === "Enter") {
+            console.log("Entere key pressed")
+            onStatusChange('Done')
+            event.preventDefault()
+          }
+        }
+        document.addEventListener("keydown", listener)
+        return () => {
+          document.removeEventListener("keydown", listener)
+        }
+      }, [])
+
+    useEffect(() => {
         if (property?.contract_type === "Hourly") { 
-            console.log("active property is hourly")
             setState(() => ({...initialState, disabled: true, showModal: true})) 
         } else {
             console.log('returning to intial state')
             setState(initialState)
         } 
     }, [property.id, activeRoute.id])
+
+    useEffect(() => {
+        dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))
+        setState({initialState})
+    }, [activeRoute.id] )
 
     useEffect(() => {
         if (showModal) {
@@ -169,7 +187,7 @@ const PropertyDetails = (props) => {
     }
 
     return (
-        property ? 
+        property.id ? 
             <DetailsPanel property={property} showModal={showModal} onCloseClick={onCloseClick}>
                 <Tabs defaultActiveKey='job'>
                     <Tab style={{padding: "1em", height:'75vh', overflow:'hide'}} eventKey='job' title='Job'>
@@ -215,6 +233,7 @@ const PropertyDetails = (props) => {
                                 variant="success" 
                                 size="lg"  
                                 disabled={isRunning || routePending || disabled || (property.sand_contract === "Per Yard" && yards === 0 && workType.name === "Sanding")} 
+                                autoFocus={true}                                
                                 onClick={() => onStatusChange('Done')}>
                                     Done
                             </Button>

@@ -40,7 +40,6 @@ const AdminDropdown = () => {
         setShowContactsMenu(false)
         setShowRawTableModal(false)
         navigate(lastLocation)
-        dispatch(hideModal('User Editor'))
     }
 
 // if(this.state.userRole === 'Admin') {
@@ -62,18 +61,12 @@ const AdminDropdown = () => {
                 <Dropdown.Item key="rawTable" eventKey="rawTable">
                     All Customer Data
                 </Dropdown.Item>
-                <Dropdown.Item key="userEditor" eventKey="userEditor">
+                <Dropdown.Item as={Link} to="/users" key="userEditor" eventKey="userEditor">
                     User Editor
                 </Dropdown.Item>
             </DropdownButton>
-            
-            
             <CustomerContact show={showContactsMenu} onClose={onClose} />  
-            <RawCustomerData show={showRawTableModal} onClose={onClose} /> 
-            {
-                modals.includes('User Editor') ? <UserEditor onClose={onClose} /> : null   
-            }
-                              
+            <RawCustomerData show={showRawTableModal} onClose={onClose} />                               
         </>
     )
 //  } else return null

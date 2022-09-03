@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import RouteBuilder from './route_builder/RouteBuilder';
 import DisplayRoute from './DisplayRoute'
 import ServiceLogs from './components/service_logs/ServiceLogs';
+import UserEditor from './components/editor_panels/UserEditor';
 
 const App = (props) => { 
    const [user] = useAuthState(auth);
@@ -32,7 +33,7 @@ const App = (props) => {
         <Route path="/" element={<DisplayRoute />} />
         <Route path="routebuilder" element={<RouteBuilder />} />
         <Route path="logs" element={<ServiceLogs />} />
-
+        <Route path="users" element={<UserEditor />} />
       </Routes>
       </>
       

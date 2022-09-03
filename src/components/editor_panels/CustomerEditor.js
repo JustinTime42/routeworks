@@ -446,7 +446,7 @@ const CustomerEditor = (props) => {
                                 }
                                 <Row>
                                     {/* <Form.Label>Routes Assigned:</Form.Label> */}
-                                    <p>Routes Assigned: {customer.routesAssigned?.join(', ')}</p>
+                                    <p>Routes Assigned: {customer.routesAssigned ? Object.values(customer.routesAssigned)?.join(', ') : null}</p>
                                 {
                                     routeData.map((entry, i) => {                                        
                                         if (entry.property_key === customer?.key) {
@@ -471,7 +471,7 @@ const CustomerEditor = (props) => {
                     </Tab>
                     {
                         customer?.id ?
-                        <Tab eventKey='logs' title='Service Logs'>
+                        <Tab eventKey='logs' title='Service Logs' mountOnEnter={true}>
                             <CustLogs height="50vh"/>
                         </Tab> : null
                     }

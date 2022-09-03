@@ -56,7 +56,7 @@ const UserEditor = (props) => {
     }
 
     return (
-        <Container style={{width:'100vw', position:'fixed', marginTop:'400px'}}>
+        <Container style={{width:'100vw', position:'fixed', margin:'1em'}}>
                 <Button onClick={onFetchUsers}>Fetch Users</Button>
                 <Button>Create New User</Button>
                 <Button onClick={props.onClose}>Close</Button>

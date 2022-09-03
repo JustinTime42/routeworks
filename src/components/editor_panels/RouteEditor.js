@@ -34,6 +34,11 @@
 
         const onSave = () => {
             if (tempItem.id) {
+                tempItem.customers.map(customer => {
+                    let newCustomer = customers.find(item => item.id === customer.id)
+                    newCustomer.routesAssigned[tempItem.id] = tempItem.name
+                    dispatch(editItem(newCustomer, customers, 'driver/driver_lists/customer', null, UPDATE_ADDRESSES_SUCCESS))
+                })
                 dispatch(editItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             } else {
                 dispatch(createItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
@@ -45,8 +50,9 @@
             // go through route customers and delete the routesAssigned on that customer document
             tempItem.customers.map(customer => {
                 let newCustomer = customers.find(item => item.id === customer.id)
-                let newRoutesAssigned = newCustomer.routesAssigned.filter(item => item !== tempItem.name)
-                newCustomer.routesAssigned = newRoutesAssigned
+                delete newCustomer.routesAssigned[tempItem.id]
+                //let newRoutesAssigned = newCustomer.routesAssigned   //.filter(item => item !== tempItem.name)
+                //newCustomer.routesAssigned = newRoutesAssigned
                 dispatch(editItem(newCustomer, customers, 'driver/driver_lists/customer', null, UPDATE_ADDRESSES_SUCCESS))
             })
             dispatch(deleteItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))

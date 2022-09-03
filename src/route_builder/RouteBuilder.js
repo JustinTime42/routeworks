@@ -88,7 +88,7 @@ const RouteBuilder = () => {
     const onPropertySave = (newDetails) => {
         // edit relevant details on each route assigned
         const newTrimmedDetails = removeExtraFields(newDetails)
-        newDetails.routesAssigned.forEach(route => {
+        Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
             newRoute.customers[newRoute.customers.findIndex(item => item.id === newDetails.id)] = newTrimmedDetails
             dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', null, REQUEST_ROUTES_SUCCESS))
@@ -113,13 +113,15 @@ const RouteBuilder = () => {
     }
 
     const dragEnd = (result) => {
+        console.log(activeRoute.id)
         const newLists = onDragEnd(result, activeRoute.customers, filteredProperties)
         const customer = allCustomers.find(customer => customer.id === newLists.card.id)
-        if (!customer.routesAssigned) {customer.routesAssigned = []}
+        if (!customer.routesAssigned || customer.routesAssigned === []) {customer.routesAssigned = {}}
         if (newLists.whereTo === 'on') {
-            customer.routesAssigned.push(activeRoute.name)
+            customer.routesAssigned[activeRoute.id] = activeRoute.name 
+            console.log(customer)
         } else if (newLists.whereTo === 'off') {
-            customer.routesAssigned.splice(customer.routesAssigned.indexOf(activeRoute.name), 1)
+            delete customer.routesAssigned[activeRoute.id]
         }
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
         dispatch(editItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))

@@ -8,9 +8,14 @@ const CustLogs = (props) => {
     const [entries, setEntries] = useState([])
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
 
+    // useEffect(() => {
+    //     setEntries([])
+    // }, [activeProperty])
+
     useEffect(() => {
-        setEntries([])
-    }, [activeProperty])
+        getLogs()
+    },[])
+
     
     const getLogs = async() => {
         const q = query(collection(db, 'service_logs'), where('cust_id', '==', activeProperty.id))
@@ -26,6 +31,7 @@ const CustLogs = (props) => {
         })        
         logs.sort((a,b) => b[8] - a[8])
         logs.forEach(item => item.pop())
+        console.log(logs)
         setEntries(logs)
     }
 

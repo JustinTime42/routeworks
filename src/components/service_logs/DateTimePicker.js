@@ -18,8 +18,6 @@ export const DeleteLogRenderer = (props) => {
         console.log(props)
         dispatch(deleteItem(props.data, logs, 'service_logs', null, SET_LOG_ENTRIES))
     }
-    
-    
     return (
         <Button onClick={handleClick}>Delete</Button>
     )
