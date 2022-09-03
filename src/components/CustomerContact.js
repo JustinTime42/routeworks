@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import {Modal, Form, Button} from 'react-bootstrap'
-import axios from 'axios'
+import { doc, onSnapshot, query, where, getDocs, collection } from 'firebase/firestore'
+import { db } from '../firebase'
 import { CSVLink } from 'react-csv'
 
 const CustomerContact = (props) => {
@@ -9,14 +10,14 @@ const CustomerContact = (props) => {
     const [showDownloadLink, setShowDownloadLink] = useState(false)
     const [customers, setCustomers] = useState([])
 
-    useEffect(() => {      
-        const getTags = async () => {
-            const result = await axios(
-                `${process.env.REACT_APP_API_URL}/alltags`,
-            )
-           setAllTags(result.data)
-        }  
-        getTags()
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, `driver/`, 'tags'), (doc) => {
+            console.log(doc.data().tags)
+            setAllTags([...doc.data().tags])
+        })
+        return () => {
+            unsub()
+        }
     }, [])
 
     const toggleTags = (event) => {
@@ -35,16 +36,16 @@ const CustomerContact = (props) => {
             if(i === 0){tagParams.push(`?tags=${tag}`)}
             else{tagParams.push(`&tags=${tag}`)}
         })
-        axios.get(`${process.env.REACT_APP_API_URL}/contactinfo${tagParams.join('')}`)
-        .then(results => {
-            let customerArray = []
-            results.data.data.forEach(item => {
-                customerArray.push.apply(customerArray, item)                
-            })
-            setCustomers(customerArray)
-            setShowDownloadLink(true)
-        })
-        .catch(err => console.log(err))
+        // axios.get(`${process.env.REACT_APP_API_URL}/contactinfo${tagParams.join('')}`)
+        // .then(results => {
+        //     let customerArray = []
+        //     results.data.data.forEach(item => {
+        //         customerArray.push.apply(customerArray, item)                
+        //     })
+        //     setCustomers(customerArray)
+        //     setShowDownloadLink(true)
+        // })
+        // .catch(err => console.log(err))
     }
 
     const headers = [
