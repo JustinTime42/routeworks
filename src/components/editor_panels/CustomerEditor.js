@@ -66,8 +66,8 @@ const CustomerEditor = (props) => {
         } else {
             tagsArray.push(name)
         }
-        let tags = tagsArray.join()
-        dispatch(setTempItem({...customer, tags: tags}))
+        //let tags = tagsArray.join()
+        dispatch(setTempItem({...customer, tags: tagsArray}))
     }
 
     const saveNewTag = async(newTag) => {
@@ -99,10 +99,10 @@ const CustomerEditor = (props) => {
         dispatch(setTempItem(
             {
                 ...customer, 
-                bill_address: customer.address,
-                bill_city: customer.city,
-                bill_state: customer.state,
-                bill_zip: customer.zip,
+                bill_address: customer.service_address,
+                bill_city: customer.service_city,
+                bill_state: customer.service_state,
+                bill_zip: customer.service_zip,
             }
         ))
         setSameAddress(!sameAddress)
@@ -115,10 +115,10 @@ const CustomerEditor = (props) => {
         dispatch(setTempItem(
             {
                 ...customer, 
-                address: addressArray[0],
-                city: addressArray[1],
-                state: addressArray[2],
-                zip: postalCode
+                service_address: addressArray[0],
+                service_city: addressArray[1],
+                service_state: addressArray[2],
+                service_zip: postalCode
 
             }
         ))
@@ -224,26 +224,26 @@ const CustomerEditor = (props) => {
                         <Form.Group as={Row}>
                             <Form.Label>Address</Form.Label>
                             <Col>
-                                <Form.Control name="address" type="text" value={customer?.address || ''} onChange={onChange}/>
+                                <Form.Control name="service_address" type="text" value={customer?.service_address || ''} onChange={onChange}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
                             <Form.Label>City</Form.Label>
                             <Col>
-                                <Form.Control name="city" type="text" value={customer?.city || ''} onChange={onChange}/>
+                                <Form.Control name="service_city" type="text" value={customer?.service_city || ''} onChange={onChange}/>
                             </Col>
                         </Form.Group>
                         <Row>
                         <Col>
                         <Form.Group>                                                                                                    
                             <Form.Label>State</Form.Label>   
-                            <Form.Control name="state" type="text" value={customer?.state || ''} onChange={onChange}/>
+                            <Form.Control name="service_state" type="text" value={customer?.service_state || ''} onChange={onChange}/>
                         </Form.Group>
                         </Col>
                         <Col>
                         <Form.Group>
                             <Form.Label>Zip</Form.Label>                              
-                            <Form.Control name="zip" type="text" value={customer?.zip || ''} onChange={onChange}/> 
+                            <Form.Control name="service_zip" type="text" value={customer?.service_zip || ''} onChange={onChange}/> 
                         </Form.Group>
                         </Col>   
                         </Row>                                
@@ -316,7 +316,7 @@ const CustomerEditor = (props) => {
                                 <Form.Group>
                                 <Row>
                                     <Col xs={8}>
-                                        <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
+                                        <Form.Label size='sm'>Sanding Price</Form.Label>
                                     </Col>
                                     <Col>
                                         <Form.Control size='sm' name="price_per_yard" type="number" value={customer?.price_per_yard || ''} onChange={onChange}/>

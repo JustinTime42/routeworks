@@ -1,24 +1,32 @@
 import React, { useState, useEffect } from 'react'
-import {Modal, Form, Button} from 'react-bootstrap'
+import {Modal, Form, Button, Row, Col} from 'react-bootstrap'
 import { doc, onSnapshot, query, where, getDocs, collection } from 'firebase/firestore'
 import { db } from '../firebase'
 import { CSVLink } from 'react-csv'
+import { useSelector } from 'react-redux'
 
 const CustomerContact = (props) => {
     const [allTags, setAllTags] = useState([])
     const [selectedTags, setSelectedTags] = useState([])
     const [showDownloadLink, setShowDownloadLink] = useState(false)
-    const [customers, setCustomers] = useState([])
+    const [customers, setCustomers] = useState(['test'])
+    const modals = useSelector(state => state.whichModals.modals)
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, `driver/`, 'tags'), (doc) => {
-            console.log(doc.data().tags)
             setAllTags([...doc.data().tags])
         })
         return () => {
             unsub()
         }
     }, [])
+
+    useEffect(() => {
+        const emailsField = document.getElementById('customer-emails')
+        if (emailsField) {
+            emailsField.value = customers
+        }
+    }, [customers])
 
     const toggleTags = (event) => {
         const {target: {name, value} } = event       
@@ -30,38 +38,48 @@ const CustomerContact = (props) => {
         }
     }
 
+    const copyToClipboard = () => {
+        const emails = document.getElementById('customer-emails')
+        emails.select()
+        emails.setSelectionRange(0, 99999)
+        navigator.clipboard.writeText(emails.value)
+    }
+
     const onDownload = () => {
-        let tagParams = []
-        selectedTags.forEach((tag, i) => {
-            if(i === 0){tagParams.push(`?tags=${tag}`)}
-            else{tagParams.push(`&tags=${tag}`)}
+        let contactList = []
+        selectedTags.forEach(async(tag, i) => {
+            console.log(tag)
+            const q = query(collection(db, 'driver/driver_lists/customer'), where("tags", "array-contains", tag))
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach(doc => {
+                let customer = {...doc.data(), id: doc.id}
+                if (!contactList.includes(customer.cust_email)) {
+                    contactList.push(customer.cust_email)
+                }                
+                if (customer.include_email2 && !contactList.includes(customer.cust_email2)) {
+                    contactList.push(customer.cust_email2)
+                }
+            })
+            console.log(contactList)
+            setCustomers(contactList)
         })
-        // axios.get(`${process.env.REACT_APP_API_URL}/contactinfo${tagParams.join('')}`)
-        // .then(results => {
-        //     let customerArray = []
-        //     results.data.data.forEach(item => {
-        //         customerArray.push.apply(customerArray, item)                
-        //     })
-        //     setCustomers(customerArray)
-        //     setShowDownloadLink(true)
-        // })
-        // .catch(err => console.log(err))
     }
 
     const headers = [
         { label: "Customer Name", key: "cust_name" },
-        { label: "Service Address", key: "address" },
+        { label: "Service Address", key: "service_address" },
         { label: "Customer Email", key: "cust_email" },
         { label: "Customer Email 2", key: "cust_email2" },
         { label: "Tags", key: "tags" }
     ]
 
     return (
-        <Modal show={props.show} onHide={props.close}>
+        <Modal show={modals.includes('Contact')} onHide={props.close}>
             <Modal.Header>Download Customer Contact Info</Modal.Header>
-            <Modal.Body>
+            <Modal.Body style={{display: 'flex', flexWrap:'nowrap'}}>
                 <Form>
-                    <Form.Group>
+                    <Form.Group as={Row}>
+                        <Col>
                         <Form.Label>Select By Tags</Form.Label>
                         {
                             allTags.map(tag => {
@@ -77,13 +95,22 @@ const CustomerContact = (props) => {
                                 )                            
                             })
                         }
+                        </Col>
+                        
+                        <Col>
+                            <Button size='sm' onClick={copyToClipboard}>Copy To Clickboard</Button>
+                            <Form.Control style={{overflowY:'scroll'}} id="customer-emails" name="notes" as="textarea" rows="3" value={customers} readOnly={true}/>
+                        </Col>
                     </Form.Group>
+                    
+                    
                     {
-                        showDownloadLink ?
-                        <CSVLink data={customers} headers={headers} filename={`customers_${selectedTags.toString()}.csv`}>
-                        Download
-                        </CSVLink> : <></>
+                        // showDownloadLink ?
+                        // <CSVLink data={customers} headers={headers} filename={`customers_${selectedTags.toString()}.csv`}>
+                        // Download
+                        // </CSVLink> : <></>
                     } 
+
                 </Form>
             </Modal.Body>
             <Modal.Footer>

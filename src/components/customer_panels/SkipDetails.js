@@ -48,7 +48,7 @@ const SkipDetails = (props) => {
 
     return (
         <Alert show={props.show} variant="danger">
-        <Alert.Heading>Skip {props.customer.address}?</Alert.Heading>
+        <Alert.Heading>Skip {props.customer.service_address}?</Alert.Heading>
             <div className="d-flex justify-content-around align-items-center">
                 <Button size="lg" style={{marginRight:"3px"}} onClick={cancelSkip}>Cancel</Button>
                 <Button size="lg" disabled={isConfirmDisabled()} onClick={confirmSkip} variant="primary">Confirm</Button>

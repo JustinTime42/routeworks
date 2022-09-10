@@ -14,7 +14,7 @@ const xeroHeaders =  [
     { headerName: "DueDate", field: "dueDate"}, 
     { headerName: "UnitAmount", field: "price", valueParser: params => Number(params.newValue)},
     { headerName: "Work Type", field: "work_type"},
-    { headerName: "Service Address", field: "address"},
+    { headerName: "Service Address", field: "service_address"},
     { headerName: "Status", field: "status"},
     { headerName: "Driver Name", field: "driver"},
     { headerName: "Vehicle", field: "tractor"},
@@ -60,7 +60,7 @@ const hourlyHeaders = [
 
 const rawHeaders = [
     {headerName: 'Delete', cellRenderer:DeleteLogRenderer},
-    { headerName: "Service Address", field: "address"},
+    { headerName: "Service Address", field: "service_address"},
     { headerName: "Contract Type", field: "contract_type"},
     { headerName: "Customer Name", field: "cust_name"},
     { headerName: "Description", field: "description"},

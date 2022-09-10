@@ -58,7 +58,7 @@ const SearchBar = () => {
         if (searchValue.length > 0 ) {
             const filteredCustomers = allCustomers.filter(customer => {
                 if(customer.cust_name?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                customer.address?.toLowerCase().includes(searchValue.toLowerCase())) return true
+                customer.service_address?.toLowerCase().includes(searchValue.toLowerCase())) return true
             })
             setMatches(filteredCustomers)
             let offRouteResults = [] 
@@ -89,7 +89,7 @@ const SearchBar = () => {
                 (matches.length > 0) ?
                 matches.map(customer => (
                         <ListGroup.Item style={itemStyle} key={customer.id} action onClick={() => selectCustomer(customer)}>
-                        {customer.cust_name} | {customer.address} | {customer.cust_phone}
+                        {customer.cust_name} | {customer.service_address} | {customer.cust_phone}
                         </ListGroup.Item> 
                     )
                 ) : null

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
 import { UserLogin } from './auth/UserLogin'
@@ -12,7 +12,7 @@ import DisplayRoute from './DisplayRoute'
 import ServiceLogs from './components/service_logs/ServiceLogs';
 import UserEditor from './components/editor_panels/UserEditor';
 
-const App = (props) => { 
+const App = () => { 
    const [user] = useAuthState(auth);
    const dispatch = useDispatch()
 
@@ -36,13 +36,6 @@ const App = (props) => {
         <Route path="users" element={<UserEditor />} />
       </Routes>
       </>
-      
-      //
-
-      
-      // showRouteEditor && activeRoute.id ? <RouteBuilder /> : 
-      // activeTractor.name && (activeDriver.key !== '')  && activeWorkType.name && activeRoute.id ? <DisplayRoute /> :
-
     ) 
   } else {
     return <UserLogin />

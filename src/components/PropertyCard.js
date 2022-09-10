@@ -98,7 +98,7 @@ const PropertyCard = (props) => {
                     {props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}
                     {props.address ? props.address.is_new ? "*" : null : null}            
                 </h5> 
-                <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.address ? props.address.address : "address" : "address"} </p>                   
+                <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.service_address ? props.address.service_address : "address" : "address"} </p>                   
             </Col>
             <ServiceLevel />
             <Col style={{flex:"1 1 75px"}}>             

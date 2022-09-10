@@ -144,8 +144,8 @@ const PropertyDetails = (props) => {
         newRecordObject.timestamp = new Date(Date.now())
         newRecordObject.contract_type = property.contract_type
         newRecordObject.cust_id = property.id
-        newRecordObject.reference = property.address
-        newRecordObject.address = property.address
+        newRecordObject.reference = property.service_address
+        newRecordObject.service_address = property.service_address
         newRecordObject.cust_name = property.cust_name
         newRecordObject.value = property.value
         newRecordObject.driver = driver.name
@@ -194,7 +194,7 @@ const PropertyDetails = (props) => {
                         <Row>
                             <Col>
                                 <h3>{property?.cust_name}</h3>
-                                <a href={`https://www.google.com/maps/place/${property?.address}%20${property?.city}%20${property?.state}%20${property?.zip}`} target="_blank">{property?.address}</a>
+                                <a href={`https://www.google.com/maps/place/${property?.service_address}%20${property?.service_city}%20${property?.service_state}%20${property?.service_zip}`} target="_blank">{property?.service_address}</a>
                                 <p>phone: {property?.cust_phone}</p>
                             </Col>
                             <Col>

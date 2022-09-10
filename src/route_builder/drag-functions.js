@@ -5,7 +5,7 @@ export const removeExtraFields = (item) => {
         {
             id: item.id,
             cust_name: item.cust_name, 
-            address: item.address || '',
+            service_address: item.service_address || '',
             service_level: item.service_level || false,
             active: true,
             priority: false,

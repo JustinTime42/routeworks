@@ -27,7 +27,7 @@ const AdminDropdown = () => {
     const onSelect = (event) => {
         switch(event) {
             //case "logs": return setShowLogsMenu({showLogsMenu: true})
-            case "contact": return setShowContactsMenu({showContactsMenu: true})
+            case "contact": return dispatch(showModal('Contact'))
             case "rawTable": return dispatch(showModal('All Customers'))
             case "userEditor": return dispatch(showModal('User Editor'))
             default: return
@@ -36,9 +36,9 @@ const AdminDropdown = () => {
 
    // onClose = () => this.setState({showLogsMenu: false, showDownload: false, showContactsMenu: false, showRawTableModal: false, showUserEditor: false})
     const onClose = () => {
-        setShowLogsMenu(false)
-        setShowContactsMenu(false)
-        setShowRawTableModal(false)
+        dispatch(hideModal('Contact'))
+        dispatch(hideModal('All Customers'))
+        dispatch(hideModal('User Editor'))        
         navigate(lastLocation)
     }
 
@@ -55,9 +55,9 @@ const AdminDropdown = () => {
                 <Dropdown.Item as={Link} to={'/logs'} key="logs" eventKey="logs">                                
                     Service Logs                          
                 </Dropdown.Item>
-                {/* <Dropdown.Item key="contact" eventKey="contact">
+                <Dropdown.Item key="contact" eventKey="contact">
                     Customer Contact 
-                </Dropdown.Item> */}
+                </Dropdown.Item>
                 <Dropdown.Item key="rawTable" eventKey="rawTable">
                     All Customer Data
                 </Dropdown.Item>
