@@ -1,5 +1,5 @@
 import { addDoc, setDoc, collection } from "firebase/firestore";
-import { db } from "./firebase";
+import { db } from "../../firebase";
 
 const sendToDB = async(item, path) => {
     console.log(item)
@@ -11,7 +11,7 @@ const sendToDB = async(item, path) => {
    }
 }
 
-const migrateCustomers = () => {
+export const migrateCustomers = () => {
     fetch(`${process.env.REACT_APP_API_URL}/properties`)
     .then(response => response.json())
     .then(data => {
@@ -79,7 +79,7 @@ const migrateCustomers = () => {
 }
 
 //this will be for drivers, vehicles, vehicle_types, work_types
-const migrateBasic = (oldPath, newPath) => {
+export const migrateBasic = (oldPath, newPath) => {
     fetch(`${process.env.REACT_APP_API_URL}/${oldPath}`)
     .then(response => response.json())
     .then(data => {
@@ -94,7 +94,7 @@ const migrateBasic = (oldPath, newPath) => {
 }
 
 
-const migrateRouteData = () => {
+export const migrateRouteData = () => {
     fetch(`${process.env.REACT_APP_API_URL}/routelist`)
     .then(res => res.json())
     .then(data => {
@@ -140,10 +140,9 @@ const migrateRouteData = () => {
 
         })
     */
-        http://snowline-route-manager.herokuapp.com/api/routelist
 }
 
-migrateTags = () => {
+export const migrateTags = () => {
     fetch(`${process.env.REACT_APP_API_URL}/alltags`)
     .then(response => response.json())
     .then(async(data) => {
@@ -155,7 +154,7 @@ migrateTags = () => {
 }
 
 //
-migrateLogs = () => {
+export const migrateLogs = () => {
     fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=raw&start=2019-01-01&end=2023-01-01`)
     .then(response => response.json())
     .then(data => {
