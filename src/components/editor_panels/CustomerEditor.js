@@ -81,7 +81,7 @@ const CustomerEditor = (props) => {
         console.log(customer)    
         let { target: { name, value } } = event
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
-        let numberValues = ['price', 'value', 'price_per_yard', 'sweep_price', 'season_price', ...vTypes]
+        let numberValues = ['snow_price', 'value', 'price_per_yard', 'sweep_price', 'season_price', ...vTypes]
         if (numberValues.includes(name)){
             value = !value ? null : Number(value)
         }
@@ -302,7 +302,7 @@ const CustomerEditor = (props) => {
                                 return (
                                     <Form.Group key = {i}>
                                         <Row>  
-                                            <Col xs={8}>
+                                            <Col xs={6}>
                                                 <Form.Label size='sm'>{item.name} Price</Form.Label>
                                             </Col>
                                             <Col>
@@ -315,7 +315,7 @@ const CustomerEditor = (props) => {
                             }
                                 <Form.Group>
                                 <Row>
-                                    <Col xs={8}>
+                                    <Col xs={6}>
                                         <Form.Label size='sm'>Sanding Price</Form.Label>
                                     </Col>
                                     <Col>
@@ -331,17 +331,17 @@ const CustomerEditor = (props) => {
                                 <Form.Label size='sm'>Prices</Form.Label>
                                     <Form.Group>
                                         <Row>  
-                                            <Col xs={8}>
-                                                <Form.Label size='sm'>Snow Price</Form.Label>
+                                            <Col xs={6}>
+                                                <Form.Label size='med'>Snow Price</Form.Label>
                                             </Col>
                                             <Col>
-                                                <Form.Control size='sm' name="price" type="number" value={customer?.price || ''} onChange={onChange}/>
+                                                <Form.Control size="sm" name="snow_price" type="number" value={customer?.snow_price || ''} onChange={onChange}/>
                                             </Col>
                                         </Row>                                    
                                     </Form.Group>
                                     <Form.Group>
                                         <Row>  
-                                            <Col xs={8}>
+                                            <Col xs={6}>
                                                 <Form.Label size='sm'>Seasonal Price</Form.Label>
                                             </Col>
                                             <Col>
@@ -351,7 +351,7 @@ const CustomerEditor = (props) => {
                                     </Form.Group>
                                     <Form.Group>
                                     <Row>
-                                        <Col xs={8}>
+                                        <Col xs={6}>
                                             <Form.Label size='sm'>Sweeping Price</Form.Label>
                                         </Col>                                    
                                         <Col>
@@ -361,7 +361,7 @@ const CustomerEditor = (props) => {
                                     </Form.Group>
                                     <Form.Group>
                                     <Row>
-                                        <Col xs={8}>
+                                        <Col xs={6}>
                                             <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
                                         </Col>
                                         <Col>
@@ -371,7 +371,7 @@ const CustomerEditor = (props) => {
                                     </Form.Group>
                                     <Form.Group>
                                     <Row>
-                                        <Col xs={8}>
+                                        <Col xs={6}>
                                         <Form.Label size='sm'>Value</Form.Label>
                                         </Col>
                                         <Col>
@@ -411,6 +411,7 @@ const CustomerEditor = (props) => {
                             <Form.Group>
                                 <Form.Label>Sanding Contract</Form.Label>
                                     <Form.Control name="sand_contract" as="select" value={customer?.sand_contract || ''} onChange={onChange}>
+                                    <option value="select">Select</option>
                                         {
                                             sandContractTypes.map(type => <option key={type} value={type}>{type}</option>)
                                         }
@@ -471,7 +472,7 @@ const CustomerEditor = (props) => {
                     </Tab>
                     {
                         customer?.id ?
-                        <Tab eventKey='logs' title='Service Logs' mountOnEnter={true}>
+                        <Tab eventKey='logs' title='Service Logs' mountOnEnter={true} unmountOnExit={true}>
                             <CustLogs height="50vh"/>
                         </Tab> : null
                     }

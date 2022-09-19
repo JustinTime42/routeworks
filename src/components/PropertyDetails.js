@@ -116,7 +116,7 @@ const PropertyDetails = (props) => {
         const customerDetails = customers.find(i => i.id === property.id)
         let newRecordObject = {}
         newRecordObject.status = newStatus
-        newRecordObject.price = property.price
+        newRecordObject.price = property.snow_price
         let month = new Date().getMonth() + 1
         let year = new Date().getFullYear().toString().substr(-2)
         // round down to the nearest minute. and then up to the nearest quarter hour
@@ -157,7 +157,7 @@ const PropertyDetails = (props) => {
         newRecordObject.bill_city = customerDetails.bill_city
         newRecordObject.bill_state = customerDetails.bill_state
         newRecordObject.bill_zip = customerDetails.bill_zip
-        if (yards) {newRecordObject.yards = (yards !== 0) ? ": " + yards + " yds" : ""}
+        if (yards) {newRecordObject.yards = (yards !== 0) ? " " + yards + " yds" : ""}
         if (startTime) {newRecordObject.startTime = startTime}
         if (endTime) {newRecordObject.endTime = endTime} 
         newRecordObject.description = newRecordObject.status === 'Skipped' ? '' : workType.name + yardString
@@ -174,6 +174,10 @@ const PropertyDetails = (props) => {
             dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
         }
         console.log(newRecordObject.driverEarning)
+        let keysArray = Object.keys(newRecordObject)
+        keysArray.forEach(key => {
+            if (newRecordObject[key] === null || newRecordObject[key] === undefined) {delete newRecordObject[key]}
+        })
         dispatch(createItem(newRecordObject, null, 'service_logs', ACTIVE_LOG_ENTRY, null))
 
 
@@ -253,7 +257,7 @@ const PropertyDetails = (props) => {
                             </Alert>                        
                         </Card.Body>
                     </Tab>
-                    <Tab eventKey='logs' title='Logs'>
+                    <Tab eventKey='logs' title='Logs' mountOnEnter={true} unmountOnExit={true}>
                         <CustLogs height="80vh"/>                  
                     </Tab>
                 </Tabs>

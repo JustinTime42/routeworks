@@ -3,10 +3,8 @@ import { Dropdown, DropdownButton } from 'react-bootstrap'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux"
 import {hideModal, showModal, showRouteEditor} from "../actions"
-import ServiceLogs from "../components/service_logs/ServiceLogs"
 import CustomerContact from '../components/CustomerContact'
 import RawCustomerData from '../components/RawCustomerData'
-import UserEditor from '../components/editor_panels/UserEditor'
 
 const AdminDropdown = () => {
     let location = useLocation()
@@ -52,7 +50,7 @@ const AdminDropdown = () => {
                 <Dropdown.Item as={Link} to="/routebuilder" key="routebuilder" eventKey="routebuilder">                              
                     Editor View
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to={'/logs'} key="logs" eventKey="logs">                                
+                <Dropdown.Item as={Link} to='/logs' key="logs" eventKey="logs">                                
                     Service Logs                          
                 </Dropdown.Item>
                 <Dropdown.Item key="contact" eventKey="contact">
@@ -65,7 +63,7 @@ const AdminDropdown = () => {
                     User Editor
                 </Dropdown.Item>
                 <Dropdown.Item as={Link} to="/migration" key="migration" eventKey="migration">
-                    User Editor
+                    Data Migration
                 </Dropdown.Item>
             </DropdownButton>
             <CustomerContact show={showContactsMenu} onClose={onClose} />  

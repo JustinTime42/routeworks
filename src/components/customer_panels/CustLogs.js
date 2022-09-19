@@ -8,14 +8,13 @@ const CustLogs = (props) => {
     const [entries, setEntries] = useState([])
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
 
-    // useEffect(() => {
-    //     setEntries([])
-    // }, [activeProperty])
+    useEffect(() => {
+        setEntries([])
+    }, [activeProperty])
 
     useEffect(() => {
         getLogs()
     },[])
-
     
     const getLogs = async() => {
         const q = query(collection(db, 'service_logs'), where('cust_id', '==', activeProperty.id))
