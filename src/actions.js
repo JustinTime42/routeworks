@@ -127,7 +127,7 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
     const itemRef = doc(db, className, item.id)    
     const sendToDB = async() => {
         try {            
-            await setDoc(itemRef, {...itemDetails}, {merge: true})
+            await setDoc(itemRef, itemDetails, {merge: true})
             console.log("success")
         } catch (e) { console.log("error adding document: ", e)}
     }

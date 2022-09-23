@@ -1,6 +1,7 @@
 
 
-export const removeExtraFields = (item) => {    
+export const removeExtraFields = (item) => {  
+    console.log(item)  
     return (
         {
             id: item.id,
@@ -9,7 +10,7 @@ export const removeExtraFields = (item) => {
             service_level: item.service_level || false,
             active: true,
             priority: false,
-            status: item.status || "Waiting",
+            status: (item.contract_type === 'Hourly') ? "Hourly" : "Waiting",
             //maybe add temp and new here depending on Sandor's feedback
         }
     )
@@ -36,6 +37,7 @@ const reorder = (list, startIndex, endIndex) => {
 
 export const onDragEnd = (result, onList, offList) => {
     console.log(result)
+    console.log(offList)
     const { source, destination, draggableId } = result
 
     const id2List = {
@@ -45,7 +47,6 @@ export const onDragEnd = (result, onList, offList) => {
 
     const getList = id => id2List[id]
 
-    //moving the below to the parent function
     const newList = move(
         getList(source.droppableId),
         getList(destination.droppableId),
@@ -56,7 +57,7 @@ export const onDragEnd = (result, onList, offList) => {
 
     // // we're only ever going to care about the dropped card if it's dropped on the active route < not true...
      let droppedCard = newList[destination.droppableId].find(item => item.id === draggableId)
-     console.log(droppedCard)
+     console.log({...droppedCard})
     if (!destination) {
         return;
     }
@@ -70,11 +71,6 @@ export const onDragEnd = (result, onList, offList) => {
                 source.index,
                 destination.index
             )
-            console.log(orderedItems)
-            // I'm attempting to use array index instead of route_position
-            // orderedItems.forEach((item, i) => {
-            //     item.route_position = i
-            // })
             return (
                 {
                     newRoute: orderedItems,
@@ -83,13 +79,11 @@ export const onDragEnd = (result, onList, offList) => {
                     whereTo: 'same',
                 }
             )
-            // this.setState({selected: orderedItems, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
-            // this.onSave(orderedItems)
         }   else return
     } else {   //if  moving from one list to another
-       // newList.droppable2.forEach((item, i) => item.route_position = i) // removed to use array index instead of a separate field
         if ((destination.droppableId === "droppable2")) { //If adding to route
-            droppedCard.status="Waiting"
+            console.log(droppedCard)
+            //droppedCard.status="Waiting"
             return (
                 {
                     newRoute: newList.droppable2, 
@@ -98,26 +92,8 @@ export const onDragEnd = (result, onList, offList) => {
                     whereTo: 'on',
                 }   
             )
-            // this.setState({selected: newList.droppable2, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
-            // this.onSave(newList.droppable2, droppedCard, 'on') 
-            // the below is old and no longer neccessary
-            // if (this.state.selected.find(item => item.key === droppedCard.key)) { // if customer already on route 
-            //     let rect = document.getElementById(`${droppedCard.key}routecard`).getBoundingClientRect().top
-            //     let scrollTop = document.getElementById('droppable2scroll').scrollTop
-            //     this.setState({scrollPosition: rect + scrollTop - (window.innerHeight * .3)}) 
-            //    // document.getElementById('droppable2scroll').scrollTop = rect + scrollTop - (window.innerHeight * .3)                   
-            //     alert(`${droppedCard.cust_name} is already on ${this.props.activeRoute}`)
-            //     console.log(`${droppedCard.key}routecard`)
-            //     document.getElementById(`${droppedCard.key}routecard`).scrollIntoView(true)
-
-            // } else {
-            //     droppedCard.status="Waiting"
-            //     this.setState({selected: newList.droppable2, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
-            //     this.onSave(newList.droppable2, droppedCard, 'on') 
-            // }
-        }      
+        }
         else if (destination.droppableId === "droppable") {  // removing from route
-           // let droppedCard = newList.droppable.find(item => item.id === parseInt(result.draggableId.slice(1))) 
             return (
                 {
                     newRoute: newList.droppable2,
@@ -125,30 +101,8 @@ export const onDragEnd = (result, onList, offList) => {
                     card: droppedCard,
                     whereTo: 'off'
                 }
-            ) 
-        //    this.setState({selected: newList.droppable2, scrollPosition: document.getElementById('droppable2scroll').scrollTop})
-        //     this.onSave(newList.droppable2, droppedCard, 'off')   
+            )  
            }
     }        
 }
-
-// export const getItemStyle = (isDragging, draggableStyle) => ({
-//     // some basic styles to make the items look a bit nicer
-//     userSelect: 'Waiting',
-//     padding: grid * 2,
-//     margin: `0 0 ${grid}px 0`,
-
-//     // change background colour if dragging
-//     background: isDragging ? '#4E8098' : '#303030',
-
-//     // styles we need to apply on draggables
-//     ...draggableStyle
-// })
-
-// export const getListStyle = isDraggingOver => ({   
-//     padding: grid,
-//     height: "85vh", 
-//     overflow: "scroll", 
-//     width: "90%"
-// })
 
