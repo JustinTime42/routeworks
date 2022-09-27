@@ -113,7 +113,8 @@ const RouteBuilder = () => {
     }
 
     const dragEnd = (result) => {
-        console.log(activeRoute.id)
+
+        console.log(result)
         const newLists = onDragEnd(result, activeRoute.customers, filteredProperties)
         const customer = allCustomers.find(customer => customer.id === newLists.card.id)
         if (!customer.routesAssigned || customer.routesAssigned === []) {customer.routesAssigned = {}}
@@ -122,9 +123,10 @@ const RouteBuilder = () => {
             console.log(customer)
         } else if (newLists.whereTo === 'off') {
             delete customer.routesAssigned[activeRoute.id]
+            console.log("customer" , customer)
         }
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
-        dispatch(editItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+        dispatch(editItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }
 
     const onCloseClick = () => {

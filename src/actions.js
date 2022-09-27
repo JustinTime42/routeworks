@@ -115,7 +115,7 @@ export const createItem = (item, itemList = null, className, activeActionType = 
     sendToDB()
 }
 
-export const editItem = (item, itemList, className, activeActionType = null, listAction = null) => (dispatch) => {
+export const editItem = (item, itemList, className, activeActionType = null, listAction = null, merge = true) => (dispatch) => {
     dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})    
     if (item.adminFields) {
         let tempList = [...itemList]
@@ -127,7 +127,7 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
     const itemRef = doc(db, className, item.id)    
     const sendToDB = async() => {
         try {            
-            await setDoc(itemRef, itemDetails, {merge: true})
+            await setDoc(itemRef, itemDetails, {merge: merge})
             console.log("success")
         } catch (e) { console.log("error adding document: ", e)}
     }
