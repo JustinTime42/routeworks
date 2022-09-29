@@ -58,6 +58,7 @@ const SearchBar = () => {
         if (searchValue.length > 0 ) {
             const filteredCustomers = allCustomers.filter(customer => {
                 if(customer.cust_name?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                customer.cust_phone?.toLowerCase().includes(searchValue.toLowerCase()) ||
                 customer.service_address?.toLowerCase().includes(searchValue.toLowerCase())) return true
             })
             setMatches(filteredCustomers)
