@@ -21,6 +21,10 @@ const LogsTable = (props) => {
         console.log(props.logType)
     }, [props.logType, props.editable])
 
+    useEffect(() => {
+        //preserve scroll position between renders
+    })
+
     const gridRef = useRef()
 
     const defaultColDef = useMemo( ()=> ({

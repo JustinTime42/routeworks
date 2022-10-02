@@ -2,6 +2,7 @@ import { addDoc, setDoc, collection, doc, getDocs, Timestamp } from "firebase/fi
 import { db } from "../../firebase";
 
 const sendToDB = async(item, path) => {
+  
     try {
         console.log(item)
         const docRef = await addDoc(collection(db, path), item)          
@@ -105,6 +106,7 @@ export const migrateCustomers = () => {
 
 //this will be for drivers, vehicles, vehicle_types, work_types
 export const migrateBasic = (oldPath, newPath) => {
+    return 
     fetch(`${process.env.REACT_APP_API_URL}${oldPath}`)
     .then(response => response.json())
     .then(data => {
@@ -156,6 +158,7 @@ export const migrateRouteData = () => {
 }
 
 export const migrateTags = () => {
+    return 
     fetch(`${process.env.REACT_APP_API_URL}/alltags`)
     .then(response => response.json())
     .then(async(data) => {
@@ -168,14 +171,14 @@ export const migrateTags = () => {
 
 //
 export const migrateLogs = () => {
-    
-    fetch(`${process.env.REACT_APP_API_URL}/getlogs?type=raw&start=2018-01-01&end=2023-01-01`)
+   // return 
+   console.log('getting logs')
+    fetch(`https://snowline-route-manager.herokuapp.com/api/getlogs?type=raw&start=2022-02-03&end=2023-09-30`)
     .then(response => response.json())
     .then(data => {
         console.log('logs from old database')
         console.log(data.length)         
         data.forEach((item, i) => {
-           // if (i < 100) {
                 
                 item.service_address = item.address
                 item.cust_id = item.property_key.toString()
@@ -197,7 +200,6 @@ export const migrateLogs = () => {
                 let timeOut
                 timeOut = setTimeout(() => sendToDB(item, 'service_logs'), (i*10))
                 
-           // }
 
         })        
         console.log("done")

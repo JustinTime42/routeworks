@@ -59,13 +59,15 @@ const CustomerEditor = (props) => {
 
     const tagChange = (event) => {
         console.log(event)
+        console.log(customer)
         let {target: {name, value} } = event
-        let tagsArray = customer.tags ? customer.tags?.split(',') : []
+        let tagsArray = customer.tags ? customer.tags : []
         if (tagsArray.includes(name)) {
             tagsArray.splice(tagsArray.indexOf(name), 1)
         } else {
             tagsArray.push(name)
         }
+        console.log(tagsArray)
         //let tags = tagsArray.join()
         dispatch(setTempItem({...customer, tags: tagsArray}))
     }

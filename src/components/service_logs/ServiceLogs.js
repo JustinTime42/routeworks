@@ -1,7 +1,7 @@
 import React, { useState, useEffect} from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Dropdown, DropdownButton, Form, } from 'react-bootstrap'
-import { collection, query, where, getDocs} from "firebase/firestore";
+import { collection, query, where, getDocs, Timestamp} from "firebase/firestore";
 import { db } from '../../firebase'
 import LogsTable from './LogsTable';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -27,9 +27,9 @@ const ServiceLogs = (props) => {
 
     const onDownload = async() => {
         const offset = new Date().getTimezoneOffset() * 60000
-        const start = new Date(Date.parse(startDate) + offset)
+        const start = Timestamp.fromDate(new Date(Date.parse(startDate) + offset))
         console.log(start)
-        let end = new Date(Date.parse(endDate) + offset + 86400000)// new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
+        let end = Timestamp.fromDate(new Date(Date.parse(endDate) + offset + 86400000))// new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
         
         const q = query(collection(db, 'service_logs'), where('timestamp', '>', start), where('timestamp', '<=', end))
         const querySnapshot = await getDocs(q)
