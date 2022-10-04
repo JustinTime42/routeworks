@@ -18,14 +18,21 @@ const SearchBar = () => {
 
     const selectCustomer = (customer) => {
         // Find out if the customer is on current route
-        let isOnRoute = routeData.find(entry => (entry.property_key === customer.key) && (entry.route_name === activeRoute.name))
-        console.log("isonroute", isOnRoute)
-        let cardId = isOnRoute ? isOnRoute.route_position : customer.key
-        let found = document.getElementById(`card${cardId}`)
-        if (found) found.scrollIntoView(true)
+        let isOnRoute = activeRoute.customers.find(entry => (entry.id === customer.id))
+        console.log("isonroute", isOnRoute)        
+        if (isOnRoute) {
+            scrollCustomerIntoView(customer)
+        }        
         dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
         setMatches([])
         setSearchValue('')
+    }
+
+    const scrollCustomerIntoView = (customer) => {
+        console.log(customer)
+        let custIndex = activeRoute.customers.findIndex(i => i.id === customer.id)
+        console.log(custIndex)
+        document.getElementById(`card${custIndex}`).scrollIntoView(true)
     }
 
     useEffect(() => {
@@ -71,6 +78,10 @@ const SearchBar = () => {
                         offRouteResults.push(item)
                     }
                 })
+            }
+            if ((offRouteResults.length === 0) && (filteredCustomers.length === 1)) {
+                dispatch(setActiveItem(filteredCustomers[0], allCustomers, SET_ACTIVE_PROPERTY))
+                scrollCustomerIntoView(filteredCustomers[0])
             }
             dispatch(filterProperties(offRouteResults))
         } else {
