@@ -18,6 +18,7 @@ const SearchBar = () => {
 
     const selectCustomer = (customer) => {
         // Find out if the customer is on current route
+        
         let isOnRoute = activeRoute.customers.find(entry => (entry.id === customer.id))
         console.log("isonroute", isOnRoute)        
         if (isOnRoute) {

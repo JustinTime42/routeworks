@@ -8,6 +8,7 @@ import { db } from '../../firebase'
 import CustLogs from '../customer_panels/CustLogs'
 import '../../styles/driver.css'
 import { serviceLevels  } from '../../globals'
+import RoutePopover from '../customer_panels/RoutePopover'
 const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt", "Hourly"]
 const sandContractTypes = ["Per Visit", "Per Yard"]
 const editorSize = {height:"90vh", marginTop: '2em'}
@@ -448,17 +449,7 @@ const CustomerEditor = (props) => {
                                     })                                    
                                 }
                                 <Row>
-                                    {/* <Form.Label>Routes Assigned:</Form.Label> */}
-                                    <p>Routes Assigned: {customer.routesAssigned ? Object.values(customer.routesAssigned)?.join(', ') : null}</p>
-                                {
-                                    routeData.map((entry, i) => {                                        
-                                        if (entry.property_key === customer?.key) {
-                                            return (
-                                                <Form.Label key={i}>{entry.route_name}, </Form.Label>
-                                            )
-                                        } else return null
-                                    })
-                                }
+                                    <p>Routes Assigned: {customer.routesAssigned ? Object.keys(customer.routesAssigned).map(i => <RoutePopover customer={customer} route={i} />) : null}</p>
                                 </Row>  
                             </Col>
                         </Row>
