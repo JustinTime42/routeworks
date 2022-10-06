@@ -162,7 +162,6 @@ export const setActiveItem = (item, itemArray, actionType) => {
             payload: item
         }
     }
-
 }
 
 export const showRouteEditor = (show) => {
@@ -199,5 +198,3 @@ export const setTempItem = (item) => {
         payload: item
     }
 }
-
-

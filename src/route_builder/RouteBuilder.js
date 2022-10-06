@@ -1,7 +1,7 @@
 import React, { useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc } from "firebase/firestore"
-import {db } from '../firebase'
+import { db } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd, removeExtraFields } from './drag-functions'
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS} from '../constants'
@@ -57,16 +57,13 @@ const RouteBuilder = () => {
 
     const onNewPropertyClick = () => {
         dispatch(showModal('Customer'))
-        dispatch(setTempItem({cust_name: '', routesAssigned: []}))
+        dispatch(setTempItem({cust_name: '', routesAssigned: [], contract_type: "Per Occurrence", sand_contract: "Per Visit"}))
     }
 
     const onDetailsPropertyClick = async(customer) => {
         dispatch(showModal('Customer'))
-        
-        // here we need to get the full details from the customer collection and set that as tempItem
         const docRef = doc(db, 'driver/driver_lists/customer', customer.id)
         const docSnap = await getDoc(docRef)
-
         if(docSnap.exists()) {
             dispatch(setTempItem({...docSnap.data(), id: docSnap.id}))
         } else {
@@ -93,7 +90,6 @@ const RouteBuilder = () => {
             newRoute.customers[newRoute.customers.findIndex(item => item.id === newDetails.id)] = newTrimmedDetails
             dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', null, REQUEST_ROUTES_SUCCESS))
         })
-        //make sure newDetails includes ID
         if (newDetails.id) {
             dispatch(editItem(newDetails, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         } else {
@@ -119,11 +115,9 @@ const RouteBuilder = () => {
         const customer = allCustomers.find(customer => customer.id === newLists.card.id)
         if (!customer.routesAssigned || customer.routesAssigned === []) {customer.routesAssigned = {}}
         if (newLists.whereTo === 'on') {
-            customer.routesAssigned[activeRoute.id] = activeRoute.name 
-            console.log(customer)
+            customer.routesAssigned[activeRoute.id] = activeRoute.name
         } else if (newLists.whereTo === 'off') {
             delete customer.routesAssigned[activeRoute.id]
-            console.log("customer" , customer)
         }
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
         dispatch(editItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
@@ -136,7 +130,6 @@ const RouteBuilder = () => {
     return (
         <>
         <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
-            {/* <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={this.refreshData}>Refresh Data</Button> */}
             <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={onInitRoute}>Initialize Route</Button>
             <Button variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
         </div>
@@ -213,7 +206,7 @@ const RouteBuilder = () => {
                                             detailsClick={onDetailsPropertyClick} 
                                             handleClick={handlePropertyClick}
                                             activeProperty={activeCustomer}
-                                        />                                                    
+                                        />                  
                                     </div>
                                 )}
                             </Draggable>

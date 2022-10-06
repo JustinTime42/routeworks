@@ -37,7 +37,7 @@ const CustLogs = (props) => {
     return (
         <>
         <Button style={{float:"right", marginRight:"3px"}} onClick={getLogs}>Refresh</Button>
-        <Table style={{display: "block", height:props.height, overflow:"auto"}} striped bordered>            
+        <Table style={{display: "block", height:props.height, overflow:"auto"}} bordered>            
             <thead>
                 <tr>
                     <th>Timestamp</th>

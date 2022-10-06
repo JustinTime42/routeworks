@@ -132,9 +132,8 @@ const CustomerEditor = (props) => {
     }
 
     const searchOptions = {
-        //location: new google.maps.LatLng(-34, 151)
         bounds: bounds,
-        radius: 2000,
+        radius: 20000,
         types: ['address']
       }
 

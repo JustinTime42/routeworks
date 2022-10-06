@@ -38,7 +38,6 @@ const DisplayRoute= (props) => {
             let currentPosition = activeRoute.customers.findIndex(i => i.id === property.id)
             console.log(currentPosition)
             let nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
-                console.log(nextPosition)
             if (nextPosition >= 0 && nextPosition < activeRoute.customers.length) {
                 dispatch(setActiveItem(custDetails(activeRoute.customers[nextPosition]), customers, SET_ACTIVE_PROPERTY))
                 if ((nextPosition - 1) > 0) {
