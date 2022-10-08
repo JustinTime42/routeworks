@@ -85,6 +85,7 @@ const RouteBuilder = () => {
     const onPropertySave = (newDetails) => {
         // edit relevant details on each route assigned
         const newTrimmedDetails = removeExtraFields(newDetails)
+        console.log(newDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
             newRoute.customers[newRoute.customers.findIndex(item => item.id === newDetails.id)] = newTrimmedDetails

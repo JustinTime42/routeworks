@@ -11,7 +11,7 @@ import RouteBuilder from './route_builder/RouteBuilder';
 import DisplayRoute from './DisplayRoute'
 import ServiceLogs from './components/service_logs/ServiceLogs';
 import UserEditor from './components/editor_panels/UserEditor';
-import MigrationUI from './components/migration/MigrationUI'
+// import MigrationUI from './components/migration/MigrationUI'
 
 const App = () => { 
    const [user] = useAuthState(auth);
@@ -35,7 +35,7 @@ const App = () => {
         <Route path="routebuilder" element={<RouteBuilder />} />
         <Route path="logs" element={<ServiceLogs />} />
         <Route path="users" element={<UserEditor />} />
-        <Route path="migration" element={<MigrationUI />} />
+        {/* <Route path="migration" element={<MigrationUI />} /> */}
       </Routes>
       </>
     ) 
