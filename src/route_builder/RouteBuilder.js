@@ -57,7 +57,7 @@ const RouteBuilder = () => {
 
     const onNewPropertyClick = () => {
         dispatch(showModal('Customer'))
-        dispatch(setTempItem({cust_name: '', routesAssigned: [], contract_type: "Per Occurrence", sand_contract: "Per Visit"}))
+        dispatch(setTempItem({cust_name: '', routesAssigned: {}, contract_type: "Per Occurrence", sand_contract: "Per Visit"}))
     }
 
     const onDetailsPropertyClick = async(customer) => {
