@@ -9,7 +9,7 @@ const CustomerContact = (props) => {
     const [allTags, setAllTags] = useState([])
     const [selectedTags, setSelectedTags] = useState([])
     const [showDownloadLink, setShowDownloadLink] = useState(false)
-    const [customers, setCustomers] = useState(['test'])
+    const [customers, setCustomers] = useState([])
     const modals = useSelector(state => state.whichModals.modals)
 
     useEffect(() => {
@@ -26,6 +26,7 @@ const CustomerContact = (props) => {
         if (emailsField) {
             emailsField.value = customers
         }
+        console.log(customers)
     }, [customers])
 
     const toggleTags = (event) => {
@@ -50,18 +51,12 @@ const CustomerContact = (props) => {
         selectedTags.forEach(async(tag, i) => {
             console.log(tag)
             const q = query(collection(db, 'driver/driver_lists/customer'), where("tags", "array-contains", tag))
-            const querySnapshot = await getDocs(q);
+            const querySnapshot = await getDocs(q)
             querySnapshot.forEach(doc => {
                 let customer = {...doc.data(), id: doc.id}
-                if (!contactList.includes(customer.cust_email)) {
-                    contactList.push(customer.cust_email)
-                }                
-                if (customer.include_email2 && !contactList.includes(customer.cust_email2)) {
-                    contactList.push(customer.cust_email2)
-                }
-            })
-            console.log(contactList)
-            setCustomers(contactList)
+                contactList.push(customer.cust_email)
+            })            
+            setCustomers([...new Set(contactList)])            
         })
     }
 
