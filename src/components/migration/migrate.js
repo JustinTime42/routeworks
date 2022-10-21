@@ -1,8 +1,7 @@
 import { addDoc, setDoc, collection, doc, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 
-const sendToDB = async(item, path) => {
-  
+const sendToDB = async(item, path) => {  
     try {
         console.log(item)
         const docRef = await addDoc(collection(db, path), item)          
@@ -205,5 +204,18 @@ export const migrateLogs = () => {
         console.log("done")
     })
     .catch(err => console.log(err))
+}
+
+export const fixSandContract = (customers) => {
+    customers.forEach(async(customer) => {
+        if (!customer.sand_contract) { 
+            let newCustomer = {...customer, sand_contract: "Per Visit"}
+            delete newCustomer.id
+            const itemRef = doc(db, "driver/driver_lists/customer", customer.id)   
+            await setDoc(itemRef, newCustomer)           
+        } else {
+            //console.log(customer.id, customer.sand_contract)
+        }
+    })
 }
 

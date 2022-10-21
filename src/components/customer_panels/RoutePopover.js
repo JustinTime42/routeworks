@@ -8,15 +8,16 @@ import { requestAllAddresses } from "../../reducers"
 
 const RoutePopover = ({customer, route}) => {
     const [show, setShow] = useState(false)
+
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const routes = useSelector(state => state.requestRoutes.routes)
     const routeDetails = routes.find(i => i.id === route)
-    const custDetails = routeDetails.customers.find(i => i.id === customer.id)
+   const custDetails = routeDetails.customers.find(i => i.id === customer.id)
     const dispatch = useDispatch()
 
     useEffect(() => {
-        console.log(custDetails)
-    },[custDetails])
+        console.log(customer)
+    },[customer])
 
     const handleRouteClick = () => {
         dispatch(setActiveItem(routeDetails.name, routes, SET_ACTIVE_ROUTE))
@@ -28,12 +29,12 @@ const RoutePopover = ({customer, route}) => {
             <Popover id="popover-basic">
                 <Popover.Header onClick={handleRouteClick} as='h3'>{routeDetails.name}</Popover.Header>
                 <Popover.Body>
-                    <p>active: {custDetails.active?.toString()} </p>
-                    <p>new: {custDetails.new?.toString()} </p>
-                    <p>priority: {custDetails.priority?.toString()} </p>
-                    <p>temp: {custDetails.temporary?.toString()} </p>
-                    <p>service_level: {custDetails.service_level?.toString()} </p>
-                    <p>status: {custDetails.status} </p>
+                    <p>active: {custDetails?.active?.toString()} </p>
+                    <p>new: {custDetails?.new?.toString()} </p>
+                    <p>priority: {custDetails?.priority?.toString()} </p>
+                    <p>temp: {custDetails?.temporary?.toString()} </p>
+                    <p>service_level: {custDetails?.service_level?.toString()} </p>
+                    <p>status: {custDetails?.status} </p>
                 </Popover.Body>
             </Popover>
     )

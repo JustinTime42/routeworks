@@ -1,8 +1,10 @@
 import React from "react"
+import { useSelector } from "react-redux"
 import { Button } from "react-bootstrap"
-import { migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags } from "./migrate"
+import { migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags, fixSandContract } from "./migrate"
 
 const MigrationUI = () => {
+    const customers = useSelector(state => state.requestAllAddresses.addresses)
     return (
         <div>
             <Button style={{margin: '1em'}} onClick={migrateCustomers}>Customers</Button>
@@ -13,6 +15,7 @@ const MigrationUI = () => {
             <Button style={{margin: '1em'}} onClick={migrateRouteData}>Route Data</Button>
             <Button style={{margin: '1em'}} onClick={migrateTags}>Tags</Button>
             <Button style={{margin: '1em'}} onClick={migrateLogs}>Logs</Button>
+            <Button style={{margin: '1em'}} onClick={() => fixSandContract(customers)}>Fix Sand Contract</Button>
         </div>
     )
 }
