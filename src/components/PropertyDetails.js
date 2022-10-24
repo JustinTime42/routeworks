@@ -80,8 +80,12 @@ const PropertyDetails = (props) => {
     const onTextChange = (event) => {
         let {target: {name, value} } = event
         if (name === "yards") {
-            value = Number(value)
+            if (value.charAt(value.length - 1) !== '.') {
+                value = Number(value)
+            }
+            
             if (isNaN(value)) {
+                console.log(value)
                 return
             }
         }
@@ -207,7 +211,7 @@ const PropertyDetails = (props) => {
                                         workType.name === 'Sanding' && property.sand_contract === "Per Yard" ?
                                         <Form.Group>
                                             <Form.Label>Number of Yards</Form.Label>
-                                            <Form.Control name="yards" type="numeric" value={yards} onChange={onTextChange}/>
+                                            <Form.Control name="yards" type="text" value={yards} onChange={onTextChange}/>
                                         </Form.Group> : null
                                     }                   
                             </Col>
