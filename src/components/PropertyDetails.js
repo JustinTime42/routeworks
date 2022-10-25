@@ -82,8 +82,7 @@ const PropertyDetails = (props) => {
         if (name === "yards") {
             if (value.charAt(value.length - 1) !== '.') {
                 value = Number(value)
-            }
-            
+            }            
             if (isNaN(value)) {
                 console.log(value)
                 return

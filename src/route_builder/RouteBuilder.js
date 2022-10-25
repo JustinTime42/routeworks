@@ -88,7 +88,8 @@ const RouteBuilder = () => {
         console.log(newDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
-            newRoute.customers[newRoute.customers.findIndex(item => item.id === newDetails.id)] = newTrimmedDetails
+            let custIndex = newRoute.customers.findIndex(item => item.id === newDetails.id)
+            newRoute.customers[custIndex] = {...newRoute.customers[custIndex], ...newTrimmedDetails} 
             dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', null, REQUEST_ROUTES_SUCCESS))
         })
         if (newDetails.id) {
