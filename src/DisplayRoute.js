@@ -56,19 +56,17 @@ const DisplayRoute= (props) => {
         <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
             <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                 {
-                    activeRoute.customers.map((address, i )=> {
-                        if (address.active){
-                            return (
-                                <PropertyCard                                                                    
-                                    i={i}  
-                                    route={activeRoute.name}                                   
-                                    key={address.id} 
-                                    address={address}
-                                    activeProperty={activeProperty}
-                                    handleClick={changeActiveProperty}                             
-                                />  
-                            )   
-                        }  else return null                                                                                    
+                    activeRoute.customers.filter(customer => customer.active === true).map((address, i )=> {
+                        return (
+                            <PropertyCard                                                                    
+                                i={i}  
+                                route={activeRoute.name}                                   
+                                key={address.id} 
+                                address={address}
+                                activeProperty={activeProperty}
+                                handleClick={changeActiveProperty}                             
+                            />  
+                        )                                                                                      
                     }) 
                 }
             </div>
