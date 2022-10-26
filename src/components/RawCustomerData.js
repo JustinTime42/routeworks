@@ -8,6 +8,9 @@ const RawCustomerData = (props) => {
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const modals = useSelector(state => state.whichModals.modals)
 
+    customers.forEach(i => {
+        i.routesAssigned = Object.values(i.routesAssigned)
+    })
     const dispatch = useDispatch()
 
     return (

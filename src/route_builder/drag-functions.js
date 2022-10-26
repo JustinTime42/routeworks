@@ -10,7 +10,7 @@ export const removeExtraFields = (item) => {
             service_level: item.service_level || null,
             // active: item.active !== undefined ? item.active : true,
             // priority: item.priority !== undefined ? item.priority : false,
-            status: item.status === undefined ? (item.contract_type === 'Hourly') ? "Hourly" : "Waiting" : item.status,
+            // status: item.status === undefined ? (item.contract_type === 'Hourly') ? "Hourly" : "Waiting" : item.status,
             // temp: item.temp !== undefined ? item.temp : false,
             // new: item.new !== undefined ? item.new : false
             //maybe add temp and new here depending on Sandor's feedback
