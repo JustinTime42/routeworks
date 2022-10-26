@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react' 
-import { useDispatch, useSelector } from "react-redux";
-import { onSnapshot, doc } from 'firebase/firestore';
-import { db } from './firebase';
+import { useDispatch, useSelector } from "react-redux"
+import { onSnapshot, doc } from 'firebase/firestore'
+import { db } from './firebase'
 import PropertyCard from "./components/PropertyCard"
 import PropertyDetails from "./components/PropertyDetails"
-import { Alert } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap'
 import { setActiveItem } from './actions'
 import { SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE } from './constants'
 
@@ -71,7 +71,7 @@ const DisplayRoute= (props) => {
                 }
             </div>
             <PropertyDetails changeProperty={changeActiveProperty}/>
-        </div> : <Alert variant="warning">Please select route, driver, vehicle, and work type to begin.</Alert>  
+        </div> : <Alert variant="warning">Please select route, vehicle, and work type to begin.</Alert>  
     )
 }
 

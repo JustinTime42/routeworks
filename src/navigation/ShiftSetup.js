@@ -1,6 +1,9 @@
 import React, { useState, useEffect }  from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { useAuthState } from "react-firebase-hooks/auth"; 
+import { useAuthState } from "react-firebase-hooks/auth"
+import { useLocation } from 'react-router-dom'
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from '../firebase' 
 //import firebase from 'firebase/compat'
 import {logout, auth} from '../firebase'
 import {Form, Col, Row, Modal, Button } from 'react-bootstrap'
@@ -16,6 +19,8 @@ import { setActiveWorkType } from '../reducers'
 
 const ShiftSetup = () => {
     const [user, loading, error] = useAuthState(auth);
+    let location = useLocation()
+
     const activeDriver = useSelector(state => state.setActiveDriver.driver)    
     const activeVehicle = useSelector(state => state.setActiveTractor.activeTractor)
     const drivers = useSelector(state => state.getDrivers.drivers)
@@ -28,6 +33,26 @@ const ShiftSetup = () => {
     const modals = useSelector(state => state.whichModals.modals)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
+    
+    useEffect(() => {
+        if(user && (drivers.length > 0) && !activeDriver.name) {
+            console.log(user.displayName)
+            dispatch(setActiveItem(user.displayName, drivers, SET_ACTIVE_DRIVER))
+        }
+        }, [user, drivers])
+
+    useEffect(() => { 
+        const unsub = onSnapshot(collection(db, 'driver/driver_lists/driver'), (querySnapshot) => {
+            dispatch({type:GET_DRIVERS_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+        })
+        return () => {
+            unsub()
+        }
+    },[])
+
+    useEffect(() => {
+        dispatch(setActiveItem(user.displayName, drivers, SET_ACTIVE_DRIVER))
+    },[location.pathname])
 
     const outerDivStyle = {
         display: "flex", 
@@ -50,16 +75,13 @@ const ShiftSetup = () => {
         margin: '1em'
     }
 
-    const onClearOptions = () => {
-        dispatch(setActiveItem(null, drivers, SET_ACTIVE_DRIVER))
+    const onClearOptions = () => {       
         dispatch(setActiveItem(null, tractors, SET_ACTIVE_TRACTOR))
-        dispatch(setActiveItem(null, workTypes, SET_WORK_TYPE))
-        
+        dispatch(setActiveItem(null, workTypes, SET_WORK_TYPE))        
     }
     const onShow = () => {
         dispatch(showModal("Shift"))
         onClearOptions()
-       // dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
     }
 
     const onCancel = () => {
@@ -75,14 +97,6 @@ const ShiftSetup = () => {
         dispatch(setTempItem({}))
         dispatch(showModal(whichModal))
     }
-
-    // const onEditAdmin = (item, whichModal, collection) => {
-    //     getAdminItem(item, collection)
-    //     .then(item => {
-    //         dispatch(setTempItem(item))
-    //     })        
-    //     dispatch(showModal(whichModal))
-    // }
 
     const onEdit = (item, whichModal) => {
         dispatch(setTempItem(item))
@@ -115,7 +129,11 @@ const ShiftSetup = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>Select Shift Details</Modal.Title>
                 </Modal.Header>
-                <SimpleSelector
+                {
+                    location.pathname === '/' ?
+                        <div style={{...labelStyle, marginTop: '1em'}}>{activeDriver.name}</div>
+                    :
+                    <SimpleSelector
                     style={selectorStyle}
                     title="Driver"
                     collection='driver'
@@ -129,6 +147,8 @@ const ShiftSetup = () => {
                     onEdit={onEdit}
                     onSelect={onSelect}
                 />
+                }
+
                 <SimpleSelector  
                     style={selectorStyle}
                     title="Vehicle"

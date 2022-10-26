@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useLocation } from 'react-router-dom'
 import {useSelector, useDispatch} from "react-redux"
-import { collection, query, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase' 
 import { Dropdown, Button, } from "react-bootstrap"
 

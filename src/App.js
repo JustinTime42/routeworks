@@ -5,17 +5,20 @@ import { auth } from "./firebase";
 import { UserLogin } from './auth/UserLogin'
 import TopNav from "./navigation/TopNav"
 import "./styles/App.css"
-import { setCurrentUser } from './actions'
-import { useDispatch } from 'react-redux';
+import { setActiveItem, setCurrentUser } from './actions'
+import { useDispatch, useSelector } from 'react-redux';
 import RouteBuilder from './route_builder/RouteBuilder';
 import DisplayRoute from './DisplayRoute'
 import ServiceLogs from './components/service_logs/ServiceLogs';
 import UserEditor from './components/editor_panels/UserEditor';
+import { SET_ACTIVE_DRIVER } from './constants';
 // import MigrationUI from './components/migration/MigrationUI'
 
 const App = () => { 
-   const [user] = useAuthState(auth);
-   const dispatch = useDispatch()
+  const [user] = useAuthState(auth);
+  const drivers = useSelector(state => state.getDrivers.drivers)
+  const activeDriver = useSelector(state => state.setActiveDriver.driver)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if(user) {
@@ -25,6 +28,13 @@ const App = () => {
       })      
     }  
   }, [user])
+
+  // useEffect(() => {
+  //   if(user && (drivers.length > 0) && !activeDriver.name) {
+  //     console.log(drivers)
+  //     dispatch(setActiveItem(user.claims.name, drivers, SET_ACTIVE_DRIVER))
+  //   }
+  // }, [user, drivers])
 
   if (user) {
     return (
