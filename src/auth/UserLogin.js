@@ -15,7 +15,6 @@ export const UserLogin = () => {
   const onPasswordReset = () => {
     sendPasswordResetEmail(auth, username)
     .then(res => {
-      console.log(res)
       alert(`Email has been sent to ${username} with a link to reset your password`)
     })
     .catch(err => alert(err))
