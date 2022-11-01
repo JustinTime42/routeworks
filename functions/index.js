@@ -1,8 +1,6 @@
 const functions = require('firebase-functions');
-
 const admin = require('firebase-admin');
 const e = require('express')
-//const { db } = require('../src/firebase');
 admin.initializeApp();
 
 exports.listUsers = functions.https.onCall((data, context) => {
@@ -10,16 +8,14 @@ exports.listUsers = functions.https.onCall((data, context) => {
 })
 
 exports.createUser = functions.https.onCall((data,context) => {
-  const {displayName, email, password, customClaims } = data
+  const {displayName, email, password, customClaims, disabled } = data
   return admin.auth().createUser({
     email: email,
     displayName: displayName,
-    password: password
+    disabled: disabled,
   })
   .then((userRecord) => { 
-      return admin.auth().setCustomUserClaims(userRecord.uid, {
-        admin: customClaims.admin
-      })
+      return admin.auth().setCustomUserClaims(userRecord.uid, {...customClaims})
       .then(() => {
         return admin.auth().getUser(userRecord.uid)
       })
@@ -33,16 +29,14 @@ exports.createUser = functions.https.onCall((data,context) => {
 })
 
 exports.updateUser = functions.https.onCall((data, context) => {
-  const {uid, displayName, email, password, customClaims} = data
-  return admin.auth().updateUser(uid, { 
-    displayName: displayName,
+  const {uid, displayName, email, password, customClaims, disabled } = data
+  return admin.auth().updateUser(data.uid, {
     email: email,
-    password: password
+    displayName: displayName,
+    disabled: disabled,
   })
   .then(userRecord => {
-    return admin.auth().setCustomUserClaims(userRecord.uid, {
-      admin: customClaims.admin
-    })
+    return admin.auth().setCustomUserClaims(userRecord.uid, {...customClaims})
     .then(() => {return admin.auth().getUser(userRecord.uid)})
   })
 })

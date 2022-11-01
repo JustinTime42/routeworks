@@ -1,97 +1,150 @@
-import React, { useEffect, useState } from "react"
-import {Button, FormControl, Alert, Modal, Form, Container, Row, Col } from "react-bootstrap"
-import { functions, httpsCallable, createUser, auth } from '../../firebase'
-
+import React, {  useState, useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux";
+import {Button, Alert, Modal, Form, Row, Col, DropdownButton, Dropdown } from "react-bootstrap"
+import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
+import {GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, TEMP_ITEM} from '../../constants.js'
+import { httpsCallable } from "firebase/functions";
+import { auth, functions } from "../../firebase";
+import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 
 const UserEditor = (props) => {
-    const [users, setUsers] = useState([])
-    const [newUser, setNewUser] = useState({customClaims: {admin:false}})
-    const [isEditing, setIsEditing] = useState(false)
+    const [deleteAlert, setDeleteAlert] = useState('')
+   // const drivers = useSelector(state => state.getDrivers.drivers)
+    const modals = useSelector(state => state.whichModals.modals)
+    const tempItem = useSelector(state => state.setTempItem.item)
+    const dispatch = useDispatch()
+    const roles = ['Driver', 'Supervisor', 'Admin']
 
-    const onChange = (event) => {
-        let { name, value, checked } = event.target 
-        console.log(checked)
-        if(event.target.getAttribute('uid')) {
-            let tempUsers = [...users] 
-            if (event.target.name === 'admin') {
-                tempUsers[users.findIndex(user => user.uid === event.target.getAttribute('uid'))].customClaims[name] = checked            
-            } else {
-                tempUsers[users.findIndex(user => user.uid === event.target.getAttribute('uid'))][name] = value
-            }      
-            setUsers(tempUsers)
+    useEffect(() => {
+        if (!tempItem && modals.includes('User')) {
+            dispatch(setTempItem({name: '', customClaims: {admin: false, supervisor: false, hourly: 0, percentage: 0}}))
+        }
+        console.log(tempItem)
+    }, [tempItem])
+
+
+
+    const onChange = (event) => {    
+        let {target: {name, value} } = event
+        if (name === "name") {
+            dispatch(setTempItem({...tempItem, displayName: value}))
         } else {
-            if(event.target.name === 'admin') {
-                setNewUser({...newUser, customClaims: {admin: checked}})
-            } else {
-                setNewUser({...newUser, [name]:value})
-            }            
-            console.log(newUser)
+            if (name === "percentage" || name === "hourly") {
+                value = Number(value)
+                if (isNaN(value)) {
+                    return
+                } else {
+                    dispatch(setTempItem({...tempItem, customClaims: {...tempItem.customClaims, [name]: value}}))
+                }
+            } else if (value === 'on') {
+                dispatch(setTempItem({...tempItem, disabled: !tempItem.disabled}))
+            } else { dispatch(setTempItem({...tempItem, [name]:value}))}
         }
     }
 
-    const onFetchUsers = () => {
-        const getUsers = httpsCallable(functions, 'listUsers')
-        getUsers()        
-        .then(data => setUsers(data.data.users))
-        .catch(err => console.log(err))
+    const onSelectRole = (role) => {
+        dispatch(setTempItem({...tempItem, customClaims: {...tempItem.customClaims, role: role}}))
     }
 
-    const onSaveUser = (user = null) => {
-        if (user.uid) {
+    const onSave = () => {
+        console.log(tempItem)
+        if (tempItem.uid) { 
+            console.log('updating user')
             const updateUser = httpsCallable(functions, 'updateUser')
-            updateUser(user).then(i => {
-                console.log(i)
-                let newUsers = users
-                newUsers[newUsers.findIndex(user => user.uid === i.data.uid)] = i.data
-                setUsers(newUsers)
+            updateUser(tempItem).then(res => {                
+                console.log(res)            
+                let newUsers = [...props.users]
+                newUsers[newUsers.findIndex(user => user.uid === res.data.uid)] = res.data
+                props.setUsers(newUsers)
             })
-        } else {
-            const createUser = httpsCallable(functions, 'createUser' )
-            createUser(newUser).then(i => {
-                console.log(i)
-                setUsers([...users, i.data])
-            } ) 
+            .catch(err => console.log(err))
         }
-        setNewUser({displayName: '', email: '', password:'', customClaims: {admin:false}})    
+        else {
+            const createUser = httpsCallable(functions, 'createUser' )
+            createUser(tempItem).then(i => {
+                console.log(i.data)
+                sendPasswordResetEmail(auth, i.data.email)
+                props.setUsers([...props.users, i.data])
+            } ) 
+        } 
+        dispatch(hideModal('User'))
+    }
+
+    const onDelete = (item) => {
+    //dispatch(deleteItem(item, drivers, 'driver/driver_lists/driver', SET_ACTIVE_DRIVER, GET_DRIVERS_SUCCESS))
+    dispatch(hideModal('User'))                 
+    }
+
+    const onClose = () => {
+        dispatch(setTempItem(null))
+        dispatch(hideModal('User'))
+        setDeleteAlert(false)
     }
 
     return (
-        <Container style={{width:'100vw', position:'fixed', margin:'1em'}}>
-                <Button onClick={onFetchUsers}>Fetch Users</Button>
-                <Button>Create New User</Button>
-                <Button onClick={props.onClose}>Close</Button>
-                <Form>
-                    <Container>
-                        <Row>
-                            <Col sm={4}>Display Name</Col>
-                            <Col sm={3}>Email</Col>
-                            <Col sm={3}>Password</Col>
-                            <Col sm={1}>Role</Col>
-                        </Row>
-                        <Row>
-                            <Col sm={4}><Form.Control name="displayName" type="text" value={newUser.displayName} onChange={onChange} /></Col>
-                            <Col sm={3}><Form.Control name="email" type="text" value={newUser.email} onChange={onChange} /></Col>
-                            <Col sm={3}><Form.Control name="password" type="text" value={newUser.password} onChange={onChange} /></Col>
-                            <Col sm={1}><Form.Check name="admin" type="checkbox" checked={newUser.customClaims?.admin} onChange={onChange} /></Col>
-                            <Col sm={1}><Button onClick={onSaveUser}>Save</Button> </Col>                                                                        
-                        </Row>
-                        {
-                            users.map(user => {
-                                console.log(user)
-                                return (
-                                    <Row key={user.uid}>
-                                        <Col sm={4}><Form.Control uid={user.uid} name="displayName" type="text" value={user.displayName} onChange={onChange} /></Col>
-                                        <Col sm={3}><Form.Control uid={user.uid} name="email" type="text" value={user.email} onChange={onChange} /></Col>
-                                        <Col sm={3}><Form.Control uid={user.uid} name="password" type="text" value={user.password} onChange={onChange} /></Col>
-                                        <Col sm={1}><Form.Check  uid={user.uid} name="admin" type="checkbox" checked={user.customClaims?.admin} onChange={onChange} /></Col>
-                                        <Col sm={1}><Button onClick={() => onSaveUser(user)}>Save</Button> </Col>                                                                        
-                                    </Row>
-                                )
-                            })
-                        }
-                    </Container>
-                </Form>
-        </Container>
+        <Modal show={modals.includes('User')} onHide={onClose}>
+            <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "space-between"}}>
+                <Form.Group as={Row}>
+                    <Form.Label column sm={2}>Name</Form.Label>
+                    <Col sm={8}>
+                        <Form.Control name="name" type="text" onChange={onChange} placeholder="Name" value={tempItem?.displayName || ''}/>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row}>
+                    <Form.Label column sm={2}>Email</Form.Label>
+                    <Col sm={8}>
+                        <Form.Control name="email" type="text" onChange={onChange} placeholder="Email" value={tempItem?.email || ''}/>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row}>
+                    <Form.Label column sm={2}>Percentage</Form.Label>
+                    <Col sm={8}>
+                        <Form.Control name="percentage" type="numeric" onChange={onChange} placeholder="Percentage" value={tempItem?.customClaims?.percentage || 0} />
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row}>
+                    <Form.Label column sm={2}>Hourly</Form.Label>
+                    <Col sm={8}>
+                        <Form.Control name="hourly" type="numeric" onChange={onChange} placeholder="Hourly" value={tempItem?.customClaims?.hourly || 0} />
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} style={{margin:'1em'}}>
+                    <Col>
+                        <Form.Check
+                            name="active"
+                            type="checkbox"
+                            label="Active?"
+                            checked = {!tempItem?.disabled}
+                            onChange={onChange}
+                        /> 
+                    </Col>
+                    <Col>
+                        <DropdownButton size="sm" title={tempItem?.customClaims?.role || "Role"} onSelect={onSelectRole}>
+                            {
+                                roles.map(role => {
+                                    return (
+                                        <Dropdown.Item key={role} eventKey={role}>{role}</Dropdown.Item>
+                                    )
+                                })
+                            }
+                        </DropdownButton>
+                    </Col>
+                </Form.Group> 
+                <div className="flex justify-content-around">
+                    <Button variant="danger" style={{visibility: ((deleteAlert !== tempItem?.displayName) && tempItem) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(tempItem)}>Delete</Button>
+                    <Button disabled={!tempItem} style={{margin: "3px"}} onClick={onSave}>Save</Button>   
+                    <Button style={{margin: "3px"}} variant="secondary" onClick={onClose}>Close</Button>
+                </div>
+                <Alert className="d-flex justify-content-around mb-3" show={deleteAlert === tempItem}>
+                    <Button onClick={() => onDelete(tempItem)} variant="danger">
+                        Delete {tempItem?.displayName}
+                    </Button>
+                    <Button onClick={() => setDeleteAlert('')} variant="success">
+                        Cancel
+                    </Button>
+                </Alert>      
+            </Modal.Body> 
+        </Modal>          
     )
 }
 

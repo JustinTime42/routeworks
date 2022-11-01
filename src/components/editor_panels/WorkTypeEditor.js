@@ -21,7 +21,7 @@
         }
 
         useEffect(() => {
-            if(!('name' in tempItem) && modals.includes('WorkType')) {
+            if(!tempItem && modals.includes('WorkType')) {
                 dispatch(setTempItem({name: '', active: true}))
             }
         },[tempItem])
@@ -29,6 +29,7 @@
         const onClose = () => {
             dispatch(hideModal('WorkType'))
             setDeleteAlert(false)
+            dispatch(setTempItem(null))
         }
 
         const onSave = () => {

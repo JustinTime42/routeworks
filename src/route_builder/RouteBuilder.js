@@ -17,6 +17,7 @@ const RouteBuilder = () => {
     const activeCustomer = useSelector(state => state.setActiveProperty.activeProperty)
     const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
     const filteredProperties = useSelector(state => state.filterProperties.customers)
+    const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -84,12 +85,34 @@ const RouteBuilder = () => {
 
     const onPropertySave = (newDetails) => {
         // edit relevant details on each route assigned
+
+        // const removeExtraFields = (item) => {  
+        //     console.log(item.status)  
+        //     return (
+        //         {
+        //             id: item.id,
+        //             cust_name: item.cust_name, 
+        //             service_address: item.service_address || '',
+        //             service_level: item.service_level || null,
+        //             // active: item.active !== undefined ? item.active : true,
+        //             // priority: item.priority !== undefined ? item.priority : false,
+        //             // status: item.status === undefined ? (item.contract_type === 'Hourly') ? "Hourly" : "Waiting" : item.status,
+        //             // temp: item.temp !== undefined ? item.temp : false,
+        //             // new: item.new !== undefined ? item.new : false
+        //             //maybe add temp and new here depending on Sandor's feedback
+        //         }
+        //     )
+        // }
+
+
         const newTrimmedDetails = removeExtraFields(newDetails)
         console.log(newDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
             let custIndex = newRoute.customers.findIndex(item => item.id === newDetails.id)
+            console.log(newRoute.customers[custIndex])
             newRoute.customers[custIndex] = {...newRoute.customers[custIndex], ...newTrimmedDetails} 
+            console.log(newRoute.customers[custIndex])
             dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', null, REQUEST_ROUTES_SUCCESS))
         })
         if (newDetails.id) {
@@ -97,7 +120,6 @@ const RouteBuilder = () => {
         } else {
             dispatch(createItem(newDetails, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         }
-        dispatch(hideModal('Customer'))
     }
 
     const onDelete = (customer) => {
@@ -111,21 +133,26 @@ const RouteBuilder = () => {
     }
 
     const dragEnd = (result) => {
-
+        
         console.log(result)
         const newLists = onDragEnd(result, activeRoute.customers, filteredProperties)
+        console.log(newLists.whereTo)
         const customer = allCustomers.find(customer => customer.id === newLists.card.id)
-        if (!customer.routesAssigned || customer.routesAssigned === []) {customer.routesAssigned = {}}
+        console.log(customer)
+        if (!customer.routesAssigned || (customer.routesAssigned === [])) {customer.routesAssigned = {}}
+        console.log(customer)
         if (newLists.whereTo === 'on') {
             customer.routesAssigned[activeRoute.id] = activeRoute.name
         } else if (newLists.whereTo === 'off') {
             delete customer.routesAssigned[activeRoute.id]
         }
+        console.log(customer)
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
         dispatch(editItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }
 
     const onCloseClick = () => {
+        dispatch(setTempItem(null))
         dispatch(hideModal('Customer'))
     }
 
@@ -164,7 +191,7 @@ const RouteBuilder = () => {
                                             route={activeRoute}
                                             key={item.id} 
                                             address={item} 
-                                            admin={true} 
+                                            admin={['Admin'].includes(currentUser.claims.role)} 
                                             detailsClick={onDetailsPropertyClick} 
                                             handleClick={handlePropertyClick}
                                             toggleField={toggleField}

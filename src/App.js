@@ -10,23 +10,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import RouteBuilder from './route_builder/RouteBuilder';
 import DisplayRoute from './DisplayRoute'
 import ServiceLogs from './components/service_logs/ServiceLogs';
-import UserEditor from './components/editor_panels/UserEditor';
+import Users from './components/Users';
 import { SET_ACTIVE_DRIVER } from './constants';
 // import MigrationUI from './components/migration/MigrationUI'
 
 const App = () => { 
   const [user] = useAuthState(auth);
-  const drivers = useSelector(state => state.getDrivers.drivers)
-  const activeDriver = useSelector(state => state.setActiveDriver.driver)
+  const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const dispatch = useDispatch()
 
   useEffect(() => {
     if(user) {
       user.getIdTokenResult().then(user => {
-        console.log(user.claims)
-        dispatch(setCurrentUser(user.claims))
+        console.log(user)
+        dispatch(setCurrentUser(user))
       })      
-    }  
+    } else {
+      dispatch(setCurrentUser(null))
+    }
   }, [user])
 
   // useEffect(() => {
@@ -36,7 +37,7 @@ const App = () => {
   //   }
   // }, [user, drivers])
 
-  if (user) {
+  if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {    
     return (
       <>
       <TopNav />
@@ -44,12 +45,13 @@ const App = () => {
         <Route path="/" element={<DisplayRoute />} />
         <Route path="routebuilder" element={<RouteBuilder />} />
         <Route path="logs" element={<ServiceLogs />} />
-        <Route path="users" element={<UserEditor />} />
+        <Route path="users" element={<Users />} />
         {/* <Route path="migration" element={<MigrationUI />} /> */}
       </Routes>
       </>
     ) 
   } else {
+    console.log(user)
     return <UserLogin />
   }
 }

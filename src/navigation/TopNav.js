@@ -11,11 +11,10 @@ import Spinner from "../components/Spinner"
 import {  setTempItem, showModal, setActiveItem} from "../actions"
 
 import SearchBar from "./SearchBar"
-import { Alert, Button } from "react-bootstrap"
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
 
 import '../styles/driver.css'
-import UserEditor from '../components/editor_panels/UserEditor';
+import Users from '../components/Users';
 
 const TopNav = () => {
     const isRoutePending = useSelector(state => state.getRouteProperties.isPending)
@@ -26,12 +25,6 @@ const TopNav = () => {
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
 
-    // useEffect(() => {
-    //     refreshData()
-    // },[])
-
-    
-    // get all customers
     useEffect(() => {
         const unsub = onSnapshot(collection(db, `driver/driver_lists/customer`), (querySnapshot) => {
             dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
@@ -40,8 +33,6 @@ const TopNav = () => {
             unsub()
         }
     },[])
-
-
 
     const sendToDB = async(item) => {
         console.log(item)
@@ -91,8 +82,7 @@ const TopNav = () => {
                 <ShiftSetup />                
                 <SearchBar />
                 {/* <UserEditor /> */}
-                { currentUser.admin ? <AdminDropdown /> : null }
-                 
+                {['Supervisor','Admin'].includes(currentUser.claims.role) ? <AdminDropdown /> : null }
                 {/* <Button variant="primary" size="sm" onClick={refreshData2}>Refresh</Button> */}
             </div>
         </div>            

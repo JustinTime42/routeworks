@@ -14,7 +14,9 @@
         const dispatch = useDispatch()
 
         useEffect(() => {
-            if(!('name' in tempItem) && modals.includes('Route')) {
+            //this was if(!('name' in tempItem) && modals.includes('Route')) {
+                //not sure but there may be places where tempItem doesn't revert to null but probably should? changing for now
+            if(!tempItem && modals.includes('Route')) {
                 dispatch(setTempItem({name: '', active: true, customers: []}))
             }
         },[tempItem])
@@ -22,6 +24,7 @@
         const onClose = () => {
             dispatch(hideModal('Route'))
             setDeleteAlert(false)
+            dispatch(setTempItem(null))
         }
 
         const onChange = (event) => {

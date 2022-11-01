@@ -22,10 +22,10 @@ const TractorEditor = (props) => {
     },[activeVehicleType])
 
     useEffect(() => {
-        if(!('name' in tempItem) && modals.includes('Vehicle')) {
+        if(!tempItem && modals.includes('Vehicle')) {
             dispatch(setTempItem({name: '', active: true}))
         }
-        if(tempItem.type) {
+        if(tempItem?.type) {
             dispatch(setActiveItem(tempItem.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
         }
     }, [tempItem])
@@ -49,6 +49,7 @@ const TractorEditor = (props) => {
     const onClose = () => {
         dispatch(hideModal('Vehicle'))
         setDeleteAlert(false)
+        dispatch(setTempItem(null))
     }
 
     const onSave = () => {

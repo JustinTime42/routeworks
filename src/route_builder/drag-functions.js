@@ -23,7 +23,7 @@ const move = (source, destination, droppableSource, droppableDestination) => {
     const destClone = Array.from(destination)
     const [removed] = sourceClone.splice(droppableSource.index, 1)  
     console.log(removeExtraFields(removed))  
-    destClone.splice(droppableDestination.index, 0, removeExtraFields(removed)  )
+    destClone.splice(droppableDestination.index, 0, {...removeExtraFields(removed), status: 'Waiting', active: true}  )
     const result = {}
     result[droppableSource.droppableId] = sourceClone
     result[droppableDestination.droppableId] = destClone

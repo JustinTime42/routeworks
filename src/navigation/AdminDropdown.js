@@ -27,7 +27,6 @@ const AdminDropdown = () => {
             //case "logs": return setShowLogsMenu({showLogsMenu: true})
             case "contact": return dispatch(showModal('Contact'))
             case "rawTable": return dispatch(showModal('All Customers'))
-            case "userEditor": return dispatch(showModal('User Editor'))
             default: return
         }
     }

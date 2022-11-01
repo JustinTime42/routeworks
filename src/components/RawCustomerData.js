@@ -3,21 +3,29 @@ import { useSelector, useDispatch } from 'react-redux'
 import {Modal, Button} from 'react-bootstrap'
 import { CSVLink } from 'react-csv'
 import { hideModal } from '../actions'
+import { useEffect } from 'react'
+import { useState } from 'react'
 
-const RawCustomerData = (props) => {
+const RawCustomerData = (props) => {    
     const customers = useSelector(state => state.requestAllAddresses.addresses)
+    const [newList, setNewList] = useState([])
     const modals = useSelector(state => state.whichModals.modals)
 
-    customers.forEach(i => {
-        i.routesAssigned = Object.values(i.routesAssigned)
-    })
+    useEffect(() => {
+        let temp = [...customers]
+        temp.forEach(i => {
+            i.routesAssigned = Object.values(i.routesAssigned)
+        })
+        setNewList(temp)
+    },[])
+
     const dispatch = useDispatch()
 
     return (
         <Modal show={modals.includes('All Customers')} onHide={props.close}>
             <Modal.Header>Download Raw Customer Table</Modal.Header>
             <Modal.Body>   
-                <CSVLink data={customers} filename={`all-customer-data.csv`}>
+                <CSVLink data={newList} filename={`all-customer-data.csv`}>
                 Download
                 </CSVLink>             
             </Modal.Body>

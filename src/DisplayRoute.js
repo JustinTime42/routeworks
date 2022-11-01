@@ -15,7 +15,7 @@ const DisplayRoute= (props) => {
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
-    const activeDriver = useSelector(state => state.setActiveDriver.driver)
+    const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
     const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const dispatch = useDispatch()
@@ -50,9 +50,9 @@ const DisplayRoute= (props) => {
             dispatch(setActiveItem(custDetails(property), customers, SET_ACTIVE_PROPERTY))
         }
     }
-            
+
     return (
-        activeRoute.id && activeDriver.id && activeTractor.id && activeWorkType.id ?
+        activeRoute.id && activeTractor.id && activeWorkType.id ?
         <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
             <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                 {

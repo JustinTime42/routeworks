@@ -448,7 +448,7 @@ const CustomerEditor = (props) => {
                                     })                                    
                                 }
                                 <Row>
-                                    <p>Routes Assigned: {customer.routesAssigned ? Object.keys(customer.routesAssigned).map(i => <RoutePopover customer={customer} route={i} />) : null}</p>
+                                    <p>Routes Assigned: {customer?.routesAssigned ? Object.keys(customer.routesAssigned).map(i => <RoutePopover key={i} customer={customer} route={i} />) : null}</p>
                                 </Row>  
                             </Col>
                         </Row>

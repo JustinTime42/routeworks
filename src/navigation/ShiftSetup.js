@@ -8,7 +8,7 @@ import { db } from '../firebase'
 import {logout, auth} from '../firebase'
 import {Form, Col, Row, Modal, Button } from 'react-bootstrap'
 import SimpleSelector from '../components/SimpleSelector'
-import DriverEditor from '../components/editor_panels/DriverEditor'
+//import DriverEditor from '../components/editor_panels/UserEditor'
 import TractorEditor from '../components/editor_panels/TractorEditor'
 import {getAdminItem} from '../firebase'
 import WorkTypeEditor from '../components/editor_panels/WorkTypeEditor'
@@ -121,7 +121,7 @@ const ShiftSetup = () => {
 
     return (
         <div style={outerDivStyle}>
-            <div style={labelStyle}>{activeDriver.name || 'driver'}</div>
+            <div style={labelStyle}>{currentUser.claims.name || 'driver'}</div>
             <div style={labelStyle}>{activeVehicle.name || 'vehicle'}</div>
             <div style={labelStyle}>{activeWorkType.name || 'work type'}</div>
             <Button style={labelStyle} size='sm' variant='primary' onClick={onShow}>Edit Shift</Button>            
@@ -129,26 +129,7 @@ const ShiftSetup = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>Select Shift Details</Modal.Title>
                 </Modal.Header>
-                {
-                    location.pathname === '/' ?
-                        <div style={{...labelStyle, marginTop: '1em'}}>{activeDriver.name}</div>
-                    :
-                    <SimpleSelector
-                    style={selectorStyle}
-                    title="Driver"
-                    collection='driver'
-                    collectionPath='driver/driver_lists/'
-                    reduxListAction= {GET_DRIVERS_SUCCESS}
-                    selectedItem={activeDriver}
-                    itemArray={drivers}
-                    whichModal="Driver"
-                    setActiveAction={SET_ACTIVE_DRIVER}
-                    onCreate={onCreate}
-                    onEdit={onEdit}
-                    onSelect={onSelect}
-                />
-                }
-
+                <div style={{...labelStyle, marginTop: '1em'}}>{currentUser.claims.name}</div>
                 <SimpleSelector  
                     style={selectorStyle}
                     title="Vehicle"
@@ -184,7 +165,6 @@ const ShiftSetup = () => {
                 </Modal.Footer>
             </Modal>
             <TractorEditor/>
-            <DriverEditor />
             <WorkTypeEditor />            
         </div>        
     )
