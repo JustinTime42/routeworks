@@ -1,6 +1,6 @@
 import React, { useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { collection, onSnapshot, doc, getDoc } from "firebase/firestore"
+import { collection, onSnapshot, doc, getDoc, Timestamp } from "firebase/firestore"
 import { db } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd, removeExtraFields } from './drag-functions'
@@ -58,7 +58,8 @@ const RouteBuilder = () => {
 
     const onNewPropertyClick = () => {
         dispatch(showModal('Customer'))
-        dispatch(setTempItem({cust_name: '', routesAssigned: {}, contract_type: "Per Occurrence", sand_contract: "Per Visit"}))
+        let dateCreated = Timestamp.fromDate(new Date(Date.now()))
+        dispatch(setTempItem({cust_name: '', routesAssigned: {}, contract_type: "Per Occurrence", sand_contract: "Per Visit", date_created: dateCreated}))
     }
 
     const onDetailsPropertyClick = async(customer) => {
@@ -123,7 +124,7 @@ const RouteBuilder = () => {
     }
 
     const onDelete = (customer) => {
-        customer.routesAssigned.forEach(route => {
+        Object.values(customer.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
             newRoute.customers.splice(newRoute.customers.findIndex(item => item.id === customer.id), 1)
             dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', null, REQUEST_ROUTES_SUCCESS))

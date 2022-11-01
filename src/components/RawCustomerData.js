@@ -12,11 +12,14 @@ const RawCustomerData = (props) => {
     const modals = useSelector(state => state.whichModals.modals)
 
     useEffect(() => {
-        let temp = [...customers]
-        temp.forEach(i => {
-            i.routesAssigned = Object.values(i.routesAssigned)
-        })
-        setNewList(temp)
+        if (customers.length > 0) {
+            console.log(customers)
+            let temp = [...customers]
+            temp.forEach(i => {
+                i.routesAssigned = Object.values(i.routesAssigned)
+            })
+            setNewList(temp)
+        }
     },[])
 
     const dispatch = useDispatch()
