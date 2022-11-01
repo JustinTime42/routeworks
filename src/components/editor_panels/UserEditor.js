@@ -70,6 +70,12 @@ const UserEditor = (props) => {
         dispatch(hideModal('User'))
     }
 
+    const onPasswordReset = () => {
+        sendPasswordResetEmail(auth, tempItem.email)
+        .then(alert(`Email has been sent to ${tempItem.email} with a link to reset your password`))
+        .catch(err => alert(err))
+    }
+
     const onDelete = (item) => {
     //dispatch(deleteItem(item, drivers, 'driver/driver_lists/driver', SET_ACTIVE_DRIVER, GET_DRIVERS_SUCCESS))
     dispatch(hideModal('User'))                 
@@ -128,6 +134,9 @@ const UserEditor = (props) => {
                                 })
                             }
                         </DropdownButton>
+                    </Col>
+                    <Col>
+                            <Button size="sm" onClick={onPasswordReset}>Reset Password</Button>
                     </Col>
                 </Form.Group> 
                 <div className="flex justify-content-around">
