@@ -1,15 +1,25 @@
+import { sendPasswordResetEmail } from 'firebase/auth'
 import React, { useState } from 'react'
 import { Button, Form, Card } from 'react-bootstrap'
-import {logInWithEmailAndPassword} from '../firebase'
+import {auth, logInWithEmailAndPassword} from '../firebase'
 
 export const UserLogin = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')  
 
-  const handleSubmit = (event) => {
+  const onSubmit = (event) => {
     event.preventDefault()
     logInWithEmailAndPassword(username, password)
   }
+
+  const onPasswordReset = () => {
+    sendPasswordResetEmail(auth, username)
+    .then(res => {
+      console.log(res)
+      alert(`Email has been sent to ${username} with a link to reset your password`)
+    })
+    .catch(err => alert(err))
+}
 
   return (
     <Card className="text-center" style={{ width: '18rem', marginTop: '2em', marginLeft: 'auto', marginRight: 'auto' }}>
@@ -34,13 +44,14 @@ export const UserLogin = () => {
             />
           </Card.Text>
           <Button
-            onClick={handleSubmit}
+            onClick={onSubmit}
             variant="primary"
             size="large"
             type="submit"
           >
             Log In
           </Button>
+          <Button style={{marginLeft:'1em'}} onClick={onPasswordReset}>Forgot Password</Button>
         </Form>
         
       </Card.Body>
