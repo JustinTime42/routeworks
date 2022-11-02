@@ -2,22 +2,19 @@ import React, { useState, useEffect } from 'react'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux"
-import {hideModal, showModal, showRouteEditor} from "../actions"
+import {hideModal, showModal} from "../actions"
 import CustomerContact from '../components/CustomerContact'
 import RawCustomerData from '../components/RawCustomerData'
 
 const AdminDropdown = () => {
     let location = useLocation()
     let navigate = useNavigate()
-    const [showLogsMenu, setShowLogsMenu] = useState(false)
     const [showContactsMenu, setShowContactsMenu] = useState(false)
     const [showRawTableModal, setShowRawTableModal] = useState(false)
     const [lastLocation, setLastLocation] = useState(location)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
-    const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
     
-
     useEffect(() => {
       setLastLocation(location)
     }, [location]);
@@ -31,7 +28,6 @@ const AdminDropdown = () => {
         }
     }
 
-   // onClose = () => this.setState({showLogsMenu: false, showDownload: false, showContactsMenu: false, showRawTableModal: false, showUserEditor: false})
     const onClose = () => {
         dispatch(hideModal('Contact'))
         dispatch(hideModal('All Customers'))
@@ -39,7 +35,6 @@ const AdminDropdown = () => {
         navigate(lastLocation)
     }
 
-// if(this.state.userRole === 'Admin') {
     return (
         <>                        
             <DropdownButton size="sm" title="Admin" onSelect={onSelect}>        
@@ -49,6 +44,9 @@ const AdminDropdown = () => {
                 <Dropdown.Item as={Link} to="/routebuilder" key="routebuilder" eventKey="routebuilder">                              
                     Editor View
                 </Dropdown.Item>
+                {
+                currentUser.claims.role === 'Admin' ? 
+                <>                
                 <Dropdown.Item as={Link} to='/logs' key="logs" eventKey="logs">                                
                     Service Logs                          
                 </Dropdown.Item>
@@ -64,13 +62,12 @@ const AdminDropdown = () => {
                 {/* <Dropdown.Item as={Link} to="/migration" key="migration" eventKey="migration">
                     Data Migration
                 </Dropdown.Item> */}
+                </> : null}
             </DropdownButton>
             <CustomerContact show={showContactsMenu} onClose={onClose} />  
             <RawCustomerData show={showRawTableModal} onClose={onClose} />                               
         </>
-    )
-//  } else return null
-    
+    )    
 }
 
 export default AdminDropdown

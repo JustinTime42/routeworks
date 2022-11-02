@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import SimpleSelector from "../components/SimpleSelector"
-import ShiftSetup from './ShiftSetup';
-import RouteEditor from '../components/editor_panels/RouteEditor';
-import { addDoc, collection, onSnapshot } from 'firebase/firestore';
+import ShiftSetup from './ShiftSetup'
+import RouteEditor from '../components/editor_panels/RouteEditor'
+import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from '../firebase'
 
 import AdminDropdown from "./AdminDropdown"
@@ -14,7 +14,6 @@ import SearchBar from "./SearchBar"
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
 
 import '../styles/driver.css'
-import Users from '../components/Users';
 
 const TopNav = () => {
     const isRoutePending = useSelector(state => state.getRouteProperties.isPending)
@@ -34,15 +33,6 @@ const TopNav = () => {
         }
     },[])
 
-    const sendToDB = async(item) => {
-        console.log(item)
-        try {
-            const docRef = await addDoc(collection(db, 'driver/driver_lists/customer'), {...item})                     
-       } catch (e) {
-         alert("Error adding document: ", e);
-       }
-    }
-
     const onCreate = (whichModal) => {
         dispatch(setTempItem({name: '', active: true, customers: []}))
         dispatch(showModal(whichModal))
@@ -54,9 +44,7 @@ const TopNav = () => {
     }
     
     const onSelect = (event, itemArray, setActiveAction) => {
-        console.log(event)
         dispatch(setActiveItem(event, itemArray, setActiveAction))
-      //  dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))
     }
 
     return (
@@ -77,13 +65,12 @@ const TopNav = () => {
                     onCreate={onCreate}
                     onEdit={onEdit}
                     onSelect={onSelect}
+                    permissions={['Supervisor', 'Admin']}
                 />
                 <RouteEditor />
                 <ShiftSetup />                
                 <SearchBar />
-                {/* <UserEditor /> */}
                 {['Supervisor','Admin'].includes(currentUser.claims.role) ? <AdminDropdown /> : null }
-                {/* <Button variant="primary" size="sm" onClick={refreshData2}>Refresh</Button> */}
             </div>
         </div>            
     )

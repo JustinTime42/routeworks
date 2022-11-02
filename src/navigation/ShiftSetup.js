@@ -143,6 +143,7 @@ const ShiftSetup = () => {
                     onCreate={onCreate}
                     onEdit={onEdit}
                     onSelect={onSelectVehicle} 
+                    permissions={['Admin']}
                 />
                 <SimpleSelector  
                     style={selectorStyle}
@@ -157,6 +158,7 @@ const ShiftSetup = () => {
                     onCreate={onCreate}
                     onEdit={onEdit}
                     onSelect={onSelect}
+                    permissions={['Admin']}
                 />
                 <Modal.Footer>
                     <Button variant='primary' onClick={handleLogout}>Log Out</Button>

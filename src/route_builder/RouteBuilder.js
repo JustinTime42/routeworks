@@ -152,7 +152,7 @@ const RouteBuilder = () => {
         <>
         <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
             <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={onInitRoute}>Initialize Route</Button>
-            <Button variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
+            <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
         </div>
         <div className="adminGridContainer">
         <DragDropContext onDragEnd={dragEnd}>
