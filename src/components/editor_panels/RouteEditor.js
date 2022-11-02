@@ -13,14 +13,6 @@
         const tempItem = useSelector(state => state.setTempItem.item)
         const dispatch = useDispatch()
 
-        useEffect(() => {
-            //this was if(!('name' in tempItem) && modals.includes('Route')) {
-                //not sure but there may be places where tempItem doesn't revert to null but probably should? changing for now
-            if(!tempItem && modals.includes('Route')) {
-                dispatch(setTempItem({name: '', active: true, customers: []}))
-            }
-        },[tempItem])
-
         const onClose = () => {
             dispatch(hideModal('Route'))
             setDeleteAlert(false)
@@ -54,8 +46,6 @@
             tempItem.customers.map(customer => {
                 let newCustomer = customers.find(item => item.id === customer.id)
                 delete newCustomer.routesAssigned[tempItem.id]
-                //let newRoutesAssigned = newCustomer.routesAssigned   //.filter(item => item !== tempItem.name)
-                //newCustomer.routesAssigned = newRoutesAssigned
                 dispatch(editItem(newCustomer, customers, 'driver/driver_lists/customer', null, UPDATE_ADDRESSES_SUCCESS))
             })
             dispatch(deleteItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))

@@ -36,7 +36,7 @@ const SimpleSelector = (props) => {
             </Dropdown.Toggle>
             <Dropdown.Menu style={{maxHeight: '80vh', overflow:'scroll'}} >
             {
-                currentUser.admin ? 
+                ['Supervisor', 'Admin'].includes(currentUser.claims.role) ?
                 <div style={{display: 'flex', float: "left"}}>
                     <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button>
                     <Button 

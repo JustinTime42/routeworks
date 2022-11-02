@@ -87,26 +87,17 @@ const RouteBuilder = () => {
     const onPropertySave = (newDetails) => {
         // edit relevant details on each route assigned
 
-        // const removeExtraFields = (item) => {  
-        //     console.log(item.status)  
-        //     return (
-        //         {
-        //             id: item.id,
-        //             cust_name: item.cust_name, 
-        //             service_address: item.service_address || '',
-        //             service_level: item.service_level || null,
-        //             // active: item.active !== undefined ? item.active : true,
-        //             // priority: item.priority !== undefined ? item.priority : false,
-        //             // status: item.status === undefined ? (item.contract_type === 'Hourly') ? "Hourly" : "Waiting" : item.status,
-        //             // temp: item.temp !== undefined ? item.temp : false,
-        //             // new: item.new !== undefined ? item.new : false
-        //             //maybe add temp and new here depending on Sandor's feedback
-        //         }
-        //     )
-        // }
-
-
-        const newTrimmedDetails = removeExtraFields(newDetails)
+        const removeFields = (item) => { 
+            return (
+                {
+                    id: item.id,
+                    cust_name: item.cust_name, 
+                    service_address: item.service_address || '',
+                    service_level: item.service_level || null,
+                }
+            )
+        }
+        const newTrimmedDetails = removeFields(newDetails)
         console.log(newDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
