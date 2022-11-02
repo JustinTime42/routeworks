@@ -5,14 +5,11 @@ import ShiftSetup from './ShiftSetup'
 import RouteEditor from '../components/editor_panels/RouteEditor'
 import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from '../firebase'
-
 import AdminDropdown from "./AdminDropdown"
 import Spinner from "../components/Spinner"
 import {  setTempItem, showModal, setActiveItem} from "../actions"
-
 import SearchBar from "./SearchBar"
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
-
 import '../styles/driver.css'
 
 const TopNav = () => {

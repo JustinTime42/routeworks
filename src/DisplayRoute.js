@@ -52,7 +52,7 @@ const DisplayRoute= (props) => {
     }
 
     return (
-        activeRoute.id && activeTractor.id && activeWorkType.id ?
+        activeTractor.id && activeWorkType.id ?
         <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
             <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                 {
