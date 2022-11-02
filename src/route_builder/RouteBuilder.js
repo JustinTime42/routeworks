@@ -29,7 +29,7 @@ const RouteBuilder = () => {
         }
     },[activeRoute.id])
 
-    useEffect(() => {         
+    useEffect(() => {
         const unsub = onSnapshot(collection(db, `driver/driver_lists/customer/`), (querySnapshot) => {
             dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
@@ -85,8 +85,11 @@ const RouteBuilder = () => {
     }
 
     const onPropertySave = (newDetails) => {
+        if (allCustomers.some(i => (i.service_address === newDetails.service_address) && (i.id !== newDetails.id))) {
+            alert('This address is assigned to another customer')
+            return
+        }
         // edit relevant details on each route assigned
-
         const removeFields = (item) => { 
             return (
                 {
@@ -112,6 +115,7 @@ const RouteBuilder = () => {
         } else {
             dispatch(createItem(newDetails, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         }
+        onCloseClick()
     }
 
     const onDelete = (customer) => {
@@ -125,20 +129,14 @@ const RouteBuilder = () => {
     }
 
     const dragEnd = (result) => {
-        
-        console.log(result)
         const newLists = onDragEnd(result, activeRoute.customers, filteredProperties)
-        console.log(newLists.whereTo)
         const customer = allCustomers.find(customer => customer.id === newLists.card.id)
-        console.log(customer)
         if (!customer.routesAssigned || (customer.routesAssigned === [])) {customer.routesAssigned = {}}
-        console.log(customer)
         if (newLists.whereTo === 'on') {
             customer.routesAssigned[activeRoute.id] = activeRoute.name
         } else if (newLists.whereTo === 'off') {
             delete customer.routesAssigned[activeRoute.id]
         }
-        console.log(customer)
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
         dispatch(editItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }
