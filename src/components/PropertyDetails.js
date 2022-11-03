@@ -14,7 +14,7 @@ import '../styles/driver.css'
 const initialState = {
     noteField: '',
     disabled: false,
-    yards: 0,
+    yards: '',
     done_label: "hidden",
     showSkipConfirmation: false,
     currentLogEntry: null,
@@ -79,12 +79,13 @@ const PropertyDetails = (props) => {
 
     const onTextChange = (event) => {
         let {target: {name, value} } = event
+        console.log(event.target.value)
         if (name === "yards") {
-            if (value.charAt(value.length - 1) !== '.') {
+            if (value.charAt(value.length - 1) !== '.') {                
                 value = Number(value)
-            }            
+            }
+            if (value === 0) value = ''       
             if (isNaN(value)) {
-                console.log(value)
                 return
             }
         }
@@ -160,7 +161,7 @@ const PropertyDetails = (props) => {
         newRecordObject.bill_city = customerDetails.bill_city
         newRecordObject.bill_state = customerDetails.bill_state
         newRecordObject.bill_zip = customerDetails.bill_zip
-        if (yards) {newRecordObject.yards = (yards !== 0) ? " " + yards + " yds" : ""}
+        if (yards) {newRecordObject.yards = (yards !== 0) ? yards + " yds" : ""}
         if (startTime) {newRecordObject.startTime = startTime}
         if (endTime) {newRecordObject.endTime = endTime} 
         newRecordObject.description = newRecordObject.status === 'Skipped' ? '' : workType.name + yardString
@@ -210,7 +211,7 @@ const PropertyDetails = (props) => {
                                         workType.name === 'Sanding' && property.sand_contract === "Per Yard" ?
                                         <Form.Group>
                                             <Form.Label>Number of Yards</Form.Label>
-                                            <Form.Control name="yards" type="text" value={yards} onChange={onTextChange}/>
+                                            <Form.Control name="yards" type="number" step='any' value={yards} onChange={onTextChange}/>
                                         </Form.Group> : null
                                     }                   
                             </Col>
