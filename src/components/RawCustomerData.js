@@ -24,18 +24,21 @@ const RawCustomerData = (props) => {
 
     const dispatch = useDispatch()
 
-    return (
-        <Modal show={modals.includes('All Customers')} onHide={props.close}>
-            <Modal.Header>Download Raw Customer Table</Modal.Header>
-            <Modal.Body>   
-                <CSVLink data={newList} filename={`all-customer-data.csv`}>
-                Download
-                </CSVLink>             
-            </Modal.Body>
-            <Modal.Footer>                
-                <Button variant="secondary" onClick={() => dispatch(hideModal('All Customers'))}>Close</Button>
-            </Modal.Footer>            
-        </Modal>
-    )
+    if(customers.length > 0) {
+        return (
+            <Modal show={modals.includes('All Customers')} onHide={props.close}>
+                <Modal.Header>Download Raw Customer Table</Modal.Header>
+                <Modal.Body>   
+                    <CSVLink data={newList} filename={`all-customer-data.csv`}>
+                    Download
+                    </CSVLink>             
+                </Modal.Body>
+                <Modal.Footer>                
+                    <Button variant="secondary" onClick={() => dispatch(hideModal('All Customers'))}>Close</Button>
+                </Modal.Footer>            
+            </Modal>
+        )
+    } else return null
+
 }
 export default RawCustomerData
