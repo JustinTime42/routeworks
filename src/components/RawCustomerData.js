@@ -20,7 +20,7 @@ const RawCustomerData = (props) => {
             })
             setNewList(temp)
         }
-    },[])
+    },[customers])
 
     const dispatch = useDispatch()
 
