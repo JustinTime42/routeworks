@@ -128,7 +128,7 @@ const PropertyDetails = (props) => {
         console.log("time logged", timeLogged)
         
         newRecordObject.driverEarning = driver.percentage * .01 * property.value
-        let yardString = (yards !== 0) ? ": " + yards + " yds" : ""
+        let yardString = ((workType.name === 'Sanding') && ((yards !== 0) || (yards !== ''))) ? ": " + yards + " yds" : ""
         if (property.contract_type === 'Hourly') {
             newRecordObject.driverEarning = timeLogged * driver.hourly
         }
