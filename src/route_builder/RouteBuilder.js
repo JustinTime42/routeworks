@@ -6,7 +6,7 @@ import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd, removeExtraFields } from './drag-functions'
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS} from '../constants'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-import { Button } from 'react-bootstrap'
+import { Button, Form } from 'react-bootstrap'
 import PropertyCard from '../components/PropertyCard'
 import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../actions"
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
@@ -53,7 +53,7 @@ const RouteBuilder = () => {
     },[])
 
     useEffect(() => {
-        document.getElementById('droppable2scroll').scrollTo(0,0)
+        document.getElementById('droppable2scroll')?.scrollTo(0,0)
     }, [activeRoute.name])
 
     const onInitRoute = () => {
@@ -164,105 +164,108 @@ const RouteBuilder = () => {
         dispatch(hideModal('Customer'))
     }
 
-    return (
-        <>
-        <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
-            <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={onInitRoute}>Initialize Route</Button>
-            <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
-        </div>
-        <div className="adminGridContainer">
-        <DragDropContext onDragEnd={dragEnd}>
-            <Droppable droppableId="droppable2">                    
-                {(provided, snapshot) => (
-                    <div
-                        className="leftSide, scrollable"
-                        id="droppable2scroll"
-                        ref={provided.innerRef}
-                        style={getListStyle(snapshot.isDraggingOver)}>
-                        {activeRoute.customers?.map((item, index) => (
-                            <Draggable
-                                key={item.id}
-                                draggableId={item.id}
-                                index={index}>
-                                {(provided, snapshot) => (
-                                    <div
-                                        id={`${item.id}routecard`}
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        style={getItemStyle(
-                                            snapshot.isDragging,
-                                            provided.draggableProps.style
-                                        )}>
-                                        <PropertyCard 
-                                            i={index} 
-                                            route={activeRoute}
-                                            key={item.id} 
-                                            address={item} 
-                                            admin={['Admin'].includes(currentUser.claims.role)} 
-                                            detailsClick={onDetailsPropertyClick} 
-                                            handleClick={handlePropertyClick}
-                                            toggleField={toggleField}
-                                            activeProperty={activeCustomer}
-                                        />
-                                    </div>
-                                )}
-                            </Draggable>
-                        ))
-                        }
-                        {provided.placeholder}
-                    </div>
-                )}
-            </Droppable>
-            <Droppable className="rightSide" droppableId="droppable">
-                {(provided, snapshot) => (
-                    <div
-                        ref={provided.innerRef}
-                        className="rightSide, scrollable"
-                        style={getListStyle(snapshot.isDraggingOver)}>
-                        {filteredProperties.map((item, index) => (
-                            <Draggable
-                                key={item.id}
-                                draggableId={item.id}
-                                index={index}>
-                                {(provided, snapshot) => (
-                                    <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        style={getItemStyle(
-                                            snapshot.isDragging,
-                                            provided.draggableProps.style
-                                        )}>
-                                        <PropertyCard 
-                                            i={index} 
-                                            route={activeRoute}
-                                            key={item.id} 
-                                            address={item} 
-                                            admin={['Admin'].includes(currentUser.claims.role)} 
-                                            detailsClick={onDetailsPropertyClick} 
-                                            handleClick={handlePropertyClick}
-                                            activeProperty={activeCustomer}
-                                        />                  
-                                    </div>
-                                )}
-                            </Draggable>
-                        ))
-                        } 
-                        {provided.placeholder}
-                    </div>
-                )}
-            </Droppable>
-        </DragDropContext>
-            <CustomerEditor 
-                activeProperty={activeCustomer} 
-                onSave={onPropertySave}
-                close={onCloseClick}
-                onDelete={onDelete}
-            />
-        </div>
-        </> 
-   )    
+    if (activeRoute?.editableBy?.includes(currentUser.claims.role)) {
+        return (
+            <>
+            <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
+                <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={onInitRoute}>Initialize Route</Button>
+                <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
+            </div>
+            <div className="adminGridContainer">
+            <DragDropContext onDragEnd={dragEnd}>
+                <Droppable droppableId="droppable2">                    
+                    {(provided, snapshot) => (
+                        <div
+                            className="leftSide, scrollable"
+                            id="droppable2scroll"
+                            ref={provided.innerRef}
+                            style={getListStyle(snapshot.isDraggingOver)}>
+                            {activeRoute.customers?.map((item, index) => (
+                                <Draggable
+                                    key={item.id}
+                                    draggableId={item.id}
+                                    index={index}>
+                                    {(provided, snapshot) => (
+                                        <div
+                                            id={`${item.id}routecard`}
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            style={getItemStyle(
+                                                snapshot.isDragging,
+                                                provided.draggableProps.style
+                                            )}>
+                                            <PropertyCard 
+                                                i={index} 
+                                                route={activeRoute}
+                                                key={item.id} 
+                                                address={item} 
+                                                admin={['Admin'].includes(currentUser.claims.role)} 
+                                                detailsClick={onDetailsPropertyClick} 
+                                                handleClick={handlePropertyClick}
+                                                toggleField={toggleField}
+                                                activeProperty={activeCustomer}
+                                            />
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))
+                            }
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+                <Droppable className="rightSide" droppableId="droppable">
+                    {(provided, snapshot) => (
+                        <div
+                            ref={provided.innerRef}
+                            className="rightSide, scrollable"
+                            style={getListStyle(snapshot.isDraggingOver)}>
+                            {filteredProperties.map((item, index) => (
+                                <Draggable
+                                    key={item.id}
+                                    draggableId={item.id}
+                                    index={index}>
+                                    {(provided, snapshot) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            style={getItemStyle(
+                                                snapshot.isDragging,
+                                                provided.draggableProps.style
+                                            )}>
+                                            <PropertyCard 
+                                                i={index} 
+                                                route={activeRoute}
+                                                key={item.id} 
+                                                address={item} 
+                                                admin={['Admin'].includes(currentUser.claims.role)} 
+                                                detailsClick={onDetailsPropertyClick} 
+                                                handleClick={handlePropertyClick}
+                                                activeProperty={activeCustomer}
+                                            />                  
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))
+                            } 
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
+                <CustomerEditor 
+                    activeProperty={activeCustomer} 
+                    onSave={onPropertySave}
+                    close={onCloseClick}
+                    onDelete={onDelete}
+                />
+            </div>
+            </> 
+       )    
+    } else return <Form.Label>Insufficient permissions to edit this route.</Form.Label>
+    
 }
 
 export default RouteBuilder
