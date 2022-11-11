@@ -4,6 +4,7 @@ import {Modal, Button} from 'react-bootstrap'
 import { CSVLink } from 'react-csv'
 import { hideModal } from '../actions'
 import { useEffect } from 'react'
+import _ from 'lodash'
 import { useState } from 'react'
 
 const RawCustomerData = (props) => {    
@@ -14,10 +15,12 @@ const RawCustomerData = (props) => {
     useEffect(() => {
         if (customers.length > 0) {
             console.log(customers)
-            let temp = JSON.parse(JSON.stringify(customers)) 
+            let temp = _.cloneDeep(customers)
             temp.forEach(i => {
                 i.routesAssigned = Object.values(i.routesAssigned)
+                if(i.date_created) i.date_created = i.date_created.toDate()
             })
+            console.log(temp)
             setNewList(temp)
         }
     },[customers])

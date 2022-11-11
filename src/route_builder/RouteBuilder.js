@@ -147,7 +147,10 @@ const RouteBuilder = () => {
             //customer.routesAssigned[activeRoute.id] = activeRoute.name
             console.log({...customer.routesAssigned})
         } else if (newLists.whereTo === 'off') {
-            delete customer.routesAssigned[activeRoute.id]
+            let confirmed = window.confirm(`Confirm removal of ${customer.cust_name} from ${activeRoute.name}`)
+            if (confirmed) {
+                delete customer.routesAssigned[activeRoute.id]
+            } else return            
         }
         
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
@@ -234,7 +237,7 @@ const RouteBuilder = () => {
                                             route={activeRoute}
                                             key={item.id} 
                                             address={item} 
-                                            admin={true} 
+                                            admin={['Admin'].includes(currentUser.claims.role)} 
                                             detailsClick={onDetailsPropertyClick} 
                                             handleClick={handlePropertyClick}
                                             activeProperty={activeCustomer}
