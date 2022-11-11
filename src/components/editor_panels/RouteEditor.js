@@ -64,8 +64,9 @@ import DropdownToggle from "react-bootstrap/esm/DropdownToggle";
             dispatch(hideModal('Route'))                 
         }
 
-    return (
-        <Modal show={modals.includes('Route')&& isEditable(tempItem) } onHide={onClose}>
+    if (modals.includes('Route')) {
+        return (
+            <Modal show={modals.includes('Route')&& isEditable(tempItem) } onHide={onClose}>
             <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "space-between"}}>
                 <Form.Group as={Row}>
                     <Form.Label column sm={2}>Name</Form.Label>
@@ -109,8 +110,9 @@ import DropdownToggle from "react-bootstrap/esm/DropdownToggle";
                     </Button>
                 </Alert>      
             </Modal.Body> 
-        </Modal>          
-    )
+            </Modal>
+        )
+    } else return null
 }
 
 export default RouteEditor
