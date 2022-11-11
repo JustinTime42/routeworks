@@ -1,8 +1,6 @@
 
 
 export const removeExtraFields = (item) => { 
-
-    console.log(item.status)  
     return (
         {
             id: item.id,
@@ -39,8 +37,6 @@ const reorder = (list, startIndex, endIndex) => {
 }
 
 export const onDragEnd = (result, onList, offList) => {
-    console.log(result)
-    console.log(offList)
     const { source, destination, draggableId } = result
 
     const id2List = {
@@ -60,7 +56,6 @@ export const onDragEnd = (result, onList, offList) => {
 
     // // we're only ever going to care about the dropped card if it's dropped on the active route < not true...
      let droppedCard = newList[destination.droppableId].find(item => item.id === draggableId)
-     console.log({...droppedCard})
     if (!destination) {
         return;
     }
@@ -82,7 +77,7 @@ export const onDragEnd = (result, onList, offList) => {
                     whereTo: 'same',
                 }
             )
-        }   else return
+        } else return null
     } else {   //if  moving from one list to another
         if ((destination.droppableId === "droppable2")) { //If adding to route
             console.log(droppedCard)

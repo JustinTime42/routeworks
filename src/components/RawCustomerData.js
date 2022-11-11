@@ -14,7 +14,7 @@ const RawCustomerData = (props) => {
     useEffect(() => {
         if (customers.length > 0) {
             console.log(customers)
-            let temp = [...customers]
+            let temp = JSON.parse(JSON.stringify(customers)) 
             temp.forEach(i => {
                 i.routesAssigned = Object.values(i.routesAssigned)
             })

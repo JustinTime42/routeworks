@@ -8,6 +8,10 @@ exports.listUsers = functions.https.onCall((data, context) => {
 })
 
 exports.createUser = functions.https.onCall((data,context) => {
+  if (!context.auth) {
+    // Throwing an HttpsError so that the client gets the error details.
+    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+  }
   const {displayName, email, password, customClaims, disabled } = data
   return admin.auth().createUser({
     email: email,
@@ -15,7 +19,7 @@ exports.createUser = functions.https.onCall((data,context) => {
     disabled: disabled,
   })
   .then((userRecord) => { 
-      return admin.auth().setCustomUserClaims(userRecord.uid, {...customClaims})
+      return admin.auth().setCustomUserClaims(userRecord.uid, {...customClaims, organization: 'Snowline'})
       .then(() => {
         return admin.auth().getUser(userRecord.uid)
       })

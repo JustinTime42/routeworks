@@ -31,7 +31,12 @@ const RouteBuilder = () => {
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, `driver/driver_lists/customer/`), (querySnapshot) => {
-            dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+            dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc, i) => {
+                if (i % 100 === 0) {
+                    console.log(doc.data())
+                }                
+                return {...doc.data(), id: doc.id}
+            } )})
         })
         return () => {
             unsub()
@@ -130,13 +135,21 @@ const RouteBuilder = () => {
 
     const dragEnd = (result) => {
         const newLists = onDragEnd(result, activeRoute.customers, filteredProperties)
-        const customer = allCustomers.find(customer => customer.id === newLists.card.id)
+        if (!newLists) {
+            console.log("no result")
+            return
+        } 
+        let customer = {...allCustomers.find(customer => customer.id === newLists.card.id)}
         if (!customer.routesAssigned || (customer.routesAssigned === [])) {customer.routesAssigned = {}}
         if (newLists.whereTo === 'on') {
-            customer.routesAssigned[activeRoute.id] = activeRoute.name
+            console.log({...customer.routesAssigned})
+            customer = {...customer, routesAssigned: {...customer.routesAssigned, [activeRoute.id]:activeRoute.name}}
+            //customer.routesAssigned[activeRoute.id] = activeRoute.name
+            console.log({...customer.routesAssigned})
         } else if (newLists.whereTo === 'off') {
             delete customer.routesAssigned[activeRoute.id]
         }
+        
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
         dispatch(editItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }

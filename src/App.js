@@ -30,13 +30,6 @@ const App = () => {
     }
   }, [user])
 
-  // useEffect(() => {
-  //   if(user && (drivers.length > 0) && !activeDriver.name) {
-  //     console.log(drivers)
-  //     dispatch(setActiveItem(user.claims.name, drivers, SET_ACTIVE_DRIVER))
-  //   }
-  // }, [user, drivers])
-
   if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {    
     return (
       <>
