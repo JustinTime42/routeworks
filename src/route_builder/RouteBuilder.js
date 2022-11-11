@@ -57,8 +57,10 @@ const RouteBuilder = () => {
     }, [activeRoute.name])
 
     const onInitRoute = () => {
-        const newRouteCustomers = activeRoute.customers.map(i => ({...i, status: "Waiting"}))
-        dispatch(editItem({...activeRoute, customers: newRouteCustomers}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        if (window.confirm(`Initialized ${activeRoute.name}`)) {
+            const newRouteCustomers = activeRoute.customers.map(i => ({...i, status: "Waiting"}))
+            dispatch(editItem({...activeRoute, customers: newRouteCustomers}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        } else return        
     }
 
     const onNewPropertyClick = () => {
