@@ -31,7 +31,7 @@ const TopNav = () => {
     },[])
 
     const onCreate = (whichModal) => {
-        dispatch(setTempItem({name: '', active: true, customers: []}))
+        dispatch(setTempItem({name: '', active: true, editableBy: ['Supervisor', 'Admin'], customers: []}))
         dispatch(showModal(whichModal))
     }
 
