@@ -26,7 +26,7 @@ const SearchBar = () => {
         }        
         dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
         setMatches([])
-        setSearchValue('')
+        if (location.pathname !== '/routebuilder') setSearchValue('')
     }
 
     const scrollCustomerIntoView = (customer) => {
@@ -37,8 +37,8 @@ const SearchBar = () => {
     }
 
     useEffect(() => {
-       setSearchValue('')
-       onSetMatches()
+        if (location.pathname !== '/routebuilder') setSearchValue('')
+        onSetMatches()
     }, [activeRoute])
 
     const listStyle = {
@@ -80,9 +80,10 @@ const SearchBar = () => {
                     }
                 })
             }
-            if ((offRouteResults.length === 0) && (filteredCustomers.length === 1)) {
-                dispatch(setActiveItem(filteredCustomers[0], allCustomers, SET_ACTIVE_PROPERTY))
-                scrollCustomerIntoView(filteredCustomers[0])
+            if ((filteredCustomers.length === 1)) {
+                selectCustomer(filteredCustomers[0])
+                // dispatch(setActiveItem(filteredCustomers[0], allCustomers, SET_ACTIVE_PROPERTY))
+                // scrollCustomerIntoView(filteredCustomers[0])
             }
             dispatch(filterProperties(offRouteResults))
         } else {

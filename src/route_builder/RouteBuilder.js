@@ -164,7 +164,7 @@ const RouteBuilder = () => {
         dispatch(hideModal('Customer'))
     }
 
-    if (activeRoute?.editableBy?.includes(currentUser.claims.role)) {
+    if (activeRoute?.editableBy?.includes(currentUser.claims.role) || !activeRoute.id) {
         return (
             <>
             <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
