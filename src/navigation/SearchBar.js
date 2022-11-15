@@ -31,7 +31,7 @@ const SearchBar = () => {
 
     const scrollCustomerIntoView = (customer) => {
         console.log(customer)
-        let custIndex = activeRoute.customers.findIndex(i => i.id === customer.id)
+        let custIndex = activeRoute.customers.filter(i => i.active).findIndex(i => i.id === customer.id)
         console.log(custIndex)
         document.getElementById(`card${custIndex}`).scrollIntoView(true)
     }
