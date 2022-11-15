@@ -20,8 +20,9 @@ const SearchBar = () => {
         // Find out if the customer is on current route
         
         let isOnRoute = activeRoute.customers.find(entry => (entry.id === customer.id))
-        console.log("isonroute", isOnRoute)        
+              
         if (isOnRoute) {
+            console.log("isonroute", isOnRoute)  
             scrollCustomerIntoView(customer)
         }        
         dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
@@ -37,8 +38,7 @@ const SearchBar = () => {
         } else {
             custIndex = activeRoute.customers.filter(i => i.active).findIndex(i => i.id === customer.id)
         }
-        console.log(custIndex)
-        document.getElementById(`card${custIndex}`)?.scrollIntoView(true)
+        setTimeout(() => document.getElementById(`card${custIndex}`)?.scrollIntoView(), 100)
     }
 
     useEffect(() => {
