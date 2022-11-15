@@ -26,14 +26,19 @@ const SearchBar = () => {
         }        
         dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
         setMatches([])
-        if (location.pathname !== '/routebuilder') setSearchValue('')
+        //if (location.pathname !== '/routebuilder') setSearchValue('')
     }
 
     const scrollCustomerIntoView = (customer) => {
         console.log(customer)
-        let custIndex = activeRoute.customers.filter(i => i.active).findIndex(i => i.id === customer.id)
+        let custIndex
+        if(location.pathname === '/routebuilder') {
+            custIndex = activeRoute.customers.findIndex(i => i.id === customer.id)
+        } else {
+            custIndex = activeRoute.customers.filter(i => i.active).findIndex(i => i.id === customer.id)
+        }
         console.log(custIndex)
-        document.getElementById(`card${custIndex}`).scrollIntoView(true)
+        document.getElementById(`card${custIndex}`)?.scrollIntoView(true)
     }
 
     useEffect(() => {
