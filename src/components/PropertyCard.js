@@ -84,8 +84,7 @@ const PropertyCard = (props) => {
         }
         return (
             <>
-                <Col>{levelText}{visual}</Col> 
-                
+                <Col>{levelText}{visual}</Col>                 
             </>
         )
     }

@@ -40,9 +40,8 @@ const SkipDetails = (props) => {
 
     const isConfirmDisabled = () => {
         if ((skipReason === 'Snow Depth') && (snowDepth)) return false
-        else if (skipReason === 'Soft Ground') return false
+        else if (['Soft Ground', 'Customer Request', 'Already Cleared', 'No Sand Needed'].includes(skipReason)) return false
         else if ((skipReason === 'Other Reason') && (otherNotes)) return false
-        else if ((skipReason === 'Customer Request') || skipReason ==='Already Cleared') return false
         else return true
     }
 
@@ -57,6 +56,7 @@ const SkipDetails = (props) => {
                     <Dropdown.Item key="Snow Depth" eventKey="Snow Depth"><h5>Not Enough Snow</h5></Dropdown.Item>
                     <Dropdown.Item key="Customer Request" eventKey="Customer Request"><h5>Customer Request</h5></Dropdown.Item>
                     <Dropdown.Item key="Already Cleared" eventKey="Already Cleared"><h5>Already Cleared</h5></Dropdown.Item>
+                    <Dropdown.Item key="No Sand Needed" eventKey="No Sand Needed"><h5>No Sand Needed</h5></Dropdown.Item>
                     <Dropdown.Item key="Other Reason" eventKey="Other Reason"><h5>Other</h5></Dropdown.Item>
                 </DropdownButton>
                 {
@@ -65,7 +65,7 @@ const SkipDetails = (props) => {
                     {
                         snowDepthOptions().map(option => (
                             <Dropdown.Item key={option} eventKey={option}><h5>{option}</h5></Dropdown.Item>
-                        ))                           
+                        ))
                     }                   
                     </DropdownButton> : null 
                 }                            

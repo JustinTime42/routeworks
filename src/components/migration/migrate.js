@@ -1,3 +1,4 @@
+import { indexedDBLocalPersistence } from "firebase/auth";
 import { addDoc, setDoc, collection, doc, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 
@@ -218,4 +219,28 @@ export const fixSandContract = (customers) => {
         }
     })
 }
+
+
+export const copyNoRoutesAssigned = (customers, routes) => {
+    let emptyObjects = []
+    let ids = []
+    let results = []
+    customers.forEach(customer => {
+        if(Object.keys(customer.routesAssigned).length === 0) {
+            emptyObjects.push(`${customer.cust_name}\n`)
+            ids.push(customer.id)
+        }
+    })
+    console.log(ids)
+    routes.forEach((route, i) => {
+        route.customers.forEach(customer => {
+            if (ids.includes(customer.id)) {
+                results.push(`${customer.cust_name} ${route.name}`)
+            }
+        })
+    })
+    console.log(results)
+    navigator.clipboard.writeText(emptyObjects)
+}
+
 

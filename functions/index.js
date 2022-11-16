@@ -45,6 +45,11 @@ exports.updateUser = functions.https.onCall((data, context) => {
   })
 })
 
+// exports.deleteUser = functions.https.onCall((data, context) => {
+//   //check if custom claims matches admin role and organization
+
+// })
+
 exports.updateLogEntry = functions.firestore 
   .document('service_logs/{itemID}')
   .onUpdate(async(change, context) => {

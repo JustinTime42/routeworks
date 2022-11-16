@@ -5,11 +5,10 @@ import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } f
 import {GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, TEMP_ITEM} from '../../constants.js'
 import { httpsCallable } from "firebase/functions";
 import { auth, functions } from "../../firebase";
-import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
+import { sendEmailVerification, sendPasswordResetEmail, deleteUser } from "firebase/auth";
 
 const UserEditor = (props) => {
     const [deleteAlert, setDeleteAlert] = useState('')
-   // const drivers = useSelector(state => state.getDrivers.drivers)
     const modals = useSelector(state => state.whichModals.modals)
     const tempItem = useSelector(state => state.setTempItem.item)
     const dispatch = useDispatch()
@@ -51,7 +50,7 @@ const UserEditor = (props) => {
         if (tempItem.uid) { 
             console.log('updating user')
             const updateUser = httpsCallable(functions, 'updateUser')
-            updateUser(tempItem).then(res => {                
+            updateUser({...tempItem, customClaims: {...tempItem.customClaims, organization: "Snowline"}}).then(res => {                
                 console.log(res)            
                 let newUsers = [...props.users]
                 newUsers[newUsers.findIndex(user => user.uid === res.data.uid)] = res.data
@@ -77,6 +76,14 @@ const UserEditor = (props) => {
     }
 
     const onDelete = (item) => {
+        const user = item
+        deleteUser(user).then(() => {
+            console.log(`${user.displayName} deleted`) 
+        })
+        .catch(err => {
+            alert(err)
+        })
+        
     //dispatch(deleteItem(item, drivers, 'driver/driver_lists/driver', SET_ACTIVE_DRIVER, GET_DRIVERS_SUCCESS))
     dispatch(hideModal('User'))                 
     }
