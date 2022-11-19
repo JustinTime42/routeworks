@@ -18,10 +18,11 @@ const DisplayRoute= (props) => {
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
     const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const dispatch = useDispatch()
       
     useEffect(() => {
-        const unsub = activeRoute.id ? onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
+        const unsub = activeRoute.id ? onSnapshot(doc(db, `organizations/${organization}/route/`, activeRoute.id), (doc) => {
             dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
         }) : () => null
         return () => {

@@ -39,7 +39,7 @@ const App = () => {
         <Route path="routebuilder" element={<RouteBuilder />} />
         <Route path="logs" element={<ServiceLogs />} />
         <Route path="users" element={<Users />} />
-        <Route path="migration" element={<MigrationUI />} />
+        {/* <Route path="migration" element={<MigrationUI />} /> */}
       </Routes>
       </>
     ) 
