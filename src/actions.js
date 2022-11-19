@@ -1,44 +1,9 @@
 import { addDoc, collection, doc, setDoc, deleteDoc } from "firebase/firestore"; 
 import {db} from './firebase'
 import { 
-    SET_ACTIVE_ROUTE,
-    REQUEST_ROUTES_PENDING,
-    REQUEST_ROUTES_SUCCESS,
-    REQUEST_ROUTES_FAILED, 
-    SET_ACTIVE_DRIVER,
-    UPDATE_ADDRESSES_PENDING,
-    UPDATE_ADDRESSES_SUCCESS,
-    UPDATE_ADDRESSES_FAILED,
-    GET_ROUTE_SUCCESS,
-    GET_ROUTE_PENDING,
-    GET_ROUTE_FAILED,
-    SET_ACTIVE_PROPERTY,
-    SAVE_ROUTE_SUCCESS,
-    SAVE_ROUTE_PENDING,
-    SAVE_ROUTE_FAILED,
-    SHOW_ROUTE_EDITOR,
-    SHOW_ROUTE,
-    SET_ACTIVE_TRACTOR,
-    GET_DRIVERS_PENDING,
-    GET_DRIVERS_SUCCESS,
-    GET_DRIVERS_FAILED,
-    GET_ITEMS_PENDING,
-    GET_TRACTORS_SUCCESS,
-    GET_ITEMS_FAILED,
-    ROUTE_DATA_PENDING,
-    ROUTE_DATA_SUCCESS,
-    ROUTE_DATA_FAILED,
     FILTER_PROPERTIES_SUCCESS,
-    GET_VEHICLE_TYPES_PENDING,
-    GET_VEHICLE_TYPES_SUCCESS,
-    GET_VEHICLE_TYPES_FAILED,
     SET_CURRENT_USER,
     TIMER_IS_RUNNING,
-    SET_ACTIVE_VEHICLE_TYPE,
-    GET_WORK_TYPES_SUCCESS,
-    GET_WORK_TYPES_PENDING,
-    GET_WORK_TYPES_FAILED,
-    SET_WORK_TYPE,
     SHOW_MODAL,
     HIDE_MODAL,
     TEMP_ITEM,
@@ -57,21 +22,6 @@ export const setTimerIsRunning = (isRunning) => {
         type: TIMER_IS_RUNNING,
         payload: isRunning
     }
-}
-
-export const getRouteData = () => (dispatch) => {
-    dispatch({ type: ROUTE_DATA_PENDING })
-    fetch(`${process.env.REACT_APP_API_URL}/routedata`)
-    .then(response => response.json())
-    .then(data => dispatch({ type: ROUTE_DATA_SUCCESS, payload: data }))
-    .catch(error => dispatch({ type: ROUTE_DATA_FAILED, payload: error }))
-}
-
-export const filterRouteProperties = (allAddresses, routeName, filter = '') => (dispatch) => {
-    dispatch({ type: GET_ROUTE_PENDING})
-    const routeProperties = allAddresses.filter(address => address.route_data.some(route => route.route_name === routeName )) 
-        .sort((a, b) => a.route_position > b.route_position ? 1 : -1); 
-    dispatch({ type: GET_ROUTE_SUCCESS, payload: routeProperties})
 }
 
 export const filterProperties = (matches) => {
@@ -161,20 +111,6 @@ export const setActiveItem = (item, itemArray, actionType) => {
             type: actionType,
             payload: item
         }
-    }
-}
-
-export const showRouteEditor = (show) => {
-    return {
-        type: SHOW_ROUTE_EDITOR,
-        payload: show
-    }
-}
-
-export const showRoute = (show) => {
-    return {
-        type: SHOW_ROUTE, 
-        payload: show
     }
 }
 

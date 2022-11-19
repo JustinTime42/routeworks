@@ -12,7 +12,7 @@ import DisplayRoute from './DisplayRoute'
 import ServiceLogs from './components/service_logs/ServiceLogs';
 import Users from './components/Users';
 import { SET_ACTIVE_DRIVER } from './constants';
-// import MigrationUI from './components/migration/MigrationUI'
+import MigrationUI from './components/migration/MigrationUI'
 
 const App = () => { 
   const [user] = useAuthState(auth);
@@ -24,7 +24,7 @@ const App = () => {
       user.getIdTokenResult().then(user => {
         console.log(user)
         dispatch(setCurrentUser(user))
-      })      
+      })
     } else {
       dispatch(setCurrentUser(null))
     }
@@ -39,7 +39,7 @@ const App = () => {
         <Route path="routebuilder" element={<RouteBuilder />} />
         <Route path="logs" element={<ServiceLogs />} />
         <Route path="users" element={<Users />} />
-        {/* <Route path="migration" element={<MigrationUI />} /> */}
+        <Route path="migration" element={<MigrationUI />} />
       </Routes>
       </>
     ) 

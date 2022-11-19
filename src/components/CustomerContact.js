@@ -11,9 +11,11 @@ const CustomerContact = (props) => {
     const [showDownloadLink, setShowDownloadLink] = useState(false)
     const [customers, setCustomers] = useState([])
     const modals = useSelector(state => state.whichModals.modals)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
 
     useEffect(() => {
-        const unsub = onSnapshot(doc(db, `driver/`, 'tags'), (doc) => {
+        const unsub = onSnapshot(doc(db, `organizations/${organization}/tags/`, 'tags'), (doc) => {
             setAllTags([...doc.data().tags])
         })
         return () => {
@@ -50,7 +52,7 @@ const CustomerContact = (props) => {
         let contactList = []
         selectedTags.forEach(async(tag, i) => {
             console.log(tag)
-            const q = query(collection(db, 'driver/driver_lists/customer'), where("tags", "array-contains", tag))
+            const q = query(collection(db, `organizations/${organization}/customer`), where("tags", "array-contains", tag))
             const querySnapshot = await getDocs(q)
             querySnapshot.forEach(doc => {
                 let customer = {...doc.data(), id: doc.id}

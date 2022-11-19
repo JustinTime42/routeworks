@@ -10,11 +10,11 @@ import { createStore, applyMiddleware, combineReducers } from 'redux'
 import App from './App'
 import thunkMiddleWare from 'redux-thunk'
 import { createLogger } from 'redux-logger'
-import { setActiveRoute, requestRoutes, setActiveDriver, setActiveTractor, requestAllAddresses, getRouteProperties, setActiveProperty, saveRoute, getDrivers, getTractors, getRouteData, filterProperties, getTractorTypes, setActiveVehicleType, setActiveWorkType, getWorkTypes, whichModals, setTempItem, setTimerIsRunning, setCurrentUser, setLogs, setActiveLogEntry } from './reducers';
+import { setActiveRoute, requestRoutes, setActiveDriver, setActiveTractor, requestAllAddresses, setActiveProperty, getTractors, filterProperties, getTractorTypes, setActiveVehicleType, setActiveWorkType, getWorkTypes, whichModals, setTempItem, setTimerIsRunning, setCurrentUser, setLogs, setActiveLogEntry } from './reducers';
 //import "./index.css"
 
 const logger = createLogger()
-const rootReducer = combineReducers( { setActiveRoute, requestRoutes, setActiveDriver, setActiveTractor, requestAllAddresses, getRouteProperties, setActiveProperty, saveRoute, getDrivers, getTractors, getRouteData, filterProperties, getTractorTypes, setActiveVehicleType, setActiveWorkType, getWorkTypes, whichModals, setTempItem, setTimerIsRunning, setCurrentUser, setLogs, setActiveLogEntry })
+const rootReducer = combineReducers( { setActiveRoute, requestRoutes, setActiveDriver, setActiveTractor, requestAllAddresses, setActiveProperty, getTractors, filterProperties, getTractorTypes, setActiveVehicleType, setActiveWorkType, getWorkTypes, whichModals, setTempItem, setTimerIsRunning, setCurrentUser, setLogs, setActiveLogEntry })
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleWare, logger))
 const rootElement = document.getElementById("root");
 

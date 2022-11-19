@@ -5,7 +5,7 @@ import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } f
 import {GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, TEMP_ITEM} from '../../constants.js'
 import { httpsCallable } from "firebase/functions";
 import { auth, functions } from "../../firebase";
-import { sendEmailVerification, sendPasswordResetEmail, deleteUser } from "firebase/auth";
+import { sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 
 const UserEditor = (props) => {
     const [deleteAlert, setDeleteAlert] = useState('')
@@ -55,15 +55,16 @@ const UserEditor = (props) => {
                 let newUsers = [...props.users]
                 newUsers[newUsers.findIndex(user => user.uid === res.data.uid)] = res.data
                 props.setUsers(newUsers)
+                alert(`${tempItem.displayName} updated.`)
             })
             .catch(err => console.log(err))
         }
         else {
             const createUser = httpsCallable(functions, 'createUser' )
             createUser(tempItem).then(i => {
-                console.log(i.data)
                 sendPasswordResetEmail(auth, i.data.email)
                 props.setUsers([...props.users, i.data])
+                alert(`${i.data.displayName} created.`)
             } ) 
         } 
         dispatch(hideModal('User'))
@@ -77,15 +78,17 @@ const UserEditor = (props) => {
 
     const onDelete = (item) => {
         const user = item
+        const deleteUser = httpsCallable(functions, 'deleteUser')
         deleteUser(user).then(() => {
             console.log(`${user.displayName} deleted`) 
+            let newUsers = props.users.filter(i => i.uid !== user.uid)
+            props.setUsers(newUsers)
+            alert(`${user.displayName} deleted`)
         })
         .catch(err => {
             alert(err)
         })
-        
-    //dispatch(deleteItem(item, drivers, 'driver/driver_lists/driver', SET_ACTIVE_DRIVER, GET_DRIVERS_SUCCESS))
-    dispatch(hideModal('User'))                 
+        dispatch(hideModal('User'))                 
     }
 
     const onClose = () => {
@@ -153,7 +156,7 @@ const UserEditor = (props) => {
                 </div>
                 <Alert className="d-flex justify-content-around mb-3" show={deleteAlert === tempItem}>
                     <Button onClick={() => onDelete(tempItem)} variant="danger">
-                        Delete {tempItem?.displayName}
+                        Delete {tempItem?.displayName}?
                     </Button>
                     <Button onClick={() => setDeleteAlert('')} variant="success">
                         Cancel

@@ -13,6 +13,8 @@ import DropdownToggle from "react-bootstrap/esm/DropdownToggle";
         const modals = useSelector(state => state.whichModals.modals)
         const tempItem = useSelector(state => state.setTempItem.item)
         const currentUser = useSelector(state => state.setCurrentUser.currentUser)
+        const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
         const dispatch = useDispatch()
       
         const isEditable = (item) => {
@@ -44,11 +46,11 @@ import DropdownToggle from "react-bootstrap/esm/DropdownToggle";
                 tempItem.customers.map(customer => {
                     let newCustomer = customers.find(item => item.id === customer.id)
                     newCustomer.routesAssigned[tempItem.id] = tempItem.name
-                    dispatch(editItem(newCustomer, customers, 'driver/driver_lists/customer', null, UPDATE_ADDRESSES_SUCCESS))
+                    dispatch(editItem(newCustomer, customers, `organizations/${organization}/customer`, null, UPDATE_ADDRESSES_SUCCESS))
                 })
-                dispatch(editItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+                dispatch(editItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             } else {
-                dispatch(createItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+                dispatch(createItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             }
             dispatch(hideModal('Route'))
         }
@@ -58,9 +60,9 @@ import DropdownToggle from "react-bootstrap/esm/DropdownToggle";
             tempItem.customers.map(customer => {
                 let newCustomer = customers.find(item => item.id === customer.id)
                 delete newCustomer.routesAssigned[tempItem.id]
-                dispatch(editItem(newCustomer, customers, 'driver/driver_lists/customer', null, UPDATE_ADDRESSES_SUCCESS))
+                dispatch(editItem(newCustomer, customers, `organizations/${organization}/customer`, null, UPDATE_ADDRESSES_SUCCESS))
             })
-            dispatch(deleteItem(tempItem, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+            dispatch(deleteItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
             dispatch(hideModal('Route'))                 
         }
 

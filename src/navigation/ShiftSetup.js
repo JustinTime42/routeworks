@@ -21,9 +21,8 @@ const ShiftSetup = () => {
     const [user, loading, error] = useAuthState(auth);
     let location = useLocation()
 
-    const activeDriver = useSelector(state => state.setActiveDriver.driver)    
+   // const activeDriver = useSelector(state => state.setActiveDriver.driver)    
     const activeVehicle = useSelector(state => state.setActiveTractor.activeTractor)
-    const drivers = useSelector(state => state.getDrivers.drivers)
     const tractors = useSelector(state => state.getTractors.allTractors)
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeVehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
@@ -34,12 +33,12 @@ const ShiftSetup = () => {
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
     
-    useEffect(() => {
-        if(user && (drivers.length > 0) && !activeDriver.name) {
-            console.log(user.displayName)
-            dispatch(setActiveItem(user.displayName, drivers, SET_ACTIVE_DRIVER))
-        }
-        }, [user, drivers])
+    // useEffect(() => {
+    //     if(user && (drivers.length > 0) && !activeDriver.name) {
+    //         console.log(user.displayName)
+    //         dispatch(setActiveItem(user.displayName, drivers, SET_ACTIVE_DRIVER))
+    //     }
+    //     }, [user, drivers])
 
     useEffect(() => { 
         const unsub = onSnapshot(collection(db, 'driver/driver_lists/driver'), (querySnapshot) => {
@@ -50,9 +49,6 @@ const ShiftSetup = () => {
         }
     },[])
 
-    useEffect(() => {
-        dispatch(setActiveItem(user.displayName, drivers, SET_ACTIVE_DRIVER))
-    },[location.pathname])
 
     const outerDivStyle = {
         display: "flex", 

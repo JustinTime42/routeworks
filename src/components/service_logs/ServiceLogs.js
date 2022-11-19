@@ -16,6 +16,8 @@ const ServiceLogs = (props) => {
     const [dueDate, setDueDate ] = useState('')
     const [editable, setEditable] = useState(false)
     const logs = useSelector(state => state.setLogs.entries)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
 
     const dispatch = useDispatch()
 
@@ -31,7 +33,7 @@ const ServiceLogs = (props) => {
         console.log(start)
         let end = Timestamp.fromDate(new Date(Date.parse(endDate) + offset + 86400000))// new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
         
-        const q = query(collection(db, 'service_logs'), where('timestamp', '>', start), where('timestamp', '<=', end))
+        const q = query(collection(db, `organizations/${organization}/service_logs`), where('timestamp', '>', start), where('timestamp', '<=', end))
         const querySnapshot = await getDocs(q)
         let logs = []
         if (logType === 'xero') {

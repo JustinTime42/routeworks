@@ -6,31 +6,11 @@ import { SET_ACTIVE_ROUTE,
     UPDATE_ADDRESSES_PENDING,
     UPDATE_ADDRESSES_SUCCESS,
     UPDATE_ADDRESSES_FAILED,
-    GET_ROUTE_SUCCESS,
-    GET_ROUTE_PENDING,
-    GET_ROUTE_FAILED,
     SET_ACTIVE_PROPERTY,
-    SAVE_ROUTE_SUCCESS,
-    SAVE_ROUTE_PENDING,
-    SAVE_ROUTE_FAILED,
-    SHOW_ROUTE_EDITOR,
-    SHOW_ROUTE,
     SET_ACTIVE_TRACTOR,
-    NEW_PROPERTY_SUCCESS,
-    NEW_PROPERTY_PENDING,
-    NEW_PROPERTY_FAILED,
-    DEL_PROPERTY_SUCCESS,
-    DEL_PROPERTY_PENDING,
-    DEL_PROPERTY_FAILED,
-    GET_DRIVERS_PENDING,
-    GET_DRIVERS_SUCCESS,
-    GET_DRIVERS_FAILED,
     GET_ITEMS_PENDING,
     GET_TRACTORS_SUCCESS,
     GET_ITEMS_FAILED,
-    ROUTE_DATA_PENDING,
-    ROUTE_DATA_SUCCESS,
-    ROUTE_DATA_FAILED,
     FILTER_PROPERTIES_SUCCESS,
     GET_VEHICLE_TYPES_PENDING,
     GET_VEHICLE_TYPES_SUCCESS,
@@ -170,25 +150,6 @@ export const setActiveDriver = (state = initialStateDriver, action={}) => {
     }
 }
 
-const initialStateDrivers = {
-    isPending: false,
-    drivers: [],
-    error: ''    
-}
-
-export const getDrivers = (state = initialStateDrivers, action={}) => {
-    switch(action.type) {
-        case GET_DRIVERS_PENDING: 
-            return {...state, isPending: true}
-        case GET_DRIVERS_SUCCESS:
-            return {...state, drivers: action.payload, isPending: false}
-        case GET_DRIVERS_FAILED:
-            return {...state, error: action.payload, isPending: false}
-        default:
-            return state
-    }
-}
-
 const initialStateActiveTractor = {
     activeTractor: {
         name: '',
@@ -315,44 +276,6 @@ export const requestAllAddresses = (state = initialStateAllAddresses, action={})
     }
 }
 
-export const initialStateRouteData = {
-    routeData: [],
-    isPending: false,
-    error:''
-}
-
-export const getRouteData = (state = initialStateRouteData, action={}) => {
-    switch(action.type) {
-        case ROUTE_DATA_PENDING:
-            return {...state, isPending: true}
-        case ROUTE_DATA_SUCCESS:
-            return {...state, routeData: action.payload, isPending: false}
-        case ROUTE_DATA_FAILED:
-            return {...state, error: action.payload, isPending: false}
-        default:
-            return state
-    }
-}
-
-export const initialStateRouteProperties = {
-    addresses: [],
-    isPending: false,
-    error: ''
-}
-
-export const getRouteProperties = (state = initialStateRouteProperties, action={}) => {
-    switch(action.type) {
-        case GET_ROUTE_PENDING: 
-            return {...state, isPending: true}
-        case GET_ROUTE_SUCCESS:
-            return {...state, addresses: action.payload, isPending: false}
-        case GET_ROUTE_FAILED:
-            return {...state, error: action.payload, isPending: false}
-        default:
-            return state
-    }
-}
-
 export const initialStateFilteredProperties = {
     customers: [],
 }
@@ -362,38 +285,6 @@ export const filterProperties = (state = initialStateFilteredProperties, action=
         case FILTER_PROPERTIES_SUCCESS: 
             return {...state, customers: action.payload}
         default: return state
-    }
-}
-
-export const initialStateSaveRoute = {
-    addresses: [],
-    isPending: true,
-    error: ''
-}
-
-export const saveRoute = (state = initialStateSaveRoute, action={}) => {
-    switch(action.type) {
-        case SAVE_ROUTE_PENDING:
-            return {...state, isPending: true}
-        case SAVE_ROUTE_SUCCESS:
-            return {...state, addresses: action.payload, isPending: false}
-        case SAVE_ROUTE_FAILED: 
-            return {...state, error: action.payload, isPending: false}
-        default: 
-            return state
-    }
-}
-
-export const initialStateShowRoute = {
-    showRoute: false
-}
-
-export const showRoute = (state = initialStateShowRoute, action={}) => {
-    switch(action.type) {
-        case SHOW_ROUTE: 
-            return {...state, showRoute: action.payload}
-        default:
-            return state
     }
 }
 

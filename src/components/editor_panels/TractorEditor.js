@@ -14,6 +14,8 @@ const TractorEditor = (props) => {
     const tractors = useSelector(state => state.getTractors.allTractors)
     const modals = useSelector(state => state.whichModals.modals)
     const tempItem = useSelector(state => state.setTempItem.item)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -58,17 +60,17 @@ const TractorEditor = (props) => {
             let newTractor = {...tempItem, type: activeVehicleType}
             console.log(newTractor)
             if (tempItem.id) {    
-                dispatch(editItem(tempItem, tractors, 'driver/driver_lists/vehicle', SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
+                dispatch(editItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
             }
             else {
-                dispatch(createItem(tempItem, tractors, 'driver/driver_lists/vehicle', SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
+                dispatch(createItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
             } 
             dispatch(hideModal('Vehicle'))    
         }
     } 
 
     const onDelete = (item) => {
-        dispatch(deleteItem(tempItem, tractors, "driver/driver_lists/vehicle", SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
+        dispatch(deleteItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
         dispatch(hideModal('Vehicle'))             
     }
 
@@ -90,16 +92,16 @@ const TractorEditor = (props) => {
 
     const onSaveType = () => {
         if (vehicleType.id) {  
-            dispatch(editItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))  
+            dispatch(editItem(vehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))  
         }
         else {
-            dispatch(createItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))
+            dispatch(createItem(vehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))
         } 
         dispatch(hideModal('VehicleType'))    
     }
 
     const onDeleteType = () => {
-        dispatch(deleteItem(vehicleType, vehicleTypes, 'driver/driver_lists/vehicle_type', GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))
+        dispatch(deleteItem(vehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))
         dispatch(hideModal('VehicleType'))                 
     }
 
@@ -113,7 +115,7 @@ const TractorEditor = (props) => {
                     selectedItem={activeVehicleType}
                     itemArray={vehicleTypes}   
                     collection='vehicle_type'   
-                    collectionPath='driver/driver_lists/'             
+                    collectionPath={`organizations/${organization}/` }            
                     setActiveAction={SET_ACTIVE_VEHICLE_TYPE}
                     reduxListAction= {GET_VEHICLE_TYPES_SUCCESS}
                     whichModal="VehicleType"

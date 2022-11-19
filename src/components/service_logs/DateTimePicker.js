@@ -13,10 +13,12 @@ const offset = new Date().getTimezoneOffset() * 60000
 
 export const DeleteLogRenderer = (props) => {
     const logs = useSelector(state => state.setLogs.entries)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
     const dispatch = useDispatch()
     const handleClick = () => {
         console.log(props)
-        dispatch(deleteItem(props.data, logs, 'service_logs', null, SET_LOG_ENTRIES))
+        dispatch(deleteItem(props.data, logs, `organizations/${organization}/service_logs`, null, SET_LOG_ENTRIES))
     }
     return (
         <Button onClick={handleClick}>Delete</Button>

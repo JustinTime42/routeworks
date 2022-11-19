@@ -7,6 +7,8 @@ import { db } from '../../firebase'
 const CustLogs = (props) => {
     const [entries, setEntries] = useState([])
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
 
     useEffect(() => {
         setEntries([])
@@ -17,7 +19,7 @@ const CustLogs = (props) => {
     },[])
     
     const getLogs = async() => {
-        const q = query(collection(db, 'service_logs'), where('cust_id', '==', activeProperty.id))
+        const q = query(collection(db, `organizations/${organization}/service_logs`), where('cust_id', '==', activeProperty.id))
         const querySnapshot = await getDocs(q);
         let logs = []
         querySnapshot.forEach((doc) => {

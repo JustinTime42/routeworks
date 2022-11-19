@@ -18,10 +18,12 @@ const RouteBuilder = () => {
     const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
     const filteredProperties = useSelector(state => state.filterProperties.customers)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
     const dispatch = useDispatch()
 
     useEffect(() => {
-        const unsub = activeRoute.id ? onSnapshot(doc(db, `driver/driver_lists/route/`, activeRoute.id), (doc) => {
+        const unsub = activeRoute.id ? onSnapshot(doc(db, `organizations/${organization}/route/`, activeRoute.id), (doc) => {
             dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
         }) : () => null
         return () => {
@@ -30,7 +32,7 @@ const RouteBuilder = () => {
     },[activeRoute.id])
 
     useEffect(() => {
-        const unsub = onSnapshot(collection(db, `driver/driver_lists/customer/`), (querySnapshot) => {
+        const unsub = onSnapshot(collection(db, `organizations/${organization}/customer/`), (querySnapshot) => {
             dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc, i) => {
                 if (i % 100 === 0) {
                     console.log(doc.data())
@@ -44,7 +46,7 @@ const RouteBuilder = () => {
     },[])
 
     useEffect(() => {
-        const unsub = onSnapshot(collection(db, `driver/driver_lists/vehicle_type`), (querySnapshot) => {
+        const unsub = onSnapshot(collection(db, `organizations/${organization}/vehicle_type`), (querySnapshot) => {
             dispatch({type: GET_VEHICLE_TYPES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
         return () => {
@@ -60,7 +62,7 @@ const RouteBuilder = () => {
         let confirmed = window.confirm(`Initialize ${activeRoute.name}?`)
         if (confirmed) {
             const newRouteCustomers = activeRoute.customers.map(i => ({...i, status: "Waiting"}))
-            dispatch(editItem({...activeRoute, customers: newRouteCustomers}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS)) 
+            dispatch(editItem({...activeRoute, customers: newRouteCustomers}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS)) 
         } else return
     }
 
@@ -72,7 +74,7 @@ const RouteBuilder = () => {
 
     const onDetailsPropertyClick = async(customer) => {
         dispatch(showModal('Customer'))
-        const docRef = doc(db, 'driver/driver_lists/customer', customer.id)
+        const docRef = doc(db, `organizations/${organization}/customer`, customer.id)
         const docSnap = await getDoc(docRef)
         if(docSnap.exists()) {
             dispatch(setTempItem({...docSnap.data(), id: docSnap.id}))
@@ -89,7 +91,7 @@ const RouteBuilder = () => {
         let newRoute = ({...route})  
         const routeIndex = activeRoute.customers.findIndex(item => item.id === customer.id)
         newRoute.customers[routeIndex][field] = !newRoute.customers[routeIndex][field]
-        dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
     const onPropertySave = (newDetails) => {
@@ -119,9 +121,9 @@ const RouteBuilder = () => {
             dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', null, REQUEST_ROUTES_SUCCESS))
         })
         if (newDetails.id) {
-            dispatch(editItem(newDetails, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+            dispatch(editItem(newDetails, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         } else {
-            dispatch(createItem(newDetails, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+            dispatch(createItem(newDetails, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         }
         onCloseClick()
     }
@@ -130,9 +132,9 @@ const RouteBuilder = () => {
         Object.values(customer.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
             newRoute.customers.splice(newRoute.customers.findIndex(item => item.id === customer.id), 1)
-            dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', null, REQUEST_ROUTES_SUCCESS))
+            dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
         })
-        dispatch(deleteItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+        dispatch(deleteItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         dispatch(hideModal('Customer'))
     }
 
@@ -156,8 +158,8 @@ const RouteBuilder = () => {
             } else return            
         }
         
-        dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
-        dispatch(editItem(customer, allCustomers, 'driver/driver_lists/customer', SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
+        dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
+        dispatch(editItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }
 
     const onCloseClick = () => {

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Tabs, Tab, Card, Col, Row, Button, Form, Alert, Modal } from 'react-bootstrap'
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase'
-import { getRouteData, createItem, editItem, setActiveItem, } from "../actions"
+import { createItem, editItem, setActiveItem, } from "../actions"
 import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY, SET_ACTIVE_PROPERTY } from '../constants';
 import CustLogs from './customer_panels/CustLogs'
 import SkipDetails from './customer_panels/SkipDetails'
@@ -31,21 +31,22 @@ const PropertyDetails = (props) => {
     ] = useState(initialState)
 
     const customers = useSelector(state => state.requestAllAddresses.addresses)
-    const driver = useSelector(state => state.setActiveDriver.driver)
+    const driver = useSelector(state => state.setCurrentUser.currentUser)
     const tractor = useSelector(state => state.setActiveTractor.activeTractor)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
-    const routePending = useSelector(state => state.getRouteProperties.isPending)
     const routes = useSelector(state => state.requestRoutes.routes)
     const workType = useSelector(state => state.setActiveWorkType.workType)
     const property = useSelector(state => state.setActiveProperty.activeProperty)
     const currentLogEntry = useSelector(state => state.setActiveLogEntry.entry)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
     const dispatch = useDispatch()
 
     useEffect(() => {
         const listener = event => {
             console.log(event)
           if (event.code === "Enter") {
-            console.log("Entere key pressed")
+            console.log("Enter key pressed")
             onStatusChange('Done')
             event.preventDefault()
           }
@@ -102,17 +103,16 @@ const PropertyDetails = (props) => {
     const setIsRunning = (isRunning) => setState(prevState => ({...prevState, isRunning:isRunning}))
     
     const undoStatus = () => {
-        deleteDoc(doc(db, 'service_logs', currentLogEntry.id))
+        deleteDoc(doc(db, `organizations/${organization}/service_logs`, currentLogEntry.id))
         .then(() => {
             setState(prevState => ({...prevState, showUndoConfirmation: false, done_label: "hidden", disabled: false}))
-            dispatch(getRouteData())
             dispatch(setActiveItem(null, [], ACTIVE_LOG_ENTRY))
         })
         .catch(err => alert(err))
         let newRouteCustomers = [...activeRoute.customers]
         console.log(newRouteCustomers)
         newRouteCustomers[newRouteCustomers.findIndex(i => i.id === property.id)].status = "Waiting"
-        dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
     const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {        
@@ -175,14 +175,14 @@ const PropertyDetails = (props) => {
             const newIndex = newRoute.customers.findIndex(i => i.id === property.id)
             newRoute.customers[newIndex].status = newStatus     
             newRoute.customers[newIndex].priority = false     
-            dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+            dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
         }
         console.log(newRecordObject.driverEarning)
         let keysArray = Object.keys(newRecordObject)
         keysArray.forEach(key => {
             if (newRecordObject[key] === null || newRecordObject[key] === undefined) {delete newRecordObject[key]}
         })
-        dispatch(createItem(newRecordObject, null, 'service_logs', ACTIVE_LOG_ENTRY, null))
+        dispatch(createItem(newRecordObject, null, `organizations/${organization}/service_logs`, ACTIVE_LOG_ENTRY, null))
 
 
 
@@ -232,7 +232,7 @@ const PropertyDetails = (props) => {
                         }
                         <Card.Body className='buttonRowStyle'>
                             <Button variant="primary" size="lg" disabled={isRunning} onClick={() => props.changeProperty(property, "prev")} >Prev</Button>
-                            <Button variant="danger" size="lg" disabled={routePending || disabled || isRunning} onClick={toggleShowSkip}>Skip</Button>
+                            <Button variant="danger" size="lg" disabled={disabled || isRunning} onClick={toggleShowSkip}>Skip</Button>
                                 <div style={{visibility: done_label, fontSize: "large"}}>                                    
                                     <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
                                 </div>
@@ -240,7 +240,7 @@ const PropertyDetails = (props) => {
                                 style={{visibility: (property.contract_type === 'Hourly') ? 'hidden' : 'visible'}} 
                                 variant="success" 
                                 size="lg"  
-                                disabled={isRunning || routePending || disabled || (property.sand_contract === "Per Yard" && yards === 0 && workType.name === "Sanding")} 
+                                disabled={isRunning || disabled || (property.sand_contract === "Per Yard" && yards === 0 && workType.name === "Sanding")} 
                                 autoFocus={true}                                
                                 onClick={() => onStatusChange('Done')}>
                                     Done

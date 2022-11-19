@@ -15,7 +15,7 @@ const editorSize = {height:"90vh", marginTop: '2em'}
 
 const CustomerEditor = (props) => {
     const customer = useSelector(state => state.setTempItem.item)
-    const routeData = useSelector(state => state.getRouteData.routeData)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
@@ -49,7 +49,7 @@ const CustomerEditor = (props) => {
     }, [customer])
 
     useEffect(() => {
-        const unsub = onSnapshot(doc(db, `driver/`, 'tags'), (doc) => {
+        const unsub = onSnapshot(doc(db, `organizations/${organization}/tags`,  'tags'), (doc) => {
             console.log(doc.data().tags)
             setAllTags([...doc.data().tags])
         })
@@ -74,7 +74,7 @@ const CustomerEditor = (props) => {
     }
 
     const saveNewTag = async(newTag) => {
-        const tagsRef = doc(db, 'driver', 'tags')
+        const tagsRef = doc(db, `organizations/${organization}/tags`, 'tags')
         await updateDoc(tagsRef, {
             tags: arrayUnion(newTag)
         })

@@ -7,48 +7,109 @@ exports.listUsers = functions.https.onCall((data, context) => {
   return admin.auth().listUsers()
 })
 
-exports.createUser = functions.https.onCall((data,context) => {
-  if (!context.auth) {
-    // Throwing an HttpsError so that the client gets the error details.
-    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+const sendVerificationEmail = (user, organization) => {
+  const mailOptions = {
+    from: organization,
+    to: user.email,
+    text: 'Please click the link below to verify your email address'
   }
+  const actionCodeSettings = {
+    url: 'https://app.snowlinealaska.com',
+    handleCodeInApp: true,
+    iOS: {bundleId: "com.snowlinealaska.app"},
+    android:{
+      packageName: 'com.snowlinealaska.app',
+      installApp: true,
+    }
+  }
+  admin.auth().generateEmailVerificationLink(user.email, actionCodeSettings)
+  .then(link => {
+    return admin.auth().sendCustomer
+  })
+
+}
+
+exports.createUser = functions.https.onCall((data,context) => {
   const {displayName, email, password, customClaims, disabled } = data
-  return admin.auth().createUser({
-    email: email,
-    displayName: displayName,
-    disabled: disabled,
-  })
-  .then((userRecord) => { 
-      return admin.auth().setCustomUserClaims(userRecord.uid, {...customClaims, organization: 'Snowline'})
-      .then(() => {
-        return admin.auth().getUser(userRecord.uid)
-      })
-      .catch(err => {
-        return err
-      })    
-  })
-  .catch(err => {
-    return err
-  })  
+  const role = context.auth.token.role
+  const organization = context.auth.token.organization
+  // assign organization based on context.token
+  if (!context.auth) {
+    // Throwing an HttpsError if not logged in
+    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+  } else if (role !== 'Admin') {
+    // Throwing an HttpsError if not Admin
+    throw new functions.https.HttpsError('failed-precondition', 'Insufficient permissions');
+  } else {
+    return admin.auth().createUser({
+      email: email,
+      displayName: displayName,
+      disabled: disabled,
+    })
+    .then((userRecord) => { 
+        return admin.auth().setCustomUserClaims(userRecord.uid, {...customClaims, organization: organization})
+        .then(() => {          
+          return admin.auth().getUser(userRecord.uid)
+        })
+        .catch(err => {
+          return err
+        })
+    })
+    .catch(err => {
+      return err
+    })
+  }
 })
 
 exports.updateUser = functions.https.onCall((data, context) => {
   const {uid, displayName, email, password, customClaims, disabled } = data
-  return admin.auth().updateUser(data.uid, {
-    email: email,
-    displayName: displayName,
-    disabled: disabled,
-  })
-  .then(userRecord => {
-    return admin.auth().setCustomUserClaims(userRecord.uid, {...customClaims})
-    .then(() => {return admin.auth().getUser(userRecord.uid)})
-  })
+  const organization = context.auth.token.organization
+  const role = context.auth.token.role
+  if (!context.auth) {
+    // Throwing an HttpsError if not logged in
+    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+  } else if (role !== 'Admin') {
+    // Throwing an HttpsError if not Admin
+    throw new functions.https.HttpsError('failed-precondition', 'Insufficient permissions');
+  } else {
+    return admin.auth().getUser(uid).then((userRecord) => {
+      if(userRecord.customClaims.organization === organization) {
+        return admin.auth().updateUser(data.uid, {
+          email: email,
+          displayName: displayName,
+          disabled: disabled,
+        })
+        .then(result => {
+          return admin.auth().setCustomUserClaims(result.uid, {...customClaims})
+          .then(() => {
+            return admin.auth().getUser(result.uid)
+          })
+        })
+      } else functions.logger.log('wrong organization')
+    })
+  }
+});
+
+exports.deleteUser = functions.https.onCall((data, context) => {
+  const {uid, displayName, email, password, customClaims, disabled } = data
+  const organization = context.auth.token.organization
+  const role = context.auth.token.role
+  functions.logger.log(`attempting to delete ${displayName}`)
+  if (!context.auth) {
+    // Throwing an HttpsError if not logged in
+    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+  } else if ((role !== 'Admin') || (organization !== customClaims.organization)) {
+    // Throwing an HttpsError if not Admin
+    throw new functions.https.HttpsError('failed-precondition', 'Insufficient permissions');
+  } else {
+    functions.logger.log(`deleting ${displayName}`)
+    return admin.auth().deleteUser(uid)
+    .then(response => {
+      return response
+    })
+    .catch(err => {return err})
+  }
 })
-
-// exports.deleteUser = functions.https.onCall((data, context) => {
-//   //check if custom claims matches admin role and organization
-
-// })
 
 exports.updateLogEntry = functions.firestore 
   .document('service_logs/{itemID}')

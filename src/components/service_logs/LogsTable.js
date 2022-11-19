@@ -13,6 +13,8 @@ import { DateTimeEditor, DateTimeRenderer } from './DateTimePicker'
 const LogsTable = (props) => {
     const [columnDefs, setColumnDefs] = useState(getColumnDefs(props.logType))
     const logs = useSelector(state => state.setLogs.entries)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -44,7 +46,7 @@ const LogsTable = (props) => {
 
     const cellValueChangedListener = useCallback(e => {
         console.log(e.data)
-        dispatch(editItem(e.data, logs, 'service_logs', null, SET_LOG_ENTRIES))
+        dispatch(editItem(e.data, logs, `organizations/${organization}/service_logs`, null, SET_LOG_ENTRIES))
     }, [])
 
     const onStopped = useCallback(e => { 

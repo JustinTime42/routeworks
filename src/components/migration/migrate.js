@@ -2,15 +2,26 @@ import { indexedDBLocalPersistence } from "firebase/auth";
 import { addDoc, setDoc, collection, doc, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 
-const sendToDB = async(item, path) => {  
+const addedDocs = []
+const sendToDB = async(item, path) => {
+    let {id, ...newItem} = item
+    await setDoc(doc(db, path, id), {...newItem}) 
+    addedDocs.push(id)         
+}
+
+export const migrateBasic = async (oldPath, newPath) => {
+    let waitTime = 0
     try {
-        console.log(item)
-        const docRef = await addDoc(collection(db, path), item)          
-   } catch (e) {
-    console.log(item)
-    console.log(e)
-     alert("Error adding document: ", e);
-   }
+        const querySnapshot = await getDocs(collection(db, oldPath))
+        waitTime = querySnapshot.length
+        console.log(`waiting ${waitTime / 10000} seconds`)
+        await querySnapshot.forEach((doc,i) => {  
+            if (!doc.id) {console.log('missing ID')}
+                let timeout = setTimeout(() => sendToDB({...doc.data(), id: doc.id}, newPath), i*10) 
+        })
+    }
+    catch(error) {alert(error)} 
+    let newTimeout = setTimeout(() => console.log(addedDocs), waitTime*10 + 500)
 }
 
 export const migrateCustomers = () => {
@@ -105,20 +116,29 @@ export const migrateCustomers = () => {
 }
 
 //this will be for drivers, vehicles, vehicle_types, work_types
-export const migrateBasic = (oldPath, newPath) => {
-    return 
-    fetch(`${process.env.REACT_APP_API_URL}${oldPath}`)
-    .then(response => response.json())
-    .then(data => {
-        console.log('data from old database')
-        console.log(data)        
-        data.forEach(item => {
-            let {key, ...newItem} = item
-            sendToDB(newItem, newPath)
-        })
-    })
-    .catch(err => alert(err))
-}
+// export const migrateBasic = async (oldPath, newPath) => {
+//     try {
+//         const querySnapshot = await getDocs(collection(db, oldPath))
+//         querySnapshot.forEach((doc,i) => {            
+//             setTimeout(sendToDB(doc.data(), newPath), i*10) 
+//         })
+//     }
+//     catch(error) {alert(error)} 
+//     console.log(addedDocs)
+
+//     // return 
+//     // fetch(`${process.env.REACT_APP_API_URL}${oldPath}`)
+//     // .then(response => response.json())
+//     // .then(data => {
+//     //     console.log('data from old database')
+//     //     console.log(data)        
+//     //     data.forEach(item => {
+//     //         let {key, ...newItem} = item
+//     //         sendToDB(newItem, newPath)
+//     //     })
+//     // })
+//     // .catch(err => alert(err))
+// }
 
 
 export const migrateRouteData = () => {

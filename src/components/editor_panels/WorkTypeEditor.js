@@ -10,6 +10,8 @@
         const modals = useSelector(state => state.whichModals.modals)
         const tempItem = useSelector(state => state.setTempItem.item)
         const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
+        const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
         const dispatch = useDispatch()
 
         const onChange = (event) => {
@@ -34,16 +36,16 @@
 
         const onSave = () => {
             if (!tempItem.id) {
-                dispatch(createItem(tempItem, workTypes, 'driver/driver_lists/work_type', SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))                               
+                dispatch(createItem(tempItem, workTypes, `organizations/${organization}/work_type`, SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))                               
             }
             else {
-                dispatch(editItem(tempItem, workTypes, 'driver/driver_lists/work_type', SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))
+                dispatch(editItem(tempItem, workTypes, `organizations/${organization}/work_type`, SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))
             } 
             dispatch(hideModal('WorkType'))    
         }
 
         const onDelete = () => {
-            dispatch(deleteItem(tempItem, workTypes, 'driver/driver_lists/work_type', SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))
+            dispatch(deleteItem(tempItem, workTypes, `organizations/${organization}/work_type`, SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))
             dispatch(hideModal('WorkType'))                 
         }
 

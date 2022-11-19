@@ -13,16 +13,17 @@ import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDAT
 import '../styles/driver.css'
 
 const TopNav = () => {
-    const isRoutePending = useSelector(state => state.getRouteProperties.isPending)
     const isAllPending = useSelector(state => state.requestAllAddresses.isPending)
     const routesPending = useSelector(state => state.requestRoutes.isPending)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+
     const dispatch = useDispatch()
 
     useEffect(() => {
-        const unsub = onSnapshot(collection(db, `driver/driver_lists/customer`), (querySnapshot) => {
+        const unsub = onSnapshot(collection(db, `organizations/${organization}/customer`), (querySnapshot) => {
             dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
         return () => {
@@ -47,13 +48,13 @@ const TopNav = () => {
     return (
         <div style={{margin: "1em"}}>
             {
-            (isAllPending || isRoutePending || routesPending) ? <Spinner /> : null
+            (isAllPending || routesPending) ? <Spinner /> : null
             } 
             <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px", alignItems:'center',}}>
                 <SimpleSelector
                     title="Route"
                     collection='route'
-                    collectionPath='driver/driver_lists/'
+                    collectionPath={`organizations/${organization}/`} 
                     reduxListAction= {REQUEST_ROUTES_SUCCESS}
                     selectedItem={activeRoute}
                     itemArray={routes}
