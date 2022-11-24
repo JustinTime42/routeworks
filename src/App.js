@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Routes, Route } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
 import { UserLogin } from './auth/UserLogin'
 import TopNav from "./navigation/TopNav"
 import "./styles/App.css"
@@ -13,11 +13,33 @@ import ServiceLogs from './components/service_logs/ServiceLogs';
 import Users from './components/Users';
 import { SET_ACTIVE_DRIVER } from './constants';
 import MigrationUI from './components/migration/MigrationUI'
+import { doc, onSnapshot } from 'firebase/firestore';
 
 const App = () => { 
   const [user] = useAuthState(auth);
+  const [version, setVersion] = useState(.1)
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const dispatch = useDispatch()
+  
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, 'globals', 'version'), doc => {
+      if(version !== doc.data().version) {
+        setVersion(doc.data().version)
+      }      
+    })
+    return () => {
+      unsub()
+    }
+  },[])
+
+  useEffect(() => {
+    if (version !== .1) {
+      alert('New software version. Click OK to refresh')
+      window.location.reload()
+      console.log(version)
+    }
+
+  },[version])
 
   useEffect(() => {
     if(user) {
