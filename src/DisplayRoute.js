@@ -14,6 +14,7 @@ const DisplayRoute= (props) => {
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
+    const routeCustomers = useSelector(state => state.setActiveRoute.activeRoute.customers.filter(customer => customer.active === true))
     const routes = useSelector(state => state.requestRoutes.routes)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
@@ -30,17 +31,34 @@ const DisplayRoute= (props) => {
         }
     },[activeRoute.id])
 
-    const changeActiveProperty = (property = activeProperty, direction = '') => {
+    const changeActiveProperty = (property = activeProperty, direction = '') => {        
         const custDetails = (customer) => {
             return customers.find(i => i.id === customer.id)
         }
         console.log(property, direction)
         if (direction) {
-            let currentPosition = activeRoute.customers.findIndex(i => i.id === property.id)
+            let currentPosition = routeCustomers.findIndex(i => i.id === property.id)
+            let nextPosition
+            const getNextPosition = (direction, current) => {
+                nextPosition = (direction === 'next') ? current + 1 : current - 1
+                console.log(nextPosition)
+                currentPosition = nextPosition
+            }
             console.log(currentPosition)
-            let nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
-            if (nextPosition >= 0 && nextPosition < activeRoute.customers.length) {
-                dispatch(setActiveItem(custDetails(activeRoute.customers[nextPosition]), customers, SET_ACTIVE_PROPERTY))
+            let isNextCustomerActive = false
+            let nextCustomer = {}
+            do {
+                getNextPosition(direction, currentPosition)
+                if(routeCustomers[nextPosition].active) {
+                    console.log('active')
+                    nextCustomer = routeCustomers[nextPosition]
+                    isNextCustomerActive = true
+                }
+            }
+            while ((isNextCustomerActive === false) && (nextPosition < routeCustomers.length))
+            
+            if (nextPosition >= 0 && nextPosition < routeCustomers.length) {
+                dispatch(setActiveItem(custDetails(routeCustomers[nextPosition]), customers, SET_ACTIVE_PROPERTY))
                 if ((nextPosition - 1) > 0) {
                     document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
                 } else {
@@ -57,7 +75,7 @@ const DisplayRoute= (props) => {
         <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
             <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                 {
-                    activeRoute.customers.filter(customer => customer.active === true).map((address, i )=> {
+                    routeCustomers.map((address, i )=> {
                         return (
                             <PropertyCard                                                                    
                                 i={i}  

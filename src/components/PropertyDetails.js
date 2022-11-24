@@ -31,7 +31,7 @@ const PropertyDetails = (props) => {
     ] = useState(initialState)
 
     const customers = useSelector(state => state.requestAllAddresses.addresses)
-    const driver = useSelector(state => state.setCurrentUser.currentUser)
+    const driver = useSelector(state => state.setCurrentUser.currentUser.claims)
     const tractor = useSelector(state => state.setActiveTractor.activeTractor)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
@@ -91,7 +91,7 @@ const PropertyDetails = (props) => {
             }
         }
         console.log(value)
-        setState(prevState => ({ ...prevState, [name]: value}))
+        setState(prevState => ({ ...prevState, [name]: value || ''}))
     } 
 
     const toggleShowSkip = () => setState(prevState => ({...prevState, showSkipConfirmation: !prevState.showSkipConfirmation}))
@@ -144,7 +144,6 @@ const PropertyDetails = (props) => {
         if (property.contract_type === "Hourly") { 
             newRecordObject.status = 'Hourly'
         }
-        
         newRecordObject.timestamp = new Date(Date.now())
         newRecordObject.contract_type = property.contract_type
         newRecordObject.cust_id = property.id
@@ -224,7 +223,7 @@ const PropertyDetails = (props) => {
                         <Card.Body>
                         <Form.Group>
                             <Form.Label>Driver Notes</Form.Label>
-                            <Form.Control name="noteField" as="textarea" rows="3" value={noteField} onChange={onTextChange}/>
+                            <Form.Control name="noteField" as="textarea" rows="3" value={noteField || ""} onChange={onTextChange}/>
                         </Form.Group>
                         </Card.Body>
                         {

@@ -55,8 +55,9 @@ const RouteBuilder = () => {
     },[])
 
     useEffect(() => {
-        document.getElementById('droppable2scroll')?.scrollTo(0,0)
-    }, [activeRoute.name])
+        let custIndex = activeRoute?.customers.findIndex(i => i.id === activeCustomer.id)
+        document.getElementById(`card${custIndex}`)?.scrollIntoView()
+    }, [activeCustomer])
 
     const onInitRoute = () => {
         let confirmed = window.confirm(`Initialize ${activeRoute.name}?`)

@@ -30,7 +30,7 @@ const App = () => {
     }
   }, [user])
 
-  if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {    
+ if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {    
     return (
       <>
       <TopNav />
@@ -43,7 +43,12 @@ const App = () => {
       </Routes>
       </>
     ) 
-  } else {
+  // } else if (!stateUser?.claims?.stripeRole) {
+  //   let checkoutPage = 'https://buy.stripe.com/test_9AQ4jo7SS0wS5yw000'          
+  //   window.open(checkoutPage, '_blank')
+   }
+  
+  else {
     console.log(user)
     return <UserLogin />
   }

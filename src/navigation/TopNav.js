@@ -42,6 +42,7 @@ const TopNav = () => {
     }
     
     const onSelect = (event, itemArray, setActiveAction) => {
+        document.getElementById('droppable2scroll')?.scrollTo(0,0)
         dispatch(setActiveItem(event, itemArray, setActiveAction))
     }
 

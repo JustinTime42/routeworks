@@ -21,8 +21,6 @@ const UserEditor = (props) => {
         console.log(tempItem)
     }, [tempItem])
 
-
-
     const onChange = (event) => {    
         let {target: {name, value} } = event
         if (name === "name") {

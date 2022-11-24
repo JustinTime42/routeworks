@@ -36,8 +36,8 @@ const SearchBar = () => {
             custIndex = activeRoute.customers.findIndex(i => i.id === customer.id)
         } else {
             custIndex = activeRoute.customers.filter(i => i.active).findIndex(i => i.id === customer.id)
-        }
-        setTimeout(() => document.getElementById(`card${custIndex}`)?.scrollIntoView(), 100)
+        }        
+        setTimeout(() => document.getElementById(`card${custIndex}`)?.scrollIntoView(), 300)
     }
 
     useEffect(() => {

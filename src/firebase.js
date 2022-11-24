@@ -98,6 +98,7 @@ signOut(auth)
 
 export {
   functions,
+  createUserWithEmailAndPassword,
   app,
   auth,
   db,
