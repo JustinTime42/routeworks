@@ -122,6 +122,7 @@ const TractorEditor = (props) => {
                     onCreate={onCreateType}
                     onEdit={onEditType}
                     onSelect={onSelectType}
+                    permissions={['Admin']}
                 />
                 <Form.Group as={Row}>
                     <Col sm={8}>

@@ -31,6 +31,7 @@ const ShiftSetup = () => {
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const modals = useSelector(state => state.whichModals.modals)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const dispatch = useDispatch()
     
     // useEffect(() => {
@@ -130,7 +131,7 @@ const ShiftSetup = () => {
                     style={selectorStyle}
                     title="Vehicle"
                     collection='vehicle'
-                    collectionPath='driver/driver_lists/'
+                    collectionPath={`organizations/${organization}/`}
                     selectedItem={activeVehicle}
                     itemArray={tractors}                    
                     whichModal="Vehicle"
@@ -145,7 +146,7 @@ const ShiftSetup = () => {
                     style={selectorStyle}
                     title="Work Type"
                     collection='work_type'
-                    collectionPath={'driver/driver_lists/'}
+                    collectionPath={`organizations/${organization}/`}
                     selectedItem={activeWorkType}
                     itemArray={workTypes}              
                     whichModal="WorkType"

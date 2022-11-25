@@ -12,6 +12,7 @@ const SimpleSelector = (props) => {
     let location = useLocation()
   
     useEffect(() => { 
+        console.log(props.permissions)
         const unsub = onSnapshot(collection(db, `${props.collectionPath}${props.collection}`), (querySnapshot) => {
             dispatch({type:props.reduxListAction, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
