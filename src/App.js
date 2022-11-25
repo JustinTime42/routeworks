@@ -17,7 +17,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 
 const App = () => { 
   const [user] = useAuthState(auth);
-  const [version, setVersion] = useState(.2)
+  const [version, setVersion] = useState(.3)
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const dispatch = useDispatch()
   
@@ -33,7 +33,7 @@ const App = () => {
   },[])
 
   useEffect(() => {
-    if (version !== .2) {
+    if (version !== .3) {
       alert('New software version. Click OK to refresh')
       window.location.reload()
       console.log(version)
