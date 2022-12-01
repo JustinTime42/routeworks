@@ -17,32 +17,23 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import Register from './auth/Register.tsx';
 
 const App = () => { 
+  const currentVersion = 0.5
   const [user] = useAuthState(auth);
-  const [version, setVersion] = useState(0.3)
+  const [version, setVersion] = useState(currentVersion)
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const dispatch = useDispatch()
   
   useEffect(() => {
-    if (stateUser?.claims?.organization) {
       const unsub = onSnapshot(doc(db, 'globals', 'version'), doc => {
-        if(version !== doc.data().version) {
-          setVersion(doc.data().version)
+        if(currentVersion !== doc.data().version) {
+          alert('New software version. Click OK to refresh')
+        window.location.reload()          
         }      
       })
       return () => {
         unsub()
       }
-    }
   },[])
-
-  useEffect(() => {
-    if (version !== 0.3) {
-      alert('New software version. Click OK to refresh')
-      window.location.reload()
-      console.log(version)
-    }
-
-  },[version])
 
   useEffect(() => {
     if(user) {
