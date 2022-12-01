@@ -95,7 +95,7 @@ const RouteBuilder = () => {
         dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
-    const onPropertySave = (newDetails) => {
+    const onPropertySave = (newDetails, close) => {
         if (allCustomers.some(i => (i.service_address === newDetails.service_address) && (i.id !== newDetails.id))) {
             alert('This address is assigned to another customer')
             return
@@ -119,14 +119,14 @@ const RouteBuilder = () => {
             console.log(newRoute.customers[custIndex])
             newRoute.customers[custIndex] = {...newRoute.customers[custIndex], ...newTrimmedDetails} 
             console.log(newRoute.customers[custIndex])
-            dispatch(editItem(newRoute, routes, 'driver/driver_lists/route', null, REQUEST_ROUTES_SUCCESS))
+            dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
         })
         if (newDetails.id) {
             dispatch(editItem(newDetails, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         } else {
             dispatch(createItem(newDetails, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         }
-        onCloseClick()
+        if (close) onCloseClick()        
     }
 
     const onDelete = (customer) => {

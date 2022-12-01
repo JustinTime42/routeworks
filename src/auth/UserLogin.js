@@ -1,39 +1,17 @@
-import { sendPasswordResetEmail, sendEmailVerification } from 'firebase/auth'
-import { auth, logInWithEmailAndPassword, createUserWithEmailAndPassword } from '../firebase'
+import { sendPasswordResetEmail, sendEmailVerification, updateProfile } from 'firebase/auth'
+import { auth, db, logInWithEmailAndPassword, createUserWithEmailAndPassword, logout } from '../firebase'
+import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import React, { useState } from 'react'
 import { Button, Form, Card } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 
 export const UserLogin = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('') 
-  const [password2, setPassword2] = useState('')
-  const [isRegistering, setIsRegistering] = useState(false) 
-
+  
   const onSubmit = (event) => {  
-    event.preventDefault()  
-    if (isRegistering) {
-      if(password !== password2) alert('Passwords must match!')
-      else if (!email || !password) alert('Please enter email and password.')
-      else onCreateUser()   
-    } else {      
-      logInWithEmailAndPassword(email, password)
-    }    
-  }
-
-  const onCreateUser = () => {
-      createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log(userCredential)
-        sendEmailVerification(auth.currentUser)
-        .then(() => {
-          let checkoutPage = 'https://billing.stripe.com/p/login/test_8wM02m05CeBZ5iM8ww'
-          alert('Please check your email for a verification link')
-          window.open(checkoutPage, '_blank')
-        })        
-      })
-      .catch((error) => {
-        alert(error.message)
-      })
+    event.preventDefault()       
+    logInWithEmailAndPassword(email, password)
   }
 
   const onPasswordReset = () => {
@@ -42,6 +20,10 @@ export const UserLogin = () => {
       alert(`Email has been sent to ${email} with a link to reset your password`)
     })
     .catch(err => alert(err))
+  }
+
+  const handleRegister = () => {
+    window.location.assign()
   }
 
   return (
@@ -65,32 +47,32 @@ export const UserLogin = () => {
               type="password"
               className="form_input"
             />
-            {
-              isRegistering ? 
-              <Form.Control
-              value={password2}
-              onChange={(event) => setPassword2(event.target.value)}
-              placeholder="Retype Password"
-              size="large"
-              type="password"
-              className="form_input"
-            /> : null
-            }
           </Card.Text>
           <Button
             onClick={onSubmit}
             variant="primary"
             size="large"
             type="submit"
+            style={{margin:'1em'}}
           >
-            {isRegistering ? 'Submit' : 'Log In'}
+            Log In
+          </Button>
+          <Button
+            onClick={handleRegister}
+            variant="primary"
+            size="large"
+            type="submit"
+            style={{margin:'1em'}}
+            as = {Link}
+            to ='/register'
+          >
+            Register
           </Button>
           <Button 
-            style={{margin:'1em', visibility: isRegistering ? 'hidden' : 'visible'}} 
-            onClick={() => setIsRegistering(true)}>
-              Register
-            </Button>
-          <Button onClick={onPasswordReset}>Forgot Password</Button>
+            style={{margin:'1em'}}
+            onClick={onPasswordReset}>
+            Forgot Password
+          </Button>
         </Form>
         
       </Card.Body>

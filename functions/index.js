@@ -1,33 +1,56 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const e = require('express')
 admin.initializeApp();
 
 exports.listUsers = functions.https.onCall((data, context) => {
   return admin.auth().listUsers()
 })
 
-const sendVerificationEmail = (user, organization) => {
-  const mailOptions = {
-    from: organization,
-    to: user.email,
-    text: 'Please click the link below to verify your email address'
-  }
-  const actionCodeSettings = {
-    url: 'https://app.snowlinealaska.com',
-    handleCodeInApp: true,
-    iOS: {bundleId: "com.snowlinealaska.app"},
-    android:{
-      packageName: 'com.snowlinealaska.app',
-      installApp: true,
+// const sendVerificationEmail = (user, organization) => {
+//   const mailOptions = {
+//     from: organization,
+//     to: user.email,
+//     text: 'Please click the link below to verify your email address'
+//   }
+//   const actionCodeSettings = {
+//     url: 'https://app.snowlinealaska.com',
+//     handleCodeInApp: true,
+//     iOS: {bundleId: "com.snowlinealaska.app"},
+//     android:{
+//       packageName: 'com.snowlinealaska.app',
+//       installApp: true,
+//     }
+//   }
+//   admin.auth().generateEmailVerificationLink(user.email, actionCodeSettings)
+//   .then(link => {
+//     return admin.auth().sendCustomer
+//   })
+
+// }
+
+exports.createOrg = functions.https.onCall(async(data, context) => {
+  const stripeRole = context.auth.token.stripeRole
+  const { orgName } = data
+  if (stripeRole !== 'Owner') {
+    throw new functions.https.HttpsError('failed-precondition', 'Insufficient permissions');
+  } else {
+    if (orgName === '') {
+      throw new functions.https.HttpsError('failed-precondition', 'Must include organization name');
+    } else {
+      return admin.firestore().collection('organizations').add({
+        orgName: orgName
+      })
+      .then(doc => {
+        return admin.auth().setCustomUserClaims(context.auth.uid, {...customClaims, organization: orgName, role: 'Admin'})
+        .then(() => {          
+          return admin.auth().getUser(context.auth.uid)
+        })
+        .catch(err => err)
+      })
+      .catch(e => e)
     }
   }
-  admin.auth().generateEmailVerificationLink(user.email, actionCodeSettings)
-  .then(link => {
-    return admin.auth().sendCustomer
-  })
-
-}
+})
 
 exports.createUser = functions.https.onCall((data,context) => {
   const {displayName, email, password, customClaims, disabled } = data
@@ -136,7 +159,7 @@ exports.updateLogEntry = functions.firestore
     const {itemID } = context.params
     return admin.firestore().collection(`audit_logs`).add({
       id: itemID, 
-      timestamp: timestamp, 
+      timestamp: timestamp,
       deleted: record
     })
     .then(doc => {

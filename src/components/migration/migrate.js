@@ -5,7 +5,8 @@ import { db } from "../../firebase";
 const addedDocs = []
 const sendToDB = async(item, path) => {
     let {id, ...newItem} = item
-    await setDoc(doc(db, path, id), {...newItem}) 
+    console.log(item)
+    await setDoc(doc(db, path, id), {...newItem}, { merge: true }) 
     addedDocs.push(id)         
 }
 
@@ -22,6 +23,28 @@ export const migrateBasic = async (oldPath, newPath) => {
     }
     catch(error) {alert(error)} 
     let newTimeout = setTimeout(() => console.log(addedDocs), waitTime*10 + 500)
+}
+
+export const addEmailsToLogs = async(customers) => {
+    try {
+        const querySnapshot = await getDocs(collection(db, 'organizations/Snowline/service_logs'))
+       // console.log(querySnapshot)
+        let waitTime = 0
+        await querySnapshot.forEach(doc => {
+            let entry = {...doc.data(), id: doc.id}            
+            if (!entry.cust_email) {
+                const customer = customers.find(i => i.id === entry.cust_id)
+                if (customer && customer.cust_email) {
+                    entry.cust_email = customer.cust_email                    
+                    //sendToDB(entry, 'organizations/Snowline/service_logs', i)
+                    setTimeout(() => sendToDB(entry, 'organizations/Snowline/service_logs'), waitTime*10)
+                    waitTime++
+                }                
+            }            
+        })
+        console.log(addedDocs)
+    }
+    catch(err) {alert(err)}
 }
 
 export const migrateCustomers = () => {

@@ -12,28 +12,31 @@ import DisplayRoute from './DisplayRoute'
 import ServiceLogs from './components/service_logs/ServiceLogs';
 import Users from './components/Users';
 import { SET_ACTIVE_DRIVER } from './constants';
-import MigrationUI from './components/migration/MigrationUI'
+// import MigrationUI from './components/migration/MigrationUI'
 import { doc, onSnapshot } from 'firebase/firestore';
+import Register from './auth/Register.tsx';
 
 const App = () => { 
   const [user] = useAuthState(auth);
-  const [version, setVersion] = useState(.3)
+  const [version, setVersion] = useState(0.3)
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const dispatch = useDispatch()
   
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'globals', 'version'), doc => {
-      if(version !== doc.data().version) {
-        setVersion(doc.data().version)
-      }      
-    })
-    return () => {
-      unsub()
+    if (stateUser?.claims?.organization) {
+      const unsub = onSnapshot(doc(db, 'globals', 'version'), doc => {
+        if(version !== doc.data().version) {
+          setVersion(doc.data().version)
+        }      
+      })
+      return () => {
+        unsub()
+      }
     }
   },[])
 
   useEffect(() => {
-    if (version !== .3) {
+    if (version !== 0.3) {
       alert('New software version. Click OK to refresh')
       window.location.reload()
       console.log(version)
@@ -52,7 +55,11 @@ const App = () => {
     }
   }, [user])
 
- if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {    
+  // return (
+  //   <OrgSetup />
+  // )
+
+  if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {    
     return (
       <>
       <TopNav />
@@ -65,14 +72,17 @@ const App = () => {
       </Routes>
       </>
     ) 
-  // } else if (!stateUser?.claims?.stripeRole) {
-  //   let checkoutPage = 'https://buy.stripe.com/test_9AQ4jo7SS0wS5yw000'          
-  //   window.open(checkoutPage, '_blank')
-   }
-  
+  } else if (stateUser?.claims?.stripeRole === 'Owner') {
+    return <Register />
+   }  
   else {
     console.log(user)
-    return <UserLogin />
+    return (
+      <Routes>
+        <Route path='/' element={<UserLogin />} />
+        <Route path='register' element={<Register />} />
+      </Routes>
+    ) 
   }
 }
 

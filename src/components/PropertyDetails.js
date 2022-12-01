@@ -150,6 +150,7 @@ const PropertyDetails = (props) => {
         newRecordObject.reference = property.service_address
         newRecordObject.service_address = property.service_address
         newRecordObject.cust_name = property.cust_name
+        newRecordObject.cust_email = property.cust_email
         newRecordObject.value = property.value
         newRecordObject.driver = driver.name
         newRecordObject.notes = newRecordObject.status === 'Skipped' ? noteField + ' ' + skipDetails : noteField

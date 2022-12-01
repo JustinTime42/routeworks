@@ -472,8 +472,9 @@ const CustomerEditor = (props) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="danger" onClick={() => setDeleteAlert(!deleteAlert)}>{deleteAlert ? "Cancel" : "DELETE PROPERTY"}</Button>
-                <Button variant="primary" onClick={() => props.onSave(customer)}>Save Customer</Button>
-                <Button variant="secondary" onClick={props.close}>Close</Button>
+                <Button variant="primary" onClick={() => props.onSave(customer, false)}>Save</Button>
+                <Button variant="primary" onClick={() => props.onSave(customer, true)}>Save and Close</Button>
+                <Button variant="secondary" onClick={props.close}>Cancel</Button>
             </Modal.Footer>
             <Alert show={deleteAlert} variant="danger">
                 <Alert.Heading>Delete Property?</Alert.Heading>
