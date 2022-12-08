@@ -1,25 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { Routes, Route } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { useIdToken } from "react-firebase-hooks/auth";
 import { auth, db } from "./firebase";
 import { UserLogin } from './auth/UserLogin'
 import TopNav from "./navigation/TopNav"
 import "./styles/App.css"
-import { setActiveItem, setCurrentUser } from './actions'
+import { setCurrentUser } from './actions'
 import { useDispatch, useSelector } from 'react-redux';
 import RouteBuilder from './route_builder/RouteBuilder';
 import DisplayRoute from './DisplayRoute'
 import ServiceLogs from './components/service_logs/ServiceLogs';
 import Users from './components/Users';
-import { SET_ACTIVE_DRIVER } from './constants';
 // import MigrationUI from './components/migration/MigrationUI'
 import { doc, onSnapshot } from 'firebase/firestore';
 import Register from './auth/Register.tsx';
 
 const App = () => { 
   const currentVersion = 0.5
-  const [user] = useAuthState(auth);
-  const [version, setVersion] = useState(currentVersion)
+  const [user, loading, error] = useIdToken(auth);
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const dispatch = useDispatch()
   
@@ -36,19 +34,16 @@ const App = () => {
   },[])
 
   useEffect(() => {
-    if(user) {
-      user.getIdTokenResult().then(user => {
-        console.log(user)
-        dispatch(setCurrentUser(user))
-      })
+    if (error) {alert(error)}    
+    else if (user) {
+      user.getIdTokenResult().then(result => {
+        console.log(result)
+        dispatch(setCurrentUser(result))
+      })      
     } else {
       dispatch(setCurrentUser(null))
     }
   }, [user])
-
-  // return (
-  //   <OrgSetup />
-  // )
 
   if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {    
     return (

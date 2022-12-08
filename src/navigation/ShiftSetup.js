@@ -1,7 +1,7 @@
 import React, { useState, useEffect }  from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from '../firebase' 
 //import firebase from 'firebase/compat'
@@ -33,6 +33,7 @@ const ShiftSetup = () => {
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     
     // useEffect(() => {
     //     if(user && (drivers.length > 0) && !activeDriver.name) {
@@ -112,8 +113,9 @@ const ShiftSetup = () => {
     }
 
     const handleLogout = async function () {
-        dispatch(hideModal("Shift"))
+        dispatch(hideModal("Shift"))        
         logout()
+        navigate('/')
     };
 
     return (

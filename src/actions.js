@@ -79,7 +79,7 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
         try {            
             await setDoc(itemRef, itemDetails, {merge: merge})
             console.log("success")
-        } catch (e) { console.log("error adding document: ", e)}
+        } catch (e) { alert("error adding document: ", e)}
     }
     sendToDB()
 }

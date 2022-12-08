@@ -31,6 +31,8 @@ exports.listUsers = functions.https.onCall((data, context) => {
 exports.createOrg = functions.https.onCall(async(data, context) => {
   const stripeRole = context.auth.token.stripeRole
   const { orgName } = data
+  functions.logger.log('uid: ', context.auth.uid)
+  functions.logger.log('orgName: ', orgName)
   if (stripeRole !== 'Owner') {
     throw new functions.https.HttpsError('failed-precondition', 'Insufficient permissions');
   } else {
@@ -41,13 +43,18 @@ exports.createOrg = functions.https.onCall(async(data, context) => {
         orgName: orgName
       })
       .then(doc => {
-        return admin.auth().setCustomUserClaims(context.auth.uid, {...customClaims, organization: orgName, role: 'Admin'})
+        return admin.auth().setCustomUserClaims(context.auth.uid, {...context.auth.customClaims, organization: doc.id, role: 'Admin'})
         .then(() => {          
+          functions.logger.log(admin.auth().getUser(context.auth.uid))
           return admin.auth().getUser(context.auth.uid)
         })
-        .catch(err => err)
+        .catch(err => {
+          functions.logger.log(err)
+        } )
       })
-      .catch(e => e)
+      .catch(e => {
+        functions.logger.log(e)
+      })
     }
   }
 })

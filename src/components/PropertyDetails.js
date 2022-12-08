@@ -43,11 +43,13 @@ const PropertyDetails = (props) => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        const listener = event => {
+        const nope = isRunning || disabled || (property.sand_contract === "Per Yard" && yards === 0 && workType.name === "Sanding") || (property.contract_type === 'Hourly') 
+        const listener = async(event) => {
             console.log(event)
-          if (event.code === "Enter") {
-            console.log("Enter key pressed")
-            onStatusChange('Done')
+          if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
+            console.log(property)
+            await onStatusChange('Done', '', null, null, false)
+            props.changeProperty(property, "next")
             event.preventDefault()
           }
         }
@@ -55,7 +57,7 @@ const PropertyDetails = (props) => {
         return () => {
           document.removeEventListener("keydown", listener)
         }
-      }, [])
+      }, [property.id])
 
     useEffect(() => {
         if (property?.contract_type === "Hourly") { 
@@ -115,7 +117,7 @@ const PropertyDetails = (props) => {
         dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
-    const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {        
+    const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {  
         setState(prevState => ({...prevState, disabled: disabled}))        
         const customerDetails = customers.find(i => i.id === property.id)
         let newRecordObject = {}
