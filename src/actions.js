@@ -40,33 +40,29 @@ export const setLogs = (entries) => {
 
 export const createItem = (item, itemList = null, className, activeActionType = null, listAction = null) => (dispatch) => {
     console.log(item)
-    dispatch({type: activeActionType, payload: item})
+    //dispatch({type: activeActionType, payload: item})
     // if (item.adminFields) {
     //     let tempList = [...itemList]            
     //     tempList.push(item.nonAdminFields ? item.nonAdminFields : item)
     //     dispatch({type: listAction, payload: tempList})
     // }
-    const sendToDB = async() => {
-        try {
-           // const docRef = await addDoc(collection(db, className), {...item})  
-            addDoc(collection(db, className), {...item}) 
-            .then(result => {
-                console.log(result.id)
-                dispatch({
-                    type: activeActionType,                     
-                    payload: {...item, id: result.id}
-                }) 
-            })
-                              
-       } catch (e) {
-         alert("Error adding document: ", e);
-       }
+    const sendToDB = () => {
+        // const docRef = await addDoc(collection(db, className), {...item})  
+        addDoc(collection(db, className), {...item}) 
+        .then(result => {
+            console.log(result.id)
+            dispatch({
+                type: activeActionType,                     
+                payload: {...item, id: result.id}
+            }) 
+        })
+        .catch(err => alert(err))              
     }
     sendToDB()
 }
 
 export const editItem = (item, itemList, className, activeActionType = null, listAction = null, merge = true) => (dispatch) => {
-    dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})    
+    //dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})    
     if (item.adminFields) {
         let tempList = [...itemList]
         tempList[tempList.findIndex(i => i.admin_key === item.id)] = item.nonAdminFields
@@ -75,11 +71,10 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
     console.log({...item})
     const {id, ...itemDetails} = item
     const itemRef = doc(db, className, item.id)    
-    const sendToDB = async() => {
-        try {            
-            await setDoc(itemRef, itemDetails, {merge: merge})
-            console.log("success")
-        } catch (e) { alert("error adding document: ", e)}
+    const sendToDB = () => {           
+        setDoc(itemRef, itemDetails, {merge: merge})
+        .then(() => console.log("success"))
+        .catch((e => alert("error adding document: ", e)))
     }
     sendToDB()
 }
