@@ -242,7 +242,7 @@ const PropertyDetails = (props) => {
                                 style={{visibility: (property.contract_type === 'Hourly') ? 'hidden' : 'visible'}} 
                                 variant="success" 
                                 size="lg"  
-                                disabled={isRunning || disabled || (property.sand_contract === "Per Yard" && yards === 0 && workType.name === "Sanding")} 
+                                disabled={isRunning || disabled || (property.sand_contract === "Per Yard" && !yards && workType.name === "Sanding")} 
                                 autoFocus={true}                                
                                 onClick={() => onStatusChange('Done')}>
                                     Done
