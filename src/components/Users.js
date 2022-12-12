@@ -19,7 +19,10 @@ const Users = (props) => {
     const onFetchUsers = () => {
         const getUsers = httpsCallable(functions, 'listUsers')
         getUsers()        
-        .then(data => setUsers(data.data.users))
+        .then(data => {
+            console.log(data)
+            setUsers(data.data)
+        } )
         .catch(err => console.log(err))
     }
 

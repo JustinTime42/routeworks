@@ -178,6 +178,8 @@ const PropertyDetails = (props) => {
             newRoute.customers[newIndex].status = newStatus     
             newRoute.customers[newIndex].priority = false     
             dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        } else {
+            alert('No change in status on route. If you are serving a customer without their route pulled up, this is expected behavior.')
         }
         console.log(newRecordObject.driverEarning)
         let keysArray = Object.keys(newRecordObject)

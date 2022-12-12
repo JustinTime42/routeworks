@@ -22,7 +22,7 @@ const xeroHeaders =  [
     { headerName: "Vehicle Type", field: "vehicle_type"},
     { headerName: "Driver Earning", field: "driverEarning", valueParser: params => Number(params.newValue)},
     { headerName: "Property Value", field: "value", valueParser: params => Number(params.newValue)},
-    { headerName: "Start Time", field: "start_time"},
+    { headerName: "Start Time", field: "startTime"},
     { headerName: "End Time", field: "endTime"},
     { headerName: "Yardage Rate", field: "price_per_yard", valueParser: params => Number(params.newValue)},
     { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},

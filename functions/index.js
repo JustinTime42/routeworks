@@ -3,7 +3,22 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 exports.listUsers = functions.https.onCall((data, context) => {
+  const {role, organization} = context.auth.token 
+  let results = [] 
   return admin.auth().listUsers()
+  .then(userList => {
+    functions.logger.log(userList)
+      userList.users.forEach(user => {
+        functions.logger.log(user)
+        if ((user.customClaims.organization === organization)
+          && (role === 'Admin')) {
+            functions.logger.log(user)
+            results.push(user)
+          }
+      })
+      functions.logger.log(results)
+    return results    
+  })
 })
 
 // const sendVerificationEmail = (user, organization) => {

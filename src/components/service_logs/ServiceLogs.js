@@ -48,8 +48,13 @@ const ServiceLogs = (props) => {
                 entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
                 entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                 entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() 
-                entry.endTime = (!entry.endTime) ? null : entry.endTime.toDate() 
+                if (entry.contract_type === 'Hourly') {                    
+                    entry.elapsed = Math.round(((entry.endTime?.seconds) - (entry.startTime?.seconds)) / 36) / 100 // elapsed time as decimal hours
+                    entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes 
+                    entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() 
+                    entry.endTime = (!entry.endTime) ? null : entry.endTime.toDate() 
+                }
+
                logs.push(entry)
             })
         } else if (logType === 'hourly') {
