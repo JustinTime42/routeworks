@@ -1,70 +1,72 @@
 
-    import React, {  useEffect, useState } from "react"
-    import { useDispatch, useSelector } from "react-redux";
-    import { Button, Alert, Modal, Form, Row, Col, DropdownButton, Dropdown } from "react-bootstrap"
-    import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
-    import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_SUCCESS } from '../../constants.js'
+import React, {  useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Alert, Modal, Form, Row, Col, DropdownButton, Dropdown } from "react-bootstrap"
+import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
+import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_SUCCESS } from '../../constants.js'
 import DropdownToggle from "react-bootstrap/esm/DropdownToggle";
     
-    const RouteEditor = (props) => {
-        const [deleteAlert, setDeleteAlert] = useState('')
-        const routes = useSelector(state => state.requestRoutes.routes)
-        const customers = useSelector(state => state.requestAllAddresses.addresses)
-        const modals = useSelector(state => state.whichModals.modals)
-        const tempItem = useSelector(state => state.setTempItem.item)
-        const currentUser = useSelector(state => state.setCurrentUser.currentUser)
-        const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+const RouteEditor = (props) => {
+    const [deleteAlert, setDeleteAlert] = useState('')
+    const routes = useSelector(state => state.requestRoutes.routes)
+    const customers = useSelector(state => state.requestAllAddresses.addresses)
+    const modals = useSelector(state => state.whichModals.modals)
+    const tempItem = useSelector(state => state.setTempItem.item)
+    const currentUser = useSelector(state => state.setCurrentUser.currentUser)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
 
-        const dispatch = useDispatch()
-      
-        const isEditable = (item) => {
-            if (item?.editableBy?.includes(currentUser.claims.role)) return true
-            else return false
+    const dispatch = useDispatch()
+    
+    const isEditable = (item) => {
+        if (item?.editableBy?.includes(currentUser.claims.role)) return true
+        else return false
+    }
+
+    const onClose = () => {
+        dispatch(hideModal('Route'))
+        setDeleteAlert(false)
+        dispatch(setTempItem(null))
+    }
+
+    const onChange = (event) => {
+        if (event.target.value === "on") {
+            dispatch(setTempItem({...tempItem, [event.target.name]: !tempItem[event.target.name]}))
+        } else {
+            dispatch(setTempItem({...tempItem, name: event.target.value}))
         }
+    }
 
-        const onClose = () => {
-            dispatch(hideModal('Route'))
-            setDeleteAlert(false)
-            dispatch(setTempItem(null))
-        }
+    const onSelect = (event) => {
+        console.log(event)
+        dispatch(setTempItem({...tempItem, editableBy: event.split(',')}))
+    }
 
-        const onChange = (event) => {
-            if (event.target.value === "on") {
-                dispatch(setTempItem({...tempItem, [event.target.name]: !tempItem[event.target.name]}))
-            } else {
-                dispatch(setTempItem({...tempItem, name: event.target.value}))
-            }
-        }
-
-        const onSelect = (event) => {
-            console.log(event)
-            dispatch(setTempItem({...tempItem, editableBy: event.split(',')}))
-        }
-
-        const onSave = () => {
-            if (tempItem.id) {
-                tempItem.customers.map(customer => {
-                    let newCustomer = customers.find(item => item.id === customer.id)
-                    newCustomer.routesAssigned[tempItem.id] = tempItem.name
-                    dispatch(editItem(newCustomer, customers, `organizations/${organization}/customer`, null, UPDATE_ADDRESSES_SUCCESS))
-                })
-                dispatch(editItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
-            } else {
-                dispatch(createItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
-            }
-            dispatch(hideModal('Route'))
-        }
-
-        const onDelete = () => {
-            // go through route customers and delete the routesAssigned on that customer document
+    const onSave = () => {
+        if (tempItem.id) {
             tempItem.customers.map(customer => {
                 let newCustomer = customers.find(item => item.id === customer.id)
-                delete newCustomer.routesAssigned[tempItem.id]
+                newCustomer.routesAssigned[tempItem.id] = tempItem.name
                 dispatch(editItem(newCustomer, customers, `organizations/${organization}/customer`, null, UPDATE_ADDRESSES_SUCCESS))
             })
-            dispatch(deleteItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
-            dispatch(hideModal('Route'))                 
+            dispatch(editItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        } else {
+            dispatch(createItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
         }
+        dispatch(hideModal('Route'))
+    }
+
+    const onDelete = () => {
+        // go through route customers and delete the routesAssigned on that customer document
+        tempItem.customers.map(customer => {
+            let newCustomer = customers.find(item => item.id === customer.id)
+            console.log(newCustomer)
+            if(!newCustomer) {alert('customer not found')}
+            delete newCustomer.routesAssigned[tempItem.id]
+            dispatch(editItem(newCustomer, customers, `organizations/${organization}/customer`, null, UPDATE_ADDRESSES_SUCCESS, false))
+        })
+        dispatch(deleteItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        dispatch(hideModal('Route'))
+    }
 
     if (modals.includes('Route')) {
         return (
