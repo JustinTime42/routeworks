@@ -1,17 +1,25 @@
-import { sendPasswordResetEmail, sendEmailVerification, updateProfile } from 'firebase/auth'
-import { auth, db, logInWithEmailAndPassword, createUserWithEmailAndPassword, logout } from '../firebase'
-import { addDoc, collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
+import { sendPasswordResetEmail, getAuth, signInWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth'
 import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Form, Card } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { setCurrentUser } from '../actions';
 
 export const UserLogin = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('') 
+  const dispatch = useDispatch()
+  const auth = getAuth()
   
-  const onSubmit = (event) => {  
+  const onSubmit = (event) => {      
     event.preventDefault()       
-    logInWithEmailAndPassword(email, password)
+    signInWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      userCredential.user.getIdTokenResult().then(result => {
+        dispatch(setCurrentUser(result))
+      })      
+    })
+    .catch(err => alert(err))
   }
 
   const onPasswordReset = () => {
@@ -20,10 +28,6 @@ export const UserLogin = () => {
       alert(`Email has been sent to ${email} with a link to reset your password`)
     })
     .catch(err => alert(err))
-  }
-
-  const handleRegister = () => {
-    window.location.assign()
   }
 
   return (
@@ -58,7 +62,6 @@ export const UserLogin = () => {
             Log In
           </Button>
           <Button
-            onClick={handleRegister}
             variant="primary"
             size="large"
             type="submit"
@@ -73,10 +76,8 @@ export const UserLogin = () => {
             onClick={onPasswordReset}>
             Forgot Password
           </Button>
-        </Form>
-        
+        </Form>        
       </Card.Body>
     </Card>    
-  )
- 
+  ) 
 }

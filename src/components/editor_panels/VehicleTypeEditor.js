@@ -44,15 +44,16 @@ const VehicleTypeEditor = (props) => {
                             onChange={props.onChangeTypeActive}
                         /> 
                     </Col>
-                </Form.Group>                       
+                </Form.Group>                  
                 <div className="flex justify-content-around">
                     <Button variant="danger" style={{visibility: ((deleteAlert !== props.vehicleType?.name) && props.vehicleType) ? "initial" : "hidden"}} onClick={() => setDeleteAlert(props.vehicleType)}>Delete</Button>
                     <Button disabled={!props.vehicleType} style={{margin: "3px"}} onClick={props.onSaveType}>Save</Button>   
                     <Button style={{margin: "3px"}} variant="secondary" onClick={onClose}>Close</Button>
                 </div>
                 <Alert className="d-flex justify-content-around mb-3" show={deleteAlert === props.vehicleType}>
+                Warning: Ensure that you have deleted or reassigned vehicles of this type before proceeding!
                     <Button onClick={() => props.onDeleteType(props.vehicleType)} variant="danger">
-                        Delete {props.vehicleType?.name}
+                        Delete {props.vehicleType?.name}                         
                     </Button>
                     <Button onClick={() => setDeleteAlert('')} variant="success">
                         Cancel

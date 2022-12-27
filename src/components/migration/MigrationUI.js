@@ -1,7 +1,7 @@
 import React from "react"
 import { useSelector } from "react-redux"
 import { Button } from "react-bootstrap"
-import { migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags, fixSandContract, copyNoRoutesAssigned, addEmailsToLogs } from "./migrate"
+import { fixOrphanedRoutes, migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags, fixSandContract, copyNoRoutesAssigned, addEmailsToLogs } from "./migrate"
 
 const MigrationUI = () => {
     const customers = useSelector(state => state.requestAllAddresses.addresses)
@@ -18,6 +18,7 @@ const MigrationUI = () => {
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('service_logs', 'organizations/Snowline/service_logs')}>Service Logs</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('driver/tags', 'organizations/Snowline/tags/tags')}>Tags</Button>
             <Button style={{margin: '1em'}} onClick={() => addEmailsToLogs(customers)}>Add Emails To Logs</Button>
+            <Button style={{margin: '1em'}} onClick={() => fixOrphanedRoutes(routes, customers)}>Fix Orphaned Routes</Button>
 
             {/* <Button style={{margin: '1em'}} onClick={() => migrateBasic('/vehicles', 'driver/driver_lists/vehicle')}>Vehicles</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('/vehicletypes', 'driver/driver_lists/vehicle_type')}>Vehicle Types</Button>

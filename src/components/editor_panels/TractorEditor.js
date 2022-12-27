@@ -60,14 +60,14 @@ const TractorEditor = (props) => {
             let newTractor = {...tempItem, type: activeVehicleType}
             console.log(newTractor)
             if (tempItem.id) {    
-                dispatch(editItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
+                dispatch(editItem(newTractor, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
             }
             else {
-                dispatch(createItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
+                dispatch(createItem(newTractor, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
             } 
             dispatch(hideModal('Vehicle'))    
         }
-    } 
+    }
 
     const onDelete = (item) => {
         dispatch(deleteItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
@@ -97,22 +97,23 @@ const TractorEditor = (props) => {
         else {
             dispatch(createItem(vehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))
         } 
+        dispatch(setTempItem({...tempItem, type: vehicleType}))
         dispatch(hideModal('VehicleType'))    
     }
 
     const onDeleteType = () => {
-        dispatch(deleteItem(vehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_VEHICLE_TYPE))
-        dispatch(hideModal('VehicleType'))                 
+        dispatch(deleteItem(activeVehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))
+        dispatch(hideModal('VehicleType'))
     }
 
     return (
-        <>
+        <>  
         <Modal show={modals.includes('Vehicle')} onHide={onClose}>
             <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "center"}}>
                 <FormControl style={{width: '50%', margin: "3px"}} size="sm" name="name" type="text" onChange={onChangeName} value={tempItem?.name || ''} />
                 <SimpleSelector
                     title="Vehicle Type"
-                    selectedItem={activeVehicleType}
+                    selectedItem={{...activeVehicleType}}
                     itemArray={vehicleTypes}   
                     collection='vehicle_type'   
                     collectionPath={`organizations/${organization}/` }            

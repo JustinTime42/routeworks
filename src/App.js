@@ -11,7 +11,7 @@ import RouteBuilder from './route_builder/RouteBuilder';
 import DisplayRoute from './DisplayRoute'
 import ServiceLogs from './components/service_logs/ServiceLogs';
 import Users from './components/Users';
-// import MigrationUI from './components/migration/MigrationUI'
+import MigrationUI from './components/migration/MigrationUI'
 import { doc, onSnapshot } from 'firebase/firestore';
 import Register from './auth/Register.tsx';
 
@@ -34,7 +34,7 @@ const App = () => {
   },[])
 
   useEffect(() => {
-    if (error) {alert(error)}    
+    if (error) {alert(error)}
     else if (user) {
       user.getIdTokenResult().then(result => {
         console.log(result)
@@ -54,7 +54,7 @@ const App = () => {
         <Route path="routebuilder" element={<RouteBuilder />} />
         <Route path="logs" element={<ServiceLogs />} />
         <Route path="users" element={<Users />} />
-        {/* <Route path="migration" element={<MigrationUI />} /> */}
+        <Route path="migration" element={<MigrationUI />} />
       </Routes>
       </>
     ) 
@@ -62,7 +62,6 @@ const App = () => {
     return <Register />
    }  
   else {
-    console.log(user)
     return (
       <Routes>
         <Route path='/' element={<UserLogin />} />

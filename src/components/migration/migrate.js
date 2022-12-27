@@ -6,8 +6,32 @@ const addedDocs = []
 const sendToDB = async(item, path) => {
     let {id, ...newItem} = item
     console.log(item)
-    await setDoc(doc(db, path, id), {...newItem}, { merge: true }) 
+    await setDoc(doc(db, path, id), {...newItem}, { merge: false }) 
     addedDocs.push(id)         
+}
+
+export const fixOrphanedRoutes = (routes, customers) => {
+    //convert routes to array of ids
+    const routeList = routes.map(i => i.id)   
+    
+    //iterate through each customers
+    customers.forEach(customer => {
+        // get array of route ids assigned
+        let routesAssigned = Object.keys(customer.routesAssigned)
+        routesAssigned.forEach(route => {
+            if (!routeList.includes(route)) {
+                //delete customer.routesAssigned[route]
+                console.log(customer)
+                //sendToDB(customer, 'organizations/Snowline/customer')
+            }
+        })
+    })
+   // console.log(results)
+   
+    //look at Object.keys(routesAssigned)
+    //for each route, see if routes.includes(route) 
+    //if it includes, push to results, delete the route from routesAssigned
+
 }
 
 export const migrateBasic = async (oldPath, newPath) => {

@@ -114,7 +114,7 @@ const ShiftSetup = () => {
 
     const handleLogout = async function () {
         dispatch(hideModal("Shift"))        
-        logout()
+        await logout()
         navigate('/')
     };
 
