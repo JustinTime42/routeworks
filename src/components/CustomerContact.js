@@ -53,15 +53,18 @@ const CustomerContact = (props) => {
     const onDownload = () => {
         let contactList = []
         selectedTags.forEach(async(tag, i) => {
-            console.log(tag)
             const q = query(collection(db, `organizations/${organization}/customer`), where("tags", "array-contains", tag))
             const querySnapshot = await getDocs(q)
             querySnapshot.forEach(doc => {
                 let customer = {...doc.data(), id: doc.id}
-                contactList.push(customer.cust_email)
-            })            
+                contactList.push(customer.cust_email)                
+            })
             setCustomers([...new Set(contactList)])            
         })
+    }
+
+    const onClearEmails = () => {
+        setCustomers([])
     }
 
     const headers = [
@@ -113,6 +116,7 @@ const CustomerContact = (props) => {
                 </Form>
             </Modal.Body>
             <Modal.Footer>
+                <Button variant='primary' onClick={onClearEmails}>Clear Results</Button>
                 <Button variant="primary" onClick={onDownload}>Create File</Button>
                 <Button variant="secondary" onClick={props.onClose}>Close</Button>
             </Modal.Footer>            

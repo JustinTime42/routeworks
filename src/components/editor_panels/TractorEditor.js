@@ -40,9 +40,10 @@ const TractorEditor = (props) => {
         dispatch(setTempItem({...tempItem, active:!tempItem.active}))
     }
 
-    const onSelectType = (event, itemArray, setActiveAction) => {        
+    const onSelectType = (event, itemArray, setActiveAction) => {   
+        console.log(event)     
         dispatch(setTempItem({...tempItem, type: event}))
-        dispatch(setActiveItem({name:event}, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
+        dispatch(setActiveItem(event, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
     }
 
     // Save change handlers for Tractor
@@ -87,6 +88,7 @@ const TractorEditor = (props) => {
     }
 
     const onDeleteType = () => {
+        console.log(activeVehicleType)
         dispatch(deleteItem(activeVehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))
         dispatch(hideModal('VehicleType'))
     }
