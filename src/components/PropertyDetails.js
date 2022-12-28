@@ -215,7 +215,7 @@ const PropertyDetails = (props) => {
                                         workType.name === 'Sanding' && property.sand_contract === "Per Yard" ?
                                         <Form.Group>
                                             <Form.Label>Number of Yards</Form.Label>
-                                            <Form.Control name="yards" type="number" step='any' value={yards} onChange={onTextChange}/>
+                                            <Form.Control name="yards" type="number" step='any' value={yards || ''} onChange={onTextChange}/>
                                         </Form.Group> : null
                                     }                   
                             </Col>

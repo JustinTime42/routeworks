@@ -16,7 +16,7 @@ const MigrationUI = () => {
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('driver/driver_lists/work_type', 'organizations/Snowline/work_type')}>Work Type</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('audit_logs', 'organizations/Snowline/audit_logs')}>Audit Logs</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('service_logs', 'organizations/Snowline/service_logs')}>Service Logs</Button>
-            <Button style={{margin: '1em'}} onClick={() => migrateBasic('driver/tags', 'organizations/Snowline/tags/tags')}>Tags</Button>
+            <Button style={{margin: '1em'}} onClick={migrateTags}>Tags</Button>
             <Button style={{margin: '1em'}} onClick={() => addEmailsToLogs(customers)}>Add Emails To Logs</Button>
             <Button style={{margin: '1em'}} onClick={() => fixOrphanedRoutes(routes, customers)}>Fix Orphaned Routes</Button>
 

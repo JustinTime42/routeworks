@@ -15,7 +15,7 @@ const CustomerContact = (props) => {
 
 
     useEffect(() => {
-        const unsub = onSnapshot(doc(db, `organizations/${organization}/tags/`, 'tags'), (doc) => {
+        const unsub = onSnapshot(doc(db, `organizations`, organization), (doc) => {
             if (doc.data()) {
                 setAllTags([...doc.data().tags])
             }            

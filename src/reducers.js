@@ -26,8 +26,10 @@ import { SET_ACTIVE_ROUTE,
     HIDE_MODAL,
     TEMP_ITEM,
     ACTIVE_LOG_ENTRY, 
-    SET_LOG_ENTRIES 
+    SET_LOG_ENTRIES, 
+    USER_LOGOUT
 } from './constants.js'
+import { rootReducer } from './index.js'
 
 const initialStateCurrentUser = {
     currentUser: {
@@ -315,3 +317,19 @@ export const setTempItem = (state = initialStateTempItem, action={}) => {
             return state
     }
 }
+
+// const initialStateClearState = {}
+// export const clearState = (state = initialStateClearState, action={}) => {
+//     switch(action.type) {
+//         case USER_LOGOUT:
+//             state = undefined
+//             return rootReducer(undefined)
+//         default:
+//             return state
+//     }
+
+// }
+
+// const allReducers = (state, action) => {
+//     return rootReducer(state,action)
+// }

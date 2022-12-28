@@ -52,18 +52,18 @@ const SimpleSelector = (props) => {
             <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={(event) => props.onSelect(null, props.itemArray, props.setActiveAction)}>Clear</Button>
             {
                 props.itemArray ?                   
-                        props.itemArray.filter(item => item.active).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => {    
-                                                    
-                                return (
-                                    <div key={i} style={{display: "flex"}}>                        
-                                        <Dropdown.Item eventKey={item.name}>{item.name}
-                                            <Button disabled={!item.id} style={{visibility: (showEdit) ? "initial" : "hidden"}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
-                                        </Dropdown.Item>
-                                    </div>
-                                )                                           
-                        })
-                        
-                    : null
+                    props.itemArray.filter(item => item.active).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => {    
+                                                
+                        return (
+                            <div key={i} style={{display: "flex"}}>                        
+                                <Dropdown.Item eventKey={item.name}>{item.name}
+                                    <Button disabled={!item.id} style={{visibility: (showEdit) ? "initial" : "hidden"}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
+                                </Dropdown.Item>
+                            </div>
+                        )                                           
+                    })
+                    
+                : null
             }             
             {
                 (location.pathname === '/routebuilder') && props.itemArray ? 

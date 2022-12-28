@@ -5,7 +5,7 @@ import { auth, db } from "./firebase";
 import { UserLogin } from './auth/UserLogin'
 import TopNav from "./navigation/TopNav"
 import "./styles/App.css"
-import { setCurrentUser } from './actions'
+import { clearState, setCurrentUser } from './actions'
 import { useDispatch, useSelector } from 'react-redux';
 import RouteBuilder from './route_builder/RouteBuilder';
 import DisplayRoute from './DisplayRoute'
@@ -42,6 +42,7 @@ const App = () => {
       })      
     } else {
       dispatch(setCurrentUser(null))
+      //dispatch(clearState)
     }
   }, [user])
 

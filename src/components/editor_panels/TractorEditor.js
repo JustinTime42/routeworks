@@ -9,7 +9,7 @@ import {GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS
 const TractorEditor = (props) => {
     const [deleteAlert, setDeleteAlert] = useState('')      
     const activeVehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
-    const [vehicleType, setVehicleType] = useState(activeVehicleType)
+    const activeVehicle = useSelector(state => state.setActiveTractor.activeTractor)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const tractors = useSelector(state => state.getTractors.allTractors)
     const modals = useSelector(state => state.whichModals.modals)
@@ -19,51 +19,41 @@ const TractorEditor = (props) => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        console.log("vehicle type", props.vehicleType)
-        setVehicleType(activeVehicleType)
-    },[activeVehicleType])
+        console.log('vehicle types', vehicleTypes)
+        const newType = vehicleTypes.find(i => i.name === activeVehicle.type)
+        dispatch(setActiveItem(newType, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
+    },[activeVehicle])
 
-    useEffect(() => {
-        if(!tempItem && modals.includes('Vehicle')) {
-            dispatch(setTempItem({name: '', active: true}))
-        }
-        if(tempItem?.type) {
-            dispatch(setActiveItem(tempItem.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
-        }
-    }, [tempItem])
-
-    const onChangeName = (event) => {
-        dispatch(setTempItem({...tempItem, name: event.target.value}))
-    }
-
-    const onChangeTypeName = (event) => {
-        setVehicleType({...vehicleType, name: event.target.value})
-    }
-
-    const onChangeActive = () => {
-        dispatch(setTempItem({...tempItem, active:!tempItem.active}))
-    }
-
-    const onChangeTypeActive = () => {
-        setVehicleType({...vehicleType, active: !vehicleType.active})
-    }
-
+    // Modal handlers for Tractor    
     const onClose = () => {
         dispatch(hideModal('Vehicle'))
         setDeleteAlert(false)
         dispatch(setTempItem(null))
     }
 
+    // Field change handlers for Tractor
+    const onChangeName = (event) => {
+        dispatch(setTempItem({...tempItem, name: event.target.value}))
+    }
+
+    const onChangeActive = () => {
+        dispatch(setTempItem({...tempItem, active:!tempItem.active}))
+    }
+
+    const onSelectType = (event, itemArray, setActiveAction) => {        
+        dispatch(setTempItem({...tempItem, type: event}))
+        dispatch(setActiveItem({name:event}, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
+    }
+
+    // Save change handlers for Tractor
     const onSave = () => {
-        if (!activeVehicleType.id) {alert('please enter vehicle type')}
+        if (!tempItem.type) {alert('please enter vehicle type')}
         else {
-            let newTractor = {...tempItem, type: activeVehicleType}
-            console.log(newTractor)
             if (tempItem.id) {    
-                dispatch(editItem(newTractor, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
+                dispatch(editItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
             }
             else {
-                dispatch(createItem(newTractor, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
+                dispatch(createItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
             } 
             dispatch(hideModal('Vehicle'))    
         }
@@ -74,15 +64,10 @@ const TractorEditor = (props) => {
         dispatch(hideModal('Vehicle'))             
     }
 
-    const onCreateType = (whichModal) => {        
-        setVehicleType({name:'', active:true})
+    // Modal handlers for vehicle type
+    const onCreateType = (whichModal) => {  
+        dispatch({type:SET_ACTIVE_VEHICLE_TYPE, payload: {name:'', active:true}})   
         dispatch(showModal(whichModal))
-    }
-    
-    // maybe here I can setTempItem(...tempItem, type: event)
-    const onSelectType = (event, itemArray, setActiveAction) => {
-        dispatch(setActiveItem(event, itemArray, setActiveAction))
-        dispatch(setTempItem({...tempItem, type: event}))
     }
 
     const onEditType = (item, whichModal) => {
@@ -91,13 +76,13 @@ const TractorEditor = (props) => {
     }
 
     const onSaveType = () => {
-        if (vehicleType.id) {  
-            dispatch(editItem(vehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))  
+        if (activeVehicleType.id) {  
+            dispatch(editItem(activeVehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))  
         }
         else {
-            dispatch(createItem(vehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))
+            dispatch(createItem(activeVehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))
         } 
-        dispatch(setTempItem({...tempItem, type: vehicleType}))
+        dispatch(setTempItem({...tempItem, type: activeVehicleType.name}))
         dispatch(hideModal('VehicleType'))    
     }
 
@@ -106,14 +91,23 @@ const TractorEditor = (props) => {
         dispatch(hideModal('VehicleType'))
     }
 
+    // Field change handlers for vehicle type
+    const onChangeTypeName = (event) => {
+        dispatch({type:SET_ACTIVE_VEHICLE_TYPE, payload: {...activeVehicleType, name:event.target.value}}) 
+    }
+
+    const onChangeTypeActive = () => {
+        dispatch({type:SET_ACTIVE_VEHICLE_TYPE, payload: {...activeVehicleType, active:!activeVehicleType.active}})
+    }
+
     return (
-        <>  
+        <>
         <Modal show={modals.includes('Vehicle')} onHide={onClose}>
             <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "center"}}>
                 <FormControl style={{width: '50%', margin: "3px"}} size="sm" name="name" type="text" onChange={onChangeName} value={tempItem?.name || ''} />
                 <SimpleSelector
                     title="Vehicle Type"
-                    selectedItem={{...activeVehicleType}}
+                    selectedItem={activeVehicleType}
                     itemArray={vehicleTypes}   
                     collection='vehicle_type'   
                     collectionPath={`organizations/${organization}/` }            
@@ -151,7 +145,7 @@ const TractorEditor = (props) => {
                 </Alert>      
             </Modal.Body> 
         </Modal>
-        <VehicleTypeEditor onSaveType={onSaveType} onChange={onChangeTypeName} onChangeTypeActive={onChangeTypeActive} vehicleType={vehicleType} onDeleteType={onDeleteType}/>
+        <VehicleTypeEditor onSaveType={onSaveType} onChange={onChangeTypeName} onChangeTypeActive={onChangeTypeActive} vehicleType={activeVehicleType} onDeleteType={onDeleteType}/>
         </>         
     )
 }

@@ -43,7 +43,7 @@ exports.listUsers = functions.https.onCall((data, context) => {
 
 // }
 
-exports.createOrg = functions.https.onCall(async(data, context) => {
+exports.createOrg = functions.https.onCall((data, context) => {
   const stripeRole = context.auth.token.stripeRole
   const { orgName } = data
   functions.logger.log('uid: ', context.auth.uid)
@@ -65,7 +65,7 @@ exports.createOrg = functions.https.onCall(async(data, context) => {
         })
         .catch(err => {
           functions.logger.log(err)
-        } )
+        })
       })
       .catch(e => {
         functions.logger.log(e)

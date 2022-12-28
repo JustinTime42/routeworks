@@ -1,5 +1,5 @@
 import { indexedDBLocalPersistence } from "firebase/auth";
-import { addDoc, setDoc, collection, doc, getDocs, Timestamp } from "firebase/firestore";
+import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase";
 
 const addedDocs = []
@@ -224,16 +224,23 @@ export const migrateRouteData = () => {
     })
 }
 
-export const migrateTags = () => {
-    return 
-    fetch(`${process.env.REACT_APP_API_URL}/alltags`)
-    .then(response => response.json())
-    .then(async(data) => {
-        console.log('tags from old database')
-        console.log(data)
-        await setDoc(doc(db, "driver", "tags"), {tags:[...data]});
-    })
-    .catch(err => alert(err))
+export const migrateTags = async() => {
+    console.log('migrating tags')
+    const docRef = doc(db, `organizations/Snowline/tags`, 'tags')
+    const docSnap = await getDoc(docRef)
+    const tags = docSnap.data().tags
+    console.log(tags)
+
+    const snowlineRef = doc(db, 'organizations', 'Snowline')
+    await setDoc(snowlineRef, {tags:[...tags]}, { merge: true })
+    // fetch(`${process.env.REACT_APP_API_URL}/alltags`)
+    // .then(response => response.json())
+    // .then(async(data) => {
+    //     console.log('tags from old database')
+    //     console.log(data)
+    //     await setDoc(doc(db, "driver", "tags"), {tags:[...data]});
+    // })
+    // .catch(err => alert(err))
 }
 
 //
@@ -245,27 +252,26 @@ export const migrateLogs = () => {
     .then(data => {
         console.log('logs from old database')
         console.log(data.length)         
-        data.forEach((item, i) => {
-                
-                item.service_address = item.address
-                item.cust_id = item.property_key.toString()
-                item.driverEarning = item.driver_earning
-                item.driver = item.user_name
-                item.timestamp = Timestamp.fromDate(new Date(item.timestamp)) //convert to firebase timestamp
-                delete item.driver_earning
-                delete item.user_name
-                delete item.item_code
-                delete item.property_key
-                delete item.key
-                delete item.address
-                if ((i % 1000) === 0) {
-                    console.log(item)
-                }
-                if (i === (data.length -1)) {
-                    console.log('last item', i)
-                }
-                let timeOut
-                timeOut = setTimeout(() => sendToDB(item, 'service_logs'), (i*10))
+        data.forEach((item, i) => {                
+            item.service_address = item.address
+            item.cust_id = item.property_key.toString()
+            item.driverEarning = item.driver_earning
+            item.driver = item.user_name
+            item.timestamp = Timestamp.fromDate(new Date(item.timestamp)) //convert to firebase timestamp
+            delete item.driver_earning
+            delete item.user_name
+            delete item.item_code
+            delete item.property_key
+            delete item.key
+            delete item.address
+            if ((i % 1000) === 0) {
+                console.log(item)
+            }
+            if (i === (data.length -1)) {
+                console.log('last item', i)
+            }
+            let timeOut
+            timeOut = setTimeout(() => sendToDB(item, 'service_logs'), (i*10))
                 
 
         })        

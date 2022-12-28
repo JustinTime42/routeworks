@@ -8,6 +8,7 @@ import {
     HIDE_MODAL,
     TEMP_ITEM,
     SET_LOG_ENTRIES,
+    USER_LOGOUT,
 } from './constants.js'
 
 export const setCurrentUser = (currentUser) => {
@@ -73,7 +74,13 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
     const itemRef = doc(db, className, item.id)    
     const sendToDB = () => {           
         setDoc(itemRef, itemDetails, {merge: merge})
-        .then(() => console.log("success"))
+        .then((result) => {
+            console.log("success", result)
+            dispatch({
+                type: activeActionType,
+                payload: {...item}
+            })
+        })
         .catch((e => alert("error adding document: ", e)))
     }
     sendToDB()
@@ -94,6 +101,7 @@ export const deleteItem = (item, itemList, className, activeActionType, listActi
 }
 
 export const setActiveItem = (item, itemArray, actionType) => {
+    console.log(item)
     const activeItem = itemArray.find(i => i.name === item)
     if (activeItem) {
         return {
@@ -127,5 +135,12 @@ export const setTempItem = (item) => {
     return {
         type: TEMP_ITEM,
         payload: item
+    }
+}
+
+export const clearState = (state, action) => {
+    return {
+        type: USER_LOGOUT,
+        payload: null
     }
 }

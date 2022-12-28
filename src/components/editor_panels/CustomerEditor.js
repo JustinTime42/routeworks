@@ -15,6 +15,7 @@ const editorSize = {height:"90vh", marginTop: '2em'}
 
 const CustomerEditor = (props) => {
     const customer = useSelector(state => state.setTempItem.item)
+    const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const modals = useSelector(state => state.whichModals.modals)
@@ -30,6 +31,10 @@ const CustomerEditor = (props) => {
         setSameAddress(false)
         setDeleteAlert(false)
     }, [customer])
+
+    useEffect(() => {
+        dispatch(setTempItem(activeProperty))
+    },[activeProperty])
 
     useEffect(() => {
         let center = {lat: 0, lng: 0}
@@ -49,7 +54,7 @@ const CustomerEditor = (props) => {
     }, [customer])
 
     useEffect(() => {
-        const unsub = onSnapshot(doc(db, `organizations/${organization}/tags`,  'tags'), (doc) => {
+        const unsub = onSnapshot(doc(db, `organizations`,  organization), (doc) => {
             console.log(doc.data().tags)
             setAllTags([...doc.data().tags])
         })
@@ -74,7 +79,7 @@ const CustomerEditor = (props) => {
     }
 
     const saveNewTag = async(newTag) => {
-        const tagsRef = doc(db, `organizations/${organization}/tags`, 'tags')
+        const tagsRef = doc(db, `organizations`, `${organization}`)
         await updateDoc(tagsRef, {
             tags: arrayUnion(newTag)
         })

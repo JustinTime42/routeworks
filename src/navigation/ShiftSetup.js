@@ -12,10 +12,10 @@ import SimpleSelector from '../components/SimpleSelector'
 import TractorEditor from '../components/editor_panels/TractorEditor'
 import {getAdminItem} from '../firebase'
 import WorkTypeEditor from '../components/editor_panels/WorkTypeEditor'
-import { setActiveItem, showModal, hideModal, setTempItem, setCurrentUser } from "../actions"
+import { setActiveItem, showModal, hideModal, setTempItem, setCurrentUser, clearState } from "../actions"
 
-import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY} from '../constants.js'
-import { setActiveWorkType } from '../reducers'
+import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY, USER_LOGOUT} from '../constants.js'
+import { rootReducer } from '..';
 
 const ShiftSetup = () => {
     const [user, loading, error] = useAuthState(auth);
@@ -92,7 +92,7 @@ const ShiftSetup = () => {
     }
 
     const onCreate = (whichModal) => {        
-        dispatch(setTempItem({}))
+        dispatch(setTempItem({name: '', active: true}))
         dispatch(showModal(whichModal))
     }
 
@@ -108,14 +108,17 @@ const ShiftSetup = () => {
 
     const onSelectVehicle = (event, itemArray, setActiveAction) => {
         let newActive = tractors.find(item => item.id === Number(event))
-        dispatch(setActiveItem(event, itemArray, setActiveAction))
+        console.log(event)
         dispatch(setActiveItem(newActive?.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
+        dispatch(setActiveItem(event, itemArray, setActiveAction))
+        
     }
 
     const handleLogout = async function () {
-        dispatch(hideModal("Shift"))        
-        await logout()
         navigate('/')
+        dispatch(hideModal("Shift"))        
+        logout()        
+        dispatch(clearState())
     };
 
     return (

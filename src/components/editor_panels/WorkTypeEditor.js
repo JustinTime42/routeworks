@@ -1,12 +1,11 @@
     import React, {  useEffect, useState } from "react"
     import { useDispatch, useSelector } from "react-redux";
     import {Button, Alert, Modal, Form, Row, Col } from "react-bootstrap"
-    import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
+    import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem, setActiveItem } from "../../actions"
     import {SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS} from '../../constants.js'
     
     const WorkTypeEditor = (props) => {
-        const [deleteAlert, setDeleteAlert] = useState('')
-        
+        const [deleteAlert, setDeleteAlert] = useState('')        
         const modals = useSelector(state => state.whichModals.modals)
         const tempItem = useSelector(state => state.setTempItem.item)
         const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
@@ -22,11 +21,9 @@
             }            
         }
 
-        useEffect(() => {
-            if(!tempItem && modals.includes('WorkType')) {
-                dispatch(setTempItem({name: '', active: true}))
-            }
-        },[tempItem])
+        // useEffect(() => {
+        //     dispatch(setActiveItem(tempItem, workTypes, SET_WORK_TYPE))
+        // },[tempItem])
 
         const onClose = () => {
             dispatch(hideModal('WorkType'))
