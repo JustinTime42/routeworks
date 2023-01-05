@@ -123,7 +123,7 @@ const PropertyDetails = (props) => {
         let newRecordObject = {}
         newRecordObject.status = newStatus
         newRecordObject.price = property.snow_price
-        let month = new Date().getMonth() + 1
+        let month = ('0' + (new Date().getMonth() + 1)).slice(-2) 
         let year = new Date().getFullYear().toString().substr(-2)
         // round down to the nearest minute. and then up to the nearest quarter hour
         let timeLogged = Math.ceil(Math.floor((endTime - startTime) / 60000) / 15) / 4
