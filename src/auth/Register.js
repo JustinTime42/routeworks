@@ -5,8 +5,8 @@ import { Card, ProgressBar } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { setCurrentUser } from '../actions'
 import { useIdToken } from 'react-firebase-hooks/auth';
-import RegisterUser from './RegisterUser.tsx'
-import RegisterCompany from './RegisterCompany.tsx'
+import RegisterUser from './RegisterUser.js'
+import RegisterCompany from './RegisterCompany.js'
 
 const Register = () => {     
     
@@ -27,7 +27,7 @@ const Register = () => {
         }
     }, [])
     
-    const onSaveOrg = (orgName: string) => {
+    const onSaveOrg = (orgName) => {
         setIsLoading(true)
         setLoadingText('Provisioning company database')
         setProgress(80)

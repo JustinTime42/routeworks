@@ -5,12 +5,14 @@ import { useDispatch, useSelector } from "react-redux"
 import {hideModal, showModal} from "../actions"
 import CustomerContact from '../components/CustomerContact'
 import RawCustomerData from '../components/RawCustomerData'
+import FileUpload from '../components/migration/FileUpload'
 
 const AdminDropdown = () => {
     let location = useLocation()
     let navigate = useNavigate()
     const [showContactsMenu, setShowContactsMenu] = useState(false)
     const [showRawTableModal, setShowRawTableModal] = useState(false)
+    const [showFileUpload, setShowFileUpload] = useState(false)
     const [lastLocation, setLastLocation] = useState(location)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const dispatch = useDispatch()
@@ -24,6 +26,7 @@ const AdminDropdown = () => {
             //case "logs": return setShowLogsMenu({showLogsMenu: true})
             case "contact": return dispatch(showModal('Contact'))
             case "rawTable": return dispatch(showModal('All Customers'))
+            case "fileInput": return setShowFileUpload(true)
             default: return
         }
     }
@@ -59,13 +62,18 @@ const AdminDropdown = () => {
                 <Dropdown.Item as={Link} to="/users" key="userEditor" eventKey="userEditor">
                     User Editor
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/migration" key="migration" eventKey="migration">
-                    Data Migration
+                <Dropdown.Item key="fileInput" eventKey="fileInput">
+                    File Upload
                 </Dropdown.Item>
+                {/* <Dropdown.Item as={Link} to="/migration" key="migration" eventKey="migration">
+                    Data Migration
+                </Dropdown.Item> */}
+
                 </> : null}
             </DropdownButton>
             <CustomerContact show={showContactsMenu} onClose={onClose} />  
-            <RawCustomerData show={showRawTableModal} onClose={onClose} />                               
+            <RawCustomerData show={showRawTableModal} onClose={onClose} /> 
+            <FileUpload org={currentUser.claims.organization} show={showFileUpload} onHide={() => setShowFileUpload(false)}  />                            
         </>
     )    
 }

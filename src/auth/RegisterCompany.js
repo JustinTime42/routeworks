@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Form, Card, Modal, ProgressBar } from 'react-bootstrap'
 
-export interface CompanyProps {
-    onSaveOrg: (orgName: string) => void       
-}
-
-const RegisterCompany = ({onSaveOrg}: CompanyProps) => {
-    const [orgName, setOrgName] = useState<string>('')
+const RegisterCompany = ({onSaveOrg}) => {
+    const [orgName, setOrgName] = useState('')
 
     return (
         <Form>

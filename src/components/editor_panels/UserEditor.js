@@ -11,6 +11,7 @@ const UserEditor = (props) => {
     const [deleteAlert, setDeleteAlert] = useState('')
     const modals = useSelector(state => state.whichModals.modals)
     const tempItem = useSelector(state => state.setTempItem.item)
+    const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const dispatch = useDispatch()
     const roles = ['Driver', 'Supervisor', 'Admin']
 
@@ -48,7 +49,7 @@ const UserEditor = (props) => {
         if (tempItem.uid) { 
             console.log('updating user')
             const updateUser = httpsCallable(functions, 'updateUser')
-            updateUser({...tempItem, customClaims: {...tempItem.customClaims, organization: "Snowline"}}).then(res => {                
+            updateUser({...tempItem, customClaims: {...tempItem.customClaims, organization: organization}}).then(res => {                
                 console.log(res)            
                 let newUsers = [...props.users]
                 newUsers[newUsers.findIndex(user => user.uid === res.data.uid)] = res.data

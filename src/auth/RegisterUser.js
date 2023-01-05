@@ -4,13 +4,7 @@ import { Button, Form } from 'react-bootstrap'
 import { updateProfile, sendEmailVerification } from 'firebase/auth'
 import { addDoc, collection, doc, onSnapshot } from 'firebase/firestore'
 
-export interface UserProps {
-    setProgress: React.Dispatch<React.SetStateAction<number>> 
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
-    setLoadingText: React.Dispatch<React.SetStateAction<string>>       
-}
-
-const RegisterUser = ({ setProgress, setIsLoading, setLoadingText }: UserProps) => {
+const RegisterUser = ({ setProgress, setIsLoading, setLoadingText }) => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -28,11 +22,14 @@ const RegisterUser = ({ setProgress, setIsLoading, setLoadingText }: UserProps) 
         .then((userCredential) => {
             setLoadingText('sending verification email')
             setProgress(30)
+            if (!auth.currentUser) return
             sendEmailVerification(auth.currentUser)
             .then(() => {
+                if (!auth.currentUser) return
                 updateProfile(auth.currentUser, {
                 displayName: username,
                 }).then(async() => {
+                    if (!auth.currentUser) return
                     setProgress(40)
                     setLoadingText('Redirecting to checkout page.')
                     const custRef = await doc(db, 'customers', auth.currentUser.uid)
@@ -43,8 +40,8 @@ const RegisterUser = ({ setProgress, setIsLoading, setLoadingText }: UserProps) 
                         cancel_url: window.location.origin,            
                     })
                     onSnapshot(doc(db, `${custRef.path}/checkout_sessions`, checkoutRef.id), doc => {
-                        if(doc.data().url) {
-                            window.location.assign(doc.data().url)
+                        if(doc.data()?.url) {
+                            window.location.assign(doc.data()?.url)
                             setProgress(60)
                             setIsLoading(false)
                         }
@@ -52,6 +49,7 @@ const RegisterUser = ({ setProgress, setIsLoading, setLoadingText }: UserProps) 
                 })
                 .catch(err => alert(err))
             })
+            
         })
         .catch((error) => {
             alert(error.message)

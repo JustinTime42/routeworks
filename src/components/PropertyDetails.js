@@ -147,13 +147,13 @@ const PropertyDetails = (props) => {
             newRecordObject.status = 'Hourly'
         }
         newRecordObject.timestamp = new Date(Date.now())
-        newRecordObject.contract_type = property.contract_type
-        newRecordObject.cust_id = property.id
-        newRecordObject.reference = property.service_address
-        newRecordObject.service_address = property.service_address
-        newRecordObject.cust_name = property.cust_name
-        newRecordObject.cust_email = property.cust_email
-        newRecordObject.value = property.value
+        newRecordObject.contract_type = customerDetails.contract_type
+        newRecordObject.cust_id = customerDetails.id
+        newRecordObject.reference = customerDetails.service_address
+        newRecordObject.service_address = customerDetails.service_address
+        newRecordObject.cust_name = customerDetails.cust_name
+        newRecordObject.cust_email = customerDetails.cust_email
+        newRecordObject.value = customerDetails.value
         newRecordObject.driver = driver.name
         newRecordObject.notes = newRecordObject.status === 'Skipped' ? noteField + ' ' + skipDetails : noteField
         newRecordObject.tractor = tractor.name

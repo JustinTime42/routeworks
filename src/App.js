@@ -13,10 +13,10 @@ import ServiceLogs from './components/service_logs/ServiceLogs';
 import Users from './components/Users';
 import MigrationUI from './components/migration/MigrationUI'
 import { doc, onSnapshot } from 'firebase/firestore';
-import Register from './auth/Register.tsx';
+import Register from './auth/Register';
 
 const App = () => { 
-  const currentVersion = 0.8
+  const currentVersion = 0.9
   const [user, loading, error] = useIdToken(auth);
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const dispatch = useDispatch()
