@@ -1,4 +1,4 @@
-import React, { useEffect} from 'react'
+import React, { useEffect, useState} from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc, Timestamp } from "firebase/firestore"
 import { db } from '../firebase'
@@ -10,6 +10,7 @@ import { Button, Form } from 'react-bootstrap'
 import PropertyCard from '../components/PropertyCard'
 import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../actions"
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
+import FileUpload from '../components/migration/FileUpload'
 
 const RouteBuilder = () => {
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
@@ -19,6 +20,7 @@ const RouteBuilder = () => {
     const filteredProperties = useSelector(state => state.filterProperties.customers)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+    const [showFileUpload, setShowFileUpload] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -172,7 +174,17 @@ const RouteBuilder = () => {
         <>
         <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
             <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={onInitRoute}>Initialize Route</Button>
+            <div>
             <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
+            <Button 
+                style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden', marginLeft:'1em'}} 
+                variant="primary" size="sm" 
+                onClick={() => setShowFileUpload(true)}
+                >
+                Upload Customers CSV
+            </Button>
+            </div>
+
         </div>
         <div className="adminGridContainer">
         <DragDropContext onDragEnd={dragEnd}>
@@ -266,6 +278,12 @@ const RouteBuilder = () => {
                 close={onCloseClick}
                 onDelete={onDelete}
             />
+            <FileUpload 
+                org={currentUser.claims.organization}
+                show={showFileUpload}
+                onHide={() => setShowFileUpload(false)}
+                collection={'customer'}
+            /> 
         </div>
         </> 
     )    

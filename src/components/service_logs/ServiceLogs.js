@@ -7,6 +7,7 @@ import LogsTable from './LogsTable';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
 import { setLogs } from '../../actions';
+import FileUpload from '../migration/FileUpload';
 
 const ServiceLogs = (props) => {
     const [startDate, setStartDate ] = useState('')
@@ -15,9 +16,10 @@ const ServiceLogs = (props) => {
     const [invoiceDate, setInvoiceDate ] = useState('')
     const [dueDate, setDueDate ] = useState('')
     const [editable, setEditable] = useState(false)
+    const [showFileUpload, setShowFileUpload] = useState(false)
     const logs = useSelector(state => state.setLogs.entries)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
-
+    const currentUser = useSelector(state => state.setCurrentUser.currentUser)
 
     const dispatch = useDispatch()
 
@@ -113,7 +115,7 @@ const ServiceLogs = (props) => {
                 </DropdownButton>   
                 <Form.Group style={{visibility: logType === 'xero' ? 'visible' : 'hidden', display: "flex", flexWrap: "wrap", alignItems:'end'}}>
                     <Form.Group>
-                            <Form.Label >Invoice Date</Form.Label>
+                            <Form.Label>Invoice Date</Form.Label>
                             <Form.Control name="invoiceDate" type="date" onChange={event => setInvoiceDate(event.target.value)}/>
                     </Form.Group>
                     <Form.Group>
@@ -125,9 +127,17 @@ const ServiceLogs = (props) => {
                 <Button style={{visibility: logs.length && (logType === 'raw') ? 'visible' : 'hidden'}} onClick={() => setEditable(!editable)}>
                     {!editable ? "Start Editing" : "Stop Editing"}
                 </Button>
+                <Button onClick={() => setShowFileUpload(true)}>Upload Service Logs CSV</Button>
+
             </Form.Group>
         </Form>   
         <LogsTable logType={logType} logs={logs} editable={editable}/>
+        <FileUpload 
+            org={organization}
+            show={showFileUpload}
+            onHide={() => setShowFileUpload(false)}
+            collection={'service_logs'}
+        />    
         </>
     )    
 }

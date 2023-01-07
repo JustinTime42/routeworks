@@ -1,33 +1,45 @@
-import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp } from "firebase/firestore"
+import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp, WithFieldValue, DocumentData } from "firebase/firestore"
 import { db } from "../../firebase"
-import { ICustomerFieldsBefore, ICustomerFieldsAfter } from "./definitions"
+import { ICustomerFieldsBefore, ICustomerFieldsAfter, ILogsFieldsBefore, ILogsFieldsAfter } from "./definitions"
 
-export const writeArrayToDocs = async(list: Array<ICustomerFieldsBefore>, path: string) => {
+export const writeArrayToDocs = async(list: Array<ILogsFieldsBefore | ICustomerFieldsBefore>, path: string) => {
     list.forEach(item => {
-        const fixedItem = recastCustomerNumbers(item)
+        const fixedItem = path.endsWith('customer') ? recastCustomerValues(item) : recastLogValues(item)
         writeNewItem(fixedItem, path)
     })
 }
 
-export const writeNewItem = async(item: object, path: string) => {
-    try {        
+export const writeNewItem = async<T extends WithFieldValue<DocumentData>>(item: T, path: string) => {
+    try {
         await addDoc(collection(db, path), item)
-        console.log(item)
     }
     catch(error) {
         alert('error updating database' + error)
     }              
 }
 
-const recastCustomerNumbers = (customer: ICustomerFieldsBefore): ICustomerFieldsAfter => {
+const recastCustomerValues = (customer: ICustomerFieldsBefore): ICustomerFieldsAfter => {
     const changedFields = {
-        include_email2: customer.include_email2 === "true",
-        service_level: Number(customer.service_level),
-        price_per_yard: Number(customer.price_per_yard),
-        sweep_price: Number(customer.sweep_price),
-        value: Number(customer.value),
-        snow_price: Number(customer.snow_price),
+        include_email2: customer.include_email2 === "true" || false,
+        service_level: Number(customer.service_level) || 0,
+        price_per_yard: Number(customer.price_per_yard) || 0,
+        sweep_price: Number(customer.sweep_price) || 0,
+        value: Number(customer.value) || 0,
+        snow_price: Number(customer.snow_price) || 0,
         routesAssigned: {},
     }
     return {...customer, ...changedFields}
+}
+
+const recastLogValues = (logEntry: ILogsFieldsBefore): ILogsFieldsAfter => {
+    const changedFields = {
+        include_email2: logEntry.include_email2 === "true" || false,
+        value: Number(logEntry.value) || 0,
+        price_per_yard: Number(logEntry.price_per_yard) || 0,
+        service_level: Number(logEntry.service_level) || 0,
+        sweep_price: Number(logEntry.sweep_price) || 0,
+        snow_price: Number(logEntry.snow_price) || 0,
+        timestamp: Timestamp.fromDate(new Date(logEntry.timestamp || Date.now())),
+    }
+    return {...logEntry, ...changedFields}
 }

@@ -10,9 +10,10 @@ interface IFileUploadProps {
     show: boolean
     onHide: () => void
     org: string  
+    collection: string
 }
 
-const FileUpload = ({show, onHide, org}: IFileUploadProps) => {
+const FileUpload = ({show, onHide, org, collection}: IFileUploadProps) => {
     const [file, setFile] = useState<LocalFile>()
 
     const handleSubmit = (e:React.MouseEvent) => {
@@ -29,7 +30,7 @@ const FileUpload = ({show, onHide, org}: IFileUploadProps) => {
     const papaConfig = {
         header: true,
         complete: (results : ParseResult<ICustomerFieldsBefore>) => {
-            writeArrayToDocs(results.data, `organizations/${org}/customer`)
+            writeArrayToDocs(results.data, `organizations/${org}/${collection}`)
         } ,
         skipEmptyLines: true,
         delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]

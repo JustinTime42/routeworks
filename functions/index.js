@@ -157,11 +157,12 @@ exports.deleteUser = functions.https.onCall((data, context) => {
 })
 
 exports.updateLogEntry = functions.firestore 
-  .document('service_logs/{itemID}')
+  .document('organizations/{organization}/service_logs/{itemID}')
   .onUpdate(async(change, context) => {
+    const organization = context.auth.token.organization
     const { timestamp } = context
     const { itemID} = context.params
-    return admin.firestore().collection(`audit_logs`).add({
+    return admin.firestore().collection(`organizations/${organization}/audit_logs`).add({
       id: itemID, 
       timestamp: timestamp, 
       before: change.before.data(),
@@ -174,13 +175,14 @@ exports.updateLogEntry = functions.firestore
   })
 
   exports.deleteLogEntry = functions.firestore
-  .document('service_logs/{itemID}')
+  .document(`organizations/{organization}/service_logs/{itemID}`)
   .onDelete(async(snap, context) => {
+    const organization = context.params.organization
     const record = snap.data()
     const { timestamp } = context
     const {itemID } = context.params
-    return admin.firestore().collection(`audit_logs`).add({
-      id: itemID, 
+    return admin.firestore().collection(`organizations/${organization}/audit_logs`).add({
+      id: itemID,
       timestamp: timestamp,
       deleted: record
     })

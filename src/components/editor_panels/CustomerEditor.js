@@ -79,10 +79,12 @@ const CustomerEditor = (props) => {
     }
 
     const saveNewTag = async(newTag) => {
-        const tagsRef = doc(db, `organizations`, `${organization}`)
-        await updateDoc(tagsRef, {
-            tags: arrayUnion(newTag)
-        })
+        if(newTagName) {
+            const tagsRef = doc(db, `organizations`, `${organization}`)
+            await updateDoc(tagsRef, {
+                tags: arrayUnion(newTag)
+            })
+        }
     }
     
     const onChange = (event) => {

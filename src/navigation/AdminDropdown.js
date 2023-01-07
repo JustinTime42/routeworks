@@ -73,7 +73,12 @@ const AdminDropdown = () => {
             </DropdownButton>
             <CustomerContact show={showContactsMenu} onClose={onClose} />  
             <RawCustomerData show={showRawTableModal} onClose={onClose} /> 
-            <FileUpload org={currentUser.claims.organization} show={showFileUpload} onHide={() => setShowFileUpload(false)}  />                            
+            <FileUpload 
+                org={currentUser.claims.organization}
+                show={showFileUpload}
+                onHide={() => setShowFileUpload(false)}
+                collection={'customer'}
+            />                            
         </>
     )    
 }

@@ -153,10 +153,12 @@ const PropertyDetails = (props) => {
         newRecordObject.service_address = customerDetails.service_address
         newRecordObject.cust_name = customerDetails.cust_name
         newRecordObject.cust_email = customerDetails.cust_email
+        newRecordObject.cust_email2 = customerDetails.cust_email2
+        newRecordObject.include_email2 = customerDetails.include_email2
         newRecordObject.value = customerDetails.value
         newRecordObject.driver = driver.name
         newRecordObject.notes = newRecordObject.status === 'Skipped' ? noteField + ' ' + skipDetails : noteField
-        newRecordObject.tractor = tractor.name
+        newRecordObject.vehicle = tractor.name
         newRecordObject.vehicle_type = tractor.type
         newRecordObject.work_type = workType.name
         newRecordObject.bill_address = customerDetails.bill_address
