@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, lazy, Suspense } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Dropdown, DropdownButton, Form, } from 'react-bootstrap'
 import { collection, query, where, getDocs, Timestamp} from "firebase/firestore";
@@ -6,7 +6,7 @@ import { db } from '../../firebase'
 import LogsTable from './LogsTable';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
-import { setLogs } from '../../actions';
+import { setLogs, hideModal, showModal } from '../../actions';
 import FileUpload from '../migration/FileUpload';
 
 const ServiceLogs = (props) => {
@@ -16,10 +16,10 @@ const ServiceLogs = (props) => {
     const [invoiceDate, setInvoiceDate ] = useState('')
     const [dueDate, setDueDate ] = useState('')
     const [editable, setEditable] = useState(false)
-    const [showFileUpload, setShowFileUpload] = useState(false)
     const logs = useSelector(state => state.setLogs.entries)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
-    const currentUser = useSelector(state => state.setCurrentUser.currentUser)
+    const modals = useSelector(state => state.whichModals.modals)
+    const FileUpload = lazy(() => import('../migration/FileUpload'))
 
     const dispatch = useDispatch()
 
@@ -127,17 +127,20 @@ const ServiceLogs = (props) => {
                 <Button style={{visibility: logs.length && (logType === 'raw') ? 'visible' : 'hidden'}} onClick={() => setEditable(!editable)}>
                     {!editable ? "Start Editing" : "Stop Editing"}
                 </Button>
-                <Button onClick={() => setShowFileUpload(true)}>Upload Service Logs CSV</Button>
+                <Button onClick={() => dispatch(showModal('File Upload'))}>Upload Service Logs CSV</Button>
 
             </Form.Group>
         </Form>   
         <LogsTable logType={logType} logs={logs} editable={editable}/>
-        <FileUpload 
-            org={organization}
-            show={showFileUpload}
-            onHide={() => setShowFileUpload(false)}
-            collection={'service_logs'}
-        />    
+        <Suspense fallback={<div>Loading...</div>}>
+            <FileUpload 
+                org={organization}
+                show={modals.includes('File Upload')}
+                onClose={() => dispatch(hideModal('File Upload'))}
+                collection={'service_logs'}
+            />  
+        </Suspense>
+  
         </>
     )    
 }

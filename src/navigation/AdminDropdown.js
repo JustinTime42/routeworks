@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux"
@@ -10,11 +10,10 @@ import FileUpload from '../components/migration/FileUpload'
 const AdminDropdown = () => {
     let location = useLocation()
     let navigate = useNavigate()
-    const [showContactsMenu, setShowContactsMenu] = useState(false)
-    const [showRawTableModal, setShowRawTableModal] = useState(false)
-    const [showFileUpload, setShowFileUpload] = useState(false)
     const [lastLocation, setLastLocation] = useState(location)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
+    const customers = useSelector(state => state.requestAllAddresses.addresses)
+    const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
     
     useEffect(() => {
@@ -23,18 +22,14 @@ const AdminDropdown = () => {
 
     const onSelect = (event) => {
         switch(event) {
-            //case "logs": return setShowLogsMenu({showLogsMenu: true})
             case "contact": return dispatch(showModal('Contact'))
             case "rawTable": return dispatch(showModal('All Customers'))
-            case "fileInput": return setShowFileUpload(true)
             default: return
         }
     }
 
-    const onClose = () => {
-        dispatch(hideModal('Contact'))
-        dispatch(hideModal('All Customers'))
-        dispatch(hideModal('User Editor'))        
+    const onClose = (whichModal) => {
+        dispatch(hideModal(whichModal))       
         navigate(lastLocation)
     }
 
@@ -62,23 +57,14 @@ const AdminDropdown = () => {
                 <Dropdown.Item as={Link} to="/users" key="userEditor" eventKey="userEditor">
                     User Editor
                 </Dropdown.Item>
-                <Dropdown.Item key="fileInput" eventKey="fileInput">
-                    File Upload
-                </Dropdown.Item>
                 {/* <Dropdown.Item as={Link} to="/migration" key="migration" eventKey="migration">
                     Data Migration
                 </Dropdown.Item> */}
 
                 </> : null}
             </DropdownButton>
-            <CustomerContact show={showContactsMenu} onClose={onClose} />  
-            <RawCustomerData show={showRawTableModal} onClose={onClose} /> 
-            <FileUpload 
-                org={currentUser.claims.organization}
-                show={showFileUpload}
-                onHide={() => setShowFileUpload(false)}
-                collection={'customer'}
-            />                            
+            <CustomerContact show={modals.includes('Contact')} onClose={onClose} />  
+            <RawCustomerData show={modals.includes('All Customers')} onClose={onClose} customers={customers} />                  
         </>
     )    
 }

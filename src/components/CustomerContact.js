@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react'
 import {Modal, Form, Button, Row, Col} from 'react-bootstrap'
 import { doc, onSnapshot, query, where, getDocs, collection } from 'firebase/firestore'
 import { db } from '../firebase'
-import { CSVLink } from 'react-csv'
 import { useSelector } from 'react-redux'
 
-const CustomerContact = (props) => {
+const CustomerContact = ({show, onClose}) => {
     const [allTags, setAllTags] = useState([])
     const [selectedTags, setSelectedTags] = useState([])
     const [showDownloadLink, setShowDownloadLink] = useState(false)
@@ -63,8 +62,9 @@ const CustomerContact = (props) => {
         })
     }
 
-    const onClearEmails = () => {
+    const handleClose = () => {
         setCustomers([])
+        onClose('Contact')
     }
 
     const headers = [
@@ -76,7 +76,7 @@ const CustomerContact = (props) => {
     ]
 
     return (
-        <Modal show={modals.includes('Contact')} onHide={props.close}>
+        <Modal show={show} onHide={handleClose}>
             <Modal.Header>Download Customer Contact Info</Modal.Header>
             <Modal.Body style={{display: 'flex', flexWrap:'nowrap'}}>
                 <Form>
@@ -104,21 +104,12 @@ const CustomerContact = (props) => {
                             <Form.Control style={{overflowY:'scroll'}} id="customer-emails" name="notes" as="textarea" rows="3" value={customers} readOnly={true}/>
                         </Col>
                     </Form.Group>
-                    
-                    
-                    {
-                        // showDownloadLink ?
-                        // <CSVLink data={customers} headers={headers} filename={`customers_${selectedTags.toString()}.csv`}>
-                        // Download
-                        // </CSVLink> : <></>
-                    } 
-
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant='primary' onClick={onClearEmails}>Clear Results</Button>
+                <Button variant='primary' onClick={() => setCustomers([])}>Clear Results</Button>
                 <Button variant="primary" onClick={onDownload}>Create File</Button>
-                <Button variant="secondary" onClick={props.onClose}>Close</Button>
+                <Button variant="secondary" onClick={handleClose}>Close</Button>
             </Modal.Footer>            
         </Modal>
     )

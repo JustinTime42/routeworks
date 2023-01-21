@@ -72,3 +72,5 @@ export const TEMP_ITEM = "TEMP_ITEM"
 
 export const ACTIVE_LOG_ENTRY = "ACTIVE_LOG_ENTRY"
 export const USER_LOGOUT = 'USER_LOGOUT'
+
+export const IS_LOADING = 'IS_LOADING'

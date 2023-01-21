@@ -9,7 +9,15 @@ import {
     TEMP_ITEM,
     SET_LOG_ENTRIES,
     USER_LOGOUT,
+    IS_LOADING
 } from './constants.js'
+
+export const setIsLoading = (isLoading) => {
+    return {
+        type: IS_LOADING,
+        payload: isLoading
+    }
+}
 
 export const setCurrentUser = (currentUser) => {
     return {

@@ -3,19 +3,23 @@ import { db } from "../../firebase"
 import { ICustomerFieldsBefore, ICustomerFieldsAfter, ILogsFieldsBefore, ILogsFieldsAfter } from "./definitions"
 
 export const writeArrayToDocs = async(list: Array<ILogsFieldsBefore | ICustomerFieldsBefore>, path: string) => {
+    let promises: Array<Promise<string>> = []
     list.forEach(item => {
         const fixedItem = path.endsWith('customer') ? recastCustomerValues(item) : recastLogValues(item)
-        writeNewItem(fixedItem, path)
+        promises.push(writeNewItem(fixedItem, path)) 
     })
+    return Promise.all(promises)
+    .then(() => ('Upload Complete'))
+    .catch(() => alert('Error uploading customers'))
 }
 
-export const writeNewItem = async<T extends WithFieldValue<DocumentData>>(item: T, path: string) => {
-    try {
-        await addDoc(collection(db, path), item)
-    }
-    catch(error) {
-        alert('error updating database' + error)
-    }              
+export const writeNewItem = <T extends WithFieldValue<DocumentData>>(item: T, path: string) : Promise<string> => {
+    return new Promise((resolve, reject) => {
+        addDoc(collection(db, path), item).then((item) => {
+            resolve('customer uploaded')
+        })
+        .catch(() => reject(new Error('error uploading customer')))
+    })           
 }
 
 const recastCustomerValues = (customer: ICustomerFieldsBefore): ICustomerFieldsAfter => {

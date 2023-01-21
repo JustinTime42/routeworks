@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react'
+import React, { useEffect, useState, lazy, Suspense} from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc, Timestamp } from "firebase/firestore"
 import { db } from '../firebase'
@@ -10,7 +10,7 @@ import { Button, Form } from 'react-bootstrap'
 import PropertyCard from '../components/PropertyCard'
 import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../actions"
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
-import FileUpload from '../components/migration/FileUpload'
+//import FileUpload from '../components/migration/FileUpload'
 
 const RouteBuilder = () => {
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
@@ -20,7 +20,8 @@ const RouteBuilder = () => {
     const filteredProperties = useSelector(state => state.filterProperties.customers)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
-    const [showFileUpload, setShowFileUpload] = useState(false)
+    const modals = useSelector(state => state.whichModals.modals)
+    const FileUpload = lazy(() => import('../components/migration/FileUpload'))
 
     const dispatch = useDispatch()
 
@@ -179,7 +180,7 @@ const RouteBuilder = () => {
             <Button 
                 style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden', marginLeft:'1em'}} 
                 variant="primary" size="sm" 
-                onClick={() => setShowFileUpload(true)}
+                onClick={() => dispatch(showModal('File Upload'))}
                 >
                 Upload Customers CSV
             </Button>
@@ -278,12 +279,15 @@ const RouteBuilder = () => {
                 close={onCloseClick}
                 onDelete={onDelete}
             />
-            <FileUpload 
-                org={currentUser.claims.organization}
-                show={showFileUpload}
-                onHide={() => setShowFileUpload(false)}
-                collection={'customer'}
-            /> 
+            <Suspense fallback={<div>Loading...</div>}>
+                <FileUpload 
+                    org={currentUser.claims.organization}
+                    show={modals.includes('File Upload')}
+                    onClose={() => dispatch(hideModal('File Upload'))}
+                    collection={'customer'}
+                /> 
+            </Suspense>
+
         </div>
         </> 
     )    

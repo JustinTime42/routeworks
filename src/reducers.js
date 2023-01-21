@@ -27,9 +27,22 @@ import { SET_ACTIVE_ROUTE,
     TEMP_ITEM,
     ACTIVE_LOG_ENTRY, 
     SET_LOG_ENTRIES, 
-    USER_LOGOUT
+    IS_LOADING
 } from './constants.js'
-import { rootReducer } from './index.js'
+
+
+const initialStateIsLoading = {
+    isLoading: false
+}
+
+export const setIsLoading = (state = initialStateIsLoading, action={}) => {
+    switch(action.type) {
+        case IS_LOADING: 
+            return {...state, isLoading: action.payload}
+        default: 
+            return state
+    }
+}
 
 const initialStateCurrentUser = {
     currentUser: {
