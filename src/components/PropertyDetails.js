@@ -60,7 +60,9 @@ const PropertyDetails = (props) => {
       }, [property.id])
 
     useEffect(() => {
-        if (property?.contract_type === "Hourly") { 
+        if (property.id === undefined) {
+            return 
+        } else if (property?.contract_type === "Hourly") { 
             setState(() => ({...initialState, disabled: true, showModal: true})) 
         } else {
             console.log('returning to intial state')

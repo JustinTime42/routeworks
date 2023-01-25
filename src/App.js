@@ -5,13 +5,8 @@ import { auth, db } from "./firebase";
 import { UserLogin } from './auth/UserLogin'
 import TopNav from "./navigation/TopNav"
 import "./styles/App.css"
-import { clearState, setCurrentUser } from './actions'
+import { setCurrentUser } from './actions'
 import { useDispatch, useSelector } from 'react-redux';
-// import RouteBuilder from './route_builder/RouteBuilder';
-// import DisplayRoute from './DisplayRoute'
-// import ServiceLogs from './components/service_logs/ServiceLogs';
-// import Users from './components/Users';
-// import MigrationUI from './components/migration/MigrationUI'
 import { doc, onSnapshot } from 'firebase/firestore';
 import Register from './auth/Register';
 
@@ -47,7 +42,6 @@ const App = () => {
       })      
     } else {
       dispatch(setCurrentUser(null))
-      //dispatch(clearState)
     }
   }, [user])
 
