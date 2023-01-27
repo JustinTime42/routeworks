@@ -57,9 +57,9 @@ const AdminDropdown = () => {
                 <Dropdown.Item as={Link} to="/users" key="userEditor" eventKey="userEditor">
                     User Editor
                 </Dropdown.Item>
-                {/* <Dropdown.Item as={Link} to="/migration" key="migration" eventKey="migration">
+                <Dropdown.Item as={Link} to="/migration" key="migration" eventKey="migration">
                     Data Migration
-                </Dropdown.Item> */}
+                </Dropdown.Item>
 
                 </> : null}
             </DropdownButton>

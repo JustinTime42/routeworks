@@ -6,7 +6,7 @@ import { serviceLevels } from '../globals.js'
 const PropertyCard = (props) => {
 
     const routeData = useSelector(state => state.setActiveRoute.activeRoute)
-    const status = props.address.contract_type === "Hourly" ? "Hourly" : props.address.status
+    const status = props.address.status
 
     const cardBg = () => {        
         if (props.address.active === false) return `rgba(231,76,60,.2)`

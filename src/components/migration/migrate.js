@@ -316,4 +316,21 @@ export const copyNoRoutesAssigned = (customers, routes) => {
     navigator.clipboard.writeText(emptyObjects)
 }
 
-
+// function to iterate through the customers assigned to each route, find the contract_type for the corresponding customer in customers and assign it to the customer on the route
+export const assignContractType = (routes, customers) => {
+    console.log(routes)
+    routes.forEach(route => {
+        route.customers.forEach(customer => {
+            let found = customers.find(c => c.id === customer.id)
+            if (found) {
+                customer.contract_type = found.contract_type
+            }
+        })
+    })
+    // save each new route to database with a i second delay
+    routes.forEach((route, i) => {
+        setTimeout(() => {
+            sendToDB(route, `organizations/Snowline/route/`)
+        }, (i * 1000))
+    })
+}

@@ -65,7 +65,13 @@ const RouteBuilder = () => {
     const onInitRoute = () => {
         let confirmed = window.confirm(`Initialize ${activeRoute.name}?`)
         if (confirmed) {
-            const newRouteCustomers = activeRoute.customers.map(i => ({...i, status: "Waiting"}))
+            const newRouteCustomers = activeRoute.customers.map(i => {
+                if (i.contract_type === 'Hourly') {
+                    return { ...i, status: 'Hourly' }
+                } else {
+                    return { ...i, status: 'Waiting' }
+                }
+            })
             dispatch(editItem({...activeRoute, customers: newRouteCustomers}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS)) 
         } else return
     }
@@ -104,24 +110,36 @@ const RouteBuilder = () => {
             return
         }
         // edit relevant details on each route assigned
-        const removeFields = (item) => { 
+        const removeFields = (item) => {             
             return (
                 {
                     id: item.id,
                     cust_name: item.cust_name, 
                     service_address: item.service_address || '',
                     service_level: item.service_level || null,
+                    contract_type: item.contract_type || '',                    
                 }
             )
         }
+        const setStatus = (item, custIndex, newRoute) => {
+            let status = newRoute.customers[custIndex].status
+            if (item.contract_type === "Hourly") {
+                if (status !== "Skipped") {
+                    item.status = "Hourly"
+                } 
+            } else {
+                if (status = "Hourly") {
+                    item.status = "Waiting"
+                }
+            }           
+            return item
+        }
         const newTrimmedDetails = removeFields(newDetails)
-        console.log(newDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
             let custIndex = newRoute.customers.findIndex(item => item.id === newDetails.id)
-            console.log(newRoute.customers[custIndex])
-            newRoute.customers[custIndex] = {...newRoute.customers[custIndex], ...newTrimmedDetails} 
-            console.log(newRoute.customers[custIndex])
+            const detailsWithStatus = setStatus(newTrimmedDetails, custIndex, newRoute)
+            newRoute.customers[custIndex] = {...newRoute.customers[custIndex], ...detailsWithStatus} 
             dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
         })
         if (newDetails.id) {
@@ -185,7 +203,6 @@ const RouteBuilder = () => {
                 Upload Customers CSV
             </Button>
             </div>
-
         </div>
         <div className="adminGridContainer">
         <DragDropContext onDragEnd={dragEnd}>
@@ -291,7 +308,6 @@ const RouteBuilder = () => {
         </div>
         </> 
     )    
-    
 }
 
 export default RouteBuilder

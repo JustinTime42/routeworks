@@ -78,7 +78,6 @@ const PropertyDetails = (props) => {
     useEffect(() => {
         if (showModal) {
             setTimeout(() => alert("Remember to log hours!"), 200) 
-            console.log("showModal: ") 
         }
     },[showModal])
 
@@ -136,7 +135,9 @@ const PropertyDetails = (props) => {
         if (property.contract_type === 'Hourly') {
             newRecordObject.driverEarning = timeLogged * driver.hourly
         }
-        if (workType.name === 'Sanding') {            
+        if (newStatus === "Skipped") {
+            newRecordObject.price = 0
+        } else if (workType.name === 'Sanding') {            
             (property.sand_contract === "Per Yard" || property.contract_type === "Hourly") ? newRecordObject.price = property.price_per_yard * yards : newRecordObject.price = property.price_per_yard
         } else if (property.contract_type === 'Hourly') {
             newRecordObject.price = timeLogged * property[tractor.type]
@@ -145,7 +146,7 @@ const PropertyDetails = (props) => {
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (workType.name === 'Snow Removal')) {            
             newRecordObject.price = 0  
         }
-        if (property.contract_type === "Hourly") { 
+        if (property.contract_type === "Hourly" && newStatus !== "Skipped") { 
             newRecordObject.status = 'Hourly'
         }
         newRecordObject.timestamp = new Date(Date.now())
@@ -240,7 +241,7 @@ const PropertyDetails = (props) => {
                         }
                         <Card.Body className='buttonRowStyle'>
                             <Button variant="primary" size="lg" disabled={isRunning} onClick={() => props.changeProperty(property, "prev")} >Prev</Button>
-                            <Button variant="danger" size="lg" disabled={disabled || isRunning} onClick={toggleShowSkip}>Skip</Button>
+                            <Button variant="danger" size="lg" onClick={toggleShowSkip}>Skip</Button>
                                 <div style={{visibility: done_label, fontSize: "large"}}>                                    
                                     <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
                                 </div>
