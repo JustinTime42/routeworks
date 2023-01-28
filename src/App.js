@@ -11,7 +11,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import Register from './auth/Register';
 
 const App = () => { 
-  const currentVersion = 0.7
+  const currentVersion = 0.8
   const [user, loading, error] = useIdToken(auth);
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const dispatch = useDispatch()

@@ -28,7 +28,7 @@ const SimpleSelector = (props) => {
     const toggleEdit = () => {
         setShowEdit(!showEdit)
     }
-   
+
     return (   
         <div style={props.style}>        
         <Dropdown size="sm" onSelect={(event) => props.onSelect(event, props.itemArray, props.setActiveAction)} > 
@@ -52,11 +52,10 @@ const SimpleSelector = (props) => {
             <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={(event) => props.onSelect(null, props.itemArray, props.setActiveAction)}>Clear</Button>
             {
                 props.itemArray ?                   
-                    props.itemArray.filter(item => item.active).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => {    
-                                                
+                    props.itemArray.filter(item => item.active).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => {   
                         return (
                             <div key={i} style={{display: "flex"}}>                        
-                                <Dropdown.Item eventKey={item.name}>{item.name}
+                                <Dropdown.Item eventKey={item.name}>{item.name}{props.renderItem ? props.renderItem(item) : null}
                                     <Button disabled={!item.id} style={{visibility: (showEdit) ? "initial" : "hidden"}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
                                 </Dropdown.Item>
                             </div>

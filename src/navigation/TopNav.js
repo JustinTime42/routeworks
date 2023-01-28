@@ -7,6 +7,7 @@ import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from '../firebase'
 import AdminDropdown from "./AdminDropdown"
 import Spinner from "../components/Spinner"
+import { ProgressBar } from 'react-bootstrap';
 import {  setTempItem, showModal, setActiveItem} from "../actions"
 import SearchBar from "./SearchBar"
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
@@ -46,6 +47,20 @@ const TopNav = () => {
         dispatch(setActiveItem(event, itemArray, setActiveAction))
     }
 
+    const renderProgress = (route) => {
+        console.log(route.name)
+        let done = 0
+        route.customers.forEach(customer => {
+            if (customer.status === 'Done') {
+                done++
+            }
+        })
+        return (
+            <ProgressBar style={{height: '3px'}} now={done / route.customers.length * 100} />
+        )
+    }
+    
+
     return (
         <div style={{margin: "1em"}}>
             {
@@ -65,7 +80,9 @@ const TopNav = () => {
                     onEdit={onEdit}
                     onSelect={onSelect}
                     permissions={['Supervisor', 'Admin']}
-                />
+                    renderItem={renderProgress}                 
+                >                 
+                </SimpleSelector>{/*  */}
                 <RouteEditor />
                 <ShiftSetup />                
                 <SearchBar />
