@@ -51,15 +51,17 @@ const TopNav = () => {
         console.log(route.name)
         let done = 0
         route.customers.forEach(customer => {
-            if (customer.status === 'Done') {
+            if ((customer.status === 'Done') || (customer.status === 'Skipped')) {
                 done++
             }
         })
         return (
-            <ProgressBar style={{height: '3px'}} now={done / route.customers.length * 100} />
+            <ProgressBar 
+                style={{height: '3px' }} 
+                now={done / route.customers.filter(i => i.active).length * 100} 
+            />
         )
-    }
-    
+    }    
 
     return (
         <div style={{margin: "1em"}}>

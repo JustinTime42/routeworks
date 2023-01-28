@@ -54,10 +54,14 @@ const SimpleSelector = (props) => {
                 props.itemArray ?                   
                     props.itemArray.filter(item => item.active).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => {   
                         return (
-                            <div key={i} style={{display: "flex"}}>                        
-                                <Dropdown.Item eventKey={item.name}>{item.name}{props.renderItem ? props.renderItem(item) : null}
-                                    <Button disabled={!item.id} style={{visibility: (showEdit) ? "initial" : "hidden"}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
+                            <div key={i}>                        
+                                <Dropdown.Item eventKey={item.name} style={{marginBottom:'1em'}}>
+                                    {item.name}
+                                    
+                                    <Button size='sm' disabled={!item.id} style={{visibility: (showEdit) ? "initial" : "hidden", marginBottom:'3px'}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
+                                    {props.renderItem ? props.renderItem(item) : null}
                                 </Dropdown.Item>
+                                
                             </div>
                         )                                           
                     })
