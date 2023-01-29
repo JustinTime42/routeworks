@@ -29,8 +29,7 @@ const PropertyDetails = (props) => {
         setState
     ] = useState(initialState)
     const { noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, showModal, isRunning } = currentState    
-    const stateRef = useRef(currentState)
-    //const { refDisabled, refYards, refIsRunning } = stateRef.current
+
 
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const driver = useSelector(state => state.setCurrentUser.currentUser.claims)
@@ -45,31 +44,20 @@ const PropertyDetails = (props) => {
     const dispatch = useDispatch()
 
     const listener = (event) => {        
-        const nope = stateRef.current.isRunning || stateRef.current.disabled || (property.sand_contract === "Per Yard" && (!stateRef.current.yards) && workType.name === "Sanding") || (property.contract_type === 'Hourly') 
-        if(nope) {
-            console.log('nope has been triggered', stateRef.current.yards)
-        }
-        console.log(property)
+        const nope = 
+            isRunning || 
+            disabled || 
+            (property.sand_contract === "Per Yard" && (!yards) && workType.name === "Sanding") || 
+            (property.contract_type === 'Hourly') 
       if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
-        console.log(stateRef.current.yards)
-
         onStatusChange('Done', '', null, null, false)
         props.changeProperty(property, "next")
       }
     }
 
-    useEffect(() => {
-        stateRef.current = currentState
-        console.log(stateRef.current.yards)   
-        console.log(currentState.yards)
-        console.log(yards)
-    }, [currentState])
-
     useEffect(() => {      
         document.addEventListener("keydown", listener)
-        console.log('adding listener')
         return () => {
-            console.log('removing listener')
           document.removeEventListener("keydown", listener)
         }
     }, [currentState])
@@ -98,21 +86,16 @@ const PropertyDetails = (props) => {
 
     const onTextChange = (event) => {
         let {target: {name, value} } = event
-        console.log(event.target.value)
         if (name === "yards") {
             if (value.charAt(value.length - 1) !== '.') {                
                 value = Number(value)
-                console.log('value', value)
             }
             if (value === 0) value = ''       
             if (isNaN(value)) {
-                console.log('not a number') 
                 return
             }
         }
-        console.log(value)
         setState({ ...currentState, [name]: value })
-       //setState(prevState => ({ ...prevState, [name]: value || ''}))
     } 
 
     const toggleShowSkip = () => setState(prevState => ({...prevState, showSkipConfirmation: !prevState.showSkipConfirmation}))
@@ -136,8 +119,7 @@ const PropertyDetails = (props) => {
         dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
-    const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {  
-        console.log('yards: ', yards)
+    const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {
         setState(prevState => ({...prevState, disabled: disabled}))        
         const customerDetails = customers.find(i => i.id === property.id)
         let newRecordObject = {}
