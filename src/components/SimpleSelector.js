@@ -58,7 +58,7 @@ const SimpleSelector = (props) => {
                                 <Dropdown.Item eventKey={item.name} style={{marginBottom:'1em'}}>
                                     {item.name}
                                     
-                                    <Button size='sm' disabled={!item.id} style={{visibility: (showEdit) ? "initial" : "hidden", marginBottom:'3px'}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
+                                    <Button size='sm' disabled={!item.id} style={{visibility: (showEdit) ? "initial" : "hidden", marginBottom:'3px', marginLeft: '3px'}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
                                     {props.renderItem ? props.renderItem(item) : null}
                                 </Dropdown.Item>
                                 

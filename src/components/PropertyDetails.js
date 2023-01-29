@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import { Tabs, Tab, Card, Col, Row, Button, Form, Alert, Modal } from 'react-bootstrap'
 import { deleteDoc, doc } from 'firebase/firestore';
@@ -24,11 +24,13 @@ const initialState = {
 }
 
 const PropertyDetails = (props) => {
-
     const [
-        {noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, showModal, isRunning},
+        currentState,
         setState
     ] = useState(initialState)
+    const { noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, showModal, isRunning } = currentState    
+    const stateRef = useRef(currentState)
+    //const { refDisabled, refYards, refIsRunning } = stateRef.current
 
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const driver = useSelector(state => state.setCurrentUser.currentUser.claims)
@@ -42,24 +44,37 @@ const PropertyDetails = (props) => {
 
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        const nope = isRunning || disabled || (property.sand_contract === "Per Yard" && yards === 0 && workType.name === "Sanding") || (property.contract_type === 'Hourly') 
-        const listener = async(event) => {
-            console.log(event)
-          if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
-            console.log(property)
-            await onStatusChange('Done', '', null, null, false)
-            props.changeProperty(property, "next")
-            event.preventDefault()
-          }
+    const listener = (event) => {        
+        const nope = stateRef.current.isRunning || stateRef.current.disabled || (property.sand_contract === "Per Yard" && (!stateRef.current.yards) && workType.name === "Sanding") || (property.contract_type === 'Hourly') 
+        if(nope) {
+            console.log('nope has been triggered', stateRef.current.yards)
         }
-        document.addEventListener("keydown", listener)
-        return () => {
-          document.removeEventListener("keydown", listener)
-        }
-      }, [property.id])
+        console.log(property)
+      if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
+        console.log(stateRef.current.yards)
+
+        onStatusChange('Done', '', null, null, false)
+        props.changeProperty(property, "next")
+      }
+    }
 
     useEffect(() => {
+        stateRef.current = currentState
+        console.log(stateRef.current.yards)   
+        console.log(currentState.yards)
+        console.log(yards)
+    }, [currentState])
+
+    useEffect(() => {      
+        document.addEventListener("keydown", listener)
+        console.log('adding listener')
+        return () => {
+            console.log('removing listener')
+          document.removeEventListener("keydown", listener)
+        }
+    }, [currentState])
+
+    useEffect(() => {   
         if (property.id === undefined) {
             return 
         } else if (property?.contract_type === "Hourly") { 
@@ -70,7 +85,7 @@ const PropertyDetails = (props) => {
         } 
     }, [property.id, activeRoute.id])
 
-    useEffect(() => {
+    useEffect(() => {        
         dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))
         setState({initialState})
     }, [activeRoute.id] )
@@ -87,14 +102,17 @@ const PropertyDetails = (props) => {
         if (name === "yards") {
             if (value.charAt(value.length - 1) !== '.') {                
                 value = Number(value)
+                console.log('value', value)
             }
             if (value === 0) value = ''       
             if (isNaN(value)) {
+                console.log('not a number') 
                 return
             }
         }
         console.log(value)
-        setState(prevState => ({ ...prevState, [name]: value || ''}))
+        setState({ ...currentState, [name]: value })
+       //setState(prevState => ({ ...prevState, [name]: value || ''}))
     } 
 
     const toggleShowSkip = () => setState(prevState => ({...prevState, showSkipConfirmation: !prevState.showSkipConfirmation}))
@@ -119,6 +137,7 @@ const PropertyDetails = (props) => {
     }
 
     const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {  
+        console.log('yards: ', yards)
         setState(prevState => ({...prevState, disabled: disabled}))        
         const customerDetails = customers.find(i => i.id === property.id)
         let newRecordObject = {}

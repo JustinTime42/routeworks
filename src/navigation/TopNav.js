@@ -55,12 +55,15 @@ const TopNav = () => {
                 done++
             }
         })
-        return (
-            <ProgressBar 
-                style={{height: '3px' }} 
-                now={done / route.customers.filter(i => i.active).length * 100} 
-            />
-        )
+        const now = done / route.customers.filter(i => i.active).length * 100
+        if (now < 100) {
+            return (
+                <ProgressBar 
+                    style={{height: '3px' }} 
+                    now={done / route.customers.filter(i => i.active).length * 100} 
+                />
+            )
+        } else return <p> &#9749;&#127849;</p>
     }    
 
     return (
