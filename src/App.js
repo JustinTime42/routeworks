@@ -1,5 +1,5 @@
 import React, { useEffect, Suspense, lazy } from 'react'
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Outlet, useParams, Navigate } from "react-router-dom";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth, db } from "./firebase";
 import { UserLogin } from './auth/UserLogin'
@@ -9,28 +9,37 @@ import { setCurrentUser } from './actions'
 import { useDispatch, useSelector } from 'react-redux';
 import { doc, onSnapshot } from 'firebase/firestore';
 import Register from './auth/Register';
+import PropertyDetails from './components/PropertyDetails';
+import CustomerEditor from './components/editor_panels/CustomerEditor';
+import { Alert } from 'react-bootstrap';
+const RouteBuilder = lazy(() => import('./route_builder/RouteBuilder'))
+const DisplayRoute = lazy(() => import('./DisplayRoute'))
+const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))
+const Users = lazy(() => import('./components/Users'))
 
 const App = () => { 
-  const currentVersion = 0.8
+  const localVersion = 0.8
+  let prodVersion = localVersion
   const [user, loading, error] = useIdToken(auth);
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
+  const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
+  const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
+  const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
   const dispatch = useDispatch()
-  const RouteBuilder = lazy(() => import('./route_builder/RouteBuilder'))
-  const DisplayRoute = lazy(() => import('./DisplayRoute'))
-  const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))
-  const Users = lazy(() => import('./components/Users'))
+  const { routeName, custId } = useParams()
+  
+
+ // const modals = useSelector(state => state.whichModals.modals)
   const MigrationUI = lazy(() => import('./components/migration/MigrationUI'))
   
-  useEffect(() => {
-      const unsub = onSnapshot(doc(db, 'globals', 'version'), doc => {
-        if(currentVersion !== doc.data().version) {
-          alert('New software version. Click OK to refresh')
-        window.location.reload()          
-        }      
-      })
-      return () => {
-        unsub()
-      }
+  useEffect(() => {    
+    const unsub = onSnapshot(doc(db, 'globals', 'test-version'), doc => {
+      prodVersion = doc.data().version  
+      //checkVersion() 
+    })
+    return () => {
+      unsub()
+    }
   },[])
 
   useEffect(() => {
@@ -45,17 +54,42 @@ const App = () => {
     }
   }, [user])
 
+  // useEffect(() => {
+  //   checkVersion()
+  // }, [modals])
+
+  // const checkVersion = () => {
+  //   console.log('checking version', modals.length)
+  //   if ((prodVersion !== localVersion) && (modals.length === 0)) {
+  //     console.log(modals)
+  //     alert('New software version. Click OK to refresh')
+  //     window.location.reload()
+  //   }
+  // }
+
+  
+
   if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {    
     return (
       <>
-      <TopNav />
       <Suspense fallback={<div>Loading...</div>}>
-        <Routes>        
-            <Route path="/" element={<DisplayRoute />} />
-            <Route path="routebuilder" element={<RouteBuilder />} />
+        <Routes> 
+          <Route path='/' element={<Navigate to="displayRoute" />} /> 
+          <Route path='displayRoute/*' element={<TopNav />}>
+              <Route path=":routeName" element={<DisplayRoute />}>
+                  <Route path=":custId" element={<PropertyDetails />} />
+              </Route>
+          </Route>
+          <Route path="routebuilder/*" element={<TopNav /> }>
+            <Route path=":routeName" element={<RouteBuilder />}>
+              <Route path=":custId" element={<CustomerEditor />} />
+            </Route>
+          </Route>
+          <Route path='admin/*' element={<TopNav />}>
             <Route path="logs" element={<ServiceLogs />} />
             <Route path="users" element={<Users />} />
-            <Route path="migration" element={<MigrationUI />} />        
+            <Route path="migration" element={<MigrationUI />} /> 
+          </Route>      
         </Routes>
       </Suspense>
       </>
@@ -66,7 +100,8 @@ const App = () => {
   else {
     return (
       <Routes>
-        <Route path='/' element={<UserLogin />} />
+        <Route path='/' element={<Navigate to="login" />} /> 
+        <Route path='login' element={<UserLogin />} />
         <Route path='register' element={<Register />} />
       </Routes>
     ) 

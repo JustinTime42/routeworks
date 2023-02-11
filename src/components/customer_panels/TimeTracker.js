@@ -6,16 +6,20 @@ import '../../styles/driver.css'
 let interval
 
 const TimeTracker = props => {
+    const { workType, yards, isRunning, setIsRunning, onStatusChange, sand_contract} = props
     const [timeElapsed, setTimeElapsed] = useState(0)
     const [startTime, setStartTime] = useState()
     
     useEffect(() => {        
-        if(props.isRunning && (timeElapsed === 0)){            
+        if(isRunning && (timeElapsed === 0)){    
+            console.log('isRunning', isRunning)         
             interval = setInterval(() => setTimeElapsed(Date.now() - startTime), 500)
-        } else if (props.isRunning) {
+        } else if (isRunning) {
             setTimeElapsed(Date.now() - startTime)
         }
-    },[props.isRunning])
+    },[isRunning])
+
+
 
     const DisplayTime = () => {
         let hours = Math.floor(timeElapsed / 3600000).toString().padStart(2,'0')
@@ -25,15 +29,19 @@ const TimeTracker = props => {
     }
 
     const onStartPress = () => {
-            setTimeElapsed(0)
-            setStartTime(Date.now())
-            props.setIsRunning(true)
+        setTimeElapsed(0)
+        setStartTime(Date.now())
+        setIsRunning(true)
     }
 
     const onStopPress = () => {
         clearInterval(interval) 
-        props.setIsRunning(false)
-        props.onStatusChange('Waiting', '', new Date(startTime), new Date(Date.now()), false)
+        setIsRunning(false)
+        onStatusChange('Hourly', '', new Date(startTime), new Date(Date.now()), false)
+    }
+
+    const needsYards = () => {
+        return ((workType.name === 'Sanding') && (sand_contract === 'Per Yard') && (!yards))
     }
 
     return (
@@ -45,7 +53,7 @@ const TimeTracker = props => {
                 <Col sm={4}><Form.Label><h5>{startTime ? (new Date(startTime)).toLocaleTimeString() : null}</h5></Form.Label></Col>
                 <Col><Button disabled={props.isRunning} size='lg' onClick={onStartPress}>Start</Button></Col>
                 <Col><DisplayTime /></Col>
-                <Col><Button disabled={!props.isRunning || ((props.workType.name === 'Sanding') && (!props.yards))} size='lg' onClick={onStopPress}>Stop</Button></Col>                                    
+                <Col><Button disabled={!props.isRunning || needsYards()} size='lg' onClick={onStopPress}>Stop</Button></Col>                                    
             </Row>
         </Container>
     )

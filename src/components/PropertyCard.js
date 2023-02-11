@@ -1,10 +1,13 @@
 import React from "react"
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Button, Col, Row, Dropdown, DropdownButton } from 'react-bootstrap'
 import { serviceLevels } from '../globals.js'
+import { changeActiveProperty } from "./utils.js";
+
 
 const PropertyCard = (props) => {
-
+    const navigate = useNavigate()
     const routeData = useSelector(state => state.setActiveRoute.activeRoute)
     const status = props.address.status
 
@@ -90,7 +93,10 @@ const PropertyCard = (props) => {
     }
 
     return (
-        <Row id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} style={cardStyle} onClick={() => props.handleClick(props.address)}>
+        <Row 
+            id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} 
+            style={cardStyle} 
+            onClick={() => navigate(changeActiveProperty(props.address, '', routeData.customers))}>
             <Col style={{flex:"2 1 auto"}}>
                 <h5 style={{textAlign: "left", fontWeight: "bold"}}>  
                     {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}

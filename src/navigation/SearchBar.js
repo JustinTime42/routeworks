@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { FormControl, ListGroup } from 'react-bootstrap'
 import { setActiveItem, filterProperties } from '../actions'
 import { SET_ACTIVE_PROPERTY } from '../constants'
+import { scrollCardIntoView } from '../components/utils'
 
 const SearchBar = () => {
 
@@ -14,6 +15,19 @@ const SearchBar = () => {
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const dispatch = useDispatch()
     let location = useLocation()
+
+    useEffect(() => {
+        onSetMatches()
+    }, [searchValue]) 
+
+    useEffect(() => {
+        if (location.pathname !== '/routebuilder') {
+            setSearchValue('')
+        } 
+        if (matches !== '') {
+            onSetMatches()
+        }        
+    }, [activeRoute])
 
     const selectCustomer = (customer) => {
         // Find out if the customer is on current route
@@ -36,14 +50,11 @@ const SearchBar = () => {
             custIndex = activeRoute.customers.findIndex(i => i.id === customer.id)
         } else {
             custIndex = activeRoute.customers.filter(i => i.active).findIndex(i => i.id === customer.id)
-        }        
-        setTimeout(() => document.getElementById(`card${custIndex}`)?.scrollIntoView(), 300)
+        }     
+        scrollCardIntoView(custIndex)           
     }
 
-    useEffect(() => {
-        if (location.pathname !== '/routebuilder') setSearchValue('')
-        onSetMatches()
-    }, [activeRoute])
+
 
     const listStyle = {
         position: "absolute", 
@@ -56,10 +67,7 @@ const SearchBar = () => {
     const itemStyle = {
         whiteSpace: "nowrap",
     }
-   
-    useEffect(() => {
-        onSetMatches()
-    }, [searchValue, allCustomers]) 
+
 
     const updateMatches = () => {
         let index = matches.findIndex(item => item.key === activeProperty?.key)

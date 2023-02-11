@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from "react-redux";
+import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Card, Col, Row, Button, Form, Alert, Modal } from 'react-bootstrap'
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase'
-import { createItem, editItem, setActiveItem, } from "../actions"
+import { createItem, editItem, setActiveItem, showModal, hideModal} from "../actions"
 import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY, SET_ACTIVE_PROPERTY } from '../constants';
 import CustLogs from './customer_panels/CustLogs'
 import SkipDetails from './customer_panels/SkipDetails'
 import TimeTracker from './customer_panels/TimeTracker'
+import { changeActiveProperty } from './utils';
 
 import '../styles/driver.css'
 
@@ -19,7 +21,6 @@ const initialState = {
     showSkipConfirmation: false,
     currentLogEntry: null,
     showUndoConfirmation: false,
-    showModal: false,
     isRunning: false,
 }
 
@@ -27,10 +28,9 @@ const PropertyDetails = (props) => {
     const [
         currentState,
         setState
-    ] = useState(initialState)
-    const { noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, showModal, isRunning } = currentState    
-
-
+    ] = useState(initialState)   
+    const navigate = useNavigate()
+    const { noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, isRunning } = currentState    
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const driver = useSelector(state => state.setCurrentUser.currentUser.claims)
     const tractor = useSelector(state => state.setActiveTractor.activeTractor)
@@ -40,8 +40,10 @@ const PropertyDetails = (props) => {
     const property = useSelector(state => state.setActiveProperty.activeProperty)
     const currentLogEntry = useSelector(state => state.setActiveLogEntry.entry)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+    const shouldShowModal = useSelector(state => state.whichModals.modals).includes("Hourly")
 
     const dispatch = useDispatch()
+    const {custId, routeName} = useParams()
 
     const listener = (event) => {        
         const nope = 
@@ -51,7 +53,7 @@ const PropertyDetails = (props) => {
             (property.contract_type === 'Hourly') 
       if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
         onStatusChange('Done', '', null, null, false)
-        props.changeProperty(property, "next")
+        changeActiveProperty(property, "next", activeRoute.customers)
       }
     }
 
@@ -63,26 +65,17 @@ const PropertyDetails = (props) => {
     }, [currentState])
 
     useEffect(() => {   
-        if (property.id === undefined) {
-            return 
-        } else if (property?.contract_type === "Hourly") { 
-            setState(() => ({...initialState, disabled: true, showModal: true})) 
-        } else {
-            console.log('returning to intial state')
-            setState(initialState)
-        } 
-    }, [property.id, activeRoute.id])
-
-    useEffect(() => {        
-        dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))
-        setState({initialState})
-    }, [activeRoute.id] )
-
-    useEffect(() => {
-        if (showModal) {
+        const newActiveCustomer = customers.find(i => i.id === custId)       
+        if (newActiveCustomer === undefined) return 
+        dispatch(setActiveItem(newActiveCustomer, customers, SET_ACTIVE_PROPERTY))
+        if (newActiveCustomer.contract_type === "Hourly") { 
+          dispatch(showModal("Hourly"))
             setTimeout(() => alert("Remember to log hours!"), 200) 
+            setState(() => ({...initialState, disabled: true})) 
+        } else {
+            setState(initialState)
         }
-    },[showModal])
+    }, [custId])
 
     const onTextChange = (event) => {
         let {target: {name, value} } = event
@@ -101,7 +94,9 @@ const PropertyDetails = (props) => {
     const toggleShowSkip = () => setState(prevState => ({...prevState, showSkipConfirmation: !prevState.showSkipConfirmation}))
 
     const onCloseClick = () => {
-        if(!isRunning) setState((prevState) => ({...prevState, showModal: false}))
+        if(!isRunning) {
+            dispatch(hideModal("Hourly"))
+        } 
     } 
 
     const setIsRunning = (isRunning) => setState(prevState => ({...prevState, isRunning:isRunning}))
@@ -114,7 +109,6 @@ const PropertyDetails = (props) => {
         })
         .catch(err => alert(err))
         let newRouteCustomers = [...activeRoute.customers]
-        console.log(newRouteCustomers)
         newRouteCustomers[newRouteCustomers.findIndex(i => i.id === property.id)].status = "Waiting"
         dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
@@ -129,7 +123,6 @@ const PropertyDetails = (props) => {
         let year = new Date().getFullYear().toString().substr(-2)
         // round down to the nearest minute. and then up to the nearest quarter hour
         let timeLogged = Math.ceil(Math.floor((endTime - startTime) / 60000) / 15) / 4
-        console.log("time logged", timeLogged)
         
         newRecordObject.driverEarning = driver.percentage * .01 * property.value
         let yardString = ((workType.name === 'Sanding') && (property.sand_contract === "Per Yard")) ? ": " + yards + " yds" : ""
@@ -146,9 +139,6 @@ const PropertyDetails = (props) => {
             newRecordObject.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (workType.name === 'Snow Removal')) {            
             newRecordObject.price = 0  
-        }
-        if (property.contract_type === "Hourly" && newStatus !== "Skipped") { 
-            newRecordObject.status = 'Hourly'
         }
         newRecordObject.timestamp = new Date(Date.now())
         newRecordObject.contract_type = customerDetails.contract_type
@@ -187,14 +177,11 @@ const PropertyDetails = (props) => {
         } else {
             alert('No change in status on route. If you are serving a customer without their route pulled up, this is expected behavior.')
         }
-        console.log(newRecordObject.driverEarning)
         let keysArray = Object.keys(newRecordObject)
         keysArray.forEach(key => {
             if (newRecordObject[key] === null || newRecordObject[key] === undefined) {delete newRecordObject[key]}
         })
         dispatch(createItem(newRecordObject, null, `organizations/${organization}/service_logs`, ACTIVE_LOG_ENTRY, null))
-
-
 
         const confirmedStatus = currentLogEntry.status
         setState(prevState => ({
@@ -204,90 +191,108 @@ const PropertyDetails = (props) => {
         }))
     }
 
+
     return (
-        property.id ? 
-            <DetailsPanel property={property} showModal={showModal} onCloseClick={onCloseClick}>
-                <Tabs defaultActiveKey='job'>
-                    <Tab style={{padding: "1em", height:'75vh', overflow:'hide'}} eventKey='job' title='Job'>
-                        <Row>
-                            <Col>
-                                <h3>{property?.cust_name}</h3>
-                                <a href={`https://www.google.com/maps/place/${property?.service_address}%20${property?.service_city}%20${property?.service_state}%20${property?.service_zip}`} target="_blank">{property?.service_address}</a>
-                                <p>phone: {property?.cust_phone}</p>
-                            </Col>
-                            <Col>
-                                <h4 style={{textAlign:"right"}}>Surface: {property?.surface_type?.toUpperCase()}</h4>
-                                    {
-                                        workType.name === 'Sanding' && property.sand_contract === "Per Yard" ?
-                                        <Form.Group>
-                                            <Form.Label>Number of Yards</Form.Label>
-                                            <Form.Control name="yards" type="number" step='any' value={yards || ''} onChange={onTextChange}/>
-                                        </Form.Group> : null
-                                    }                   
-                            </Col>
-                        </Row>
-                        <Card.Body>
-                            <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
-                            <Card.Title>{property ? !!property.temp ? "TEMPORARY" : null : null}</Card.Title>
-                        </Card.Body>        
-                        {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Title className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Title></Card.Body> : null : null }
-                        <Card.Body>
-                        <Form.Group>
-                            <Form.Label>Driver Notes</Form.Label>
-                            <Form.Control name="noteField" as="textarea" rows="3" value={noteField || ""} onChange={onTextChange}/>
-                        </Form.Group>
-                        </Card.Body>
-                        {
-                            property.contract_type === "Hourly" ? <TimeTracker yards={yards} workType={workType} onStatusChange={onStatusChange} isRunning={isRunning} setIsRunning={setIsRunning}/> : null 
-                        }
-                        <Card.Body className='buttonRowStyle'>
-                            <Button variant="primary" size="lg" disabled={isRunning} onClick={() => props.changeProperty(property, "prev")} >Prev</Button>
-                            <Button variant="danger" size="lg" onClick={toggleShowSkip}>Skip</Button>
-                                <div style={{visibility: done_label, fontSize: "large"}}>                                    
-                                    <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
-                                </div>
-                            <Button 
-                                style={{visibility: (property.contract_type === 'Hourly') ? 'hidden' : 'visible'}} 
-                                variant="success" 
-                                size="lg"  
-                                disabled={isRunning || disabled || (property.sand_contract === "Per Yard" && !yards && workType.name === "Sanding")} 
-                                autoFocus={true}                                
-                                onClick={() => onStatusChange('Done')}>
-                                    Done
-                            </Button>
-                            <Button variant="primary" size="lg" disabled={isRunning} onClick={() => props.changeProperty(property, "next")} >Next</Button>
-                        </Card.Body>
-                        <Card.Body>
-                            <SkipDetails
-                                show={showSkipConfirmation}
-                                toggleShowSkip={toggleShowSkip}
-                                onStatusChange={onStatusChange}
-                                customer={property} 
-                            />    
-                            <Alert show={showUndoConfirmation} variant="danger">
-                                <Alert.Heading>Undo {newStatus} and set as 'Waiting'?</Alert.Heading>
-                                <Button size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: false}))}>Cancel</Button>
-                                <Button size='lg' onClick={undoStatus}>Confirm</Button>
-                            </Alert>                        
-                        </Card.Body>
-                    </Tab>
-                    <Tab eventKey='logs' title='Logs' mountOnEnter={true} unmountOnExit={true}>
-                        <CustLogs height="80vh"/>                  
-                    </Tab>
-                </Tabs>
-            </DetailsPanel> : null
+        <WithModal property = { property } shouldShowModal = { shouldShowModal } onCloseClick = { onCloseClick }>
+            <Tabs defaultActiveKey='job'>
+                <Tab style={{padding: "1em", height:'75vh', overflow:'hide'}} eventKey='job' title='Job'>
+                    <Row>
+                        <Col>
+                            <h3>{property?.cust_name}</h3>
+                            <a href={`https://www.google.com/maps/place/${property?.service_address}%20${property?.service_city}%20${property?.service_state}%20${property?.service_zip}`} target="_blank">{property?.service_address}</a>
+                            <p>phone: {property?.cust_phone}</p>
+                        </Col>
+                        <Col>
+                            <h4 style={{textAlign:"right"}}>Surface: {property?.surface_type?.toUpperCase()}</h4>
+                            {
+                            workType.name === 'Sanding' && property.sand_contract === "Per Yard" ?
+                            <Form.Group>
+                                <Form.Label>Number of Yards</Form.Label>
+                                <Form.Control name="yards" type="number" step='any' value={yards || ''} onChange={onTextChange}/>
+                            </Form.Group> : null
+                            }                   
+                        </Col>
+                    </Row>
+                    <Card.Body>
+                        <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
+                        <Card.Title>{property ? !!property.temp ? "TEMPORARY" : null : null}</Card.Title>
+                    </Card.Body>        
+                    {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Title className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Title></Card.Body> : null : null }
+                    <Card.Body>
+                    <Form.Group>
+                        <Form.Label>Driver Notes</Form.Label>
+                        <Form.Control name="noteField" as="textarea" rows="3" value={noteField || ""} onChange={onTextChange}/>
+                    </Form.Group>
+                    </Card.Body>
+                    {
+                        property.contract_type === "Hourly" ? <TimeTracker sand_contract={property.sand_contract} yards={yards} workType={workType} onStatusChange={onStatusChange} isRunning={isRunning} setIsRunning={setIsRunning}/> : null 
+                    }
+                    <Card.Body className='buttonRowStyle'>
+                        <Button 
+                            variant="primary"
+                            size="lg"
+                            disabled={isRunning}
+                            onClick={() => navigate(changeActiveProperty(property, "prev", activeRoute.customers))} 
+                            >
+                                Prev
+                        </Button>
+                        <Button variant="danger" size="lg" onClick={toggleShowSkip}>Skip</Button>
+                            <div style={{visibility: done_label, fontSize: "large"}}>                                    
+                                <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
+                            </div>
+                        <Button 
+                            style={{visibility: (property.contract_type === 'Hourly') ? 'hidden' : 'visible'}} 
+                            variant="success" 
+                            size="lg"  
+                            disabled={isRunning || disabled || (property.sand_contract === "Per Yard" && !yards && workType.name === "Sanding")} 
+                            autoFocus={true}                                
+                            onClick={() => onStatusChange('Done')}>
+                                Done
+                        </Button>
+                        <Button 
+                            variant="primary"
+                            size="lg"
+                            disabled={isRunning} 
+                            onClick={() => navigate(`../${changeActiveProperty(property, "next", activeRoute.customers)}`)}
+                            >
+                                Next
+                        </Button>
+                    </Card.Body>
+                    <Card.Body>
+                        <SkipDetails
+                            show={showSkipConfirmation}
+                            toggleShowSkip={toggleShowSkip}
+                            onStatusChange={onStatusChange}
+                            customer={property} 
+                        />    
+                        <Alert show={showUndoConfirmation} variant="danger">
+                            <Alert.Heading>Undo {newStatus} and set as 'Waiting'?</Alert.Heading>
+                            <Button size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: false}))}>Cancel</Button>
+                            <Button size='lg' onClick={undoStatus}>Confirm</Button>
+                        </Alert>                        
+                    </Card.Body>
+                </Tab>
+                <Tab eventKey='logs' title='Logs' mountOnEnter={true} unmountOnExit={true}>
+                    <CustLogs height="80vh"/>                  
+                </Tab>
+            </Tabs>
+        </WithModal>
     )      
 }
 
-const DetailsPanel = (props) => {
+const WithModal = (props) => {
+    const { property, shouldShowModal, onCloseClick, children } = props    
     return (
-        props.property?.contract_type === "Hourly" ? 
-        <Modal style={{marginTop: '2em'}} show={props.showModal} onHide={props.onCloseClick} backdrop='static' size='lg'>
-            <Modal.Header closeButton></Modal.Header>
-            {props.children}
-        </Modal> :
-        <div className='rightside'> {props.children} </div>
+        property.contract_type === "Hourly" ? 
+        <Modal style={{marginTop: '2em'}} show={shouldShowModal} onHide={onCloseClick} backdrop='static' size='lg'>
+        <Modal.Header closeButton></Modal.Header>            
+        {property.id ? children : null}
+    </Modal> :
+    <div className='rightside'> 
+        {property.id ?  children : null }
+    </div>
     )
+
 }
 
 export default PropertyDetails

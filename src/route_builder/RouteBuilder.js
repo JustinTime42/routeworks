@@ -10,6 +10,8 @@ import { Button, Form } from 'react-bootstrap'
 import PropertyCard from '../components/PropertyCard'
 import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../actions"
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
+import { scrollCardIntoView } from '../components/utils'
+import { Outlet, useParams } from 'react-router-dom'
 //import FileUpload from '../components/migration/FileUpload'
 
 const RouteBuilder = () => {
@@ -22,31 +24,19 @@ const RouteBuilder = () => {
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const modals = useSelector(state => state.whichModals.modals)
     const FileUpload = lazy(() => import('../components/migration/FileUpload'))
+    const { routeName, custId } = useParams()
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        const unsub = activeRoute.id ? onSnapshot(doc(db, `organizations/${organization}/route/`, activeRoute.id), (doc) => {
+        const routeId = routes.find(i => i.name === routeName)?.id
+        const unsub = routeId ? onSnapshot(doc(db, `organizations/${organization}/route/`, routeId), (doc) => {
             dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
         }) : () => null
         return () => {
             unsub()
         }
-    },[activeRoute.id])
-
-    useEffect(() => {
-        const unsub = onSnapshot(collection(db, `organizations/${organization}/customer/`), (querySnapshot) => {
-            dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc, i) => {
-                if (i % 100 === 0) {
-                    console.log(doc.data())
-                }                
-                return {...doc.data(), id: doc.id}
-            } )})
-        })
-        return () => {
-            unsub()
-        }
-    },[])
+    },[routeName])
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, `organizations/${organization}/vehicle_type`), (querySnapshot) => {
@@ -59,7 +49,7 @@ const RouteBuilder = () => {
 
     useEffect(() => {
         let custIndex = activeRoute?.customers.findIndex(i => i.id === activeCustomer.id)
-        document.getElementById(`card${custIndex}`)?.scrollIntoView()
+        scrollCardIntoView(custIndex)
     }, [activeCustomer])
 
     const onInitRoute = () => {
@@ -189,6 +179,8 @@ const RouteBuilder = () => {
         dispatch(hideModal('Customer'))
     }
 
+    if(!activeRoute.name) return null
+
     return (
         <>
         <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
@@ -290,11 +282,8 @@ const RouteBuilder = () => {
                 )}
             </Droppable>
         </DragDropContext>
-            <CustomerEditor 
-                activeProperty={activeCustomer} 
-                onSave={onPropertySave}
-                close={onCloseClick}
-                onDelete={onDelete}
+            <Outlet
+                context={[onPropertySave, onCloseClick, onDelete]}
             />
             <Suspense fallback={<div>Loading...</div>}>
                 <FileUpload 
@@ -304,7 +293,6 @@ const RouteBuilder = () => {
                     collection={'customer'}
                 /> 
             </Suspense>
-
         </div>
         </> 
     )    

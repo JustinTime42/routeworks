@@ -15,10 +15,6 @@ const RoutePopover = ({customer, route}) => {
    const custDetails = routeDetails.customers.find(i => i.id === customer.id)
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        console.log(customer)
-    },[customer])
-
     const handleRouteClick = () => {
         dispatch(setActiveItem(routeDetails.name, routes, SET_ACTIVE_ROUTE))
         dispatch(hideModal('Customer'))

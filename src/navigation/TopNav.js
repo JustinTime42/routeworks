@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import SimpleSelector from "../components/SimpleSelector"
 import ShiftSetup from './ShiftSetup'
 import RouteEditor from '../components/editor_panels/RouteEditor'
@@ -7,7 +8,7 @@ import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from '../firebase'
 import AdminDropdown from "./AdminDropdown"
 import Spinner from "../components/Spinner"
-import { ProgressBar } from 'react-bootstrap';
+import { ProgressBar, Alert } from 'react-bootstrap';
 import {  setTempItem, showModal, setActiveItem} from "../actions"
 import SearchBar from "./SearchBar"
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
@@ -18,10 +19,14 @@ const TopNav = () => {
     const routesPending = useSelector(state => state.requestRoutes.isPending)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
+    const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
+    const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
 
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const location = useLocation()
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, `organizations/${organization}/customer`), (querySnapshot) => {
@@ -43,8 +48,12 @@ const TopNav = () => {
     }
     
     const onSelect = (event, itemArray, setActiveAction) => {
-        document.getElementById('droppable2scroll')?.scrollTo(0,0)
-        dispatch(setActiveItem(event, itemArray, setActiveAction))
+        console.log(location)
+        navigate(`${event}`)
+
+        //move the scroll to the useEffect in display route when the route is selected
+       // document.getElementById('droppable2scroll')?.scrollTo(0,0)
+        //dispatch(setActiveItem(event, itemArray, setActiveAction))
     }
 
     const renderProgress = (route) => {
@@ -56,11 +65,13 @@ const TopNav = () => {
             }
         })
         const now = done / route.customers.filter(i => i.active).length * 100
+        const display = now === 0 ? 0 : Math.max(now, 10)
         if (now < 100) {
             return (
                 <ProgressBar 
-                    style={{height: '3px' }} 
-                    now={done / route.customers.filter(i => i.active).length * 100} 
+                    style={{minWidth:"10px"}}
+                    now={display} 
+                    label={`${Math.round(now)}%`}
                 />
             )
         } else return <p> &#9749;&#127849;</p>
@@ -87,12 +98,13 @@ const TopNav = () => {
                     permissions={['Supervisor', 'Admin']}
                     renderItem={renderProgress}                 
                 >                 
-                </SimpleSelector>{/*  */}
+                </SimpleSelector>
                 <RouteEditor />
                 <ShiftSetup />                
                 <SearchBar />
                 {['Supervisor','Admin'].includes(currentUser.claims.role) ? <AdminDropdown /> : null }
-            </div>
+            </div>  
+            <Outlet/>          
         </div>            
     )
 }

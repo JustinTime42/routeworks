@@ -36,28 +36,28 @@ const AdminDropdown = () => {
     return (
         <>                        
             <DropdownButton size="sm" title="Admin" onSelect={onSelect}>        
-                <Dropdown.Item as={Link} to="/" key="route" eventKey="route">                              
+                <Dropdown.Item as={Link} to="/displayRoute" key="route" eventKey="route">                              
                     Driver View
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/routebuilder" key="routebuilder" eventKey="routebuilder">                              
+                <Dropdown.Item as={Link} to={`/routebuilder`} key="routebuilder" eventKey="routebuilder">                              
                     Editor View
                 </Dropdown.Item>
                 {
                 currentUser.claims.role === 'Admin' ? 
                 <>                
-                <Dropdown.Item as={Link} to='/logs' key="logs" eventKey="logs">                                
+                <Dropdown.Item as={Link} to='/admin/logs' key="logs" eventKey="logs">                                
                     Service Logs                          
                 </Dropdown.Item>
-                <Dropdown.Item key="contact" eventKey="contact">
+                <Dropdown.Item key="admin/contact" eventKey="contact">
                     Customer Contact 
                 </Dropdown.Item>
                 <Dropdown.Item key="rawTable" eventKey="rawTable">
                     All Customer Data
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/users" key="userEditor" eventKey="userEditor">
+                <Dropdown.Item as={Link} to="/admin/users" key="userEditor" eventKey="userEditor">
                     User Editor
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/migration" key="migration" eventKey="migration">
+                <Dropdown.Item as={Link} to="/admin/migration" key="migration" eventKey="migration">
                     Data Migration
                 </Dropdown.Item>
 

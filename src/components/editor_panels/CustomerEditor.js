@@ -9,11 +9,13 @@ import CustLogs from '../customer_panels/CustLogs'
 import '../../styles/driver.css'
 import { serviceLevels  } from '../../globals'
 import RoutePopover from '../customer_panels/RoutePopover'
+import { useOutletContext } from 'react-router-dom'
 const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt", "Hourly"]
 const sandContractTypes = ["Per Visit", "Per Yard"]
 const editorSize = {height:"90vh", marginTop: '2em'}
 
 const CustomerEditor = (props) => {
+    const [onPropertySave, onCloseClick, onDelete] = useOutletContext()
     const customer = useSelector(state => state.setTempItem.item)
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
@@ -34,7 +36,7 @@ const CustomerEditor = (props) => {
 
     useEffect(() => {
         dispatch(setTempItem(activeProperty))
-    },[activeProperty])
+    },[activeProperty.id])
 
     useEffect(() => {
         let center = {lat: 0, lng: 0}
@@ -145,7 +147,7 @@ const CustomerEditor = (props) => {
       }
 
     return (      
-           <Modal className="scrollable" style={editorSize} show={modals.includes('Customer')} onHide={props.close} size='lg'>
+           <Modal className="scrollable" style={editorSize} show={modals.includes('Customer')} onHide={onCloseClick} size='lg'>
             <Modal.Header>Customer Editor</Modal.Header>
             <Modal.Body>
                 <Tabs defaultActiveKey='contact'>
@@ -479,9 +481,9 @@ const CustomerEditor = (props) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="danger" onClick={() => setDeleteAlert(!deleteAlert)}>{deleteAlert ? "Cancel" : "DELETE PROPERTY"}</Button>
-                <Button variant="primary" onClick={() => props.onSave(customer, false)}>Save</Button>
-                <Button variant="primary" onClick={() => props.onSave(customer, true)}>Save and Close</Button>
-                <Button variant="secondary" onClick={props.close}>Cancel</Button>
+                <Button variant="primary" onClick={() => onPropertySave(customer, false)}>Save</Button>
+                <Button variant="primary" onClick={() => onPropertySave(customer, true)}>Save and Close</Button>
+                <Button variant="secondary" onClick={onCloseClick}>Cancel</Button>
             </Modal.Footer>
             <Alert show={deleteAlert} variant="danger">
                 <Alert.Heading>Delete Property?</Alert.Heading>
@@ -490,7 +492,7 @@ const CustomerEditor = (props) => {
                 </p>
                 <hr />
                 <div className="d-flex justify-content-end">
-                <Button onClick={() => props.onDelete(customer)} variant="outline-success">
+                <Button onClick={() => onDelete(customer)} variant="outline-success">
                     Permanently Delete This Property
                 </Button>
                 </div>
