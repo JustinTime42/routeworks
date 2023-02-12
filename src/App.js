@@ -18,25 +18,26 @@ const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))
 const Users = lazy(() => import('./components/Users'))
 
 const App = () => { 
-  const localVersion = 0.8
-  let prodVersion = localVersion
+  const localVersion = 0.9
+  let prodVersion = 0.9
   const [user, loading, error] = useIdToken(auth);
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
   const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
   const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
+  const modals = useSelector(state => state.whichModals.modals)
   const dispatch = useDispatch()
   const { routeName, custId } = useParams()
   const navigate = useNavigate()
   
 
- // const modals = useSelector(state => state.whichModals.modals)
   const MigrationUI = lazy(() => import('./components/migration/MigrationUI'))
   
   useEffect(() => {    
     const unsub = onSnapshot(doc(db, 'globals', 'test-version'), doc => {
-      prodVersion = doc.data().version  
-      //checkVersion() 
+      prodVersion = doc.data().version 
+      console.log(prodVersion) 
+      checkVersion() 
     })
     return () => {
       unsub()
@@ -57,18 +58,18 @@ const App = () => {
     }
   }, [user])
 
-  // useEffect(() => {
-  //   checkVersion()
-  // }, [modals])
+  useEffect(() => {
+    checkVersion()
+  }, [modals])
 
-  // const checkVersion = () => {
-  //   console.log('checking version', modals.length)
-  //   if ((prodVersion !== localVersion) && (modals.length === 0)) {
-  //     console.log(modals)
-  //     alert('New software version. Click OK to refresh')
-  //     window.location.reload()
-  //   }
-  // }
+  const checkVersion = () => {
+    console.log('checking version', modals.length)
+    if ((prodVersion !== localVersion) && (modals.length === 0)) {
+      console.log(modals)
+      alert('New software version. Click OK to refresh')
+      window.location.reload()
+    }
+  }
 
   
 // TODO this routing is messy, fix it
