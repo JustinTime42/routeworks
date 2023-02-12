@@ -1,5 +1,5 @@
 import { sendPasswordResetEmail, getAuth, signInWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Form, Card } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
@@ -8,6 +8,7 @@ import { setCurrentUser } from '../actions';
 export const UserLogin = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('') 
+  const currentUser = useSelector(state => state.setCurrentUser.currentUser)
   const dispatch = useDispatch()
   const auth = getAuth()
   const navigate = useNavigate()
@@ -18,11 +19,18 @@ export const UserLogin = () => {
     .then(userCredential => {
       userCredential.user.getIdTokenResult().then(result => {
         dispatch(setCurrentUser(result))
-        navigate('/')
+       // navigate('/displayRoute')
       })      
     })
     .catch(err => alert(err))
   }
+
+  // useEffect(() => {
+  //   console.log(currentUser)
+  //   if (currentUser) {
+  //     navigate('/displayRoute')
+  //   }   
+  // },[currentUser])
 
   const onPasswordReset = () => {
     sendPasswordResetEmail(auth, email)

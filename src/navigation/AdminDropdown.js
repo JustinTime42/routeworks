@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux"
 import {hideModal, showModal} from "../actions"
 import CustomerContact from '../components/CustomerContact'
@@ -15,6 +15,7 @@ const AdminDropdown = () => {
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
+    const { routeName } = useParams()
     
     useEffect(() => {
       setLastLocation(location)
@@ -36,10 +37,10 @@ const AdminDropdown = () => {
     return (
         <>                        
             <DropdownButton size="sm" title="Admin" onSelect={onSelect}>        
-                <Dropdown.Item as={Link} to="/displayRoute" key="route" eventKey="route">                              
+                <Dropdown.Item as={Link} to={`/displayRoute/${routeName}`} key="route" eventKey="route">                              
                     Driver View
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to={`/routebuilder`} key="routebuilder" eventKey="routebuilder">                              
+                <Dropdown.Item as={Link} to={`/routebuilder/${routeName}`} key="routebuilder" eventKey="routebuilder">                              
                     Editor View
                 </Dropdown.Item>
                 {

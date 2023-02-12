@@ -93,7 +93,7 @@ const getItem = async(item, collection) => {
 // }
 
 const logout = () => {
-signOut(auth)
+  signOut(auth)
 }
 
 export {

@@ -1,5 +1,5 @@
 import React, { useEffect, Suspense, lazy } from 'react'
-import { Routes, Route, Outlet, useParams, Navigate } from "react-router-dom";
+import { Routes, Route, Outlet, useParams, Navigate, useNavigate } from "react-router-dom";
 import { useIdToken } from "react-firebase-hooks/auth";
 import { auth, db } from "./firebase";
 import { UserLogin } from './auth/UserLogin'
@@ -27,6 +27,7 @@ const App = () => {
   const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
   const dispatch = useDispatch()
   const { routeName, custId } = useParams()
+  const navigate = useNavigate()
   
 
  // const modals = useSelector(state => state.whichModals.modals)
@@ -48,9 +49,11 @@ const App = () => {
       user.getIdTokenResult().then(result => {
         console.log(result)
         dispatch(setCurrentUser(result))
+        navigate('/displayRoute')
       })      
     } else {
       dispatch(setCurrentUser(null))
+     navigate('/login')
     }
   }, [user])
 
@@ -68,17 +71,27 @@ const App = () => {
   // }
 
   
-
-  if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {    
+// TODO this routing is messy, fix it
+  if (!stateUser) {
+    console.log('null user')
     return (
-      <>
+      <Routes>
+        <Route path='/' element={<UserLogin />} /> 
+        <Route path='login' element={<UserLogin />} />
+        <Route path='register' element={<Register />} />    
+      </Routes>
+    )
+  } else if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {   
+    return (
       <Suspense fallback={<div>Loading...</div>}>
         <Routes> 
           <Route path='/' element={<Navigate to="displayRoute" />} /> 
           <Route path='displayRoute/*' element={<TopNav />}>
               <Route path=":routeName" element={<DisplayRoute />}>
                   <Route path=":custId" element={<PropertyDetails />} />
+                  <Route path="customer/:custId" element={<PropertyDetails />} />
               </Route>
+              
           </Route>
           <Route path="routebuilder/*" element={<TopNav /> }>
             <Route path=":routeName" element={<RouteBuilder />}>
@@ -92,11 +105,10 @@ const App = () => {
           </Route>      
         </Routes>
       </Suspense>
-      </>
     ) 
   } else if (stateUser?.claims?.stripeRole === 'Owner') {
     return <Register />
-   }  
+  } 
   else {
     return (
       <Routes>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { FormControl, ListGroup } from 'react-bootstrap'
 import { setActiveItem, filterProperties } from '../actions'
 import { SET_ACTIVE_PROPERTY } from '../constants'
@@ -14,14 +14,16 @@ const SearchBar = () => {
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const dispatch = useDispatch()
-    let location = useLocation()
+    const location = useLocation()
+    const navigate = useNavigate()
+    const {routeName, custId} = useParams()
 
     useEffect(() => {
         onSetMatches()
-    }, [searchValue]) 
+    }, [searchValue, allCustomers]) 
 
     useEffect(() => {
-        if (location.pathname !== '/routebuilder') {
+        if (!location.pathname.startsWith('/routebuilder')) {
             setSearchValue('')
         } 
         if (matches !== '') {
@@ -30,14 +32,20 @@ const SearchBar = () => {
     }, [activeRoute])
 
     const selectCustomer = (customer) => {
-        // Find out if the customer is on current route
-        
+        // Find out if the customer is on current route        
         let isOnRoute = activeRoute.customers.find(entry => (entry.id === customer.id))
               
         if (isOnRoute) {
             console.log("isonroute", isOnRoute)  
             scrollCustomerIntoView(customer)
-        }        
+        } else {
+            if (custId) {
+                navigate(`${routeName}/customer/${customer.id}`)  
+            } else {
+                navigate(`${routeName}/customer/${customer.id}`)
+            }
+            
+        }       
         dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
         setMatches([])
         //if (location.pathname !== '/routebuilder') setSearchValue('')
@@ -61,7 +69,7 @@ const SearchBar = () => {
        // height: "200px",
         overflow: "scroll",
         zIndex: "99",
-        visibility: ((matches.length > 0) && !(location.pathname ==='/routebuilder')) ? "visible" : "hidden"
+        visibility: ((matches.length > 0) && !(location.pathname.startsWith('/routebuilder'))) ? "visible" : "hidden"
     }
 
     const itemStyle = {

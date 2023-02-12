@@ -51,16 +51,16 @@ const PropertyDetails = (props) => {
             disabled || 
             (property.sand_contract === "Per Yard" && (!yards) && workType.name === "Sanding") || 
             (property.contract_type === 'Hourly') 
-      if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
+    if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
         onStatusChange('Done', '', null, null, false)
         changeActiveProperty(property, "next", activeRoute.customers)
-      }
+    }
     }
 
     useEffect(() => {      
         document.addEventListener("keydown", listener)
         return () => {
-          document.removeEventListener("keydown", listener)
+        document.removeEventListener("keydown", listener)
         }
     }, [currentState])
 
@@ -132,7 +132,7 @@ const PropertyDetails = (props) => {
         if (newStatus === "Skipped") {
             newRecordObject.price = 0
         } else if (workType.name === 'Sanding') {            
-            (property.sand_contract === "Per Yard" || property.contract_type === "Hourly") ? newRecordObject.price = property.price_per_yard * yards : newRecordObject.price = property.price_per_yard
+            (property.sand_contract === "Per Yard") ? newRecordObject.price = property.price_per_yard * yards : newRecordObject.price = property.price_per_yard
         } else if (property.contract_type === 'Hourly') {
             newRecordObject.price = timeLogged * property[tractor.type]
         } else if (workType.name === 'Sweeping') {

@@ -100,8 +100,7 @@ const ServiceLogs = (props) => {
                 <Form.Group>
                     <Form.Label>End Date</Form.Label>
                     <Form.Control name="endDate" type="date" onChange={event => setEndDate(event.target.value)}/>
-                </Form.Group>                
-                <Button variant="primary" onClick={onDownload}>Create File</Button>
+                </Form.Group>    
                 <DropdownButton title={logType || "Type"} onSelect={event => handleSelect(event)}>        
                     <Dropdown.Item key="xero" eventKey="xero">                                
                             Xero                             
@@ -112,7 +111,8 @@ const ServiceLogs = (props) => {
                     <Dropdown.Item key="raw" eventKey="raw">                                
                             Raw                          
                     </Dropdown.Item> 
-                </DropdownButton>   
+                </DropdownButton>              
+                <Button variant="primary" onClick={onDownload}>Create File</Button> 
                 <Form.Group style={{visibility: logType === 'xero' ? 'visible' : 'hidden', display: "flex", flexWrap: "wrap", alignItems:'end'}}>
                     <Form.Group>
                             <Form.Label>Invoice Date</Form.Label>

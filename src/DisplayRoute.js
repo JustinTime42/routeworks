@@ -23,15 +23,14 @@ const DisplayRoute= (props) => {
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const dispatch = useDispatch()
     const { routeName, custId } = useParams()
-    const navigate = useNavigate()
       
-    useEffect(() => {
+    useEffect(() => {  
+        dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))      
         const routeId = routes.find(i => i.name === routeName)?.id
         const unsub = routeId ? 
             onSnapshot(doc(db, `organizations/${organization}/route/`, routeId), 
             (doc) => {
-                dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
-                dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))
+                dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))                
                 document.getElementById('droppable2scroll')?.scrollTo(0,0)
             }, 
             err =>alert(err)) : () => null

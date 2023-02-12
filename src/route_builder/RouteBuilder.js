@@ -39,18 +39,15 @@ const RouteBuilder = () => {
     },[routeName])
 
     useEffect(() => {
-        const unsub = onSnapshot(collection(db, `organizations/${organization}/vehicle_type`), (querySnapshot) => {
-            dispatch({type: GET_VEHICLE_TYPES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
-        })
-        return () => {
-            unsub()
-        }
-    },[])
-
-    useEffect(() => {
         let custIndex = activeRoute?.customers.findIndex(i => i.id === activeCustomer.id)
         scrollCardIntoView(custIndex)
     }, [activeCustomer])
+
+    useEffect(() => {   
+        const newActiveCustomer = allCustomers.find(i => i.id === custId)       
+        if (newActiveCustomer === undefined) return 
+        dispatch(setActiveItem(newActiveCustomer, allCustomers, SET_ACTIVE_PROPERTY))
+    }, [custId])
 
     const onInitRoute = () => {
         let confirmed = window.confirm(`Initialize ${activeRoute.name}?`)
@@ -83,9 +80,9 @@ const RouteBuilder = () => {
         }
     }
 
-    const handlePropertyClick = (customer) => {
-        dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
-    }
+    // const handlePropertyClick = (customer) => {
+    //     dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
+    // }
 
     const toggleField = (customer, route, field) => { 
         let newRoute = ({...route})  
@@ -117,11 +114,7 @@ const RouteBuilder = () => {
                 if (status !== "Skipped") {
                     item.status = "Hourly"
                 } 
-            } else {
-                if (status = "Hourly") {
-                    item.status = "Waiting"
-                }
-            }           
+            }         
             return item
         }
         const newTrimmedDetails = removeFields(newDetails)
@@ -228,7 +221,6 @@ const RouteBuilder = () => {
                                             address={item} 
                                             admin={['Admin'].includes(currentUser.claims.role)} 
                                             detailsClick={onDetailsPropertyClick} 
-                                            handleClick={handlePropertyClick}
                                             toggleField={toggleField}
                                             activeProperty={activeCustomer}
                                         />
@@ -268,8 +260,7 @@ const RouteBuilder = () => {
                                             key={item.id} 
                                             address={item} 
                                             admin={['Admin'].includes(currentUser.claims.role)} 
-                                            detailsClick={onDetailsPropertyClick} 
-                                            handleClick={handlePropertyClick}
+                                            detailsClick={onDetailsPropertyClick}
                                             activeProperty={activeCustomer}
                                         />                  
                                     </div>
