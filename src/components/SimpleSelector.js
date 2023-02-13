@@ -69,7 +69,7 @@ const SimpleSelector = (props) => {
                 : null
             }             
             {
-                (location.pathname === '/routebuilder') && props.itemArray ? 
+                (location.pathname.startsWith('/routebuilder')) && props.itemArray ? 
                     props.itemArray.filter(item => !item.active).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => { 
                         return (
                             <div key={i} style={{display: "flex", backgroundColor:"rgba(231, 76, 60, 0.2)"}}>                        

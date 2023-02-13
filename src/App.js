@@ -18,8 +18,8 @@ const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))
 const Users = lazy(() => import('./components/Users'))
 
 const App = () => { 
-  const localVersion = 0.9
-  let prodVersion = 0.9
+  const localVersion = 0.1
+  let prodVersion = 0.1
   const [user, loading, error] = useIdToken(auth);
   const stateUser = useSelector(state => state.setCurrentUser.currentUser)
   const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
@@ -34,7 +34,7 @@ const App = () => {
   const MigrationUI = lazy(() => import('./components/migration/MigrationUI'))
   
   useEffect(() => {    
-    const unsub = onSnapshot(doc(db, 'globals', 'test-version'), doc => {
+    const unsub = onSnapshot(doc(db, 'globals', 'version'), doc => {
       prodVersion = doc.data().version 
       console.log(prodVersion) 
       checkVersion() 
