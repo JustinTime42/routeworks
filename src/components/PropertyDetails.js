@@ -232,7 +232,7 @@ const PropertyDetails = (props) => {
                             variant="primary"
                             size="lg"
                             disabled={isRunning}
-                            onClick={() => navigate(changeActiveProperty(property, "prev", activeRoute.customers))} 
+                            onClick={() => navigate(`../${changeActiveProperty(property, "prev", activeRoute.customers)}`)} 
                             >
                                 Prev
                         </Button>
