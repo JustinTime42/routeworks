@@ -12,11 +12,10 @@ const SearchBar = () => {
     const [matches, setMatches] = useState([])
     const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
-    const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const dispatch = useDispatch()
     const location = useLocation()
     const navigate = useNavigate()
-    const {routeName, custId} = useParams()
+    const { routeName } = useParams()
 
     useEffect(() => {
         onSetMatches()
@@ -38,17 +37,11 @@ const SearchBar = () => {
         if (isOnRoute) {
             console.log("isonroute", isOnRoute)  
             scrollCustomerIntoView(customer)
-        } else {
-            if (custId) {
-                navigate(`${routeName}/customer/${customer.id}`)  
-            } else {
-                navigate(`${routeName}/customer/${customer.id}`)
-            }
-            
+        } else if (location.pathname.startsWith('displayRoute')) {
+            navigate(`${routeName}/${customer.id}`)             
         }       
         dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
         setMatches([])
-        //if (location.pathname !== '/routebuilder') setSearchValue('')
     }
 
     const scrollCustomerIntoView = (customer) => {
@@ -62,11 +55,8 @@ const SearchBar = () => {
         scrollCardIntoView(custIndex)           
     }
 
-
-
     const listStyle = {
         position: "absolute", 
-       // height: "200px",
         overflow: "scroll",
         zIndex: "99",
         visibility: ((matches.length > 0) && !(location.pathname.startsWith('/routebuilder'))) ? "visible" : "hidden"
@@ -74,12 +64,6 @@ const SearchBar = () => {
 
     const itemStyle = {
         whiteSpace: "nowrap",
-    }
-
-
-    const updateMatches = () => {
-        let index = matches.findIndex(item => item.key === activeProperty?.key)
-        matches[index] = activeProperty
     }
 
     const onSetMatches = () => {
@@ -102,8 +86,6 @@ const SearchBar = () => {
             }
             if ((filteredCustomers.length === 1)) {
                 selectCustomer(filteredCustomers[0])
-                // dispatch(setActiveItem(filteredCustomers[0], allCustomers, SET_ACTIVE_PROPERTY))
-                // scrollCustomerIntoView(filteredCustomers[0])
             }
             dispatch(filterProperties(offRouteResults))
         } else {
@@ -113,7 +95,6 @@ const SearchBar = () => {
     }
 
     const changeSearchValue = (event) => setSearchValue(event.target.value)
-
 
     return (
         <div style={{position: "relative"}}>

@@ -29,12 +29,14 @@ const TopNav = () => {
     const location = useLocation()
 
     useEffect(() => {
+        navigate('blank')
         const unsub = onSnapshot(collection(db, `organizations/${organization}/customer`), (querySnapshot) => {
             dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
         return () => {
             unsub()
         }
+        
     },[])
 
     const onCreate = (whichModal) => {

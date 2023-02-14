@@ -172,7 +172,7 @@ const RouteBuilder = () => {
         dispatch(hideModal('Customer'))
     }
 
-    if(!activeRoute.name) return null
+    // if(!activeRoute.name) return null
 
     return (
         <>
