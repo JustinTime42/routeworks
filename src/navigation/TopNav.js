@@ -51,7 +51,7 @@ const TopNav = () => {
     
     const onSelect = (event, itemArray, setActiveAction) => {
         console.log(location)
-        navigate(`${event}`)
+        navigate(encodeURIComponent(`${event}`))
 
         //move the scroll to the useEffect in display route when the route is selected
        // document.getElementById('droppable2scroll')?.scrollTo(0,0)

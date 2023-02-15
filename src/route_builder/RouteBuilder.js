@@ -162,7 +162,7 @@ const RouteBuilder = () => {
                 delete customer.routesAssigned[activeRoute.id]
             } else return            
         }
-        
+
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
         dispatch(editItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }
@@ -171,8 +171,6 @@ const RouteBuilder = () => {
         dispatch(setTempItem(null))
         dispatch(hideModal('Customer'))
     }
-
-    // if(!activeRoute.name) return null
 
     return (
         <>
