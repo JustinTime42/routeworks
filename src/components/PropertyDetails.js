@@ -241,7 +241,7 @@ const PropertyDetails = (props) => {
                                 <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
                             </div>
                         <Button 
-                            style={{visibility: (property.contract_type === 'Hourly') ? 'hidden' : 'visible'}} 
+                            //style={{visibility: (property.contract_type === 'Hourly') ? 'hidden' : 'visible'}} 
                             variant="success" 
                             size="lg"  
                             disabled={isRunning || disabled || (property.sand_contract === "Per Yard" && !yards && workType.name === "Sanding")} 
