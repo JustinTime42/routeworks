@@ -11,7 +11,7 @@ import Spinner from "../components/Spinner"
 import { ProgressBar, Alert } from 'react-bootstrap';
 import {  setTempItem, showModal, setActiveItem} from "../actions"
 import SearchBar from "./SearchBar"
-import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
+import {GET_VEHICLE_TYPES_SUCCESS, REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
 import '../styles/driver.css'
 
 const TopNav = () => {
@@ -38,6 +38,15 @@ const TopNav = () => {
         }
         
     },[])
+
+    useEffect(() => { 
+        const unsub = onSnapshot(collection(db, `organizations/${organization}/vehicle_type`), (querySnapshot) => {
+          dispatch({type:GET_VEHICLE_TYPES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+        })
+        return () => {
+            unsub()
+        }
+      },[])
 
     const onCreate = (whichModal) => {
         dispatch(setTempItem({name: '', active: true, editableBy: ['Supervisor', 'Admin'], customers: []}))

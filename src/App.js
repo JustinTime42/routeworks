@@ -7,11 +7,12 @@ import TopNav from "./navigation/TopNav"
 import "./styles/App.css"
 import { setCurrentUser } from './actions'
 import { useDispatch, useSelector } from 'react-redux';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, onSnapshot } from 'firebase/firestore';
 import Register from './auth/Register';
 import PropertyDetails from './components/PropertyDetails';
 import CustomerEditor from './components/editor_panels/CustomerEditor';
 import { Alert } from 'react-bootstrap';
+import { GET_VEHICLE_TYPES_SUCCESS } from './constants';
 const RouteBuilder = lazy(() => import('./route_builder/RouteBuilder'))
 const DisplayRoute = lazy(() => import('./DisplayRoute'))
 const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))

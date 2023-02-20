@@ -34,9 +34,9 @@ const CustomerEditor = (props) => {
         setDeleteAlert(false)
     }, [customer])
 
-    useEffect(() => {
-        dispatch(setTempItem(activeProperty))
-    },[activeProperty.id])
+    // useEffect(() => {
+    //     dispatch(setTempItem(activeProperty))
+    // },[activeProperty])
 
     useEffect(() => {
         let center = {lat: 0, lng: 0}

@@ -11,7 +11,7 @@ import PropertyCard from '../components/PropertyCard'
 import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../actions"
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
 import { scrollCardIntoView } from '../components/utils'
-import { Outlet, useParams } from 'react-router-dom'
+import { Outlet, useNavigate, useParams } from 'react-router-dom'
 //import FileUpload from '../components/migration/FileUpload'
 
 const RouteBuilder = () => {
@@ -25,6 +25,7 @@ const RouteBuilder = () => {
     const modals = useSelector(state => state.whichModals.modals)
     const FileUpload = lazy(() => import('../components/migration/FileUpload'))
     const { routeName, custId } = useParams()
+    const navigate = useNavigate()
 
     const dispatch = useDispatch()
 
@@ -65,6 +66,7 @@ const RouteBuilder = () => {
 
     const onNewPropertyClick = () => {
         dispatch(showModal('Customer'))
+        navigate('blank')
         let dateCreated = Timestamp.fromDate(new Date(Date.now()))
         dispatch(setTempItem({cust_name: '', routesAssigned: {}, contract_type: "Per Occurrence", sand_contract: "Per Visit", date_created: dateCreated}))
     }
