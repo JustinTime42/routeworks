@@ -131,7 +131,7 @@ const PropertyDetails = (props) => {
         }
         if (newStatus === "Skipped") {
             newRecordObject.price = 0
-        } else if (workType.name === 'Sanding') {            
+        } else if (workType.name === 'Sanding') {               
             (property.sand_contract === "Per Yard") ? newRecordObject.price = property.price_per_yard * yards : newRecordObject.price = property.price_per_yard
         } else if (property.contract_type === 'Hourly') {
             newRecordObject.price = timeLogged * property[tractor.type]
@@ -181,7 +181,10 @@ const PropertyDetails = (props) => {
         keysArray.forEach(key => {
             if (newRecordObject[key] === null || newRecordObject[key] === undefined) {delete newRecordObject[key]}
         })
-        dispatch(createItem(newRecordObject, null, `organizations/${organization}/service_logs`, ACTIVE_LOG_ENTRY, null))
+        if (!((property.contract_type === 'Hourly') && (newStatus === "Done")) ) {
+            dispatch(createItem(newRecordObject, null, `organizations/${organization}/service_logs`, ACTIVE_LOG_ENTRY, null))
+        }
+        
 
         const confirmedStatus = currentLogEntry.status
         setState(prevState => ({
