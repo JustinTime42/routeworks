@@ -1,6 +1,9 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
+const client = new admin.firestore.v1.FirestoreAdminClient();
+const bucket = 'gs://cron-backups';
+
 
 exports.listUsers = functions.https.onCall((data, context) => {
   const {role, organization} = context.auth.token 
@@ -156,10 +159,31 @@ exports.deleteUser = functions.https.onCall((data, context) => {
   }
 })
 
+exports.scheduledBackup = functions.pubsub
+  .schedule('snowline-daily-backup')
+  .onRun(async (context) => {
+    const projectId = 'route-manager-5f65b' // process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
+    
+    const databaseName = client.databasePath(projectId, '(default)');
+    return client.exportDocuments({
+      name: databaseName,
+      outputUriPrefix: bucket,
+      collectionIds: []
+    })
+    .then(responses => {
+      const response = responses[0];
+      console.log(`Operation Name: ${response['name']}`);
+    })
+    .catch(err => {
+      console.error(err);
+      throw new Error('Export operation failed');
+    });
+  })
+
 exports.updateLogEntry = functions.firestore 
   .document('organizations/{organization}/service_logs/{itemID}')
   .onUpdate(async(change, context) => {
-    const organization = context.auth.token.organization
+    const organization = context.params.organization
     const { timestamp } = context
     const { itemID} = context.params
     return admin.firestore().collection(`organizations/${organization}/audit_logs`).add({
@@ -191,7 +215,24 @@ exports.updateLogEntry = functions.firestore
     })
     .catch((e) => {return e})
   })
-  
+
+  exports.writeCustomer = functions.firestore 
+  .document('organizations/{organization}/customer/{itemID}')
+  .onWrite(async(change, context) => {
+    const organization = context.params.organization
+    const { timestamp } = context
+    const { itemID} = context.params
+    return admin.firestore().collection(`organizations/${organization}/audit_customers`).add({
+      id: itemID, 
+      timestamp: timestamp, 
+      before: change.before?.data() || null, 
+      after: change.after?.data() || null
+    })
+    .then(doc => {
+      return doc
+    })
+    .catch((e) => {return e}) 
+  })  
 
 
 // exports.deleteCustomer = functions.firestore

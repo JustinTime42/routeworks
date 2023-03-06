@@ -35,7 +35,10 @@ const ServiceLogs = (props) => {
         console.log(start)
         let end = Timestamp.fromDate(new Date(Date.parse(endDate) + offset + 86400000))// new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
         
-        const q = query(collection(db, `organizations/${organization}/service_logs`), where('timestamp', '>', start), where('timestamp', '<=', end))
+        const q = query(
+            collection(db, `organizations/${organization}/service_logs`), 
+            where('timestamp', '>', start), 
+            where('timestamp', '<=', end))
         const querySnapshot = await getDocs(q)
         let logs = []
         if (logType === 'xero') {
@@ -56,7 +59,6 @@ const ServiceLogs = (props) => {
                     entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() 
                     entry.endTime = (!entry.endTime) ? null : entry.endTime.toDate() 
                 }
-
                logs.push(entry)
             })
         } else if (logType === 'hourly') {
@@ -131,7 +133,7 @@ const ServiceLogs = (props) => {
 
             </Form.Group>
         </Form>   
-        <LogsTable logType={logType} logs={logs} editable={editable}/>
+        <LogsTable height='70vh' logType={logType} logs={logs} editable={editable}/>
         <Suspense fallback={<div>Loading...</div>}>
             <FileUpload 
                 org={organization}

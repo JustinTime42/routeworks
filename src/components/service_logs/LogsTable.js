@@ -32,7 +32,7 @@ const LogsTable = (props) => {
     const defaultColDef = useMemo( ()=> ({
         sortable: true,
         resizable: true,
-        editable: props.editable && (props.logType === 'raw'),
+        editable: props.editable && ((props.logType === 'raw') || (props.logType === 'customer')),
     }))
 
     const numberParser = (params) => {
@@ -54,8 +54,12 @@ const LogsTable = (props) => {
     })
 
     return (
-        <div className="ag-theme-alpine-dark" style={{width: '90%', height: '70vh', marginRight: 'auto', marginLeft: 'auto'}}>
-            <Button style={{visibility: logs.length ? 'visible' : 'hidden'}} onClick={buttonListener}>Download CSV</Button>
+        <div className="ag-theme-alpine-dark" style={{width: '90%', height: props.height, marginRight: 'auto', marginLeft: 'auto'}}>
+            <Button 
+                style={{visibility: logs.length ? 'visible' : 'hidden'}} 
+                onClick={buttonListener}>
+                Download CSV
+            </Button>
             <AgGridReact
                 ref={gridRef} 
                 alwaysShowHorizontalScroll = {true}

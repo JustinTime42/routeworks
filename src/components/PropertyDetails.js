@@ -51,10 +51,10 @@ const PropertyDetails = (props) => {
             disabled || 
             (property.sand_contract === "Per Yard" && (!yards) && workType.name === "Sanding") || 
             (property.contract_type === 'Hourly') 
-    if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
-        onStatusChange('Done', '', null, null, false)
-        changeActiveProperty(property, "next", activeRoute.customers)
-    }
+        if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
+            onStatusChange('Done', '', null, null, false)
+            navigate(`../${changeActiveProperty(property, "prev", activeRoute.customers)}`)
+        }
     }
 
     useEffect(() => {      
@@ -276,7 +276,7 @@ const PropertyDetails = (props) => {
                     </Card.Body>
                 </Tab>
                 <Tab eventKey='logs' title='Logs' mountOnEnter={true} unmountOnExit={true}>
-                    <CustLogs height="80vh"/>                  
+                    <CustLogs style={{padding: "1em", height:'75vh', overflow:'hide'}}/>                  
                 </Tab>
             </Tabs>
         </WithModal>
