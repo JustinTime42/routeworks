@@ -3,7 +3,7 @@ import { CSVLink } from 'react-csv'
 import _ from 'lodash'
 import { useState } from 'react'
 
-const RawCustomerData = ({showRawTableModal, onClose, customers}) => {    
+const RawCustomerData = ({show, onClose, customers}) => {    
     const [newList, setNewList] = useState([])
     const [linkVisible, setLinkVisible] = useState(false)
 
@@ -22,7 +22,7 @@ const RawCustomerData = ({showRawTableModal, onClose, customers}) => {
     }
     
     return (
-        <Modal show={showRawTableModal} onHide={hideModal}>
+        <Modal show={show} onHide={hideModal}>
             <Modal.Header>Download Raw Customer Table</Modal.Header>
             <Modal.Body>   
                 <Button variant='primary' onClick={buildCustList}>Build Customer CSV</Button>

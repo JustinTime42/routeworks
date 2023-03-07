@@ -91,7 +91,6 @@ const rawHeaders = [
 ]
 
 const customerHeaders = [
-    {headerName: 'Delete', cellRenderer:DeleteLogRenderer},
     { headerName: "Timestamp", field: "timestamp", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
     { headerName: "Work Type", field: "work_type"},
     { headerName: "Description", field: "description"},
@@ -123,8 +122,8 @@ export const getColumnDefs = (logType, isEditting) => {
     if (logType === 'xero') return xeroHeaders
     else if (logType === 'hourly') return hourlyHeaders
     else if (logType === 'customer') {
-        if (isEditting) return customerHeaders
-        else return customerHeaders.filter(i => i.headerName !== 'Delete')
+        if (isEditting) return rawHeaders
+        else return customerHeaders
     } 
     else {
         if (isEditting) return rawHeaders
