@@ -6,8 +6,8 @@ const addedDocs = []
 const sendToDB = async(item, path) => {
     let {id, ...newItem} = item
     console.log(item)
-    await setDoc(doc(db, path, id), {...newItem}, { merge: false }) 
-    addedDocs.push(id)         
+    await setDoc(doc(db, path, id), {...newItem}, { merge: true }) 
+    //addedDocs.push(id)         
 }
 
 export const fixOrphanedRoutes = (routes, customers) => {
@@ -333,4 +333,15 @@ export const assignContractType = (routes, customers) => {
             sendToDB(route, `organizations/Snowline/route/`)
         }, (i * 1000))
     })
+}
+
+export const migrateDates = async() => {
+    const querySnapshot = await getDocs(collection(db, "organizations/Snowline/audit_logs"));
+    querySnapshot.forEach((doc) => {
+        let entry = {...doc.data(), id: doc.id}
+        if (typeof(entry.timestamp) === 'string') {
+            const newTimeStamp = new Date(Date.parse(entry.timestamp))
+            sendToDB({...entry, timestamp: newTimeStamp}, 'organizations/Snowline/audit_logs')
+        }
+    });    
 }
