@@ -1,23 +1,15 @@
 import { initializeApp } from "firebase/app"
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import {
-    GoogleAuthProvider,
     getAuth,
-    signInWithPopup,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
-    sendPasswordResetEmail,
     signOut,
 } from "firebase/auth"
 import {
   getDoc,
   doc,
   getFirestore,
-  query,
-  getDocs,
-  collection,
-  where,
-  addDoc,
 } from "firebase/firestore"
 
 const firebaseConfig = {
@@ -28,11 +20,15 @@ const firebaseConfig = {
     messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
     appId: process.env.REACT_APP_APP_ID,
     measurementId: process.env.REACT_APP_MEASUREMENT_ID,
-  };
+};
 
 const app = initializeApp(firebaseConfig)
+console.log(getFirestore(app))
 const auth = getAuth(app)
+
 const db = getFirestore(app)
+
+console.log(db)
 const functions = getFunctions(app)
 
 const logInWithEmailAndPassword = async (email, password) => {
@@ -76,21 +72,6 @@ const getItem = async(item, collection) => {
       alert(e)
   }
 }
-
-
-// const createUser = async (auth, email, password) => {
-//   createUserWithEmailAndPassword(auth, email, password)
-//   .then((userCredential) => {
-//     // Signed in 
-//     const user = userCredential.user;
-//     // ...
-//   })
-//   .catch((error) => {
-//     const errorCode = error.code;
-//     const errorMessage = error.message;
-//     // ..
-//   })
-// }
 
 const logout = () => {
   signOut(auth)

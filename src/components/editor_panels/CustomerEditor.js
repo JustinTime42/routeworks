@@ -12,7 +12,7 @@ import RoutePopover from '../customer_panels/RoutePopover'
 import { useOutletContext } from 'react-router-dom'
 const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt", "Hourly"]
 const sandContractTypes = ["Per Visit", "Per Yard"]
-const editorSize = {height:"90vh", marginTop: '2em'}
+const editorSize = {height:"100vh", marginTop: '2em'}
 
 const CustomerEditor = (props) => {
     const [onPropertySave, onCloseClick, onDelete] = useOutletContext()

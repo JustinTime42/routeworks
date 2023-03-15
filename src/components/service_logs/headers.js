@@ -90,17 +90,17 @@ const rawHeaders = [
     { headerName: "Work Type", field: "work_type"},
 ]
 
-const customerHeaders = [
-    { headerName: "Timestamp", field: "timestamp", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
-    { headerName: "Work Type", field: "work_type"},
+const customerEditHeaders = [
+    {headerName: 'Delete', cellRenderer:DeleteLogRenderer},
+    { headerName: "Timestamp", field: "timestamp", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},    
+    { headerName: "Status", field: "status"},
+    { headerName: "Notes", field: "notes", editable: true },
     { headerName: "Description", field: "description"},
     { headerName: "Driver Name", field: "driver"},
     { headerName: "Vehicle", field: "vehicle"},
-    { headerName: "Notes", field: "notes", editable: true },
     { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
     { headerName: "Start Time", field: "startTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
     { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
-    { headerName: "Status", field: "status"},
     { headerName: "Service Address", field: "service_address"},
     { headerName: "Contract Type", field: "contract_type"},
     { headerName: "Customer Name", field: "cust_name"},
@@ -115,6 +115,19 @@ const customerHeaders = [
     { headerName: "Reference", field: "reference" },
     { headerName: "Vehicle Type", field: "vehicle_type"},
     { headerName: "Value", field: "value", valueParser: params => Number(params.newValue)},
+    { headerName: "Work Type", field: "work_type"},
+]
+
+const customerViewHeaders = [
+    { headerName: "Timestamp", field: "timestamp", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},    
+    { headerName: "Status", field: "status"},
+    { headerName: "Notes", field: "notes", editable: true },
+    { headerName: "Description", field: "description"},
+    { headerName: "Driver Name", field: "driver"},
+    { headerName: "Vehicle", field: "vehicle"},
+    { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
+    { headerName: "Start Time", field: "startTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
+    { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
 ]
 
 export const getColumnDefs = (logType, isEditting) => {
@@ -122,8 +135,8 @@ export const getColumnDefs = (logType, isEditting) => {
     if (logType === 'xero') return xeroHeaders
     else if (logType === 'hourly') return hourlyHeaders
     else if (logType === 'customer') {
-        if (isEditting) return rawHeaders
-        else return customerHeaders
+        if (isEditting) return customerEditHeaders
+        else return customerViewHeaders
     } 
     else {
         if (isEditting) return rawHeaders
@@ -131,5 +144,4 @@ export const getColumnDefs = (logType, isEditting) => {
             return rawHeaders.filter(i => i.headerName !== 'Delete')
         }  
     }
-
 }

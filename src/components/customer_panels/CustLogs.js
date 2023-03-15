@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Table, Button} from 'react-bootstrap'
+import {  Button} from 'react-bootstrap'
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { setLogs } from '../../actions';
 import { db } from '../../firebase'
@@ -16,7 +16,7 @@ const CustLogs = (props) => {
 
     useEffect(() => {
         getLogs()
-    },[activeProperty])
+    },[])
     
     const getLogs = async() => {
         const q = query(collection(db, `organizations/${organization}/service_logs`), where('cust_id', '==', activeProperty.id))
@@ -43,7 +43,7 @@ const CustLogs = (props) => {
                 {!editable ? "Start Editing" : "Stop Editing"}
             </Button>
         : null }
-        <LogsTable height="100%" logType="customer" editable={editable} /> 
+        <LogsTable height="90%" logType="customer" editable={editable} /> 
         </div>
     )
 }

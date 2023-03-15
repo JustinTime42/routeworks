@@ -159,7 +159,7 @@ const PropertyDetails = (props) => {
         newRecordObject.bill_city = customerDetails.bill_city
         newRecordObject.bill_state = customerDetails.bill_state
         newRecordObject.bill_zip = customerDetails.bill_zip
-        if (yards) {newRecordObject.yards = (yards !== 0) ? yards + " yds" : ""}
+        if (yards) {newRecordObject.yards = (yards !== 0) ? yards : ""}
         if (startTime) {newRecordObject.startTime = startTime}
         if (endTime) {newRecordObject.endTime = endTime} 
         newRecordObject.description = newRecordObject.status === 'Skipped' ? '' : workType.name + yardString
@@ -287,13 +287,13 @@ const WithModal = (props) => {
     const { property, shouldShowModal, onCloseClick, children } = props    
     return (
         property.contract_type === "Hourly" ? 
-        <Modal style={{marginTop: '2em'}} show={shouldShowModal} onHide={onCloseClick} backdrop='static' size='lg'>
-        <Modal.Header closeButton></Modal.Header>            
-        {property.id ? children : null}
-    </Modal> :
-    <div className='rightside'> 
-        {property.id ?  children : null }
-    </div>
+            <Modal style={{marginTop: '2em'}} show={shouldShowModal} onHide={onCloseClick} backdrop='static' size='lg'>
+            <Modal.Header closeButton></Modal.Header>            
+            {property.id ? children : null}
+        </Modal> :
+        <div className='rightside'> 
+            {property.id ?  children : null }
+        </div>
     )
 
 }
