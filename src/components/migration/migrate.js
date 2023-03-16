@@ -345,3 +345,16 @@ export const migrateDates = async() => {
         }
     });    
 }
+
+export const addIDToAuditLogs = async() => {
+    const querySnapshot = await getDocs(collection(db, "organizations/Snowline/audit_logs"));
+    querySnapshot.forEach((doc) => {
+        let entry = {...doc.data(), id: doc.id} 
+            const newId = entry.after?.cust_id || entry.before?.cust_id || entry.deleted?.cust_id
+            if (!newId) {
+                console.log('EMPTY USER ID!!!')
+                return
+            }
+            sendToDB({...entry, cust_id: newId}, 'organizations/Snowline/audit_logs')
+    });    
+}

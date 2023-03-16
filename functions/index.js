@@ -187,7 +187,8 @@ exports.updateLogEntry = functions.firestore
     const { timestamp } = context
     const { itemID} = context.params
     return admin.firestore().collection(`organizations/${organization}/audit_logs`).add({
-      id: itemID, 
+      log_id: itemID, 
+      cust_id: change.before?.id,
       timestamp: new Date(timestamp), 
       before: change.before.data(),
       after: change.after.data()
@@ -206,9 +207,11 @@ exports.updateLogEntry = functions.firestore
     const { timestamp } = context
     const {itemID } = context.params
     return admin.firestore().collection(`organizations/${organization}/audit_logs`).add({
-      id: itemID,
+      log_id: itemID,
+      cust_id: record.cust_id,
       timestamp: new Date(timestamp),
       deleted: record
+
     })
     .then(doc => {
       return doc
@@ -223,7 +226,7 @@ exports.updateLogEntry = functions.firestore
     const { timestamp } = context
     const { itemID} = context.params
     return admin.firestore().collection(`organizations/${organization}/audit_customers`).add({
-      id: itemID, 
+      cust_id: itemID, 
       timestamp: new Date(timestamp), 
       before: change.before?.data() || null, 
       after: change.after?.data() || null,

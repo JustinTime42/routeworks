@@ -1,41 +1,58 @@
-import {useState, useEffect } from "react"
-import { useSelector } from "react-redux"
+import {useState, useEffect} from "react"
+import { useSelector, useDispatch } from "react-redux"
 import { Timestamp, query, collection, where, getDocs } from "firebase/firestore"
 import { db } from "../../firebase"
 import _ from 'lodash'
 import { Form, Dropdown, DropdownButton, Button } from "react-bootstrap"
 import RecordView from "./RecordView"
+import { setActiveItem } from "../../actions"
+import { SET_ACTIVE_PROPERTY } from "../../constants"
 
 const Auditor = () => {
     const [docType, setDocType] = useState('') 
     const [startDate, setStartDate ] = useState('')
-    const [endDate, setEndDate ] = useState('')
+    const [endDate, setEndDate ] = useState('')    
     const [records, setRecords] = useState([])
     const organization = useSelector((state) => state.setCurrentUser.currentUser.claims.organization)
+    const customer = useSelector(state => state.setActiveProperty.activeProperty)
+    const customers = useSelector(state => state.requestAllAddresses.addresses)
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        clearActiveCustomer()
+    },[])
 
     const onDownload = async () => {
+        setRecords([])
         const offset = new Date().getTimezoneOffset() * 60000
         const start = Timestamp.fromDate(new Date(Date.parse(startDate) + offset))
         let end = Timestamp.fromDate(new Date(Date.parse(endDate) + offset + 86400000))// new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1) + offset).toISOString()
         let results = []
-        const q = query(
-            collection(db, `organizations/${organization}/${docType}`), 
-            where('timestamp', '>', start), 
-            where('timestamp', '<=', end),
-            // nice to have: find out how to add optional cust_id / id or address depending on which type to select specific customer
-            // might need to research if wildcards work in firebase queries
-        )
+        let q
+        if (customer.id) {
+            q = query(
+                collection(db, `organizations/${organization}/${docType}`), 
+                where('timestamp', '>', start), 
+                where('timestamp', '<=', end),
+                where('cust_id', '==', customer.id))
+        } else {
+            q = query(
+                collection(db, `organizations/${organization}/${docType}`), 
+                where('timestamp', '>', start), 
+                where('timestamp', '<=', end))
+        }      
         const querySnapshot = await getDocs(q)
-        //now we have the logs, but now we have to compare, filter fields, and sort by timestamp
         querySnapshot.forEach((doc) => {
             const record = doc.data()
             results.push(getDiff(record))
         })
         console.log(results)
         setRecords(results)
-        console.log(results)
-        //Now records are of a shape array of objects, each object is keys of whatever changed, and the before and after
+    }
 
+    const clearActiveCustomer = () => {
+        dispatch(dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY)) )
     }
 
     const getDiff = (entry) => {
@@ -91,7 +108,9 @@ const Auditor = () => {
                     Customer Logs                        
                 </Dropdown.Item> 
             </DropdownButton> 
-            <Button onClick={onDownload}>Generator Report</Button>
+            <Button onClick={onDownload}>Generate Report</Button>
+            <Form.Label>{customer?.cust_name || null}</Form.Label>
+            <Button style={{visibility:customer.id ? "visible" : "hidden"}} onClick={clearActiveCustomer}>Clear Customer</Button>
         </Form>
         <RecordView records={records}/>
         </>
