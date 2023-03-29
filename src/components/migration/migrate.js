@@ -6,24 +6,25 @@ const addedDocs = []
 const sendToDB = async(item, path) => {
     let {id, ...newItem} = item
     console.log(item)
-    await setDoc(doc(db, path, id), {...newItem}, { merge: true }) 
+    await setDoc(doc(db, path, id), {...newItem}, { merge: false }) 
     //addedDocs.push(id)         
 }
 
 export const fixOrphanedRoutes = (routes, customers) => {
     //convert routes to array of ids
     const routeList = routes.map(i => i.id)   
-    
+    console.log(routeList)
     //iterate through each customers
     customers.forEach(customer => {
         // get array of route ids assigned
         let routesAssigned = Object.keys(customer.routesAssigned)
         routesAssigned.forEach(route => {
             if (!routeList.includes(route)) {
-                //delete customer.routesAssigned[route]
-                console.log(customer)
-                //sendToDB(customer, 'organizations/Snowline/customer')
+                delete customer.routesAssigned[route]
+                console.log(customer.cust_name)
+                sendToDB(customer, 'organizations/Snowline/customer')
             }
+            else {console.log('no orphaned routes')}
         })
     })
    // console.log(results)
@@ -221,6 +222,20 @@ export const migrateRouteData = () => {
                 sendToDB(newRouteObj, 'driver/driver_lists/route')                              
             })                
         })
+    })
+}
+
+export const routeArrayToMap = (routes) => {
+    //iterate through each route, then iterate through the customers array and convert it to a map, using i as route_position
+    routes.forEach(route => {
+        console.log(route)
+        let newRouteCustomers = {}
+        route.customers.forEach((customer, i) => {
+            let {id, ...newCustomer} =  customer 
+            newRouteCustomers[id] = {...newCustomer, routePosition: i}
+        })
+        console.log(newRouteCustomers)
+        sendToDB({...route, customers: newRouteCustomers}, "organizations/aqZLLXWrMHhWV24sfl89/route")
     })
 }
 

@@ -57,7 +57,7 @@ const RouteEditor = (props) => {
 
     const onDelete = () => {
         // go through route customers and delete the routesAssigned on that customer document
-        tempItem.customers.map(customer => {
+        tempItem.customers.forEach(customer => {
             let newCustomer = customers.find(item => item.id === customer.id)
             console.log(newCustomer)
             if(!newCustomer) {alert('customer not found')}

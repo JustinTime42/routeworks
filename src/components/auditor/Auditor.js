@@ -44,7 +44,7 @@ const Auditor = () => {
         }      
         const querySnapshot = await getDocs(q)
         querySnapshot.forEach((doc) => {
-            const record = doc.data()
+            const record = {...doc.data(), id: doc.id}
             results.push(getDiff(record))
         })
         console.log(results)
@@ -78,6 +78,7 @@ const Auditor = () => {
         }
         diff.service_address = entry.after?.service_address || entry.before?.service_address || entry.deleted?.service_address
         diff.timestamp = entry.timestamp
+        diff.id = entry.id
         return diff
     }
 
@@ -109,7 +110,7 @@ const Auditor = () => {
                 </Dropdown.Item> 
             </DropdownButton> 
             <Button onClick={onDownload}>Generate Report</Button>
-            <Form.Label>{customer?.cust_name || null}</Form.Label>
+            <Form.Label style={{visibility:customer.id ? "visible" : "hidden"}}>Customer: {customer?.cust_name || null}</Form.Label>
             <Button style={{visibility:customer.id ? "visible" : "hidden"}} onClick={clearActiveCustomer}>Clear Customer</Button>
         </Form>
         <RecordView records={records}/>

@@ -40,7 +40,7 @@ const RouteBuilder = () => {
     },[routeName])
 
     useEffect(() => {
-        let custIndex = activeRoute?.customers.findIndex(i => i.id === activeCustomer.id)
+        let custIndex = activeRoute?.customers[activeCustomer.id].routePosition
         scrollCardIntoView(custIndex)
     }, [activeCustomer])
 
@@ -53,11 +53,12 @@ const RouteBuilder = () => {
     const onInitRoute = () => {
         let confirmed = window.confirm(`Initialize ${activeRoute.name}?`)
         if (confirmed) {
-            const newRouteCustomers = activeRoute.customers.map(i => {
-                if (i.contract_type === 'Hourly') {
-                    return { ...i, status: 'Hourly' }
+            const newRouteCustomers = {...activeRoute.customers}
+            Object.keys(newRouteCustomers).forEach(customer => {
+                if (newRouteCustomers[customer].contract_type === 'Hourly') {
+                    newRouteCustomers[customer].status = "Hourly"
                 } else {
-                    return { ...i, status: 'Waiting' }
+                    newRouteCustomers[customer].status = "Waiting"
                 }
             })
             dispatch(editItem({...activeRoute, customers: newRouteCustomers}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS)) 
@@ -87,9 +88,8 @@ const RouteBuilder = () => {
     // }
 
     const toggleField = (customer, route, field) => { 
-        let newRoute = ({...route})  
-        const routeIndex = activeRoute.customers.findIndex(item => item.id === customer.id)
-        newRoute.customers[routeIndex][field] = !newRoute.customers[routeIndex][field]
+        let newRoute = ({...route})
+        newRoute.customers[customer.id][field] = !newRoute.customers[customer.id][field]
         dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
@@ -115,16 +115,15 @@ const RouteBuilder = () => {
             if (item.contract_type === "Hourly") {
                 if (status !== "Skipped") {
                     item.status = "Hourly"
-                } 
-            }         
+                }
+            }
             return item
         }
         const newTrimmedDetails = removeFields(newDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
-            let custIndex = newRoute.customers.findIndex(item => item.id === newDetails.id)
-            const detailsWithStatus = setStatus(newTrimmedDetails, custIndex, newRoute)
-            newRoute.customers[custIndex] = {...newRoute.customers[custIndex], ...detailsWithStatus} 
+            const detailsWithStatus = setStatus(newTrimmedDetails, newDetails.id, newRoute)
+            newRoute.customers[newDetails.id] = {...newRoute.customers[newDetails.id], ...detailsWithStatus} 
             dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
         })
         if (newDetails.id) {
@@ -138,7 +137,7 @@ const RouteBuilder = () => {
     const onDelete = (customer) => {
         Object.values(customer.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
-            newRoute.customers.splice(newRoute.customers.findIndex(item => item.id === customer.id), 1)
+            delete newRoute.customers[customer.id]
             dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
         })
         dispatch(deleteItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
@@ -162,7 +161,7 @@ const RouteBuilder = () => {
             let confirmed = window.confirm(`Confirm removal of ${customer.cust_name} from ${activeRoute.name}`)
             if (confirmed) {
                 delete customer.routesAssigned[activeRoute.id]
-            } else return            
+            } else return
         }
 
         dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
