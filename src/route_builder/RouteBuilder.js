@@ -83,10 +83,6 @@ const RouteBuilder = () => {
         }
     }
 
-    // const handlePropertyClick = (customer) => {
-    //     dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
-    // }
-
     const toggleField = (customer, route, field) => { 
         let newRoute = ({...route})
         newRoute.customers[customer.id][field] = !newRoute.customers[customer.id][field]
@@ -145,6 +141,7 @@ const RouteBuilder = () => {
     }
 
     const dragEnd = (result) => {
+        console.log(result)
         const newLists = onDragEnd(result, activeRoute.customers, filteredProperties)
         if (!newLists) {
             console.log("no result")
@@ -197,15 +194,15 @@ const RouteBuilder = () => {
                         id="droppable2scroll"
                         ref={provided.innerRef}
                         style={getListStyle(snapshot.isDraggingOver)}>
-                        {activeRoute.customers?.map((item, index) => (
+                        {Object.keys(activeRoute.customers)?.map((id, index) => (
                             <Draggable
                                 isDragDisabled = {!activeRoute?.editableBy?.includes(currentUser.claims.role)}
-                                key={item.id}
-                                draggableId={item.id}
+                                key={id}
+                                draggableId={id}
                                 index={index}>
                                 {(provided, snapshot) => (
                                     <div
-                                        id={`${item.id}routecard`}
+                                        id={`${id}routecard`}
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
@@ -216,8 +213,8 @@ const RouteBuilder = () => {
                                         <PropertyCard 
                                             i={index} 
                                             route={activeRoute}
-                                            key={item.id} 
-                                            address={item} 
+                                            key={id} 
+                                            address={{...activeRoute.customers[id], id: id}} 
                                             admin={['Admin'].includes(currentUser.claims.role)} 
                                             detailsClick={onDetailsPropertyClick} 
                                             toggleField={toggleField}

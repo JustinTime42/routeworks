@@ -109,7 +109,7 @@ const PropertyDetails = (props) => {
         })
         .catch(err => alert(err))
         let newRouteCustomers = [...activeRoute.customers]
-        newRouteCustomers[newRouteCustomers.findIndex(i => i.id === property.id)].status = "Waiting"
+        newRouteCustomers[property.id].status = "Waiting"
         dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
@@ -168,11 +168,10 @@ const PropertyDetails = (props) => {
         if (property[tractor.type]) {newRecordObject.hourly_rate = property[tractor.type]} 
 
         // editItem to make change status on current route
-        if (activeRoute.customers.find(i => i.id === property.id)) {
+        if (activeRoute.customers[property.id]) {
             const newRoute = {...activeRoute}
-            const newIndex = newRoute.customers.findIndex(i => i.id === property.id)
-            newRoute.customers[newIndex].status = newStatus     
-            newRoute.customers[newIndex].priority = false     
+            newRoute.customers[property.id].status = newStatus     
+            newRoute.customers[property.id].priority = false     
             dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
         } else {
             alert('No change in status on route. If you are serving a customer without their route pulled up, this is expected behavior.')
