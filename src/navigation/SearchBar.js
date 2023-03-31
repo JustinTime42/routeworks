@@ -32,7 +32,7 @@ const SearchBar = () => {
 
     const selectCustomer = (customer) => {
         // Find out if the customer is on current route        
-        let isOnRoute = activeRoute.customers.find(entry => (entry.id === customer.id))
+        let isOnRoute = activeRoute.customers[customer.id]
               
         if (isOnRoute) {
             console.log("isonroute", isOnRoute)  
@@ -48,9 +48,9 @@ const SearchBar = () => {
         console.log(customer)
         let custIndex
         if(location.pathname === '/routebuilder') {
-            custIndex = activeRoute.customers.findIndex(i => i.id === customer.id)
+            custIndex = activeRoute.customers[customer.id]
         } else {
-            custIndex = activeRoute.customers.filter(i => i.active).findIndex(i => i.id === customer.id)
+            custIndex = activeRoute.customers[customer.id]
         }     
         scrollCardIntoView(custIndex)           
     }
@@ -79,7 +79,7 @@ const SearchBar = () => {
                 offRouteResults = [...filteredCustomers]
             } else {
                 filteredCustomers.forEach(item => {
-                    if (!activeRoute?.customers?.find(i => i.id === item.id)) {
+                    if (!activeRoute?.customers?.[item.id]) {
                         offRouteResults.push(item)
                     }
                 })

@@ -12,7 +12,7 @@ const RoutePopover = ({customer, route}) => {
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const routes = useSelector(state => state.requestRoutes.routes)
     const routeDetails = routes.find(i => i.id === route)
-   const custDetails = routeDetails.customers.find(i => i.id === customer.id)
+   const custDetails = routeDetails.customers[customer.id]
     const dispatch = useDispatch()
 
     const handleRouteClick = () => {

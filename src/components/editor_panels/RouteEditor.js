@@ -43,8 +43,8 @@ const RouteEditor = (props) => {
 
     const onSave = () => {
         if (tempItem.id) {
-            tempItem.customers.map(customer => {
-                let newCustomer = customers.find(item => item.id === customer.id)
+            Object.keys(tempItem.customers).forEach(customerId => {
+                let newCustomer = customers.find(item => item.id === customerId)
                 newCustomer.routesAssigned[tempItem.id] = tempItem.name
                 dispatch(editItem(newCustomer, customers, `organizations/${organization}/customer`, null, UPDATE_ADDRESSES_SUCCESS))
             })
@@ -57,10 +57,9 @@ const RouteEditor = (props) => {
 
     const onDelete = () => {
         // go through route customers and delete the routesAssigned on that customer document
-        tempItem.customers.forEach(customer => {
-            let newCustomer = customers.find(item => item.id === customer.id)
-            console.log(newCustomer)
-            if(!newCustomer) {alert('customer not found')}
+        Object.keys(tempItem?.customers).forEach(customerId => {
+            let newCustomer = customers.find(item => item.id === customerId)
+            if(!newCustomer) {alert('customer not found: ' +  customerId)}
             delete newCustomer.routesAssigned[tempItem.id]
             dispatch(editItem(newCustomer, customers, `organizations/${organization}/customer`, null, UPDATE_ADDRESSES_SUCCESS, false))
         })

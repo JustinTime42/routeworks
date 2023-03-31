@@ -108,7 +108,7 @@ const PropertyDetails = (props) => {
             dispatch(setActiveItem(null, [], ACTIVE_LOG_ENTRY))
         })
         .catch(err => alert(err))
-        let newRouteCustomers = [...activeRoute.customers]
+        let newRouteCustomers = {...activeRoute.customers}
         newRouteCustomers[property.id].status = "Waiting"
         dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }

@@ -37,10 +37,10 @@ const RouteBuilder = () => {
         return () => {
             unsub()
         }
-    },[routeName])
+    }, [routeName])
 
     useEffect(() => {
-        let custIndex = activeRoute?.customers[activeCustomer.id].routePosition
+        let custIndex = activeRoute?.customers[activeCustomer.id]?.routePosition
         scrollCardIntoView(custIndex)
     }, [activeCustomer])
 
@@ -141,12 +141,19 @@ const RouteBuilder = () => {
     }
 
     const dragEnd = (result) => {
-        console.log(result)
-        const newLists = onDragEnd(result, activeRoute.customers, filteredProperties)
+        const customersArray = []
+        Object.keys(activeRoute.customers).forEach(id => {
+            console.log(id)
+            const routePosition = activeRoute.customers[id].routePosition
+            customersArray[routePosition] = {...activeRoute.customers[id], id: id}
+        })
+        console.log(customersArray)
+        const newLists = onDragEnd(result, customersArray, filteredProperties)
         if (!newLists) {
             console.log("no result")
             return
         } 
+        console.log(newLists)
         let customer = {...allCustomers.find(customer => customer.id === newLists.card.id)}
         if (!customer.routesAssigned || (customer.routesAssigned === [])) {customer.routesAssigned = {}}
         if (newLists.whereTo === 'on') {
@@ -160,8 +167,14 @@ const RouteBuilder = () => {
                 delete customer.routesAssigned[activeRoute.id]
             } else return
         }
-
-        dispatch(editItem({...activeRoute, customers: newLists.newRoute}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
+        // then turn newLists.newRoute back into object
+        const customersObject = {}
+        newLists.newRoute.forEach((customer, i) => {
+            const {id, ...customerObject} = customer 
+            customersObject[customer.id] = {...customerObject, routePosition: i}
+        })
+        console.log(customersObject)
+        dispatch(editItem({...activeRoute, customers: customersObject}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
         dispatch(editItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }
 
@@ -194,7 +207,10 @@ const RouteBuilder = () => {
                         id="droppable2scroll"
                         ref={provided.innerRef}
                         style={getListStyle(snapshot.isDraggingOver)}>
-                        {Object.keys(activeRoute.customers)?.map((id, index) => (
+                        {Object.keys(activeRoute.customers)?.sort((a,b) => (
+                            (activeRoute.customers[b].routePosition < activeRoute.customers[a].routePosition) ? 1 : -1
+                        ))
+                        .map((id, index) => (
                             <Draggable
                                 isDragDisabled = {!activeRoute?.editableBy?.includes(currentUser.claims.role)}
                                 key={id}
@@ -223,8 +239,7 @@ const RouteBuilder = () => {
                                     </div>
                                 )}
                             </Draggable>
-                        ))
-                        }
+                        ))}
                         {provided.placeholder}
                     </div>
                 )}

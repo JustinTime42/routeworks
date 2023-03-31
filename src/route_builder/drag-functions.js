@@ -1,6 +1,7 @@
 
 
 export const removeExtraFields = (item) => { 
+    console.log(item)
     return (
         {
             id: item.id,
@@ -20,6 +21,7 @@ export const removeExtraFields = (item) => {
 const move = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source)
     const destClone = Array.from(destination)
+    console.log(source)
     const [removed] = sourceClone.splice(droppableSource.index, 1)  
     console.log(removeExtraFields(removed))  
     destClone.splice(droppableDestination.index, 0, {...removeExtraFields(removed)}  )

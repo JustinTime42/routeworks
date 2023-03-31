@@ -16,8 +16,8 @@ const DisplayRoute= (props) => {
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routeCustomers = useSelector(state => {
-        const routeCustomers = state.setActiveRoute.activeRoute.customers
-        const ids = Object.keys(routeCustomers)        
+        const routeCustomers = state.setActiveRoute.activeRoute?.customers
+        const ids = Object.keys(routeCustomers || {})        
         let customersArray = []
         ids.forEach(id => {
             if(routeCustomers[id].active === true) {
