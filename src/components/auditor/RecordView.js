@@ -1,6 +1,8 @@
-import {Accordion, Row, Col, Container} from 'react-bootstrap'
+import {Accordion, Row, Col, Container, Button} from 'react-bootstrap'
 import _ from 'lodash'
-const RecordView = ({records}) => {
+import { getDiff, sendToDB } from './utils'
+
+const RecordView = ({records, org, docType}) => {
     const getRecordType = (record) => {
         console.log(record)
         if (record.deleted) {
@@ -20,38 +22,56 @@ const RecordView = ({records}) => {
         } else return entry
     }
 
+    const handleRevert = (record) => {
+        const docPath = docType === 'audit_customers' ? 'customer' : 'service_logs'
+        console.log(record)
+        let confirmed = window.confirm("Revert this change to its 'Before' state?")
+        if (confirmed && record.before) {
+            const {cust_id, id, service_address, timestamp, ...changes} = getDiff(record)
+            const newRecord = {}
+            Object.keys(changes).forEach(item => {
+                newRecord[item] = changes[item].before
+            })
+            //iterate through these other fields and write the before property
+            sendToDB({...newRecord, id: record.cust_id}, `organizations/${org}/${docPath}`)
+        }
+    }
+
     return (
         <Accordion style={{height: "80vh", overflowY:'scroll'}}>
             { (records.length > 0) ? 
-            records.map((record, i) => {                
-                const recordType = getRecordType(record)                
+            records.map((record, i) => {  
+                const flatRecord = getDiff(record)              
+                const recordType = getRecordType(flatRecord)
                 return (
                     <Accordion.Item eventKey={i} >
                         <Accordion.Header>
                             <Container>
-                                <Row>
-                                    <Col>Change Date: {new Date(record.timestamp.seconds * 1000).toUTCString()}</Col>
-                                    <Col>{record.service_address}</Col>
+                                <Row>                 
+                                    <Col>Change Date: {new Date(flatRecord.timestamp.seconds * 1000).toUTCString()}</Col>
+                                    <Col>{flatRecord.service_address}</Col>
                                     <Col>{recordType}</Col>
                                 </Row>
                             </Container>  
                         </Accordion.Header>
                         <Accordion.Body>
+                            {recordType === "Deleted" &&
+                            <Col><Button onClick={() => handleRevert(record)}>Revert Change</Button></Col>} 
                             {recordType === "Deleted" || recordType === "Created" ? 
-                            Object.keys({...record.deleted, ...record.created}).map(row => {
+                            Object.keys({...flatRecord.deleted, ...flatRecord.created}).map(row => {
                                 if ((row === 'timestamp') || (row === 'timestamp')) {
-                                    console.log({...record})
+                                    console.log({...flatRecord})
                                     return (
-                                        <Row>
+                                        <Row>                                   
                                             <Col>{row}</Col>
-                                            <Col>{new Date({...record.deleted, ...record.created, ...record.after}[row].seconds * 1000).toUTCString()}</Col>
+                                            <Col>{new Date({...flatRecord.deleted, ...flatRecord.created, ...flatRecord.after}[row].seconds * 1000).toUTCString()}</Col>
                                         </Row>
                                     )
                                 } else {
                                     return (
-                                        <Row>
+                                        <Row>                                            
                                             <Col>{row}</Col>
-                                            <Col>{flatten({...record.deleted, ...record.created}[row])}</Col>
+                                            <Col>{flatten({...flatRecord.deleted, ...flatRecord.created}[row])}</Col>
                                         </Row>
                                     )
                                 } 
@@ -59,19 +79,20 @@ const RecordView = ({records}) => {
                             :
                             <>
                             <Row>
-                                <Col></Col>
+                                <Col><Button onClick={() => handleRevert(record)}>Revert Change</Button></Col>
                                 <Col>Before</Col>
                                 <Col>After</Col>
+                                <hr/>
                             </Row>                            
-                            {Object.keys(record).map((item,i) => {
+                            {Object.keys(flatRecord).map((item,i) => {
                                 if (item === 'timestamp') {
                                     return null
-                                } else if (record[item]?.before || record[item]?.after) {
+                                } else if (flatRecord[item]?.before || flatRecord[item]?.after) {
                                     return (                                        
-                                        <Row>
+                                        <Row>                                            
                                             <Col>{item}</Col>
-                                            <Col>{flatten(record[item].before)}</Col>
-                                            <Col>{flatten(record[item].after)}</Col>
+                                            <Col>{flatten(flatRecord[item].before)}</Col>
+                                            <Col>{flatten(flatRecord[item].after)}</Col>
                                         </Row>                                
                                     )
                                 } else return null

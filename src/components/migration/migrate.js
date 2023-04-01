@@ -1,6 +1,7 @@
 import { indexedDBLocalPersistence } from "firebase/auth";
-import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp } from "firebase/firestore";
+import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp, where, query } from "firebase/firestore";
 import { db } from "../../firebase";
+import { getDiff } from "../auditor/utils";
 
 const addedDocs = []
 const sendToDB = async(item, path) => {
@@ -10,6 +11,8 @@ const sendToDB = async(item, path) => {
     //addedDocs.push(id)         
 }
 
+// Go through each route, and each customer on the route, check that their routesAssigned[routeID], else add it. 
+// then go through all customers, check routesAssigned for routes that don't exist and delete them
 export const fixOrphanedRoutes = (routes, customers) => {
     //convert routes to array of ids
     const routeList = routes.map(i => i.id)   
@@ -347,9 +350,11 @@ export const migrateDates = async() => {
 }
 
 export const addIDToAuditLogs = async() => {
-    const querySnapshot = await getDocs(collection(db, "organizations/Snowline/audit_logs"));
+    const querySnapshot = await getDocs(collection(db, "organizations/Snowline/audit_customers"));
     querySnapshot.forEach((doc) => {
         let entry = {...doc.data(), id: doc.id} 
+        console.log("Before: ", entry.before)
+        console.log("After: ", entry.after)
             const newId = entry.after?.cust_id || entry.before?.cust_id || entry.deleted?.cust_id
             if (!newId) {
                 console.log('EMPTY USER ID!!!')
@@ -358,3 +363,56 @@ export const addIDToAuditLogs = async() => {
             sendToDB({...entry, cust_id: newId}, 'organizations/Snowline/audit_logs')
     });    
 }
+
+//fetch audit logs for the propert time frame
+// iterate through them and see what changed
+// if only routesAssigned changed, revert
+// else push change to changeArray
+
+export const displayBadChanges = async() => {
+    let count = 0
+    let changes = []
+    const start = Timestamp.fromDate(new Date(Date.parse("2023-03-09T17:33:00.000Z"))) 
+    const end = Timestamp.fromDate(new Date(Date.parse("2023-03-09T17:33:50.000Z")))
+    console.log(start, end)
+    const q = query(
+        collection(db, "organizations/Snowline/audit_customers"),
+        where("timestamp", ">", start),
+        where("timestamp", "<", end),
+    )
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach(doc => {
+        let entry = getDiff({...doc.data(), id: doc.id})
+        const {routesAssigned, service_address, timestamp, cust_id, id, ...change} = entry 
+        if (Object.keys(change).length > 0) {
+            changes.push({...change, id: cust_id, service_address: service_address, timestamp: timestamp})
+        }       
+    })
+    // changes.forEach(entry => {    
+    //     if ((count === 0) && (entry.routesAssigned)) {
+    //         const newCustomerDetails = {routesAssigned: entry.routesAssigned.before, id: entry.cust_id}
+    //         const path = "organizations/Snowline/customer"
+    //         sendToDB(newCustomerDetails, path)
+    //         console.log(count, entry.cust_id)
+    //     }
+    //     count++ 
+    // })
+    return changes
+    //console.log(changes)
+    // NOPE: forget trying to revert the routesAssigned field. just run a separate thing to go through and fix all routes
+    // assigned issues. Go through each route, and each customer on the route, check that their routesAssigned[routeID], else add it. 
+    // then go through all customers, check routesAssigned for routes that don't exist and delete them
+    // Then run this deal and iterate through changes and check for fields other than routesAssigned, service_address, timestamp, cust_id, and id
+    // use ...rest !== {}
+    // If ...rest !== {} then push those changes to a list for us to go over
+    // perhaps make a quick UI component where we can revert at button press, or manually edit inline rather than opening
+    // the customer separately
+
+}
+
+
+
+
+
+
+
