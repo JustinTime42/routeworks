@@ -56,6 +56,7 @@ export const getBadChanges = async() => {
             changes.push(entry)
         }
     })
+    console.log(changes)
     return changes
     
     // NOPE: forget trying to revert the routesAssigned field. just run a separate thing to go through and fix all routes

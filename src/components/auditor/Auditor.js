@@ -89,11 +89,11 @@ const Auditor = () => {
                 </Dropdown.Item> 
             </DropdownButton> 
             <Button onClick={onDownload}>Generate Report</Button>
-            <Button onClick={marchNine}>Generate March 9 Report</Button>
+            {/* <Button onClick={marchNine}>Generate March 9 Report</Button> */}
             <Form.Label>{customer?.cust_name || null}</Form.Label>
             <Button style={{visibility:customer.id ? "visible" : "hidden"}} onClick={clearActiveCustomer}>Clear Customer</Button>
         </Form>
-        <RecordView org={organization} docType={docType} records={records}/>
+        <RecordView customers={customers} org={organization} docType={docType} records={records}/>
         </>
     )
 }

@@ -105,7 +105,7 @@ const PropertyCard = (props) => {
                 </h5> 
                 <p style={{color: "rgba(255, 255, 255, 0.7)"}}>{props.address ? props.address.service_address ? props.address.service_address : "address" : "address"} </p>                   
             </Col>
-            <ServiceLevel />
+            <Col><h5>{serviceLevels[props.address.service_level]}</h5></Col>
             <Col style={{flex:"1 1 75px"}}>             
                 <>
                     <p style={{...statusStyle, ...rightStyle}}>{status}</p>   

@@ -2,39 +2,64 @@ import { indexedDBLocalPersistence } from "firebase/auth";
 import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp, where, query } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getDiff } from "../auditor/utils";
+import _ from 'lodash'
 
 const addedDocs = []
 const sendToDB = async(item, path) => {
     let {id, ...newItem} = item
     console.log(item)
-    await setDoc(doc(db, path, id), {...newItem}, { merge: true }) 
+    try {
+        setDoc(doc(db, path, id), {...newItem}, { merge: true }).then(result => {
+            console.log(result)
+        }
+        ).catch(error => console.log(error))
+    }
+    catch(error) {
+        console.log(error)
+    }
+    
     //addedDocs.push(id)         
 }
 
 // Go through each route, and each customer on the route, check that their routesAssigned[routeID], else add it. 
 // then go through all customers, check routesAssigned for routes that don't exist and delete them
-export const fixOrphanedRoutes = (routes, customers) => {
-    //convert routes to array of ids
-    const routeList = routes.map(i => i.id)   
-    
-    //iterate through each customers
-    customers.forEach(customer => {
-        // get array of route ids assigned
-        let routesAssigned = Object.keys(customer.routesAssigned)
-        routesAssigned.forEach(route => {
-            if (!routeList.includes(route)) {
-                //delete customer.routesAssigned[route]
-                console.log(customer)
-                //sendToDB(customer, 'organizations/Snowline/customer')
+export const fixRoutesAssigned = (routes, allCustomers) => {
+    const clonedCustomers = _.cloneDeep(allCustomers)
+    const clonedRoutes = _.cloneDeep(routes)
+    let count = 0
+    // Make sure the customers routesAssigned have a value for each place they appear on the route   
+    clonedRoutes.forEach((route, i) => {
+        route.customers.forEach(customer => {
+            const newCustomer = clonedCustomers[clonedCustomers.findIndex(i => i.id === customer.id)]
+            if (!newCustomer.routesAssigned[route.id]) {
+                console.log(_.cloneDeep(newCustomer))
+                newCustomer.routesAssigned[route.id] = route.name
+                console.log(newCustomer) 
+                setTimeout(sendToDB(newCustomer, 'organizations/Snowline/customer'), i * 100)
+                count ++  
             }
         })
-    })
-   // console.log(results)
-   
-    //look at Object.keys(routesAssigned)
-    //for each route, see if routes.includes(route) 
-    //if it includes, push to results, delete the route from routesAssigned
+    })  
 
+    // Make sure there aren't any routes listed under routesAssigned that aren't in the routes documents.
+    clonedCustomers.forEach((customer, i) => {
+        const routesAssigned = Object.keys(customer.routesAssigned)
+        routesAssigned.forEach(i => {
+            const route = clonedRoutes.find(route => route.id === i)
+            const isCustomerOnRoute = route?.customers.find(j => j.id === customer.id)
+            if (route && isCustomerOnRoute){
+                return 
+            } else {
+                console.log(route)
+                console.log(_.cloneDeep(customer))
+                delete customer.routesAssigned[i]
+                console.log(_.cloneDeep(customer))
+                count ++ 
+                sendToDB(customer, 'organizations/Snowline/customer')
+            }                
+        })
+    })
+    console.log(count)
 }
 
 export const migrateBasic = async (oldPath, newPath) => {
@@ -399,14 +424,7 @@ export const displayBadChanges = async() => {
     // })
     return changes
     //console.log(changes)
-    // NOPE: forget trying to revert the routesAssigned field. just run a separate thing to go through and fix all routes
-    // assigned issues. Go through each route, and each customer on the route, check that their routesAssigned[routeID], else add it. 
-    // then go through all customers, check routesAssigned for routes that don't exist and delete them
-    // Then run this deal and iterate through changes and check for fields other than routesAssigned, service_address, timestamp, cust_id, and id
-    // use ...rest !== {}
-    // If ...rest !== {} then push those changes to a list for us to go over
-    // perhaps make a quick UI component where we can revert at button press, or manually edit inline rather than opening
-    // the customer separately
+
 
 }
 
