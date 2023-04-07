@@ -2,11 +2,12 @@ import {useState, useEffect} from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { Timestamp, query, collection, where, getDocs } from "firebase/firestore"
 import { db } from "../../firebase"
-import _ from 'lodash'
 import { Form, Dropdown, DropdownButton, Button } from "react-bootstrap"
 import RecordView from "./RecordView"
 import { setActiveItem } from "../../actions"
 import { SET_ACTIVE_PROPERTY } from "../../constants"
+import { getDiff } from "./utils"
+import { getBadChanges } from "./utils"
 
 const Auditor = () => {
     const [docType, setDocType] = useState('') 
@@ -45,7 +46,8 @@ const Auditor = () => {
         const querySnapshot = await getDocs(q)
         querySnapshot.forEach((doc) => {
             const record = {...doc.data(), id: doc.id}
-            results.push(getDiff(record))
+
+            results.push(record)
         })
         console.log(results)
         setRecords(results)
@@ -55,39 +57,17 @@ const Auditor = () => {
         dispatch(dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY)) )
     }
 
-    const getDiff = (entry) => {
-        let diff = {}
-        if (entry.deleted) {diff = entry}
-        else if (!entry.after) {
-            diff.deleted = entry.before 
-        } else if (!entry.before) {
-            diff.created = entry.after
-        } else {
-            const beforeKeys = Object.keys(entry.before)
-            const afterKeys = Object.keys(entry.after)
-            beforeKeys.forEach(key => {
-                if( !_.isEqual(entry.before[key], entry.after[key])) {
-                    diff[key] = {before: entry.before[key], after: entry.after[key]}
-                } 
-            })
-            afterKeys.forEach(key => {
-                if((!_.isEqual(entry.after[key], entry.before[key])) && !diff[key]) {
-                    diff[key] = {before: entry.before[key], after: entry.after[key]}
-                } 
-            })
-        }
-        diff.service_address = entry.after?.service_address || entry.before?.service_address || entry.deleted?.service_address
-        diff.timestamp = entry.timestamp
-        diff.id = entry.id
-        return diff
-    }
-
     const getTypeTitle = () => {
         switch (docType) {
             case 'audit_logs': return "Service Logs"
             case 'audit_customers': return "Customers"
             default: return "Select Type"
         }
+    }
+
+    const marchNine = () => {
+        setDocType("audit_customers")
+        getBadChanges().then(results => setRecords(results))
     }
 
     return (
@@ -110,10 +90,10 @@ const Auditor = () => {
                 </Dropdown.Item> 
             </DropdownButton> 
             <Button onClick={onDownload}>Generate Report</Button>
-            <Form.Label style={{visibility:customer.id ? "visible" : "hidden"}}>Customer: {customer?.cust_name || null}</Form.Label>
+            <Form.Label>{customer?.cust_name || null}</Form.Label>
             <Button style={{visibility:customer.id ? "visible" : "hidden"}} onClick={clearActiveCustomer}>Clear Customer</Button>
         </Form>
-        <RecordView records={records}/>
+        <RecordView customers={customers} org={organization} docType={docType} records={records}/>
         </>
     )
 }

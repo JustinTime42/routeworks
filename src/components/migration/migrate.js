@@ -1,38 +1,57 @@
 import { indexedDBLocalPersistence } from "firebase/auth";
-import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp } from "firebase/firestore";
+import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp, where, query } from "firebase/firestore";
 import { db } from "../../firebase";
+import { getDiff } from "../auditor/utils";
+import _ from 'lodash'
 
 const addedDocs = []
 const sendToDB = async(item, path) => {
     let {id, ...newItem} = item
     console.log(item)
-    await setDoc(doc(db, path, id), {...newItem}, { merge: false }) 
-    //addedDocs.push(id)         
+    setDoc(doc(db, path, id), {...newItem}, { merge: true }).then(result => {
+      console.log(result)
+    }).catch(error => console.log(error))       
 }
 
-export const fixOrphanedRoutes = (routes, customers) => {
-    //convert routes to array of ids
-    const routeList = routes.map(i => i.id)   
-    console.log(routeList)
-    //iterate through each customers
-    customers.forEach(customer => {
-        // get array of route ids assigned
-        let routesAssigned = Object.keys(customer.routesAssigned)
-        routesAssigned.forEach(route => {
-            if (!routeList.includes(route)) {
-                delete customer.routesAssigned[route]
-                console.log(customer.cust_name)
-                sendToDB(customer, 'organizations/Snowline/customer')
+// Go through each route, and each customer on the route, check that their routesAssigned[routeID], else add it. 
+// then go through all customers, check routesAssigned for routes that don't exist and delete them
+export const fixRoutesAssigned = (routes, allCustomers) => {
+    const clonedCustomers = _.cloneDeep(allCustomers)
+    const clonedRoutes = _.cloneDeep(routes)
+    let count = 0
+    // Make sure the customers routesAssigned have a value for each place they appear on the route   
+    clonedRoutes.forEach((route, i) => {
+        route.customers.forEach(customer => {
+            const newCustomer = clonedCustomers[clonedCustomers.findIndex(i => i.id === customer.id)]
+            if (!newCustomer.routesAssigned[route.id]) {
+                console.log(_.cloneDeep(newCustomer))
+                newCustomer.routesAssigned[route.id] = route.name
+                console.log(newCustomer) 
+                sendToDB(newCustomer, 'organizations/Snowline/customer')
+                count ++  
             }
-            else {console.log('no orphaned routes')}
+        })
+    })  
+
+    // Make sure there aren't any routes listed under routesAssigned that aren't in the routes documents.
+    clonedCustomers.forEach((customer, i) => {
+        const routesAssigned = Object.keys(customer.routesAssigned)
+        routesAssigned.forEach(i => {
+            const route = clonedRoutes.find(route => route.id === i)
+            const isCustomerOnRoute = route?.customers.find(j => j.id === customer.id)
+            if (route && isCustomerOnRoute){
+                return 
+            } else {
+                console.log(route)
+                console.log(_.cloneDeep(customer))
+                delete customer.routesAssigned[i]
+                console.log(_.cloneDeep(customer))
+                count ++ 
+                sendToDB(customer, 'organizations/Snowline/customer')
+            }                
         })
     })
-   // console.log(results)
-   
-    //look at Object.keys(routesAssigned)
-    //for each route, see if routes.includes(route) 
-    //if it includes, push to results, delete the route from routesAssigned
-
+    console.log(count)
 }
 
 export const migrateBasic = async (oldPath, newPath) => {
@@ -362,9 +381,11 @@ export const migrateDates = async() => {
 }
 
 export const addIDToAuditLogs = async() => {
-    const querySnapshot = await getDocs(collection(db, "organizations/Snowline/audit_logs"));
+    const querySnapshot = await getDocs(collection(db, "organizations/Snowline/audit_customers"));
     querySnapshot.forEach((doc) => {
         let entry = {...doc.data(), id: doc.id} 
+        console.log("Before: ", entry.before)
+        console.log("After: ", entry.after)
             const newId = entry.after?.cust_id || entry.before?.cust_id || entry.deleted?.cust_id
             if (!newId) {
                 console.log('EMPTY USER ID!!!')
@@ -373,3 +394,49 @@ export const addIDToAuditLogs = async() => {
             sendToDB({...entry, cust_id: newId}, 'organizations/Snowline/audit_logs')
     });    
 }
+
+//fetch audit logs for the propert time frame
+// iterate through them and see what changed
+// if only routesAssigned changed, revert
+// else push change to changeArray
+
+export const displayBadChanges = async() => {
+    let count = 0
+    let changes = []
+    const start = Timestamp.fromDate(new Date(Date.parse("2023-03-09T17:33:00.000Z"))) 
+    const end = Timestamp.fromDate(new Date(Date.parse("2023-03-09T17:33:50.000Z")))
+    console.log(start, end)
+    const q = query(
+        collection(db, "organizations/Snowline/audit_customers"),
+        where("timestamp", ">", start),
+        where("timestamp", "<", end),
+    )
+    const querySnapshot = await getDocs(q)
+    querySnapshot.forEach(doc => {
+        let entry = getDiff({...doc.data(), id: doc.id})
+        const {routesAssigned, service_address, timestamp, cust_id, id, ...change} = entry 
+        if (Object.keys(change).length > 0) {
+            changes.push({...change, id: cust_id, service_address: service_address, timestamp: timestamp})
+        }       
+    })
+    // changes.forEach(entry => {    
+    //     if ((count === 0) && (entry.routesAssigned)) {
+    //         const newCustomerDetails = {routesAssigned: entry.routesAssigned.before, id: entry.cust_id}
+    //         const path = "organizations/Snowline/customer"
+    //         sendToDB(newCustomerDetails, path)
+    //         console.log(count, entry.cust_id)
+    //     }
+    //     count++ 
+    // })
+    return changes
+    //console.log(changes)
+
+
+}
+
+
+
+
+
+
+

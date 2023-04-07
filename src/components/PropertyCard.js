@@ -69,15 +69,16 @@ const PropertyCard = (props) => {
         let levelText = '' 
         if (props.address.priority) {
             visual.push(<div key="a" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>PRIORITY</div>)            
-        } else if (props.address.service_level) {
+        } 
+        else if (props.address.service_level) {
             levelText = serviceLevels[props.address.service_level]
-            for (let i = 1; i < 5; i++) {
-                if (i <= level) {
-                    visual.push(<div key={i} style={{...dotStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>{" "}</div>)
-                } else {
-                    visual.push(<div key={i} style={{...dotStyle, backgroundColor:`rgba(0,0,0,0.7)`}}>{" "}</div>)
-                }
-            }
+            // for (let i = 1; i < 5; i++) {
+            //     if (i <= level) {
+            //         visual.push(<div key={i} style={{...dotStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>{" "}</div>)
+            //     } else {
+            //         visual.push(<div key={i} style={{...dotStyle, backgroundColor:`rgba(0,0,0,0.7)`}}>{" "}</div>)
+            //     }
+            // }
         }  
         if (props.address.temporary) {
             visual.push(<div key="b" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>Temp</div>)            
@@ -87,7 +88,7 @@ const PropertyCard = (props) => {
         }
         return (
             <>
-                <Col>{levelText}{visual}</Col>                 
+                <Col><h4>{levelText}</h4>{visual}</Col>        
             </>
         )
     }
