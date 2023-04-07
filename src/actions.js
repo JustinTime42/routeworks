@@ -79,6 +79,7 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
     }    
     console.log({...item})
     const {id, ...itemDetails} = item
+    console.log({...itemDetails})
     const itemRef = doc(db, className, item.id)    
     const sendToDB = () => {           
         setDoc(itemRef, itemDetails, {merge: merge})
@@ -89,7 +90,7 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
                 payload: {...item}
             })
         })
-        .catch((e => alert("error adding document: ", e)))
+        .catch((e => alert(e)))
     }
     sendToDB()
 }

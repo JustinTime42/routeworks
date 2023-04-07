@@ -46,6 +46,7 @@ const Auditor = () => {
         const querySnapshot = await getDocs(q)
         querySnapshot.forEach((doc) => {
             const record = {...doc.data(), id: doc.id}
+
             results.push(record)
         })
         console.log(results)
@@ -89,7 +90,6 @@ const Auditor = () => {
                 </Dropdown.Item> 
             </DropdownButton> 
             <Button onClick={onDownload}>Generate Report</Button>
-            {/* <Button onClick={marchNine}>Generate March 9 Report</Button> */}
             <Form.Label>{customer?.cust_name || null}</Form.Label>
             <Button style={{visibility:customer.id ? "visible" : "hidden"}} onClick={clearActiveCustomer}>Clear Customer</Button>
         </Form>

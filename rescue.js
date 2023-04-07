@@ -42447,6 +42447,9 @@ const findBadRoutes = () => {
 
 const removeBadRoute = () => {
     customers.forEach(customer => {
+      Objects.keys(customer.routesAssigned).forEach(custRoute => {
+
+      })
         if (customer.routesAssigned.azRjDhFT3vr5vLZGaywx) {
             console.log(customer.id)
             delete customer.routesAssigned.azRjDhFT3vr5vLZGaywx

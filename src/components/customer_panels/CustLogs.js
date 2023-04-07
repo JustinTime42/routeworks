@@ -16,7 +16,7 @@ const CustLogs = (props) => {
 
     useEffect(() => {
         getLogs()
-    },[])
+    },[activeProperty])
     
     const getLogs = async() => {
         const q = query(collection(db, `organizations/${organization}/service_logs`), where('cust_id', '==', activeProperty.id))

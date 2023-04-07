@@ -8,17 +8,9 @@ const addedDocs = []
 const sendToDB = async(item, path) => {
     let {id, ...newItem} = item
     console.log(item)
-    try {
-        setDoc(doc(db, path, id), {...newItem}, { merge: true }).then(result => {
-            console.log(result)
-        }
-        ).catch(error => console.log(error))
-    }
-    catch(error) {
-        console.log(error)
-    }
-    
-    //addedDocs.push(id)         
+    setDoc(doc(db, path, id), {...newItem}, { merge: true }).then(result => {
+      console.log(result)
+    }).catch(error => console.log(error))       
 }
 
 // Go through each route, and each customer on the route, check that their routesAssigned[routeID], else add it. 
@@ -249,6 +241,20 @@ export const migrateRouteData = () => {
                 sendToDB(newRouteObj, 'driver/driver_lists/route')                              
             })                
         })
+    })
+}
+
+export const routeArrayToMap = (routes) => {
+    //iterate through each route, then iterate through the customers array and convert it to a map, using i as route_position
+    routes.forEach(route => {
+        console.log(route)
+        let newRouteCustomers = {}
+        route.customers.forEach((customer, i) => {
+            let {id, ...newCustomer} =  customer 
+            newRouteCustomers[id] = {...newCustomer, routePosition: i}
+        })
+        console.log(newRouteCustomers)
+        sendToDB({...route, customers: newRouteCustomers}, "organizations/aqZLLXWrMHhWV24sfl89/route")
     })
 }
 

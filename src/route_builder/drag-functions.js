@@ -1,6 +1,7 @@
 
 
 export const removeExtraFields = (item) => { 
+    console.log(item)
     return (
         {
             id: item.id,
@@ -11,8 +12,8 @@ export const removeExtraFields = (item) => {
             priority: item.priority !== undefined ? item.priority : false,
             status: (item.contract_type === 'Hourly') ? "Hourly" : (item.status === undefined) ? "Waiting" : item.status,
             temp: item.temp !== undefined ? item.temp : false,
-            new: item.new !== undefined ? item.new : false
-            //maybe add temp and new here depending on Sandor's feedback
+            new: item.new !== undefined ? item.new : false,
+            contract_type: item.contract_type,
         }
     )
 }
@@ -20,12 +21,14 @@ export const removeExtraFields = (item) => {
 const move = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source)
     const destClone = Array.from(destination)
+    console.log(source)
     const [removed] = sourceClone.splice(droppableSource.index, 1)  
     console.log(removeExtraFields(removed))  
     destClone.splice(droppableDestination.index, 0, {...removeExtraFields(removed)}  )
     const result = {}
     result[droppableSource.droppableId] = sourceClone
     result[droppableDestination.droppableId] = destClone
+    console.log(result)
     return result
 }
 

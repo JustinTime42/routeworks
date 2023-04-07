@@ -15,7 +15,17 @@ const DisplayRoute= (props) => {
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
-    const routeCustomers = useSelector(state => state.setActiveRoute.activeRoute.customers.filter(customer => customer.active === true))
+    const routeCustomers = useSelector(state => {
+        const routeCustomers = state.setActiveRoute.activeRoute?.customers
+        const ids = Object.keys(routeCustomers || {})        
+        let customersArray = []
+        ids.forEach(id => {
+            if(routeCustomers[id].active === true) {
+                customersArray.push({...routeCustomers[id], id: id})
+            }
+        })
+        return customersArray.sort((a,b) => (b.routePosition < a.routePosition) ? 1 : -1)        
+    })
     const routes = useSelector(state => state.requestRoutes.routes)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
@@ -38,7 +48,7 @@ const DisplayRoute= (props) => {
     },[routeName, activeWorkType, activeTractor])
 
     return (
-        activeTractor.id && activeWorkType.id && (routeCustomers.length > 0) ?
+        activeTractor.id && activeWorkType.id && (routeCustomers !== {}) ?
         <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
             <div className="leftSide scrollable" style={{height: "100%", width:"100%"}}>
                 {

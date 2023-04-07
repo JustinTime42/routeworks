@@ -95,7 +95,7 @@ const PropertyCard = (props) => {
 
     return (
         <Row 
-            id={`card${(typeof(props.i) === 'number') ? props.i : props.address.key}`} 
+            id={`card${(typeof(props.i) === 'number') ? props.i : props.address.id}`} 
             style={cardStyle} 
             onClick={() => navigate(changeActiveProperty(props.address, '', routeData.customers))}>
             <Col style={{flex:"2 1 auto"}}>

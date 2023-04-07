@@ -70,12 +70,13 @@ const TopNav = () => {
     const renderProgress = (route) => {
         console.log(route.name)
         let done = 0
-        route.customers.forEach(customer => {
+        const customers = Object.values(route.customers)
+        customers.forEach(customer => {
             if ((customer.status === 'Done') || (customer.status === 'Skipped')) {
                 done++
             }
         })
-        const now = done / route.customers.filter(i => i.active).length * 100
+        const now = done / customers.filter(i => i.active).length * 100
         const display = now === 0 ? 0 : Math.max(now, 10)
         if (now < 100) {
             return (

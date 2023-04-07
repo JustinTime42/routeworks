@@ -18,32 +18,35 @@ export const scrollCardIntoView = (custIndex) => {
 
 export const changeActiveProperty = (property, direction = '', routeCustomers) => {
     if (direction) {
-        let currentPosition = routeCustomers.findIndex(i => i.id === property.id)
+        let currentPosition = routeCustomers[property.id].routePosition
         let nextPosition
-        let nextCustomer = {}
-        const getNextPosition = (direction, current) => {
+        let nextCustomerId = ''
+        const customerKeysArray = Object.keys(routeCustomers)
+        const setNextCustomer = (direction, current) => {
             nextPosition = (direction === 'next') ? current + 1 : current - 1
-            currentPosition = nextPosition
+            nextCustomerId = customerKeysArray.find(customerId => (
+                routeCustomers[customerId].routePosition === nextPosition
+            ))
+            console.log(routeCustomers[nextCustomerId])
         }
         let isNextCustomerActive = false
         do {
-            getNextPosition(direction, currentPosition)
-            if(routeCustomers[nextPosition].active) {
-                nextCustomer = routeCustomers[nextPosition]
+            setNextCustomer(direction, currentPosition)
+            if(routeCustomers[nextCustomerId].active) {
+                //nextCustomer = routeCustomers[nextPosition]
                 isNextCustomerActive = true
             }
         }
-        while ((isNextCustomerActive === false) && (nextPosition < routeCustomers.length))
-        if (nextPosition >= 0 && nextPosition < routeCustomers.length) {           
+        while ((isNextCustomerActive === false) && (nextPosition < customerKeysArray.length))
+        if (nextPosition >= 0 && nextPosition < customerKeysArray.length) {           
             if ((nextPosition - 1) > 0) {
                 document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
             } else {
                 document.getElementById(`card${nextPosition}`).scrollIntoView(true)
             }
-            return routeCustomers[nextPosition].id
+            return nextCustomerId
         }                 
     } else {
-        console.log(routeCustomers)
         return property.id
     }
 }
