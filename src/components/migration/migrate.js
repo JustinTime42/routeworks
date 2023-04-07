@@ -35,7 +35,7 @@ export const fixRoutesAssigned = (routes, allCustomers) => {
                 console.log(_.cloneDeep(newCustomer))
                 newCustomer.routesAssigned[route.id] = route.name
                 console.log(newCustomer) 
-                setTimeout(sendToDB(newCustomer, 'organizations/Snowline/customer'), i * 100)
+                sendToDB(newCustomer, 'organizations/Snowline/customer')
                 count ++  
             }
         })
