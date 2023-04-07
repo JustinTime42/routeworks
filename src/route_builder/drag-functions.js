@@ -12,8 +12,8 @@ export const removeExtraFields = (item) => {
             priority: item.priority !== undefined ? item.priority : false,
             status: (item.contract_type === 'Hourly') ? "Hourly" : (item.status === undefined) ? "Waiting" : item.status,
             temp: item.temp !== undefined ? item.temp : false,
-            new: item.new !== undefined ? item.new : false
-            //maybe add temp and new here depending on Sandor's feedback
+            new: item.new !== undefined ? item.new : false,
+            contract_type: item.contract_type,
         }
     )
 }
@@ -28,6 +28,7 @@ const move = (source, destination, droppableSource, droppableDestination) => {
     const result = {}
     result[droppableSource.droppableId] = sourceClone
     result[droppableDestination.droppableId] = destClone
+    console.log(result)
     return result
 }
 

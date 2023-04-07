@@ -16,6 +16,9 @@ const TimeTracker = props => {
             interval = setInterval(() => setTimeElapsed(Date.now() - startTime), 500)
         } else if (isRunning) {
             setTimeElapsed(Date.now() - startTime)
+        } else {
+            clearInterval(interval)
+            setTimeElapsed(0)
         }
     },[isRunning])
 

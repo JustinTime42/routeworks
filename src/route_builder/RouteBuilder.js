@@ -102,7 +102,7 @@ const RouteBuilder = () => {
                     cust_name: item.cust_name, 
                     service_address: item.service_address || '',
                     service_level: item.service_level || null,
-                    contract_type: item.contract_type || '',                    
+                    contract_type: item.contract_type || '',         
                 }
             )
         }
@@ -164,6 +164,7 @@ const RouteBuilder = () => {
         } else if (newLists.whereTo === 'off') {
             let confirmed = window.confirm(`Confirm removal of ${customer.cust_name} from ${activeRoute.name}`)
             if (confirmed) {
+                console.log(customer)
                 delete customer.routesAssigned[activeRoute.id]
             } else return
         }
@@ -174,7 +175,7 @@ const RouteBuilder = () => {
             customersObject[customer.id] = {...customerObject, routePosition: i}
         })
         console.log(customersObject)
-        dispatch(editItem({...activeRoute, customers: customersObject}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))        
+        dispatch(editItem({...activeRoute, customers: customersObject}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS, false))        
         dispatch(editItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }
 

@@ -130,6 +130,7 @@ const PropertyDetails = (props) => {
             newRecordObject.driverEarning = timeLogged * driver.hourly
         }
         if (newStatus === "Skipped") {
+            setIsRunning(false)
             newRecordObject.price = 0
         } else if (workType.name === 'Sanding') {               
             (property.sand_contract === "Per Yard") ? newRecordObject.price = property.price_per_yard * yards : newRecordObject.price = property.price_per_yard
