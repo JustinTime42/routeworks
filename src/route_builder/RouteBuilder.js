@@ -1,6 +1,6 @@
 import React, { useEffect, useState, lazy, Suspense} from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { collection, onSnapshot, doc, getDoc, Timestamp } from "firebase/firestore"
+import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField } from "firebase/firestore"
 import { db } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd, removeExtraFields } from './drag-functions'
@@ -140,7 +140,7 @@ const RouteBuilder = () => {
         dispatch(hideModal('Customer'))
     }
 
-    const dragEnd = (result) => {
+    const dragEnd = async (result) => {
         const customersArray = []
         Object.keys(activeRoute.customers).forEach(id => {
             console.log(id)
@@ -165,6 +165,10 @@ const RouteBuilder = () => {
             let confirmed = window.confirm(`Confirm removal of ${customer.cust_name} from ${activeRoute.name}`)
             if (confirmed) {
                 console.log(customer)
+                const routeRef = doc(db, `organizations/${organization}/route`, activeRoute.id);
+                await updateDoc(routeRef, {
+                    [`customers.${customer.id}`]: deleteField()
+                });
                 delete customer.routesAssigned[activeRoute.id]
             } else return
         }
@@ -172,10 +176,17 @@ const RouteBuilder = () => {
         const customersObject = {}
         newLists.newRoute.forEach((customer, i) => {
             const {id, ...customerObject} = customer 
-            customersObject[customer.id] = {...customerObject, routePosition: i}
+           // customersObject[customer.id] = {...customerObject, routePosition: i}
+            dispatch(editItem({
+                id: activeRoute.id, 
+                [`customers.${id}`]: {...customerObject, routePosition: i}}, 
+                routes, 
+                `organizations/${organization}/route`, 
+                SET_ACTIVE_ROUTE, 
+                REQUEST_ROUTES_SUCCESS))  
         })
         console.log(customersObject)
-        dispatch(editItem({...activeRoute, customers: customersObject}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS, false))        
+              
         dispatch(editItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }
 

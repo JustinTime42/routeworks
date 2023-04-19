@@ -8,7 +8,7 @@ const addedDocs = []
 const sendToDB = async(item, path) => {
     let {id, ...newItem} = item
     console.log(item)
-    setDoc(doc(db, path, id), {...newItem}, { merge: true }).then(result => {
+    setDoc(doc(db, path, id), {...newItem}, { merge: false }).then(result => {
       console.log(result)
     }).catch(error => console.log(error))       
 }
@@ -16,6 +16,7 @@ const sendToDB = async(item, path) => {
 // Go through each route, and each customer on the route, check that their routesAssigned[routeID], else add it. 
 // then go through all customers, check routesAssigned for routes that don't exist and delete them
 export const fixRoutesAssigned = (routes, allCustomers) => {
+    // THIS WON'T WORK ANYMORE NOW THAT route.customers IS A MAP!!!!!
     const clonedCustomers = _.cloneDeep(allCustomers)
     const clonedRoutes = _.cloneDeep(routes)
     let count = 0
@@ -254,7 +255,7 @@ export const routeArrayToMap = (routes) => {
             newRouteCustomers[id] = {...newCustomer, routePosition: i}
         })
         console.log(newRouteCustomers)
-        sendToDB({...route, customers: newRouteCustomers}, "organizations/aqZLLXWrMHhWV24sfl89/route")
+        sendToDB({...route, customers: newRouteCustomers}, "organizations/Snowline/route")
     })
 }
 

@@ -170,10 +170,20 @@ const PropertyDetails = (props) => {
 
         // editItem to make change status on current route
         if (activeRoute.customers[property.id]) {
-            const newRoute = {...activeRoute}
-            newRoute.customers[property.id].status = newStatus     
-            newRoute.customers[property.id].priority = false     
-            dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+
+            const newDetails = {
+                id: activeRoute.id, 
+                [`customers.${property.id}.status`]: newStatus, 
+                [`customers.${property.id}.priority`]: false 
+            }
+            // const newRoute = {...activeRoute}
+            // newRoute.customers[property.id].status = newStatus     
+            // newRoute.customers[property.id].priority = false     
+            dispatch(editItem(
+                newDetails, 
+                routes, 
+                `organizations/${organization}/route/`, 
+                ))
         } else {
             alert('No change in status on route. If you are serving a customer without their route pulled up, this is expected behavior.')
         }

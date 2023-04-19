@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, setDoc, deleteDoc } from "firebase/firestore"; 
+import { addDoc, collection, doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore"; 
 import {db} from './firebase'
 import { 
     FILTER_PROPERTIES_SUCCESS,
@@ -38,7 +38,7 @@ export const filterProperties = (matches) => {
         type: FILTER_PROPERTIES_SUCCESS,
         payload: matches
     }    
-}
+}   
 
 export const setLogs = (entries) => {
     return {
@@ -80,15 +80,15 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
     console.log({...item})
     const {id, ...itemDetails} = item
     console.log({...itemDetails})
-    const itemRef = doc(db, className, item.id)    
+    const itemRef = doc(db, className, id)    
     const sendToDB = () => {           
-        setDoc(itemRef, itemDetails, {merge: merge})
+        updateDoc(itemRef, itemDetails)
         .then((result) => {
             console.log("success", result)
-            dispatch({
-                type: activeActionType,
-                payload: {...item}
-            })
+            // dispatch({
+            //     type: activeActionType,
+            //     payload: {...item}
+            // })
         })
         .catch((e => alert(e)))
     }
