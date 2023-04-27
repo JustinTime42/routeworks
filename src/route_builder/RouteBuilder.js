@@ -24,14 +24,14 @@ const RouteBuilder = () => {
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const modals = useSelector(state => state.whichModals.modals)
     const FileUpload = lazy(() => import('../components/migration/FileUpload'))
-    const { routeName, custId } = useParams()
+    const { routeId, custId } = useParams()
     const navigate = useNavigate()
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        console.log("Route Name param: ", routeName)
-        const routeId = routes.find(i => i.name === routeName)?.id
+        
+        //const routeId = routes.find(i => i.name === routeName)?.id
         console.log(routeId)
         const unsub = routeId ? onSnapshot(doc(db, `organizations/${organization}/route/`, routeId), (doc) => {  
             console.log("Updating route")          
@@ -39,9 +39,8 @@ const RouteBuilder = () => {
         }) : () => null
         return () => {
             unsub()
-            console.log("unsubscribing from the route document", routeName)
         }
-    }, [routeName, custId])
+    }, [routeId, custId])
 
     useEffect(() => {
         let custIndex = activeRoute?.customers[activeCustomer.id]?.routePosition
@@ -190,9 +189,9 @@ const RouteBuilder = () => {
             `organizations/${organization}/route`, 
             SET_ACTIVE_ROUTE, 
             REQUEST_ROUTES_SUCCESS))
-        console.log(customersObject)
-        navigate(`/routebuilder/${activeRoute.name}`)
+        console.log(customersObject)        
         dispatch(editItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
+        navigate(`/routebuilder/${activeRoute.id}`)
     }
 
     const onCloseClick = () => {

@@ -60,7 +60,9 @@ const TopNav = () => {
     
     const onSelect = (event, itemArray, setActiveAction) => {
         console.log(location)
-        navigate(encodeURIComponent(`${event}`))
+        const routeId = routes.find(i => i.name === event).id
+        console.log(event) // THIS NEEDS TO LOOK FOR THE ID
+        navigate(encodeURIComponent(routeId))
 
         //move the scroll to the useEffect in display route when the route is selected
        // document.getElementById('droppable2scroll')?.scrollTo(0,0)
@@ -68,7 +70,6 @@ const TopNav = () => {
     }
 
     const renderProgress = (route) => {
-        console.log(route.name)
         let done = 0
         const customers = Object.values(route.customers)
         customers.forEach(customer => {

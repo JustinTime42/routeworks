@@ -32,11 +32,11 @@ const DisplayRoute= (props) => {
     const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const dispatch = useDispatch()
-    const { routeName, custId } = useParams()
+    const { routeId, custId } = useParams()
       
     useEffect(() => {  
-        dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY))      
-        const routeId = routes.find(i => i.name === routeName)?.id
+        console.log(routeId)
+        dispatch(setActiveItem({}, customers, SET_ACTIVE_PROPERTY)) 
         const unsub = routeId ? 
             onSnapshot(doc(db, `organizations/${organization}/route/`, routeId), 
             (doc) => {
@@ -45,7 +45,7 @@ const DisplayRoute= (props) => {
             }, 
             err =>alert(err)) : () => null
         return () => unsub()
-    },[routeName, activeWorkType, activeTractor])
+    },[routeId, activeWorkType, activeTractor])
 
     return (
         activeTractor.id && activeWorkType.id && (routeCustomers !== {}) ?

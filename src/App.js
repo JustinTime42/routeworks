@@ -91,14 +91,14 @@ const App = () => {
         <Routes> 
           <Route path='/' element={<Navigate to="displayRoute" />} /> 
           <Route path='displayRoute/*' element={<TopNav />}>
-              <Route path=":routeName" element={<DisplayRoute />}>
+              <Route path=":routeId" element={<DisplayRoute />}>
                   <Route path=":custId" element={<PropertyDetails />} />
                   <Route path="customer/:custId" element={<PropertyDetails />} />
               </Route>
               
           </Route>
           <Route path="routebuilder/*" element={<TopNav /> }>
-            <Route path=":routeName" element={<RouteBuilder />}>
+            <Route path=":routeId" element={<RouteBuilder />}>
               <Route path=":custId" element={<CustomerEditor />} />
             </Route>
           </Route>

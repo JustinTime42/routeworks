@@ -15,7 +15,7 @@ const SearchBar = () => {
     const dispatch = useDispatch()
     const location = useLocation()
     const navigate = useNavigate()
-    const { routeName } = useParams()
+    const { routeId } = useParams()
 
     useEffect(() => {
         onSetMatches()
@@ -37,8 +37,9 @@ const SearchBar = () => {
         if (isOnRoute) {
             console.log("isonroute", isOnRoute)  
             scrollCustomerIntoView(customer)
-        } else if (location.pathname.startsWith('displayRoute')) {
-            navigate(`${routeName}/${customer.id}`)             
+        } else if (location.pathname.startsWith('/displayRoute')) {
+            console.log("Navigating to a customer off the current route")
+            navigate(`${routeId}/${customer.id}`)             
         }       
         dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
         setMatches([])
