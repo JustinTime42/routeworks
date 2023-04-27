@@ -30,14 +30,18 @@ const RouteBuilder = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
+        console.log("Route Name param: ", routeName)
         const routeId = routes.find(i => i.name === routeName)?.id
-        const unsub = routeId ? onSnapshot(doc(db, `organizations/${organization}/route/`, routeId), (doc) => {
+        console.log(routeId)
+        const unsub = routeId ? onSnapshot(doc(db, `organizations/${organization}/route/`, routeId), (doc) => {  
+            console.log("Updating route")          
             dispatch(setActiveItem({...doc.data(), id: doc.id}, routes, SET_ACTIVE_ROUTE))
         }) : () => null
         return () => {
             unsub()
+            console.log("unsubscribing from the route document", routeName)
         }
-    }, [routeName])
+    }, [routeName, custId])
 
     useEffect(() => {
         let custIndex = activeRoute?.customers[activeCustomer.id]?.routePosition
@@ -45,6 +49,7 @@ const RouteBuilder = () => {
     }, [activeCustomer])
 
     useEffect(() => {   
+        console.log("customer param: ", custId)
         const newActiveCustomer = allCustomers.find(i => i.id === custId)       
         if (newActiveCustomer === undefined) return 
         dispatch(setActiveItem(newActiveCustomer, allCustomers, SET_ACTIVE_PROPERTY))
@@ -176,17 +181,17 @@ const RouteBuilder = () => {
         const customersObject = {}
         newLists.newRoute.forEach((customer, i) => {
             const {id, ...customerObject} = customer 
-           // customersObject[customer.id] = {...customerObject, routePosition: i}
-            dispatch(editItem({
-                id: activeRoute.id, 
-                [`customers.${id}`]: {...customerObject, routePosition: i}}, 
-                routes, 
-                `organizations/${organization}/route`, 
-                SET_ACTIVE_ROUTE, 
-                REQUEST_ROUTES_SUCCESS))  
+            customersObject[customer.id] = {...customerObject, routePosition: i}
         })
+        dispatch(editItem({
+            id: activeRoute.id, 
+            customers: {...customersObject}}, 
+            routes, 
+            `organizations/${organization}/route`, 
+            SET_ACTIVE_ROUTE, 
+            REQUEST_ROUTES_SUCCESS))
         console.log(customersObject)
-              
+        navigate(`/routebuilder/${activeRoute.name}`)
         dispatch(editItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
     }
 

@@ -72,11 +72,11 @@ export const createItem = (item, itemList = null, className, activeActionType = 
 
 export const editItem = (item, itemList, className, activeActionType = null, listAction = null, merge = true) => (dispatch) => {
     //dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})    
-    if (item.adminFields) {
-        let tempList = [...itemList]
-        tempList[tempList.findIndex(i => i.admin_key === item.id)] = item.nonAdminFields
-        dispatch({type: listAction, payload: tempList})
-    }    
+    // if (item.adminFields) {
+    //     let tempList = [...itemList]
+    //     tempList[tempList.findIndex(i => i.admin_key === item.id)] = item.nonAdminFields
+    //     dispatch({type: listAction, payload: tempList})
+    // }    
     console.log({...item})
     const {id, ...itemDetails} = item
     console.log({...itemDetails})
@@ -110,7 +110,7 @@ export const deleteItem = (item, itemList, className, activeActionType, listActi
 }
 
 export const setActiveItem = (item, itemArray, actionType) => {
-    console.log(item)
+    console.log("Setting Active Item: ", item)
     const activeItem = itemArray.find(i => i.name === item)
     if (activeItem) {
         return {
