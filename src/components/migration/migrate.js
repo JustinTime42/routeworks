@@ -22,30 +22,31 @@ export const fixRoutesAssigned = (routes, allCustomers) => {
     let count = 0
     // Make sure the customers routesAssigned have a value for each place they appear on the route   
     clonedRoutes.forEach((route, i) => {
-        route.customers.forEach(customer => {
-            const newCustomer = clonedCustomers[clonedCustomers.findIndex(i => i.id === customer.id)]
+        Object.keys(route.customers).forEach(customer => {
+            const newCustomer = clonedCustomers[clonedCustomers.findIndex(i => i.id === customer)]
             if (!newCustomer.routesAssigned[route.id]) {
-                console.log(_.cloneDeep(newCustomer))
+                //console.log(_.cloneDeep(newCustomer))
                 newCustomer.routesAssigned[route.id] = route.name
                 console.log(newCustomer) 
                 sendToDB(newCustomer, 'organizations/Snowline/customer')
                 count ++  
             }
         })
-    })  
+    })
 
     // Make sure there aren't any routes listed under routesAssigned that aren't in the routes documents.
     clonedCustomers.forEach((customer, i) => {
         const routesAssigned = Object.keys(customer.routesAssigned)
         routesAssigned.forEach(i => {
             const route = clonedRoutes.find(route => route.id === i)
-            const isCustomerOnRoute = route?.customers.find(j => j.id === customer.id)
+            const isCustomerOnRoute = route?.customers[customer.id]  // .find(j => j.id === customer.id)
             if (route && isCustomerOnRoute){
                 return 
             } else {
                 console.log(route)
-                console.log(_.cloneDeep(customer))
+                // console.log(_.cloneDeep(customer))
                 delete customer.routesAssigned[i]
+                console.log(`removed ${route.name} from routesAssigned in ${customer.cust_name}`)
                 console.log(_.cloneDeep(customer))
                 count ++ 
                 sendToDB(customer, 'organizations/Snowline/customer')

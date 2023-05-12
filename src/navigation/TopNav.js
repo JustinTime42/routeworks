@@ -61,7 +61,6 @@ const TopNav = () => {
     const onSelect = (event, itemArray, setActiveAction) => {
         console.log(location)
         const routeId = routes.find(i => i.name === event).id
-        console.log(event) // THIS NEEDS TO LOOK FOR THE ID
         navigate(encodeURIComponent(routeId))
 
         //move the scroll to the useEffect in display route when the route is selected

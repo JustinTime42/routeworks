@@ -15,7 +15,7 @@ const AdminDropdown = () => {
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
-    const { routeName } = useParams()
+    const { routeId } = useParams()
     
     useEffect(() => {
       setLastLocation(location)
@@ -37,10 +37,10 @@ const AdminDropdown = () => {
     return (
         <>                        
             <DropdownButton size="sm" title="Admin" onSelect={onSelect}>        
-                <Dropdown.Item as={Link} to={`/displayRoute/${routeName}`} key="route" eventKey="route">                              
+                <Dropdown.Item as={Link} to={`/displayRoute/${routeId}`} key="route" eventKey="route">                              
                     Driver View
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to={`/routebuilder/${routeName}`} key="routebuilder" eventKey="routebuilder">                              
+                <Dropdown.Item as={Link} to={`/routebuilder/${routeId}`} key="routebuilder" eventKey="routebuilder">                              
                     Editor View
                 </Dropdown.Item>
                 {

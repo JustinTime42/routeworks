@@ -24,13 +24,13 @@ const App = () => {
   const localVersion = 0.4
   let prodVersion = 0.4
   const [user, loading, error] = useIdToken(auth);
-  const stateUser = useSelector(state => state.setCurrentUser.currentUser)
+  const currentUser = useSelector(state => state.setCurrentUser.currentUser)
   const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
   const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
   const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
   const modals = useSelector(state => state.whichModals.modals)
   const dispatch = useDispatch()
-  const { routeName, custId } = useParams()
+  const { routeId, custId } = useParams()
   const navigate = useNavigate()
   
 
@@ -53,11 +53,13 @@ const App = () => {
       user.getIdTokenResult().then(result => {
         console.log(result)
         dispatch(setCurrentUser(result))
-        navigate('/displayRoute')
+        // if (!currentUser) {
+        //   navigate("/")
+        // }       
       })      
     } else {
       dispatch(setCurrentUser(null))
-     navigate('/login')
+      // navigate('/')
     }
   }, [user])
 
@@ -76,28 +78,21 @@ const App = () => {
 
   
 // TODO this routing is messy, fix it
-  if (!stateUser) {
-    console.log('null user')
-    return (
-      <Routes>
-        <Route path='/' element={<UserLogin />} /> 
-        <Route path='login' element={<UserLogin />} />
-        <Route path='register' element={<Register />} />    
-      </Routes>
-    )
-  } else if (['Driver', 'Supervisor', 'Admin'].includes(stateUser?.claims?.role)) {   
+
+  if (['Driver', 'Supervisor', 'Admin'].includes(currentUser?.claims?.role)) {   
     return (
       <Suspense fallback={<div>Loading...</div>}>
         <Routes> 
           <Route path='/' element={<Navigate to="displayRoute" />} /> 
           <Route path='displayRoute/*' element={<TopNav />}>
+              <Route index element={<DisplayRoute />} />
               <Route path=":routeId" element={<DisplayRoute />}>
                   <Route path=":custId" element={<PropertyDetails />} />
                   <Route path="customer/:custId" element={<PropertyDetails />} />
-              </Route>
-              
+              </Route>              
           </Route>
           <Route path="routebuilder/*" element={<TopNav /> }>
+            <Route index element={<RouteBuilder />} />
             <Route path=":routeId" element={<RouteBuilder />}>
               <Route path=":custId" element={<CustomerEditor />} />
             </Route>
@@ -111,17 +106,19 @@ const App = () => {
         </Routes>
       </Suspense>
     ) 
-  } else if (stateUser?.claims?.stripeRole === 'Owner') {
-    return <Register />
-  } 
+  }
+  // else if (currentUser && !currentUser?.claims?.organization) {
+  //   return <Register />
+  // } 
   else {
-    return (
-      <Routes>
-        <Route path='/' element={<Navigate to="login" />} /> 
-        <Route path='login' element={<UserLogin />} />
-        <Route path='register' element={<Register />} />
-      </Routes>
-    ) 
+      console.log('null user')
+      return (
+        <Routes>
+          <Route path='/' element={<UserLogin />} /> 
+          <Route path='login' element={<UserLogin />} />
+          <Route path='register' element={<Register />} />    
+        </Routes>
+      )
   }
 }
 

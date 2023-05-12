@@ -8,8 +8,7 @@ import { useIdToken } from 'react-firebase-hooks/auth';
 import RegisterUser from './RegisterUser.js'
 import RegisterCompany from './RegisterCompany.js'
 
-const Register = () => {     
-    
+const Register = () => {
     const [isLoading, setIsLoading] = useState(false)    
     const [loadingText, setLoadingText] = useState('')
     const [progress, setProgress] = useState(0)
@@ -64,7 +63,6 @@ const Register = () => {
             <ProgressBar now={progress} />
         </>
     )
-
 
     if (isLoading || loading) {
         console.log('is loading')

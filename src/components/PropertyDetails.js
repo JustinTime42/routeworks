@@ -43,7 +43,7 @@ const PropertyDetails = (props) => {
     const shouldShowModal = useSelector(state => state.whichModals.modals).includes("Hourly")
 
     const dispatch = useDispatch()
-    const {custId, routeName} = useParams()
+    const {custId, routeId} = useParams()
 
     const listener = (event) => {        
         const nope = 
@@ -169,8 +169,7 @@ const PropertyDetails = (props) => {
         if (property[tractor.type]) {newRecordObject.hourly_rate = property[tractor.type]} 
 
         // editItem to make change status on current route
-        if (activeRoute.customers[property.id]) {
-
+        if (activeRoute?.customers?.[property.id]) {
             const newDetails = {
                 id: activeRoute.id, 
                 [`customers.${property.id}.status`]: newStatus, 

@@ -50,7 +50,7 @@ const RecordView = ({records, org, docType, customers}) => {
                                 <Row>                 
                                     <Col>Change Date: {new Date(flatRecord.timestamp.seconds * 1000).toUTCString()}</Col>
                                     <Col>{flatRecord.service_address}</Col>
-                                    <Col>{customers[customers.findIndex(i=>i.id === record.cust_id)].cust_name}</Col>
+                                    <Col>{customers[customers.findIndex(i=>i.id === record.cust_id)]?.cust_name}</Col>
                                     <Col>{recordType}</Col>
                                 </Row>
                             </Container>  

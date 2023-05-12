@@ -105,7 +105,7 @@ export const deleteItem = (item, itemList, className, activeActionType, listActi
     tempList.splice(tempList.findIndex(i => i.id === item.id), 1)
     dispatch({type: listAction, payload: tempList})
     deleteDoc(doc(db, className, item.id))
-    .then(() => dispatch({type: activeActionType, payload: null}))
+    .then(() => dispatch({type: activeActionType, payload: {}}))
     .catch(err => console.log(err))
 }
 

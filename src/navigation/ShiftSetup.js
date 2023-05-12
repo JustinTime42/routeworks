@@ -111,13 +111,13 @@ const ShiftSetup = () => {
         console.log(event)
         //dispatch(setActiveItem(newActive?.type, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
         dispatch(setActiveItem(event, itemArray, setActiveAction))
-        
     }
 
-    const handleLogout = async function () {
-        //navigate('/')
-        dispatch(hideModal("Shift"))        
-        logout()        
+    const handleLogout = () => {
+        console.log("logging out")
+        logout()  
+        navigate('/')
+        dispatch(hideModal("Shift")) 
         dispatch(clearState())
     };
 

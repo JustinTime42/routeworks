@@ -32,7 +32,7 @@ const SearchBar = () => {
 
     const selectCustomer = (customer) => {
         // Find out if the customer is on current route        
-        let isOnRoute = activeRoute.customers[customer.id]
+        let isOnRoute = activeRoute?.customers?.[customer.id]
               
         if (isOnRoute) {
             console.log("isonroute", isOnRoute)  
