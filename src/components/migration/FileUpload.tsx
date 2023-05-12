@@ -22,6 +22,9 @@ const FileUpload = ({show, onClose, org, collection, test}: IFileUploadProps) =>
     const [isDisabled, setIsDisabled] = useState(false)
     const [file, setFile] = useState<LocalFile>()
     const dispatch = useDispatch()
+    const templateUrl = collection === "service_logs" ? 
+        "https://firebasestorage.googleapis.com/v0/b/route-manager-5f65b.appspot.com/o/public%2Fservice-logs-template.csv?alt=media&token=2a7c2273-d564-44b4-b0d4-920e0dc7e241" :
+        "https://firebasestorage.googleapis.com/v0/b/route-manager-5f65b.appspot.com/o/public%2Fcustomer-upload-template.csv?alt=media&token=2e71e084-9f99-4007-a315-60ca08b97c08"
 
     const handleSubmit = (e:React.MouseEvent) => {        
         if (file !== undefined) {
@@ -66,6 +69,8 @@ const FileUpload = ({show, onClose, org, collection, test}: IFileUploadProps) =>
                 Upload customer data here.
             </Modal.Header>
             <Modal.Body>
+                <p>To ensure a trouble-free upload, first <a href={templateUrl}>download</a> this template, put in your customer data, then upload it using the form below.</p>
+                
                 <form>
                     <input id='file-uploader' 
                         type='file' 
