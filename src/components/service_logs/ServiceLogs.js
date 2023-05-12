@@ -8,6 +8,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
 import { setLogs, hideModal, showModal } from '../../actions';
 import FileUpload from '../migration/FileUpload';
+import { toHRDateFormat, toHRTimeFormat } from '../utils';
 
 const ServiceLogs = (props) => {
     const [startDate, setStartDate ] = useState('')
@@ -44,16 +45,19 @@ const ServiceLogs = (props) => {
         if (logType === 'xero') {
             querySnapshot.forEach((doc) => {
                 let entry = {...doc.data(), id: doc.id}
+                const timestamp = entry.timestamp.toDate()
+                const dateHR = toHRDateFormat(timestamp)
+                const timeHR = toHRTimeFormat(timestamp)
                 entry.invoiceDate = invoiceDate
-                entry.timestamp = entry.timestamp.toDate()
+                entry.timestamp = timestamp
                 entry.dueDate = dueDate
                 entry.quantity = 1
                 entry.accountCode = 4000
                 entry.taxType = 'Tax Exempt (0%)'
-                entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
-                entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
-                entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
-                if (entry.contract_type === 'Hourly') {                    
+                entry.description += dateHR
+                entry.date = dateHR
+                entry.time = timeHR
+                if (entry.contract_type === 'Hourly') {
                     entry.elapsed = Math.round(((entry.endTime?.seconds) - (entry.startTime?.seconds)) / 36) / 100 // elapsed time as decimal hours
                     entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes 
                     entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() 
@@ -62,7 +66,7 @@ const ServiceLogs = (props) => {
                logs.push(entry)
             })
         } else if (logType === 'hourly') {
-            querySnapshot.forEach((doc) => {                
+            querySnapshot.forEach((doc) => {
                 let entry = {...doc.data(), id: doc.id}
                 if (entry.contract_type === 'Hourly') {
                     entry.timestamp = entry.timestamp.toDate()    

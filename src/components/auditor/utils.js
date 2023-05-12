@@ -3,6 +3,7 @@ import { setDoc, collection, doc, getDocs, Timestamp, where, query } from "fireb
 import { db } from "../../firebase";
 
 export const getDiff = (entry) => {
+    console.log("entry: ", entry)
     let diff = {}
     if (entry.deleted) {diff = entry}
     else if (!entry.after) {
@@ -24,7 +25,7 @@ export const getDiff = (entry) => {
         })
     }
     diff.service_address = entry.after?.service_address || entry.before?.service_address || entry.deleted?.service_address
-    diff.timestamp = entry.timestamp
+    diff.changeTime = entry.timestamp
     diff.cust_id = entry.cust_id
     diff.id = entry.id
     return diff

@@ -43,7 +43,7 @@ const RouteBuilder = () => {
     }, [routeId, custId])
 
     useEffect(() => {
-        let custIndex = activeRoute?.customers?.[activeCustomer.id]?.routePosition
+        let custIndex = activeRoute?.customers?.[activeCustomer?.id]?.routePosition
         scrollCardIntoView(custIndex)
     }, [activeCustomer])
 

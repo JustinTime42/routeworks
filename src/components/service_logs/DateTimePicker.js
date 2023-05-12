@@ -8,8 +8,7 @@ import React, {
   import { useDispatch, useSelector } from 'react-redux'
 import { Button } from 'react-bootstrap'
 import { deleteItem } from '../../actions'
-
-const offset = new Date().getTimezoneOffset() * 60000
+import { toLocalTime } from '../utils'
 
 export const DeleteLogRenderer = (props) => {
     const logs = useSelector(state => state.setLogs.entries)
@@ -45,7 +44,7 @@ export class DateTimeEditor extends Component {
         super(props) 
         this.inputRef = createRef() 
         this.state = {
-            value: props.value || new Date(Date.now() - offset).toISOString().substring(0, 16)
+            value: props.value || toLocalTime(Date.now()).toISOString() //new Date(Date.now() - offset).toISOString().substring(0, 16)
         }
     }
  
@@ -71,7 +70,8 @@ export class DateTimeEditor extends Component {
             <input
                 type='datetime-local'
                 ref={this.inputRef}
-                value={(new Date((Date.parse(this.state.value)) - offset)).toISOString().substring(0, 16)}
+                value={toLocalTime((Date.parse(this.state.value))).toISOString().substring(0, 16)}
+                //value={(new Date((Date.parse(this.state.value)) - offset)).toISOString().substring(0, 16)}
                 onChange={event => this.handleChange(event)}
                 style={{width: "100%"}}
             />

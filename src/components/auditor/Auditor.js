@@ -8,6 +8,7 @@ import { setActiveItem } from "../../actions"
 import { SET_ACTIVE_PROPERTY } from "../../constants"
 import { getDiff } from "./utils"
 import { getBadChanges } from "./utils"
+import { toLocalTime } from "../utils"
 
 const Auditor = () => {
     const [docType, setDocType] = useState('') 

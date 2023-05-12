@@ -51,3 +51,15 @@ export const changeActiveProperty = (property, direction = '', routeCustomers) =
     }
 }
 
+export const toLocalTime = (time) => {
+    const offset = new Date().getTimezoneOffset() * 60000
+    return new Date(time - offset)
+}
+
+export const toHRDateFormat = (time) => {
+    return new Date(time).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})
+}
+
+export const toHRTimeFormat = (time) => {
+    return new Date(time).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
+}

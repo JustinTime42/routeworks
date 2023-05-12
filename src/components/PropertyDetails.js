@@ -174,10 +174,7 @@ const PropertyDetails = (props) => {
                 id: activeRoute.id, 
                 [`customers.${property.id}.status`]: newStatus, 
                 [`customers.${property.id}.priority`]: false 
-            }
-            // const newRoute = {...activeRoute}
-            // newRoute.customers[property.id].status = newStatus     
-            // newRoute.customers[property.id].priority = false     
+            }    
             dispatch(editItem(
                 newDetails, 
                 routes, 
