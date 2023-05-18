@@ -11,7 +11,7 @@ service cloud.firestore {
     	allow create: if request.auth.uid == uid
     }
     match /customers/{uid}/checkout_sessions/{document} {
-    	allow write: if request.auth.uid == uid
+    	allow read, write: if request.auth.uid == uid
     }
   	match /organizations/{org}/{document=**} {
       allow read: if request.auth.token.organization == org;
