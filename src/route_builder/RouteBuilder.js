@@ -40,7 +40,7 @@ const RouteBuilder = () => {
         return () => {
             unsub()
         }
-    }, [routeId, custId])
+    }, [routeId])
 
     useEffect(() => {
         let custIndex = activeRoute?.customers?.[activeCustomer?.id]?.routePosition
