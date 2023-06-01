@@ -35,12 +35,10 @@ const SearchBar = () => {
         let isOnRoute = activeRoute?.customers?.[customer.id]
               
         if (isOnRoute) {
-            console.log("isonroute", isOnRoute)  
             scrollCustomerIntoView(customer)
         } else if (location.pathname.startsWith('/displayRoute')) {
-            console.log("Navigating to a customer off the current route")
-            navigate(`${routeId}/${customer.id}`)             
-        }       
+            navigate(`${routeId}/${customer.id}`)
+        }
         dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
         setMatches([])
     }
