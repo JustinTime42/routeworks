@@ -1,4 +1,4 @@
-import React, { useEffect, useState, lazy, Suspense} from 'react'
+import React, { useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField } from "firebase/firestore"
 import { db } from '../firebase'
@@ -23,7 +23,6 @@ const RouteBuilder = () => {
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const modals = useSelector(state => state.whichModals.modals)
-    const FileUpload = lazy(() => import('../components/migration/FileUpload'))
     const { routeId, custId } = useParams()
     const navigate = useNavigate()
 
@@ -302,16 +301,8 @@ const RouteBuilder = () => {
                 </Droppable>
             </DragDropContext>
             <Outlet context={[onPropertySave, onCloseClick, onDelete]} />
-            <Suspense fallback={<div>Loading...</div>}>
-                <FileUpload 
-                    org={currentUser.claims.organization}
-                    show={modals.includes('File Upload')}
-                    onClose={() => dispatch(hideModal('File Upload'))}
-                    collection={'customer'}
-                /> 
-            </Suspense>
         </div>
-        </> 
+        </>
     )    
 }
 

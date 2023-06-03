@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import {hideModal, showModal} from "../actions"
 import CustomerContact from '../components/CustomerContact'
 import RawCustomerData from '../components/RawCustomerData'
-import FileUpload from '../components/migration/FileUpload'
+import DataImport from '../components/migration/DataImport'
 
 const AdminDropdown = () => {
     let location = useLocation()
@@ -25,6 +25,7 @@ const AdminDropdown = () => {
         switch(event) {
             case "contact": return dispatch(showModal('Contact'))
             case "rawTable": return dispatch(showModal('All Customers'))
+            case "import": return dispatch(showModal('import'))
             default: return
         }
     }
@@ -61,6 +62,9 @@ const AdminDropdown = () => {
                 <Dropdown.Item as={Link} to="/admin/auditor">
                     Audit Logs
                 </Dropdown.Item>
+                <Dropdown.Item key="import" eventKey="import">
+                    Import Data
+                </Dropdown.Item>
                 {/* <Dropdown.Item as={Link} to="/admin/migration" key="migration" eventKey="migration">
                     Data Migration
                 </Dropdown.Item> */}
@@ -68,7 +72,16 @@ const AdminDropdown = () => {
                 </> : null}
             </DropdownButton>
             <CustomerContact show={modals.includes('Contact')} onClose={onClose} />  
-            <RawCustomerData show={modals.includes('All Customers')} onClose={onClose} customers={customers} />                  
+            <RawCustomerData 
+                show={modals.includes('All Customers')} 
+                onClose={onClose} 
+                customers={customers}
+            />
+            <DataImport 
+                show={modals.includes('import')} 
+                onClose={() => onClose('import')} 
+                org={currentUser.claims.organization}
+            />
         </>
     )    
 }

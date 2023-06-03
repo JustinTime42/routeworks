@@ -10,10 +10,11 @@ export const writeArrayToDocs = async(list: Array<ILogsFieldsBefore | ICustomerF
     })
     return Promise.all(promises)
     .then(() => ('Upload Complete'))
-    .catch(() => alert('Error uploading customers'))
+    .catch((e) => alert(e))
 }
 
 export const writeNewItem = <T extends WithFieldValue<DocumentData>>(item: T, path: string) : Promise<string> => {
+    console.log(item)
     return new Promise((resolve, reject) => {
         addDoc(collection(db, path), item).then((item) => {
             resolve('customer uploaded')
@@ -36,6 +37,7 @@ const recastCustomerValues = (customer: ICustomerFieldsBefore): ICustomerFieldsA
 }
 
 const recastLogValues = (logEntry: ILogsFieldsBefore): ILogsFieldsAfter => {
+    console.log(logEntry)
     const changedFields = {
         include_email2: logEntry.include_email2 === "true" || false,
         value: Number(logEntry.value) || 0,
@@ -44,6 +46,8 @@ const recastLogValues = (logEntry: ILogsFieldsBefore): ILogsFieldsAfter => {
         sweep_price: Number(logEntry.sweep_price) || 0,
         snow_price: Number(logEntry.snow_price) || 0,
         timestamp: Timestamp.fromDate(new Date(logEntry.timestamp || Date.now())),
+        startTime: logEntry.startTime ? Timestamp.fromDate(new Date(logEntry.startTime)) : null,
+        endTime: logEntry.endTime ? Timestamp.fromDate(new Date(logEntry.endTime)) : null,
     }
     return {...logEntry, ...changedFields}
 }
