@@ -79,6 +79,8 @@ export interface ILogsFieldsBefore extends ICommonFieldsBefore {
     sand_contract?: string
     notes?: string
     timestamp?: Date
+    startTime?: Date | null
+    endTime?: Date | null
 }
 
 export interface ILogsFieldsAfter extends ICommonFieldsAfter {
@@ -97,4 +99,6 @@ export interface ILogsFieldsAfter extends ICommonFieldsAfter {
     sand_contract?: string
     notes?: string
     timestamp?: Timestamp
+    startTime?: Timestamp | null
+    endTime?: Timestamp | null
 }

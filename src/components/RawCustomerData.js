@@ -15,7 +15,10 @@ const RawCustomerData = ({show, onClose, customers}) => {
         let temp = _.cloneDeep(customers)
         temp.forEach(i => {
             i.routesAssigned = Object.values(i.routesAssigned)
-            if(i.date_created) i.date_created = i.date_created.toDate()
+            if(i.date_created) i.date_created = i.date_created.toDate()    
+            if (i.notes) {
+                i.notes = i.notes.replaceAll('"', '""')
+            }
         })            
         setNewList(temp)
         setLinkVisible(true)
