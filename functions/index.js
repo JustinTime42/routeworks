@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const {onCall} = require("firebase-functions/v2/https")
 admin.initializeApp();
 const client = new admin.firestore.v1.FirestoreAdminClient();
 const bucket = 'gs://cron-backups';
@@ -235,8 +236,49 @@ exports.updateLogEntry = functions.firestore
       return doc
     })
     .catch((e) => {return e}) 
-  })  
+  })
 
+  exports.connectLogsToCust = onCall(async request => {
+    const organization = request.auth.token.organization
+    const role = request.auth.token.role
+    if (!request.auth) {
+      // Throwing an HttpsError if not logged in
+      throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
+    } else if (role !== 'Admin') {
+      // Throwing an HttpsError if not Admin
+      throw new functions.https.HttpsError('failed-precondition', 'Insufficient permissions');
+    } else {
+      const customersRef = admin.firestore().collection(`organizations/${organization}/customer`)
+      const logsRef = admin.firestore().collection(`organizations/${organization}/service_logs`)
+      const logsSnapshot = await logsRef.get()
+      logsSnapshot.forEach(async (result) => {
+        const entry = {...result.data(), id: result.id}
+        if (entry.cust_id) return
+        let cust_id = ""
+        const custSnapshot = await customersRef
+          .where("cust_name", "==", entry.cust_name)
+          .where("service_address", "==", entry.service_address)
+          .get()
+        if (custSnapshot.empty) {
+          // create a new customer from the appropriate log fields
+          const res = await customersRef.add({
+            service_address: entry.service_address,
+            contract_type: entry.contract_type,
+            cust_name: entry.cust_name,
+            cust_email: entry.cust_email,
+            cust_email2: entry.cust_email2,
+            include_email2: entry.include_email2,
+            value: entry.value,
+          })
+          cust_id = res.id
+        } else {
+          // set logEntry.cust_id to the id of the found customer          
+          custSnapshot.forEach(customer => cust_id = customer.id)
+        }        
+        return logsRef.doc(entry.id).set({cust_id: cust_id}, {merge: true})
+      })
+    }
+  })
 
 // exports.deleteCustomer = functions.firestore
 // .document('driver/driver_lists/customer/{itemID}')
