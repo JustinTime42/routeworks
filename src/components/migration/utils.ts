@@ -1,26 +1,36 @@
 import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp, WithFieldValue, DocumentData } from "firebase/firestore"
 import { db } from "../../firebase"
 import { ICustomerFieldsBefore, ICustomerFieldsAfter, ILogsFieldsBefore, ILogsFieldsAfter } from "./definitions"
+import {httpsCallable, functions} from '../../firebase'
 
 export const writeArrayToDocs = async(list: Array<ILogsFieldsBefore | ICustomerFieldsBefore>, path: string) => {
     let promises: Array<Promise<string>> = []
+    //let fixedArray: Array<Object> = []
     list.forEach(item => {
         const fixedItem = path.endsWith('customer') ? recastCustomerValues(item) : recastLogValues(item)
         promises.push(writeNewItem(fixedItem, path)) 
     })
     return Promise.all(promises)
-    .then(() => ('Upload Complete'))
+    .then(() => {
+        //maybe here we call the function, and it queries all service logs so it gets the ids of the logs
+        if (path.endsWith('service_logs')) {
+            const connectLogsToCust = httpsCallable(functions, 'connectLogsToCust')
+            connectLogsToCust()
+            .then(res => console.log(res))
+            .catch(err => alert(err))
+        }
+        return ('Upload Complete')
+    } )
     .catch((e) => alert(e))
 }
 
 export const writeNewItem = <T extends WithFieldValue<DocumentData>>(item: T, path: string) : Promise<string> => {
-    console.log(item)
     return new Promise((resolve, reject) => {
         addDoc(collection(db, path), item).then((item) => {
             resolve('customer uploaded')
         })
         .catch(() => reject(new Error('error uploading customer')))
-    })           
+    })
 }
 
 const recastCustomerValues = (customer: ICustomerFieldsBefore): ICustomerFieldsAfter => {
@@ -37,7 +47,6 @@ const recastCustomerValues = (customer: ICustomerFieldsBefore): ICustomerFieldsA
 }
 
 const recastLogValues = (logEntry: ILogsFieldsBefore): ILogsFieldsAfter => {
-    console.log(logEntry)
     const changedFields = {
         include_email2: logEntry.include_email2 === "true" || false,
         value: Number(logEntry.value) || 0,

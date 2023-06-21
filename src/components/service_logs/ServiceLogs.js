@@ -133,8 +133,6 @@ const ServiceLogs = (props) => {
                 <Button style={{visibility: logs.length && (logType === 'raw') ? 'visible' : 'hidden'}} onClick={() => setEditable(!editable)}>
                     {!editable ? "Start Editing" : "Stop Editing"}
                 </Button>
-                <Button onClick={() => dispatch(showModal('File Upload'))}>Upload Service Logs CSV</Button>
-
             </Form.Group>
         </Form>   
         <LogsTable height='70vh' logType={logType} logs={logs} editable={editable}/>

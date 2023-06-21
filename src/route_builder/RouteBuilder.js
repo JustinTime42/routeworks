@@ -204,13 +204,6 @@ const RouteBuilder = () => {
             <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={onInitRoute}>Initialize Route</Button>
             <div>
             <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
-            <Button 
-                style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden', marginLeft:'1em'}} 
-                variant="primary" size="sm" 
-                onClick={() => dispatch(showModal('File Upload'))}
-                >
-                Upload Customers CSV
-            </Button>
             </div>
         </div>
         <div className="adminGridContainer">

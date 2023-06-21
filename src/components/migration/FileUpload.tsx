@@ -4,7 +4,7 @@ import { Spinner, Button } from "react-bootstrap"
 import Papa, {parse} from 'papaparse'
 import { ParseResult, LocalFile } from "papaparse"
 import { writeArrayToDocs } from "./utils"
-import { ICustomerFieldsBefore } from "./definitions"
+import { ICustomerFieldsBefore, ILogsFieldsBefore } from "./definitions"
 
 interface IFileUploadProps {
     org: string  
@@ -21,13 +21,13 @@ const FileUpload = ({org, collection, templateUrl}: IFileUploadProps) => {
     const handleSubmit = (e:React.MouseEvent) => {        
         if (file !== undefined) {
             setIsLoading(true)
-            parse(file , papaConfig)                     
+            parse(file , papaConfig)
         } else {
             alert('Please upload file first!')
         }
     }
 
-    const writeCustomers = async(data: ICustomerFieldsBefore[], path: string) => {        
+    const writeData = async(data: ICustomerFieldsBefore[] | ILogsFieldsBefore[], path: string) => {
         await writeArrayToDocs(data, path)
         setIsLoading(false)
         setIsDone(true)
@@ -37,7 +37,7 @@ const FileUpload = ({org, collection, templateUrl}: IFileUploadProps) => {
     const papaConfig = {
         header: true,
         complete: (results : ParseResult<ICustomerFieldsBefore>) => {   
-            writeCustomers(results.data, `organizations/${org}/${collection}`)  
+            writeData(results.data, `organizations/${org}/${collection}`)  
         } ,
         skipEmptyLines: true,
         delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
