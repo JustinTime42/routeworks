@@ -7,7 +7,6 @@ import LogsTable from './LogsTable';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
 import { setLogs, hideModal, showModal } from '../../actions';
-import FileUpload from '../migration/FileUpload';
 import { toHRDateFormat, toHRTimeFormat } from '../utils';
 
 const ServiceLogs = (props) => {
@@ -19,8 +18,6 @@ const ServiceLogs = (props) => {
     const [editable, setEditable] = useState(false)
     const logs = useSelector(state => state.setLogs.entries)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
-    const modals = useSelector(state => state.whichModals.modals)
-    const FileUpload = lazy(() => import('../migration/FileUpload'))
 
     const dispatch = useDispatch()
 
@@ -136,15 +133,6 @@ const ServiceLogs = (props) => {
             </Form.Group>
         </Form>   
         <LogsTable height='70vh' logType={logType} logs={logs} editable={editable}/>
-        <Suspense fallback={<div>Loading...</div>}>
-            <FileUpload 
-                org={organization}
-                show={modals.includes('File Upload')}
-                onClose={() => dispatch(hideModal('File Upload'))}
-                collection={'service_logs'}
-            />  
-        </Suspense>
-  
         </>
     )    
 }
