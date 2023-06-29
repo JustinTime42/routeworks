@@ -1,10 +1,13 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const {onCall} = require("firebase-functions/v2/https")
+const {defineString} = require("firebase-functions/params");
 admin.initializeApp();
 const client = new admin.firestore.v1.FirestoreAdminClient();
 const bucket = 'gs://cron-backups';
 
+const stripeKey = defineSecret("STRIPE_TEST_KEY");
+const stripe = require('stripe')(stripeKey);
 
 exports.listUsers = functions.https.onCall((data, context) => {
   const {role, organization} = context.auth.token 
@@ -46,6 +49,42 @@ exports.listUsers = functions.https.onCall((data, context) => {
 //   })
 
 // }
+
+// Call this when creating a new stripe account
+exports.createStripeConnectedAccount = onCall(async (request) => {
+  const { organization } = request.auth.token
+  const account = await stripe.accounts.create({
+    type: 'standard',
+  });
+
+  // write account.id into the organization document
+  const organizationRef = admin.firestore().collection('organizations').doc(organization);
+  await organizationRef.update({
+    stripe_account_id: account.id
+  });
+  // create a stripe account link and return the url
+  const accountLink = createStripeAccountLink(account.id)
+  return accountLink.url
+})
+
+// Call this when getting an account link for existing account
+exports.getAccountLink = onCall(async request => {
+  // get stripe account id from organization document 
+  const { organization } = request.auth.token;
+  const organizationRef = admin.firestore().collection('organizations').doc(organization);
+  const { stripe_account_id } = await organizationRef.get();
+  createStripeAccountLink(stripe_account_id);
+})
+
+const createStripeAccountLink = async (accountId) => {
+  const accountLink = await stripe.accountLinks.create({
+    account: accountId,
+    refresh_url: 'https://app.routeworks.com/billing/setup', // have front end retrigger link creation and direct to onboarding flow
+    return_url: 'https://app.routeworks.com/billing', // this is after successfully existing. check on front end for completed account
+    type: 'account_onboarding',
+  });
+  return accountLink
+}
 
 exports.createOrg = functions.https.onCall((data, context) => {
   const stripeRole = context.auth.token.stripeRole
