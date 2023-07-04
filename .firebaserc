@@ -1,5 +1,20 @@
 {
   "projects": {
-    "default": "route-manager-5f65b"
+    "default": "routeworks-dev",
+    "prod": "route-manager-5f65b",
+    "dev": "routeworks-dev"
+  },
+  "targets": {},
+  "etags": {
+    "routeworks-dev": {
+      "extensionInstances": {
+        "firestore-stripe-payments": "c9261855b2ba32dc00e1b423e79a701e593fde538a9b508fadc6db914ac982a5"
+      }
+    },
+    "route-manager-5f65b": {
+      "extensionInstances": {
+        "firestore-stripe-payments": "6b34222ccd56741c5c08b84aa645fb5e7112ffd15977179108892352df21796c"
+      }
+    }
   }
 }

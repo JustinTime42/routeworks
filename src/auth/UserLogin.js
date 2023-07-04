@@ -42,7 +42,7 @@ export const UserLogin = () => {
 
   return (
     <Card className="text-center" style={{ width: '18rem', marginTop: '2em', marginLeft: 'auto', marginRight: 'auto' }}>
-      <Card.Header>Login</Card.Header>
+      <Card.Header>Logins</Card.Header>
       <Card.Body>
         <Form>
           <Card.Text>
