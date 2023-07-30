@@ -16,8 +16,8 @@ export const writeArrayToDocs = async(list: Array<ILogsFieldsBefore | ICustomerF
         if (path.endsWith('service_logs')) {
             const connectLogsToCust = httpsCallable(functions, 'connectLogsToCust')
             connectLogsToCust()
-            .then(res => console.log(res))
-            .catch(err => alert(err))
+            .then(res => console.log("res", res))
+            .catch(err => console.log(err))
         }
         return ('Upload Complete')
     } )

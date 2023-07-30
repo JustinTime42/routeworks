@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react'
-import { Button, Form, Card, Modal, ProgressBar } from 'react-bootstrap'
+import React, { useState } from 'react'
+import { Button, Form } from 'react-bootstrap'
 
-const RegisterCompany = ({onSaveOrg}) => {
+const RegisterCompany = ({user, onSaveOrg}) => {
     const [orgName, setOrgName] = useState('')
 
-    return (
-        <Form>
-            <Form.Control
-            value={orgName}
-            onChange={(event) => setOrgName(event.target.value)}
-            placeholder="Organization Name"
-            size="lg"
-            className="form_input"
-            /> 
-            <Button onClick={() => onSaveOrg(orgName)} variant='primary' size='lg'>
-                Save
-            </Button>
-        </Form>
-    )
+    if (user?.claims?.stripeRole === "Owner") {
+        return (
+            <Form>
+                <Form.Control
+                value={orgName}
+                onChange={(event) => setOrgName(event.target.value)}
+                placeholder="Organization Name"
+                size="lg"
+                className="form_input"
+                /> 
+                <Button onClick={() => onSaveOrg(orgName)} variant='primary' size='lg'>
+                    Save
+                </Button>
+            </Form>
+        )
+    } else return null
+
 }
 
 export default RegisterCompany

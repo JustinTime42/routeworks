@@ -19,7 +19,7 @@
     }
   ],
   "hosting": {
-    "public": "public",
+    "public": "build",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -55,5 +55,7 @@
       "enabled": true
     }
   },
-  "extensions": {}
+  "extensions": {
+    "firestore-stripe-payments": "stripe/firestore-stripe-payments@0.3.3"
+  }
 }

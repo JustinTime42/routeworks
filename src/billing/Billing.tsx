@@ -34,7 +34,7 @@ const Billing = () => {
   }, [organization])
 
   const fetchStripe = async (stripeID: string) => {
-    const stripe = await loadStripe(process.env.STRIPE_PLATFORM_PUBLISHABLE_KEY || "", {
+    const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || "", {
       stripeAccount: stripeID,
     });
     setLoading(false);

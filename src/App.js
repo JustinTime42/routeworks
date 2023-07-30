@@ -107,9 +107,9 @@ const App = () => {
       </Suspense>
     ) 
   }
-  // else if (currentUser && !currentUser?.claims?.organization) {
-  //   return <Register />
-  // } 
+  else if (currentUser && !currentUser?.claims?.organization) {
+    return <Register />
+  } 
   else {
       console.log('null user')
       return (

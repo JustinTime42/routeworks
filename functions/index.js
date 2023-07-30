@@ -2,21 +2,21 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const {onCall, HttpsError} = require('firebase-functions/v2/https');
 const {defineSecret} = require('firebase-functions/params');
-const {getAuth} = require('firebase-admin/auth');
 admin.initializeApp();
+const db = admin.firestore();
 const client = new admin.firestore.v1.FirestoreAdminClient();
 
 const stripeKey = defineSecret('STRIPE_KEY');
 const stripe = require('stripe')(stripeKey);
 
-exports.listUsers = functions.https.onCall((data, context) => {
-  const {role, organization} = context.auth.token;
+//this needs to query the org doc not the full user list so it is specific to the org
+exports.listUsers = onCall((request) => {
+  const {role, organization} = request.auth.token;
   const results = [];
   return admin.auth().listUsers()
       .then((userList) => {
-        functions.logger.log(userList);
+        functions.logger.log(userList)
         userList.users.forEach((user) => {
-          functions.logger.log(user);
           if ((user.customClaims.organization === organization) &&
           (role === 'Admin')) {
             functions.logger.log(user);
@@ -25,6 +25,10 @@ exports.listUsers = functions.https.onCall((data, context) => {
         });
         functions.logger.log(results);
         return results;
+      })
+      .catch((err) => {
+        functions.logger.log(err)
+        throw new HttpsError('internal', 'couldn\'t list users', err);
       });
 });
 
@@ -50,12 +54,11 @@ exports.listUsers = functions.https.onCall((data, context) => {
 
 // }
 
-exports.createOrg = functions.https.onCall((data, context) => {
-  const user = getAuth().getUser(data.auth.token.uid);
-  const customClaims = user.customClaims;
-  const stripeRole = context.auth.token.stripeRole;
-  const {orgName} = data;
-  functions.logger.log('uid: ', context.auth.uid);
+exports.createOrg = onCall((request) => {
+  const {stripeRole} = request.auth.token;
+  functions.logger.log(request);
+  const {orgName} = request.data;
+  functions.logger.log('uid: ', request.auth.uid);
   functions.logger.log('orgName: ', orgName);
   if (stripeRole !== 'Owner') {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
@@ -67,13 +70,15 @@ exports.createOrg = functions.https.onCall((data, context) => {
         orgName: orgName,
       })
           .then((doc) => {
-            customClaims['organization'] = doc.id;
-            customClaims['role'] = 'Admin';
+            const customClaims = {
+              stripeRole: 'Owner',
+              organization: doc.id,
+              role: 'Admin',
+            };
             return admin.auth()
-                .setCustomUserClaims(data.auth.token.uid, customClaims)
+                .setCustomUserClaims(request.auth.uid, customClaims)
                 .then(() => {
-                  functions.logger.log(admin.auth().getUser(context.auth.uid));
-                  return admin.auth().getUser(context.auth.uid);
+                  return request.auth;
                 })
                 .catch((err) => {
                   functions.logger.log(err);
@@ -86,13 +91,12 @@ exports.createOrg = functions.https.onCall((data, context) => {
   }
 });
 
-exports.createUser = functions.https.onCall((data, context) => {
-  const {displayName, email, customClaims, disabled} = data;
-  customClaims['organization'] = organization;
-  const role = context.auth.token.role;
-  const organization = context.auth.token.organization;
+exports.createUser = onCall((request) => {
+  const {displayName, email, customClaims, disabled} = request.data;
+  customClaims['organization'] = request.auth.token.organization;
+  const role = request.auth.token.role;
   // assign organization based on context.token
-  if (!context.auth) {
+  if (!request.auth) {
     // Throwing an HttpsError if not logged in
     throw new HttpsError('failed-precondition', 'Not authenticated.');
   } else if (role !== 'Admin') {
@@ -119,11 +123,11 @@ exports.createUser = functions.https.onCall((data, context) => {
   }
 });
 
-exports.updateUser = functions.https.onCall((data, context) => {
-  const {uid, displayName, email, customClaims, disabled} = data;
-  const organization = context.auth.token.organization;
-  const role = context.auth.token.role;
-  if (!context.auth) {
+exports.updateUser = onCall((request) => {
+  const {uid, displayName, email, customClaims, disabled} = request.data;
+  const organization = request.auth.token.organization;
+  const role = request.auth.token.role;
+  if (!request.auth) {
     // Throwing an HttpsError if not logged in
     throw new HttpsError('failed-precondition', 'Not authenticated.');
   } else if (role !== 'Admin') {
@@ -132,7 +136,7 @@ exports.updateUser = functions.https.onCall((data, context) => {
   } else {
     return admin.auth().getUser(uid).then((userRecord) => {
       if (userRecord.customClaims.organization === organization) {
-        return admin.auth().updateUser(data.uid, {
+        return admin.auth().updateUser(uid, {
           email: email,
           displayName: displayName,
           disabled: disabled,
@@ -142,18 +146,19 @@ exports.updateUser = functions.https.onCall((data, context) => {
                   .then(() => {
                     return admin.auth().getUser(result.uid);
                   });
+            }).catch((err) => {
+              throw new HttpsError('unknown', err);
             });
       } else functions.logger.log('wrong organization');
     });
   }
 });
 
-exports.deleteUser = functions.https.onCall((data, context) => {
-  const {uid, displayName, customClaims} = data;
-  const organization = context.auth.token.organization;
-  const role = context.auth.token.role;
+exports.deleteUser = onCall((request) => {
+  const {uid, displayName, customClaims} = request.data;
+  const {organization, role} = request.auth.token;
   functions.logger.log(`attempting to delete ${displayName}`);
-  if (!context.auth) {
+  if (!request.auth) {
     // Throwing an HttpsError if not logged in
     throw new HttpsError('failed-precondition', 'Not authenticated.');
   } else if ((role !== 'Admin') ||
@@ -260,27 +265,30 @@ exports.writeCustomer = functions.firestore
 // Call this when creating a new stripe account
 exports.createStripeConnectedAccount = onCall((request) => {
   const {organization} = request.auth.token;
-  stripe.accounts.create({
+  console.log('test')
+  console.log(request.auth.token)
+  functions.logger.log("token: ", request.auth.token);
+  return stripe.accounts.create({
     type: 'standard',
-  })
-      .then((account) => {
-        // write account.id into the organization document
-        const organizationRef = admin.firestore()
-            .collection('organizations').doc(organization);
-        organizationRef.update({
-          stripe_account_id: account.id,
-        })
-            .then((res) => null)
-            .catch((err) => err);
-        // generate and return an account link
-        return createStripeAccountLink(account.id);
-      })
-      .then((accountLink) => {
-        return accountLink.url;
-      })
-      .catch((err) => {
-        throw new HttpsError('unknown', 'Failed to create a new account');
-      });
+    email: request.data.email,
+    business_profile: {
+      name: request.data.orgName,
+    }
+  }).then((account) => {
+    // write account.id into the organization document
+    const organizationRef = admin.firestore()
+        .collection('organizations').doc(organization);
+    return organizationRef.update({
+      stripe_account_id: account.id,
+    }).then(() => {
+      // generate and return an account link
+      return createStripeAccountLink(account.id);
+    }).catch((err) => err);
+  }).then((accountLink) => {
+    return accountLink;
+  }).catch((err) => {
+    throw new HttpsError('unknown', 'Failed to create a new account');
+  });
 });
 
 // Call this when getting an account link for existing account
@@ -302,66 +310,103 @@ exports.getAccountLink = onCall((request) => {
 });
 
 const createStripeAccountLink = (accountId) => {
-  stripe.accountLinks.create({
+  return stripe.accountLinks.create({
     account: accountId,
-    refresh_url: 'https://app.routeworks.com/billing/setup', // have front end retrigger link creation and direct to onboarding flow
-    return_url: 'https://app.routeworks.com/billing', // this is after successfully existing. check on front end for completed account
+    refresh_url: 'https://app.snowlinealaska.com/', // have front end retrigger link creation and direct to onboarding flow
+    return_url: 'https://app.snowlinealaska.com/', // this is after successfully existing. check on front end for completed account
     type: 'account_onboarding',
-  })
-      .then((accountLink) => {
-        return accountLink;
-      })
-      .catch((err) => {
-        throw new HttpsError('unknown', 'Failed to generate account link');
-      });
+  }).then((accountLink) => {
+    return accountLink;
+  }).catch((err) => {
+    throw new HttpsError('unknown', 'Failed to generate account link');
+  });
 };
 
-exports.connectLogsToCust = onCall((request) => {
-  const organization = request.auth.token.organization;
-  const role = request.auth.token.role;
+exports.connectLogsToCust = onCall(async request => {
+  const organization = request.auth.token.organization
+  const role = request.auth.token.role
   if (!request.auth) {
     // Throwing an HttpsError if not logged in
-    throw new HttpsError('failed-precondition', 'Not authenticated.');
+    throw new functions.https.HttpsError('failed-precondition', 'The function must be called while authenticated.');
   } else if (role !== 'Admin') {
     // Throwing an HttpsError if not Admin
-    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+    throw new functions.https.HttpsError('failed-precondition', 'Insufficient permissions');
   } else {
-    const customersRef = admin.firestore()
-        .collection(`organizations/${organization}/customer`);
-    const logsRef = admin.firestore()
-        .collection(`organizations/${organization}/service_logs`);
-    logsRef.get().then((logsSnapshot) => {
-      logsSnapshot.forEach((result) => {
-        const entry = result.data();
-        if (entry.cust_id) return;
-        return customersRef
-            .where('cust_name', '==', entry.cust_name)
-            .where('service_address', '==', entry.service_address)
-            .get()
-            .then((custSnapshot) => {
-              if (custSnapshot.empty) {
-                // create a new customer from the appropriate log fields
-                return customersRef.add({
-                  service_address: entry.service_address,
-                  contract_type: entry.contract_type,
-                  cust_name: entry.cust_name,
-                  cust_email: entry.cust_email,
-                  cust_email2: entry.cust_email2,
-                  include_email2: entry.include_email2,
-                  value: entry.value,
-                }).then((res) => {
-                  return logsRef.doc(entry.id)
-                      .set({cust_id: res.id}, {merge: true});
-                });
-              } else {
-                // set logEntry.cust_id to the id of the found customer
-                custSnapshot.forEach((customer) => {
-                  return logsRef.doc(entry.id)
-                      .set({cust_id: customer.id}, {merge: true});
-                });
-              }
-            });
-      });
-    });
+    const customersRef = admin.firestore().collection(`organizations/${organization}/customer`)
+    const logsRef = admin.firestore().collection(`organizations/${organization}/service_logs`)
+    const logsSnapshot = await logsRef.get()
+    logsSnapshot.forEach(async (result) => {
+      const entry = {...result.data(), id: result.id}
+      if (entry.cust_id) return
+      let cust_id = ""
+      const custSnapshot = await customersRef
+        .where("cust_name", "==", entry.cust_name)
+        .where("service_address", "==", entry.service_address)
+        .get()
+      if (custSnapshot.empty) {
+        // create a new customer from the appropriate log fields
+        const res = await customersRef.add({
+          service_address: entry.service_address,
+          contract_type: entry.contract_type,
+          cust_name: entry.cust_name,
+          cust_email: entry.cust_email,
+          cust_email2: entry.cust_email2,
+          include_email2: entry.include_email2,
+          value: entry.value,
+        })
+        cust_id = res.id
+      } else {
+        // set logEntry.cust_id to the id of the found customer          
+        custSnapshot.forEach(customer => cust_id = customer.id)
+      }        
+      return logsRef.doc(entry.id).set({cust_id: cust_id}, {merge: true})
+    })
   }
-});
+})
+
+// exports.connectLogsToCust = onCall((request) => {
+//   const {organization, role} = request.auth.token;
+//   if (!request.auth) {
+//     // Throwing an HttpsError if not logged in
+//     throw new HttpsError('failed-precondition', 'Not authenticated.');
+//   } else if (role !== 'Admin') {
+//     // Throwing an HttpsError if not Admin
+//     throw new HttpsError('failed-precondition', 'Insufficient permissions');
+//   } else {
+//     const customersRef=db.collection(`organizations/${organization}/customer`);
+//     const logsRef = db.collection(`organizations/${organization}/service_logs`);
+//     return logsRef.get().then((logsSnapshot) => {
+//       logsSnapshot.forEach((result) => {
+//         const entry = result.data();
+//         if (entry.cust_id) return;
+//         return customersRef
+//             .where('cust_name', '==', entry.cust_name)
+//             .where('service_address', '==', entry.service_address)
+//             .get()
+//             .then((custSnapshot) => {
+//               if (custSnapshot.empty) {
+//                 // create a new customer from the appropriate log fields
+//                 return customersRef.add({
+//                   service_address: entry.service_address,
+//                   contract_type: entry.contract_type,
+//                   cust_name: entry.cust_name,
+//                   cust_email: entry.cust_email,
+//                   cust_email2: entry.cust_email2,
+//                   include_email2: entry.include_email2,
+//                   value: entry.value,
+//                 }).then((res) => {
+//                   return logsRef.doc(entry.id)
+//                       .set({cust_id: res.id}, {merge: true});
+//                 });
+//               } else {
+//                 // set logEntry.cust_id to the id of the found customer
+//                 custSnapshot.forEach((customer) => {
+//                   return logsRef.doc(entry.id)
+//                       .set({cust_id: customer.id}, {merge: true});
+//                 });
+//               }
+//             });
+//       });
+//     });
+//   }
+// });

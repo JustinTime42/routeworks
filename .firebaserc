@@ -8,12 +8,12 @@
   "etags": {
     "routeworks-dev": {
       "extensionInstances": {
-        "firestore-stripe-payments": "c9261855b2ba32dc00e1b423e79a701e593fde538a9b508fadc6db914ac982a5"
+        "firestore-stripe-payments": "ec6abd96b4edb0ad0fd3c031ae5fefd71633d48dfd7f1feb0d37f4b7edbd3f38"
       }
     },
     "route-manager-5f65b": {
       "extensionInstances": {
-        "firestore-stripe-payments": "6b34222ccd56741c5c08b84aa645fb5e7112ffd15977179108892352df21796c"
+        "firestore-stripe-payments": "3490e1427a177ded4fd67db63e17493f6ea5e1e349b6d9d22d8301a83d0c9f68"
       }
     }
   }

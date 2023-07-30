@@ -115,10 +115,10 @@ const ShiftSetup = () => {
 
     const handleLogout = () => {
         console.log("logging out")
-        logout()  
-        navigate('/')
+        logout()          
         dispatch(hideModal("Shift")) 
         dispatch(clearState())
+        navigate('/')
     };
 
     return (
