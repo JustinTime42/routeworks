@@ -68,16 +68,14 @@ const Register = () => {
 
     return (
         <RegistrationMain>
-            {!currentUser?.claims?.stripeRole && (
-                <RegisterUser 
-                    user={currentUser}
-                    setProgress={setProgress} 
-                    setLoadingText={setLoadingText}
-                />
-            )}
-            {(currentUser?.claims?.stripeRole === "Owner") && (
+            <RegisterUser
+                user={currentUser}
+                setProgress={setProgress} 
+                setLoadingText={setLoadingText}
+            />
+            {/* {(currentUser?.claims?.stripeRole === "Owner") && (
                 <RegisterCompany user={currentUser} onSaveOrg={onSaveOrg} />
-            )}
+            )} */}
             {isLoading && <DisplayProgress />}                
         </RegistrationMain>
     )

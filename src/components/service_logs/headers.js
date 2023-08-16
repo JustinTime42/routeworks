@@ -1,5 +1,5 @@
 import { editItem } from "../../actions"
-import { DateTimeEditor, DateTimeRenderer, DeleteLogRenderer } from "./DateTimePicker"
+import { AddToInvoiceRenderer, DateTimeEditor, DateTimeRenderer, DeleteLogRenderer } from "./utils"
 
 const xeroHeaders =  [
     { headerName: "Contract Type", field: "contract_type"},
@@ -130,6 +130,25 @@ const customerViewHeaders = [
     { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
 ]
 
+const stripeHeaders = [
+    { headerName: "Customer Name", field: "cust_name", checkboxSelection: true, headerCheckboxSelection: true,},
+    { headerName: "Service Address", field: "service_address"},
+    { headerName: "Contract Type", field: "contract_type"},
+    { headerName: "Description", field: "description"},
+    { headerName: "Driver Name", field: "driver"},
+    { headerName: "Notes", field: "notes", editable: true },
+    { headerName: "Price", field: "price", valueParser: params => Number(params.newValue) },
+    { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
+    { headerName: "Yardage Rate", field: "price_per_yard", valueParser: params => Number(params.newValue)},
+    { headerName: "Start Time", field: "startTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
+    { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
+    { headerName: "Hourly Rate", field: "hourly_rate"},
+    { headerName: "Status", field: "status"},
+    { headerName: "Timestamp", field: "timestamp", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
+    { headerName: "Vehicle", field: "vehicle"},
+    { headerName: "Vehicle Type", field: "vehicle_type"},
+]
+
 export const getColumnDefs = (logType, isEditting) => {
     console.log('isEditting', isEditting)
     if (logType === 'xero') return xeroHeaders
@@ -138,6 +157,9 @@ export const getColumnDefs = (logType, isEditting) => {
         if (isEditting) return customerEditHeaders
         else return customerViewHeaders
     } 
+    else if (logType === 'stripe') {
+        return stripeHeaders
+    }
     else {
         if (isEditting) return rawHeaders
         else {

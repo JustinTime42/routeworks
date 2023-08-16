@@ -7,9 +7,10 @@ const db = admin.firestore();
 const client = new admin.firestore.v1.FirestoreAdminClient();
 
 const stripeKey = defineSecret('STRIPE_KEY');
-const stripe = require('stripe')(stripeKey);
+const stripe = require('stripe')("sk_test_51M6hzpHadtZeRUpQvPwJ1oSUy47bkspiD6AynRUmG2rNJwpNIW6kxLcOktO5tuJBbG1vT0FFce91NY0DMgHr6fUU00oTnUMWXU");
 
-//this needs to query the org doc not the full user list so it is specific to the org
+//this should be refactored. save the drivers under the org document with key matching auth uid, then
+//query the users based on the org doc rather than querying the entire authentication database
 exports.listUsers = onCall((request) => {
   const {role, organization} = request.auth.token;
   const results = [];
@@ -17,7 +18,7 @@ exports.listUsers = onCall((request) => {
       .then((userList) => {
         functions.logger.log(userList)
         userList.users.forEach((user) => {
-          if ((user.customClaims.organization === organization) &&
+          if ((user?.customClaims?.organization === organization) &&
           (role === 'Admin')) {
             functions.logger.log(user);
             results.push(user);
@@ -55,41 +56,97 @@ exports.listUsers = onCall((request) => {
 // }
 
 exports.createOrg = onCall((request) => {
-  const {stripeRole} = request.auth.token;
-  functions.logger.log(request);
   const {orgName} = request.data;
-  functions.logger.log('uid: ', request.auth.uid);
-  functions.logger.log('orgName: ', orgName);
-  if (stripeRole !== 'Owner') {
-    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+  if (orgName === '') {
+    throw new HttpsError('failed-precondition', 'Include organization name');
   } else {
-    if (orgName === '') {
-      throw new HttpsError('failed-precondition', 'Include organization name');
-    } else {
-      return admin.firestore().collection('organizations').add({
-        orgName: orgName,
-      })
-          .then((doc) => {
-            const customClaims = {
-              stripeRole: 'Owner',
-              organization: doc.id,
-              role: 'Admin',
-            };
-            return admin.auth()
-                .setCustomUserClaims(request.auth.uid, customClaims)
-                .then(() => {
-                  return request.auth;
-                })
-                .catch((err) => {
-                  functions.logger.log(err);
-                });
+    return admin.firestore().collection('organizations').add({...request.data})
+      .then((doc) => {
+        const customClaims = {
+          organization: doc.id,
+          role: 'Admin',
+        };
+        return admin.auth()
+          .setCustomUserClaims(request.auth.token.uid, customClaims)
+          .then(() => {
+            return request.auth;
           })
-          .catch((e) => {
-            functions.logger.log(e);
+          .catch((err) => {
+            functions.logger.log(err);
           });
-    }
+      })
+      .catch((e) => {
+        functions.logger.log(e);
+      });
   }
 });
+
+const createStripeCustomer = async (customer, organization) => {
+  const stripeCustomer = await stripe.customers.create({
+    email: customer.cust_email || "",
+    name: customer.cust_name || "",
+    address: {
+      line1: customer.bill_address || "",
+      city: customer.bill_city || "",
+      state: customer.bill_state || "",
+      postal_code: customer.bill_zip || ""
+    }
+  });
+  const custRef = db.collection(`organizations/${organization}/customer`)
+  await custRef.update({stripeID: customer.id})
+  return stripeCustomer
+}
+
+// take an array of service events, 
+// generate invoices from them, and send them to Stripe
+// then set the "added to invoice" flag on the service logs entry
+exports.createInvoiceItems = onCall(async (request) => {
+  const {logsArray} = request.data;
+  const {organization, role} = request.auth.token
+  if (role !== "Admin") {
+    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+  }
+
+  let promises = []
+
+  // Generate invoices from logs array
+  logsArray.forEach(async(entry) => {
+    // if !entry.stripeId, create new stripe customer
+    let custStripeID
+    if (!entry.stripeID) {
+      const customer = createStripeCustomer(entry, organization)
+      custStripeID = customer.id
+    } else {
+      custStripeID = entry.stripeID
+    }
+
+    const invoiceItem = await stripe.invoiceItems.create({
+      customer: custStripeID,
+      amount: entry.price * 100,
+      currency: "usd",
+      description: entry.description,
+    });
+
+    // update service log with invoice item id
+    const logRef = db.collection(`organizations/${organization}/service_logs`).doc(entry.id)
+    promises.push(logRef.update({invoice_item_id: invoiceItem.id}))    
+  });
+  return Promise.all(promises)
+})
+
+exports.createAndSendInvoices = onCall(async (request) => {
+   // send invoice item to stripe
+  const {customers, stripeAccount, dueDate} = request.data
+  customers.forEach(async (customer) => {
+    await stripe.invoices.create({
+      customer: customer.stripeID,
+      due_date: dueDate,
+      on_behalf_of: stripeAccount,
+      collection_method: 'send_invoice',
+    })
+  })
+})
+
 
 exports.createUser = onCall((request) => {
   const {displayName, email, customClaims, disabled} = request.data;
@@ -263,32 +320,34 @@ exports.writeCustomer = functions.firestore
     });
 
 // Call this when creating a new stripe account
-exports.createStripeConnectedAccount = onCall((request) => {
-  const {organization} = request.auth.token;
-  console.log('test')
-  console.log(request.auth.token)
-  functions.logger.log("token: ", request.auth.token);
-  return stripe.accounts.create({
-    type: 'standard',
-    email: request.data.email,
-    business_profile: {
-      name: request.data.orgName,
-    }
-  }).then((account) => {
-    // write account.id into the organization document
-    const organizationRef = admin.firestore()
-        .collection('organizations').doc(organization);
-    return organizationRef.update({
+exports.createStripeConnectedAccount = onCall(async(request) => {
+  functions.logger.log(request)
+  const {orgName, orgID, email} = request.data
+  try {
+    const account = await stripe.accounts.create({
+      type: 'standard',
+      email: email,
+      business_profile: {
+        name: orgName,
+      }
+    })
+    await admin.firestore().collection('organizations').doc(orgID).update({
       stripe_account_id: account.id,
-    }).then(() => {
-      // generate and return an account link
-      return createStripeAccountLink(account.id);
-    }).catch((err) => err);
-  }).then((accountLink) => {
-    return accountLink;
-  }).catch((err) => {
-    throw new HttpsError('unknown', 'Failed to create a new account');
-  });
+    })
+    const custsRef = db.collection(`organizations/${orgID}/customer`)
+    const custsSnapshot = await custsRef.get()
+    let promises = []
+    custsSnapshot.forEach(async cust => {
+      promises.push(createStripeCustomer(cust)) 
+    })
+    return Promise.all(promises).then(() => {
+      return createStripeAccountLink(account.id)
+    }).catch(err => {return err})    
+  }
+  catch (err) {
+    throw new HttpsError('unknown', err);
+  }
+  
 });
 
 // Call this when getting an account link for existing account

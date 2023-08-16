@@ -113,12 +113,13 @@ const ShiftSetup = () => {
         dispatch(setActiveItem(event, itemArray, setActiveAction))
     }
 
-    const handleLogout = () => {
-        console.log("logging out")
-        logout()          
+    const handleLogout = () => {        
+        navigate('/')
         dispatch(hideModal("Shift")) 
         dispatch(clearState())
-        navigate('/')
+        console.log("logging out")
+        logout()          
+
     };
 
     return (

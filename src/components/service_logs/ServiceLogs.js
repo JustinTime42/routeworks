@@ -1,13 +1,16 @@
-import React, { useState, lazy, Suspense } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Dropdown, DropdownButton, Form, } from 'react-bootstrap'
-import { collection, query, where, getDocs, Timestamp} from "firebase/firestore";
+import { Button, Dropdown, DropdownButton, Form, Spinner, Tooltip } from 'react-bootstrap'
+import { collection, query, where, getDocs, Timestamp, doc} from "firebase/firestore";
+import { httpsCallable, functions } from '../../firebase';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
 import { db } from '../../firebase'
 import LogsTable from './LogsTable';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
-import { setLogs, hideModal, showModal } from '../../actions';
+import { setLogs, hideModal, showModal, setIsLoading } from '../../actions';
 import { toHRDateFormat, toHRTimeFormat } from '../utils';
+import ButtonWithLoading from '../buttons/ButtonWithLoading';
 
 const ServiceLogs = (props) => {
     const [startDate, setStartDate ] = useState('')
@@ -15,9 +18,17 @@ const ServiceLogs = (props) => {
     const [logType, setLogType ] = useState('')
     const [invoiceDate, setInvoiceDate ] = useState('')
     const [dueDate, setDueDate ] = useState('')
+    const [showStripeOnboard, setShowStripeOnboard ] = useState(false)
     const [editable, setEditable] = useState(false)
     const logs = useSelector(state => state.setLogs.entries)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+    const isLoading = useSelector(state => state.setIsLoading.isLoading)
+    const [value, loading, error] = useDocumentData(
+        doc(db, 'organizations/', organization),
+        {
+          snapshotListenOptions: { includeMetadataChanges: true },
+        }
+      )
 
     const dispatch = useDispatch()
 
@@ -25,6 +36,27 @@ const ServiceLogs = (props) => {
         setLogType(event)
         setEditable(false)
         dispatch(setLogs([]))
+    }
+
+    useEffect(() => {
+        console.log(value)
+        if (!loading && !error && !value.stripe_account_id) {
+            setShowStripeOnboard(true)
+        } else {
+            setShowStripeOnboard(false)
+        }
+    }, [error, loading, value])
+
+    const handleStripeOnboarding = () => {
+        const createStripeConnectedAccount = httpsCallable(functions, 'createStripeConnectedAccount') 
+        createStripeConnectedAccount({email: value.email, orgID:organization, orgName: value.orgName }).then((res) => {
+            dispatch(setIsLoading(false))
+            window.open(res.data.url, '_blank') 
+        })
+        .catch(err => {
+            alert(err)
+            dispatch(setIsLoading(false))
+        })
     }
 
     const onDownload = async() => {
@@ -68,8 +100,7 @@ const ServiceLogs = (props) => {
                 if (entry.contract_type === 'Hourly') {
                     entry.timestamp = entry.timestamp.toDate()    
                     entry.elapsed = Math.round(((entry.endTime?.seconds) - (entry.startTime?.seconds)) / 36) / 100 // elapsed time as decimal hours
-                    entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes           
-                    
+                    entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes               
                     entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
                     entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                     entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
@@ -78,7 +109,7 @@ const ServiceLogs = (props) => {
                     logs.push(entry)
                 }                
             })            
-        } else if (logType === 'raw') {
+        } else if ((logType === 'raw') || (logType === 'stripe')) {
             querySnapshot.forEach(doc => {
                 let entry = {...doc.data(), id: doc.id}  
                 logs.push({
@@ -104,30 +135,40 @@ const ServiceLogs = (props) => {
                     <Form.Label>End Date</Form.Label>
                     <Form.Control name="endDate" type="date" onChange={event => setEndDate(event.target.value)}/>
                 </Form.Group>    
-                <DropdownButton title={logType || "Type"} onSelect={event => handleSelect(event)}>        
+                <DropdownButton title={logType || "Format"} onSelect={event => handleSelect(event)}>        
                     <Dropdown.Item key="xero" eventKey="xero">                                
-                            Xero                             
+                        Xero                             
                     </Dropdown.Item>
                     <Dropdown.Item key="hourly" eventKey="hourly">                                
-                            Hourly                        
+                        Hourly                        
                     </Dropdown.Item> 
                     <Dropdown.Item key="raw" eventKey="raw">                                
-                            Raw                          
+                        Full Data                          
+                    </Dropdown.Item> 
+                    <Dropdown.Item key="stripe" eventKey="stripe">                                
+                        Stripe Billing                          
                     </Dropdown.Item> 
                 </DropdownButton>              
                 <Button variant="primary" onClick={onDownload}>Create File</Button> 
+                <ButtonWithLoading
+                    handleClick={handleStripeOnboarding}
+                    tooltip="Create your Stripe account for customer billing and payments."
+                    buttonText="Stripe Setup"
+                    isLoading={isLoading}
+                    variant="primary"
+                    style={{visibility: showStripeOnboard ? "visible" : "hidden"}}
+                /> 
                 <Form.Group style={{visibility: logType === 'xero' ? 'visible' : 'hidden', display: "flex", flexWrap: "wrap", alignItems:'end'}}>
                     <Form.Group>
-                            <Form.Label>Invoice Date</Form.Label>
-                            <Form.Control name="invoiceDate" type="date" onChange={event => setInvoiceDate(event.target.value)}/>
+                        <Form.Label>Invoice Date</Form.Label>
+                        <Form.Control name="invoiceDate" type="date" onChange={event => setInvoiceDate(event.target.value)}/>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label column={true}>Due Date</Form.Label>
                         <Form.Control name="dueDate" type="date" onChange={event => setDueDate(event.target.value)}/> 
                     </Form.Group> 
-                </Form.Group>
-                
-                <Button style={{visibility: logs.length && (logType === 'raw') ? 'visible' : 'hidden'}} onClick={() => setEditable(!editable)}>
+                </Form.Group>                
+                <Button style={{visibility: logs.length && ((logType === 'raw') || (logType === 'stripe')) ? 'visible' : 'hidden'}} onClick={() => setEditable(!editable)}>
                     {!editable ? "Start Editing" : "Stop Editing"}
                 </Button>
             </Form.Group>
