@@ -1,10 +1,11 @@
 
-import React, { ChangeEvent, useState } from "react"
+import React, { ChangeEvent, useState, MouseEvent } from "react"
 import { Spinner, Button } from "react-bootstrap"
 import Papa, {parse} from 'papaparse'
 import { ParseResult, LocalFile } from "papaparse"
 import { writeArrayToDocs } from "./utils"
 import { ICustomerFieldsBefore, ILogsFieldsBefore } from "./definitions"
+import ButtonWithLoading from "../buttons/ButtonWithLoading"
 
 interface IFileUploadProps {
     org: string  
@@ -56,15 +57,14 @@ const FileUpload = ({org, collection, templateUrl}: IFileUploadProps) => {
                     type='file' 
                     accept=".csv" 
                     onChange={handleSelect} />
-                <Button
-                    variant='primary' 
-                    type='button' 
-                    onClick={e => handleSubmit(e)}
+                <ButtonWithLoading
+                    tooltip="upload file"
+                    isLoading={isLoading}
+                    handleClick={(e: MouseEvent) => handleSubmit(e)}
                     disabled={isDisabled}
-                    >
-                    { isLoading ? <Spinner size='sm' animation="border" /> : null }
-                    { isDone ? 'Done!' : 'Upload'}                        
-                </Button>                    
+                    buttonText="Upload"
+                />
+                    
             </form>
         </div>
     )

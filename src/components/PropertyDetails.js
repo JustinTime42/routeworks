@@ -119,15 +119,16 @@ const PropertyDetails = (props) => {
         let newRecordObject = {}
         newRecordObject.status = newStatus
         newRecordObject.price = property.snow_price
+        newRecordObject.stripeID = property.stripeID
         let month = ('0' + (new Date().getMonth() + 1)).slice(-2) 
         let year = new Date().getFullYear().toString().substr(-2)
         // round down to the nearest minute. and then up to the nearest quarter hour
         let timeLogged = Math.ceil(Math.floor((endTime - startTime) / 60000) / 15) / 4
         
-        newRecordObject.driverEarning = driver.percentage * .01 * property.value
+        newRecordObject.driverEarning = driver.percentage * .01 * property.value || 0
         let yardString = ((workType.name === 'Sanding') && (property.sand_contract === "Per Yard")) ? ": " + yards + " yds" : ""
         if (property.contract_type === 'Hourly') {
-            newRecordObject.driverEarning = timeLogged * driver.hourly
+            newRecordObject.driverEarning = timeLogged * driver.hourly || 0
         }
         if (newStatus === "Skipped") {
             setIsRunning(false)

@@ -131,7 +131,7 @@ const customerViewHeaders = [
 ]
 
 const stripeHeaders = [
-    { headerName: "Customer Name", field: "cust_name", checkboxSelection: true, headerCheckboxSelection: true,},
+    { headerName: "Customer Name", field: "cust_name", checkboxSelection: (params) => {return !!params.data && !params.data.invoice_item_id}, headerCheckboxSelection: true,showDisabledCheckboxes: true},
     { headerName: "Service Address", field: "service_address"},
     { headerName: "Contract Type", field: "contract_type"},
     { headerName: "Description", field: "description"},

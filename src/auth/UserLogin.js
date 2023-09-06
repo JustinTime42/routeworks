@@ -2,7 +2,7 @@ import { sendPasswordResetEmail, getAuth, signInWithEmailAndPassword, sendEmailV
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Form, Card } from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, redirect, useNavigate } from 'react-router-dom'
 import { setCurrentUser } from '../actions';
 
 export const UserLogin = () => {
@@ -19,7 +19,7 @@ export const UserLogin = () => {
     .then(userCredential => {
       userCredential.user.getIdTokenResult().then(result => {
         dispatch(setCurrentUser(result))
-       // navigate('/displayRoute')
+        navigate('/displayRoute')
       })      
     })
     .catch(err => alert(err))

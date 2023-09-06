@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap'
+import { Button, OverlayTrigger, Tooltip, Form } from 'react-bootstrap'
 import { AgGridReact } from 'ag-grid-react'
 import { getColumnDefs } from './headers'
 import { deleteItem, editItem, setIsLoading } from '../../actions'
@@ -11,14 +11,23 @@ import { SET_LOG_ENTRIES } from '../../constants'
 import { DateTimeEditor, DateTimeRenderer } from './utils'
 import ButtonWithLoading from '../buttons/ButtonWithLoading'
 import { httpsCallable } from 'firebase/functions'
-import { functions } from '../../firebase'
+import { db, functions } from '../../firebase'
+import { useDocumentData } from 'react-firebase-hooks/firestore'
+import { doc } from 'firebase/firestore'
 
 const LogsTable = (props) => {
     const [columnDefs, setColumnDefs] = useState(getColumnDefs(props.logType))
+    const [dueDate, setDueDate] = useState('')
     const logs = useSelector(state => state.setLogs.entries)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
-    const isLoading = useSelector(state => state.setIsLoading.isLoading)
+    const isLoading = useSelector(state => state.setIsLoading.isLoading)   
     const gridRef = useRef();
+    const [value, loading, error] = useDocumentData(
+        doc(db, 'organizations/', organization),
+        {
+          snapshotListenOptions: { includeMetadataChanges: true },
+        }
+      )
 
     const dispatch = useDispatch()
 
@@ -30,7 +39,7 @@ const LogsTable = (props) => {
 
     useEffect(() => {
         //preserve scroll position between renders
-    })
+    },[])
 
     const defaultColDef = useMemo( ()=> ({
         sortable: true,
@@ -53,18 +62,18 @@ const LogsTable = (props) => {
         })        
     }, [dispatch, logs, organization]);
 
-    const addSelectedToInvoice = useCallback(() => {
-        console.log(JSON.stringify(gridRef.current.api.getSelectedRows()))
+    const addSelectedToInvoice = useCallback(() => {    
         dispatch(setIsLoading(true))
-        const createInvoiceItems = httpsCallable(functions, "createInvoiceItems")  
-        createInvoiceItems({logsArray: JSON.stringify(gridRef.current.api.getSelectedRows())}) 
+        const createInvoiceItems = httpsCallable(functions, "createInvoiceItems") 
+        const logsArray = gridRef.current.api.getSelectedRows().filter(i => !i.invoice_item_id)
+        createInvoiceItems({logsArray: logsArray}) 
         .then(res => {
             console.log(res)
-            setIsLoading(false)
+            dispatch(setIsLoading(false))
         })
-        .catch(err => {
-            setIsLoading(false)
+        .catch(err => {            
             alert(err)
+            dispatch(setIsLoading(false))
         })
     },[dispatch])
 
@@ -76,6 +85,42 @@ const LogsTable = (props) => {
     const onStopped = useCallback(e => { 
         console.log(e)
     },[])
+
+    const onFirstDataRendered = (params) => {
+        if (!logs || !params) {
+            return
+        }
+        console.log(gridRef.current.api)
+        const nodesToSelect = [];
+        gridRef.current.api.forEachNode((node) => {
+          if (node.data && node.data.invoice_item_id) {
+            nodesToSelect.push(node);
+          }
+        });
+        console.log(nodesToSelect)
+        gridRef.current.api.setNodesSelected({
+          nodes: nodesToSelect,
+          newValue: true,
+        });
+    };
+
+    const onComponentStateChanged = () => {
+        if (!logs) {
+            return
+        }
+        console.log(gridRef.current.api)
+        const nodesToSelect = [];
+        gridRef.current.api.forEachNode((node) => {
+          if (node.data && node.data.invoice_item_id) {
+            nodesToSelect.push(node);
+          }
+        });
+        console.log(nodesToSelect)
+        gridRef.current.api.setNodesSelected({
+          nodes: nodesToSelect,
+          newValue: true,
+        });
+    }
 
     return (
         <div className="ag-theme-alpine-dark" style={{width: '90%', height: props.height, marginRight: 'auto', marginLeft: 'auto'}}>
@@ -91,15 +136,14 @@ const LogsTable = (props) => {
                     buttonText="Invoice Selected"
                     isLoading={isLoading}
                     variant="primary"
-                    style={{visibility: logs.length ? 'visible' : 'hidden', marginRight: "1em"}} 
+                    style={{visibility: (logs.length && props.logType==="stripe") ? 'visible' : 'hidden', marginRight: "1em"}} 
                 />
                 <Button 
                     style={{visibility: logs.length ? 'visible' : 'hidden', marginRight: "1em"}} 
                     onClick={deleteListener}>
                     Delete Selected
-                </Button>
+                </Button>  
             </div>
-
             <AgGridReact
                 ref={gridRef} 
                 alwaysShowHorizontalScroll = {true}
@@ -111,6 +155,9 @@ const LogsTable = (props) => {
                 onCellEditingStopped={onStopped}
                 showDisabledCheckboxes={true}
                 rowMultiSelectWithClick={true}
+                //onFirstDataRendered={onFirstDataRendered}
+                suppressRowClickSelection={true}
+                onComponentStateChanged={onComponentStateChanged}
             />
         </div>
     )

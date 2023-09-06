@@ -23,12 +23,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig)
-console.log(getFirestore(app))
 const auth = getAuth(app)
 
 const db = getFirestore(app)
 
-console.log(db)
 const functions = getFunctions(app)
 
 const logInWithEmailAndPassword = async (email, password) => {

@@ -83,6 +83,8 @@ const App = () => {
     return (
       <Suspense fallback={<div>Loading...</div>}>
         <Routes> 
+          <Route path='/login' element={<UserLogin />} />
+          <Route path='/register' element={<Register />} />
           <Route path='/' element={<Navigate to="displayRoute" />} /> 
           <Route path='displayRoute/*' element={<TopNav />}>
               <Route index element={<DisplayRoute />} />
@@ -113,11 +115,12 @@ const App = () => {
   else {
       console.log('null user')
       return (
-        <Routes>
-          <Route path='/' element={<UserLogin />} /> 
-          <Route path='login' element={<UserLogin />} />
-          <Route path='register' element={<Register />} />    
-        </Routes>
+        <UserLogin />
+        // <Routes>
+        //   <Route path='/' element={<UserLogin />} /> 
+        //   <Route path='login' element={<UserLogin />} />
+        //   <Route path='register' element={<Register />} />    
+        // </Routes>
       )
   }
 }

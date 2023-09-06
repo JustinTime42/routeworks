@@ -1,6 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const {onCall, HttpsError} = require('firebase-functions/v2/https');
+const {onDocumentCreated, onDocumentUpdated} = require('firebase-functions/v2/firestore')
+// const {createStripeCustomer, createStripeAccountLink, toStripeCustomerFields} = require('./utils')
 const {defineSecret} = require('firebase-functions/params');
 admin.initializeApp();
 const db = admin.firestore();
@@ -33,28 +35,6 @@ exports.listUsers = onCall((request) => {
       });
 });
 
-// const sendVerificationEmail = (user, organization) => {
-//   const mailOptions = {
-//     from: organization,
-//     to: user.email,
-//     text: 'Please click the link below to verify your email address'
-//   }
-//   const actionCodeSettings = {
-//     url: 'https://app.snowlinealaska.com',
-//     handleCodeInApp: true,
-//     iOS: {bundleId: "com.snowlinealaska.app"},
-//     android:{
-//       packageName: 'com.snowlinealaska.app',
-//       installApp: true,
-//     }
-//   }
-//   admin.auth().generateEmailVerificationLink(user.email, actionCodeSettings)
-//   .then(link => {
-//     return admin.auth().sendCustomer
-//   })
-
-// }
-
 exports.createOrg = onCall((request) => {
   const {orgName} = request.data;
   if (orgName === '') {
@@ -81,52 +61,45 @@ exports.createOrg = onCall((request) => {
   }
 });
 
-const createStripeCustomer = async (customer, organization) => {
-  const stripeCustomer = await stripe.customers.create({
-    email: customer.cust_email || "",
-    name: customer.cust_name || "",
-    address: {
-      line1: customer.bill_address || "",
-      city: customer.bill_city || "",
-      state: customer.bill_state || "",
-      postal_code: customer.bill_zip || ""
+//probably temporary as this isn't the usual flow
+exports.createStripeCustomers = onCall(async (request) => {
+  const {customers, stripeAccount} = request.data
+  const {role, organization} = request.auth.token
+  if (role !== "Admin") {
+    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+  }
+  let promises = []
+  customers.forEach(async (customer) => {
+    if (!customer.stripeID) {
+      promises.push(createStripeCustomer(customer, organization, db, stripe, stripeAccount))   //ADD STRIPE CONNECTED ACCOUNT ID
     }
-  });
-  const custRef = db.collection(`organizations/${organization}/customer`)
-  await custRef.update({stripeID: customer.id})
-  return stripeCustomer
-}
+  })
+  return Promise.all(promises)
+})
 
 // take an array of service events, 
 // generate invoices from them, and send them to Stripe
 // then set the "added to invoice" flag on the service logs entry
 exports.createInvoiceItems = onCall(async (request) => {
-  const {logsArray} = request.data;
+  const {logsArray} = request.data;  
   const {organization, role} = request.auth.token
+  const doc = await db.collection('organizations').doc(organization).get()
+  const org = doc.data()
   if (role !== "Admin") {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
   }
-
   let promises = []
-
   // Generate invoices from logs array
   logsArray.forEach(async(entry) => {
-    // if !entry.stripeId, create new stripe customer
-    let custStripeID
-    if (!entry.stripeID) {
-      const customer = createStripeCustomer(entry, organization)
-      custStripeID = customer.id
-    } else {
-      custStripeID = entry.stripeID
-    }
 
     const invoiceItem = await stripe.invoiceItems.create({
-      customer: custStripeID,
+      customer: entry.stripeID,
       amount: entry.price * 100,
       currency: "usd",
       description: entry.description,
+    }, {
+      stripeAccount: org.stripe_account_id
     });
-
     // update service log with invoice item id
     const logRef = db.collection(`organizations/${organization}/service_logs`).doc(entry.id)
     promises.push(logRef.update({invoice_item_id: invoiceItem.id}))    
@@ -135,17 +108,58 @@ exports.createInvoiceItems = onCall(async (request) => {
 })
 
 exports.createAndSendInvoices = onCall(async (request) => {
-   // send invoice item to stripe
+   // send invoice item to stripe   
   const {customers, stripeAccount, dueDate} = request.data
+  let promises = []
+
+      // function that adds two numbers and returns the result
+
+
   customers.forEach(async (customer) => {
-    await stripe.invoices.create({
+    // query invoice items for that customer
+
+    //return the customer.id
+    
+    
+
+    
+    
+
+    
+    
+    
+
+
+    const invoiceItems = await stripe.invoiceItems.list 
+    const invoice = await stripe.invoices.create({
       customer: customer.stripeID,
       due_date: dueDate,
-      on_behalf_of: stripeAccount,
+      pending_invoice_items_behavior: "include",
       collection_method: 'send_invoice',
+
+    },
+    {
+      stripeAccount: stripeAccount
     })
-  })
+    functions.logger.log(invoice)
+    if (invoice.total > 0) {
+      promises.push(stripe.invoices.sendInvoice(invoice.id,
+        {
+          stripeAccount: stripeAccount
+        }))
+    }
+    return Promise.all(promises)
+    .then(async(res) => {
+      return res
+    })
+    .catch(err => {
+      functions.logger.log(err)
+      throw new HttpsError('Error', 'error creating invoices: ', err)
+    })
+  })  
 })
+
+
 
 
 exports.createUser = onCall((request) => {
@@ -277,8 +291,8 @@ exports.updateLogEntry = functions.firestore
     });
 
 exports.deleteLogEntry = functions.firestore
-    .document(`organizations/{organization}/service_logs/{itemID}`)
-    .onDelete((snap, context) => {
+  .document(`organizations/{organization}/service_logs/{itemID}`)
+  .onDelete((snap, context) => {
       const organization = context.params.organization;
       const record = snap.data();
       const {timestamp} = context;
@@ -296,7 +310,25 @@ exports.deleteLogEntry = functions.firestore
           .catch((e) => {
             return e;
           });
-    });
+});
+
+exports.createCustomer = onDocumentCreated('organizations/{organization}/customer/{itemID}', async(event) => {
+  const {itemID, organization} = event.params
+  const customer = {...event.data.data(), id: itemID}
+  const doc = await db.collection('organizations').doc(organization).get()
+  const org = doc.data()
+  functions.logger.log("org: ", org)
+  createStripeCustomer(customer, event.params.organization, db, stripe, org.stripe_account_id)
+})
+
+exports.updateCustomer = onDocumentUpdated('organizations/{organization}/customer/{itemID}', async (event) => {
+  const {itemID} = event.params
+  const customer = {...event.data.after.data(), id: itemID}
+  await stripe.customers.update(
+    customer.stripeID,
+    toStripeCustomerFields(customer)
+  )
+})
 
 exports.writeCustomer = functions.firestore
     .document('organizations/{organization}/customer/{itemID}')
@@ -322,7 +354,9 @@ exports.writeCustomer = functions.firestore
 // Call this when creating a new stripe account
 exports.createStripeConnectedAccount = onCall(async(request) => {
   functions.logger.log(request)
-  const {orgName, orgID, email} = request.data
+  const {organization, email} = request.auth.token
+  functions.logger.log("organization: ", organization)
+  const {orgName} = request.data
   try {
     const account = await stripe.accounts.create({
       type: 'standard',
@@ -331,17 +365,17 @@ exports.createStripeConnectedAccount = onCall(async(request) => {
         name: orgName,
       }
     })
-    await admin.firestore().collection('organizations').doc(orgID).update({
+    await db.collection('organizations').doc(organization).update({
       stripe_account_id: account.id,
     })
-    const custsRef = db.collection(`organizations/${orgID}/customer`)
+    const custsRef = db.collection(`organizations/${organization}/customer`)
     const custsSnapshot = await custsRef.get()
     let promises = []
-    custsSnapshot.forEach(async cust => {
-      promises.push(createStripeCustomer(cust)) 
+    custsSnapshot.forEach(cust => {
+      promises.push(createStripeCustomer(cust, organization, db, stripe, account.id))
     })
     return Promise.all(promises).then(() => {
-      return createStripeAccountLink(account.id)
+      return createStripeAccountLink(account.id, stripe)
     }).catch(err => {return err})    
   }
   catch (err) {
@@ -358,7 +392,7 @@ exports.getAccountLink = onCall((request) => {
       .collection('organizations').doc(organization);
   return organizationRef.get()
       .then((org) => {
-        return createStripeAccountLink(org.stripe_account_id);
+        return createStripeAccountLink(org.stripe_account_id, stripe);
       })
       .then((accountLink) => {
         return accountLink.url;
@@ -367,19 +401,6 @@ exports.getAccountLink = onCall((request) => {
         throw new HttpsError('unknown', 'Failed to generate account link');
       });
 });
-
-const createStripeAccountLink = (accountId) => {
-  return stripe.accountLinks.create({
-    account: accountId,
-    refresh_url: 'https://app.snowlinealaska.com/', // have front end retrigger link creation and direct to onboarding flow
-    return_url: 'https://app.snowlinealaska.com/', // this is after successfully existing. check on front end for completed account
-    type: 'account_onboarding',
-  }).then((accountLink) => {
-    return accountLink;
-  }).catch((err) => {
-    throw new HttpsError('unknown', 'Failed to generate account link');
-  });
-};
 
 exports.connectLogsToCust = onCall(async request => {
   const organization = request.auth.token.organization
@@ -402,19 +423,7 @@ exports.connectLogsToCust = onCall(async request => {
         .where("cust_name", "==", entry.cust_name)
         .where("service_address", "==", entry.service_address)
         .get()
-      if (custSnapshot.empty) {
-        // create a new customer from the appropriate log fields
-        const res = await customersRef.add({
-          service_address: entry.service_address,
-          contract_type: entry.contract_type,
-          cust_name: entry.cust_name,
-          cust_email: entry.cust_email,
-          cust_email2: entry.cust_email2,
-          include_email2: entry.include_email2,
-          value: entry.value,
-        })
-        cust_id = res.id
-      } else {
+      if (custSnapshot.exists()) {
         // set logEntry.cust_id to the id of the found customer          
         custSnapshot.forEach(customer => cust_id = customer.id)
       }        
@@ -423,49 +432,50 @@ exports.connectLogsToCust = onCall(async request => {
   }
 })
 
-// exports.connectLogsToCust = onCall((request) => {
-//   const {organization, role} = request.auth.token;
-//   if (!request.auth) {
-//     // Throwing an HttpsError if not logged in
-//     throw new HttpsError('failed-precondition', 'Not authenticated.');
-//   } else if (role !== 'Admin') {
-//     // Throwing an HttpsError if not Admin
-//     throw new HttpsError('failed-precondition', 'Insufficient permissions');
-//   } else {
-//     const customersRef=db.collection(`organizations/${organization}/customer`);
-//     const logsRef = db.collection(`organizations/${organization}/service_logs`);
-//     return logsRef.get().then((logsSnapshot) => {
-//       logsSnapshot.forEach((result) => {
-//         const entry = result.data();
-//         if (entry.cust_id) return;
-//         return customersRef
-//             .where('cust_name', '==', entry.cust_name)
-//             .where('service_address', '==', entry.service_address)
-//             .get()
-//             .then((custSnapshot) => {
-//               if (custSnapshot.empty) {
-//                 // create a new customer from the appropriate log fields
-//                 return customersRef.add({
-//                   service_address: entry.service_address,
-//                   contract_type: entry.contract_type,
-//                   cust_name: entry.cust_name,
-//                   cust_email: entry.cust_email,
-//                   cust_email2: entry.cust_email2,
-//                   include_email2: entry.include_email2,
-//                   value: entry.value,
-//                 }).then((res) => {
-//                   return logsRef.doc(entry.id)
-//                       .set({cust_id: res.id}, {merge: true});
-//                 });
-//               } else {
-//                 // set logEntry.cust_id to the id of the found customer
-//                 custSnapshot.forEach((customer) => {
-//                   return logsRef.doc(entry.id)
-//                       .set({cust_id: customer.id}, {merge: true});
-//                 });
-//               }
-//             });
-//       });
-//     });
-//   }
-// });
+
+const createStripeCustomer = async (customer, organization, db, stripe, stripeAccount) => {
+  functions.logger.log(stripeAccount)
+  const stripeCustomer = await stripe.customers.create(toStripeCustomerFields(customer), {stripeAccount: stripeAccount});
+  // query service log records whose cust_id matches customer.id
+  // update to add the stripeID
+  const logsRef = db.collection(`organizations/${organization}/service_logs`)
+  const snapshot = await logsRef.where('cust_id', '==', customer.id).get()
+  let promises = []
+  snapshot.forEach(doc => {
+    promises.push(db.doc(doc.ref.path).update({stripeID: stripeCustomer.id}))
+  });
+  return Promise.all(promises).then(async() => {
+    const custRef = db.collection(`organizations/${organization}/customer`).doc(customer.id)
+    await custRef.update({stripeID: stripeCustomer.id})
+    return stripeCustomer
+  }).catch(err => {functions.logger.log(err)})
+}
+
+const createStripeAccountLink = (accountId, stripe) => {
+  return stripe.accountLinks.create({
+    account: accountId,
+    refresh_url: 'https://app.snowlinealaska.com/', // have front end retrigger link creation and direct to onboarding flow
+    return_url: 'https://app.snowlinealaska.com/', // this is after successfully existing. check on front end for completed account
+    type: 'account_onboarding',
+  }).then((accountLink) => {
+    return accountLink;
+  }).catch((err) => {
+    throw new HttpsError('unknown', 'Failed to generate account link');
+  });
+};
+
+const toStripeCustomerFields = (customer) => {
+  return (
+    {
+      email: customer.cust_email || "",
+      name: customer.cust_name || "",
+      phone: customer.cust_phone || "",
+      address: {
+        line1: customer.bill_address || "",
+        city: customer.bill_city || "",
+        state: customer.bill_state || "",
+        postal_code: customer.bill_zip || ""
+      }
+    }
+  )
+}
