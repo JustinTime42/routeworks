@@ -104,7 +104,12 @@ exports.createInvoiceItems = onCall(async (request) => {
     const logRef = db.collection(`organizations/${organization}/service_logs`).doc(entry.id)
     promises.push(logRef.update({invoice_item_id: invoiceItem.id}))    
   });
-  return Promise.all(promises)
+  return Promise.all(promises).then(res => {
+    return res
+    }).catch(err => {
+      functions.logger.log(err)
+      throw new HttpsError('Error', 'error creating invoices: ', err)
+    })
 })
 
 exports.getPendingBalances = onCall(async (request) => {
