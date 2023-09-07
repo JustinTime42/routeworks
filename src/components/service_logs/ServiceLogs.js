@@ -9,11 +9,13 @@ import LogsTable from './LogsTable';
 import { setLogs, hideModal, showModal, setIsLoading } from '../../actions';
 import { toHRDateFormat, toHRTimeFormat } from '../utils';
 import ButtonWithLoading from '../buttons/ButtonWithLoading';
+import Invoices from './Invoices';
 
 const ServiceLogs = (props) => {
     const [startDate, setStartDate ] = useState('')
     const [endDate, setEndDate ] = useState('')
     const [logType, setLogType ] = useState('')
+    const [showInvoices, setShowInvoices] = useState(false)
     const [invoiceDate, setInvoiceDate ] = useState('')
     const [dueDate, setDueDate ] = useState('')
     const [isSendInvoicesLoading, setIsSendInvoicesLoading] = useState(false)
@@ -88,7 +90,7 @@ const ServiceLogs = (props) => {
 
     const sendInvoices = () => {
         setIsSendInvoicesLoading(true)
-        const createAndSendInvoices = httpsCallable(functions, "createAndSendInvoices")
+        const createAndSendInvoices = httpsCallable(functions, "getPendingBalances")
         const due = new Date(dueDate).getTime() / 1000
         console.log(value.stripe_account_id)
         createAndSendInvoices({customers: allCustomers, stripeAccount: value.stripe_account_id, dueDate: due})
@@ -208,20 +210,12 @@ const ServiceLogs = (props) => {
                 )}
                 {logType === 'stripe' && (
                 <Form.Group style={{display: "flex", flexWrap: "wrap", alignItems:'end'}}>
-                    <Form.Label>Due Date</Form.Label>
-                    <Form.Control name="dueDate" type="date" onChange={event => handleSetDueDate(event.target.value)}/>
-                    <ButtonWithLoading
-                        handleClick={sendInvoices}
-                        tooltip="Send invoices to customers for payment."
-                        buttonText="Send Invoices"
-                        isLoading={isSendInvoicesLoading}
-                        variant="primary"
-                        //style={{visibility: logs.length ? 'visible' : 'hidden', marginRight: "1em"}} 
-                    /> 
+                    <Button onClick={() => setShowInvoices(true)}>View and Send Invoices</Button>
                 </Form.Group>    
                 )}
             </Form.Group>
-        </Form>   
+        </Form>  
+        <Invoices show={showInvoices} setShow={setShowInvoices}/> 
         <LogsTable height='70vh' logType={logType} logs={logs} editable={editable}/>
         </>
     )    

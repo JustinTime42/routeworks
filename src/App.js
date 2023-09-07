@@ -109,18 +109,18 @@ const App = () => {
       </Suspense>
     ) 
   }
-  else if (currentUser && !currentUser?.claims?.organization) {
-    return <Register />
-  } 
+  // else if (currentUser && !currentUser?.claims?.organization) {
+  //   return <Register />
+  // } 
   else {
       console.log('null user')
       return (
-        <UserLogin />
-        // <Routes>
-        //   <Route path='/' element={<UserLogin />} /> 
-        //   <Route path='login' element={<UserLogin />} />
-        //   <Route path='register' element={<Register />} />    
-        // </Routes>
+        // <UserLogin />
+        <Routes>
+          <Route path='/' element={<UserLogin />} /> 
+          <Route path='login' element={<UserLogin />} />
+          <Route path='register' element={<Register />} />    
+        </Routes>
       )
   }
 }

@@ -20,7 +20,7 @@ const LogsTable = (props) => {
     const [dueDate, setDueDate] = useState('')
     const logs = useSelector(state => state.setLogs.entries)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
-    const isLoading = useSelector(state => state.setIsLoading.isLoading)   
+    const isLoading = useSelector(state => state.setIsLoading.isLoading)  
     const gridRef = useRef();
     const [value, loading, error] = useDocumentData(
         doc(db, 'organizations/', organization),
@@ -158,7 +158,7 @@ const LogsTable = (props) => {
                 //onFirstDataRendered={onFirstDataRendered}
                 suppressRowClickSelection={true}
                 onComponentStateChanged={onComponentStateChanged}
-            />
+            />            
         </div>
     )
 }

@@ -107,60 +107,90 @@ exports.createInvoiceItems = onCall(async (request) => {
   return Promise.all(promises)
 })
 
-exports.createAndSendInvoices = onCall(async (request) => {
-   // send invoice item to stripe   
-  const {customers, stripeAccount, dueDate} = request.data
+exports.getPendingBalances = onCall(async (request) => {
+  const {role, organization} = request.auth.token
+  let balancePromises = []
+  if (role !== "Admin") {
+    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+  }
+  // get stripe_account_id from organization document
+  const doc = await db.collection('organizations').doc(organization).get()
+  const org = doc.data()
+  const stripeAccount = org.stripe_account_id
+  // Get all customers from that organization's customer collection in firebase
+  const customersRef = db.collection(`organizations/${organization}/customer`)
+  const custSnapshot = await customersRef.get()
+
+  // get balances for each customer
+  const getBalance = (customer) => {
+    return stripe.invoiceItems.list({
+      customer: customer.stripeID,
+      pending: true,
+    }, {
+      stripeAccount: stripeAccount
+    })
+    .then(res => {
+      const balance = res.data.reduce((acc, item) => acc + item.amount, 0)
+      return {stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.service_address, balance: balance}
+    })
+    .catch(err => {return err})
+  }
+
+  custSnapshot.forEach(async(doc) => {
+    const customer = {...doc.data(), id: doc.id}  
+    balancePromises.push(getBalance(customer))
+  })
+  return Promise.all(balancePromises)
+  .then((balances) => {
+    return balances.filter(b => b.balance > 0)
+  })
+  .catch(err => {
+    functions.logger.log("error: ", err)
+    throw new HttpsError('Error', 'error creating invoices: ', err)
+  })
+})
+
+
+exports.sendInvoices = onCall(async (request) => {
+  const {customers, dueDate} = request.data
+  const {role, organization} = request.auth.token
+  if (role !== "Admin") {
+    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+  }
+  // get stripe_account_id from organization document
+  const doc = await db.collection('organizations').doc(organization).get()
+  const org = doc.data()
+  const stripeAccount = org.stripe_account_id
   let promises = []
 
-      // function that adds two numbers and returns the result
-
-
-  customers.forEach(async (customer) => {
-    // query invoice items for that customer
-
-    //return the customer.id
-    
-    
-
-    
-    
-
-    
-    
-    
-
-
-    const invoiceItems = await stripe.invoiceItems.list 
+  const createAndSendInvoice = async (customer) => {
     const invoice = await stripe.invoices.create({
-      customer: customer.stripeID,
+      customer: customer,
       due_date: dueDate,
       pending_invoice_items_behavior: "include",
       collection_method: 'send_invoice',
-
     },
     {
       stripeAccount: stripeAccount
     })
-    functions.logger.log(invoice)
-    if (invoice.total > 0) {
-      promises.push(stripe.invoices.sendInvoice(invoice.id,
-        {
-          stripeAccount: stripeAccount
-        }))
-    }
-    return Promise.all(promises)
-    .then(async(res) => {
-      return res
-    })
-    .catch(err => {
-      functions.logger.log(err)
-      throw new HttpsError('Error', 'error creating invoices: ', err)
-    })
-  })  
+    promises.push(stripe.invoices.sendInvoice(invoice.id,
+      {
+        stripeAccount: stripeAccount
+      }))
+  }
+  // create invoices for each customer
+  customers.forEach(async (customer) => {
+    promises.push(createAndSendInvoice(customer))
+  })
+  return Promise.all(promises)
+  .then(async(res) => {
+    return res
+  })
+  .catch(err => {
+    functions.logger.log(err)
+    throw new HttpsError('Error', 'error creating invoices: ', err)
+  })
 })
-
-
-
 
 exports.createUser = onCall((request) => {
   const {displayName, email, customClaims, disabled} = request.data;
@@ -316,18 +346,24 @@ exports.createCustomer = onDocumentCreated('organizations/{organization}/custome
   const {itemID, organization} = event.params
   const customer = {...event.data.data(), id: itemID}
   const doc = await db.collection('organizations').doc(organization).get()
-  const org = doc.data()
+  const org = doc.data()  
   functions.logger.log("org: ", org)
-  createStripeCustomer(customer, event.params.organization, db, stripe, org.stripe_account_id)
+  if (org.stripe_account_id) {
+    createStripeCustomer(customer, event.params.organization, db, stripe, org.stripe_account_id)
+  }
 })
 
 exports.updateCustomer = onDocumentUpdated('organizations/{organization}/customer/{itemID}', async (event) => {
-  const {itemID} = event.params
+  const {itemID, organization} = event.params
   const customer = {...event.data.after.data(), id: itemID}
-  await stripe.customers.update(
-    customer.stripeID,
-    toStripeCustomerFields(customer)
-  )
+  const doc = await db.collection('organizations').doc(organization).get()
+  const org = doc.data() 
+  if (org.stripe_account_id) { 
+    await stripe.customers.update(
+      customer.stripeID,
+      toStripeCustomerFields(customer)
+    )
+  }
 })
 
 exports.writeCustomer = functions.firestore
@@ -372,7 +408,7 @@ exports.createStripeConnectedAccount = onCall(async(request) => {
     const custsSnapshot = await custsRef.get()
     let promises = []
     custsSnapshot.forEach(cust => {
-      promises.push(createStripeCustomer(cust, organization, db, stripe, account.id))
+      promises.push(createStripeCustomer(cust.data(), organization, db, stripe, account.id))
     })
     return Promise.all(promises).then(() => {
       return createStripeAccountLink(account.id, stripe)
@@ -454,8 +490,8 @@ const createStripeCustomer = async (customer, organization, db, stripe, stripeAc
 const createStripeAccountLink = (accountId, stripe) => {
   return stripe.accountLinks.create({
     account: accountId,
-    refresh_url: 'https://app.snowlinealaska.com/', // have front end retrigger link creation and direct to onboarding flow
-    return_url: 'https://app.snowlinealaska.com/', // this is after successfully existing. check on front end for completed account
+    refresh_url: 'https://dev.routeworks.app', // have front end retrigger link creation and direct to onboarding flow
+    return_url: 'https://dev.routeworks.app', // this is after successfully existing. check on front end for completed account
     type: 'account_onboarding',
   }).then((accountLink) => {
     return accountLink;
