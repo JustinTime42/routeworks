@@ -27,7 +27,7 @@ const ButtonWithLoading = (
       variant={variant} 
       type='button' 
       onClick={handleClick}
-      disabled={isDisabled}
+      disabled={isDisabled || isLoading}
       {...props}
       >
       { isLoading ? <Spinner size='sm' animation="border" /> : null }
