@@ -38,12 +38,12 @@ const CustLogs = (props) => {
     return (
         <div style={{height:'75vh'}}>
         <Button style={{float:"right", marginRight:"3px"}} onClick={getLogs}>Refresh</Button>
-        {['Supervisor','Admin'].includes(currentUser.claims.role) ? 
+        {(['Supervisor','Admin'].includes(currentUser.claims.role) && props.isAdmin) ? 
             <Button style={{visibility: logs.length ? 'visible' : 'hidden'}} onClick={() => setEditable(!editable)}>
                 {!editable ? "Start Editing" : "Stop Editing"}
             </Button>
         : null }
-        <LogsTable height="90%" logType="customer" editable={editable} /> 
+        <LogsTable height="90%" logType="customer" editable={editable} isAdmin={props.admin}/> 
         </div>
     )
 }

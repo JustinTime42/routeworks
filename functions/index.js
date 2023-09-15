@@ -9,7 +9,7 @@ const db = admin.firestore();
 const client = new admin.firestore.v1.FirestoreAdminClient();
 
 const stripeKey = defineSecret('STRIPE_KEY');
-const stripe = require('stripe')("sk_test_51M6hzpHadtZeRUpQvPwJ1oSUy47bkspiD6AynRUmG2rNJwpNIW6kxLcOktO5tuJBbG1vT0FFce91NY0DMgHr6fUU00oTnUMWXU");
+const stripe = require('stripe')("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");
 
 //this should be refactored. save the drivers under the org document with key matching auth uid, then
 //query the users based on the org doc rather than querying the entire authentication database
@@ -105,6 +105,7 @@ exports.createInvoiceItems = onCall(async (request) => {
     promises.push(logRef.update({invoice_item_id: invoiceItem.id}))    
   });
   return Promise.all(promises).then(res => {
+    functions.logger.log(res)
     return res
     }).catch(err => {
       functions.logger.log(err)
@@ -118,10 +119,7 @@ exports.getPendingBalances = onCall(async (request) => {
   if (role !== "Admin") {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
   }
-  // get stripe_account_id from organization document
-  const doc = await db.collection('organizations').doc(organization).get()
-  const org = doc.data()
-  const stripeAccount = org.stripe_account_id
+  const stripeAccount = await getStripeAccount(organization)
   // Get all customers from that organization's customer collection in firebase
   const customersRef = db.collection(`organizations/${organization}/customer`)
   const custSnapshot = await customersRef.get()
@@ -136,7 +134,7 @@ exports.getPendingBalances = onCall(async (request) => {
     })
     .then(res => {
       const balance = res.data.reduce((acc, item) => acc + item.amount, 0)
-      return {stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.service_address, balance: balance}
+      return {stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.service_address, balance: balance, email: customer.cust_email}
     })
     .catch(err => {return err})
   }
@@ -162,10 +160,7 @@ exports.sendInvoices = onCall(async (request) => {
   if (role !== "Admin") {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
   }
-  // get stripe_account_id from organization document
-  const doc = await db.collection('organizations').doc(organization).get()
-  const org = doc.data()
-  const stripeAccount = org.stripe_account_id
+  const stripeAccount = await getStripeAccount(organization)
   let promises = []
 
   const createAndSendInvoice = async (customer) => {
@@ -317,7 +312,23 @@ exports.updateLogEntry = functions.firestore
             before: change.before.data(),
             after: change.after.data(),
           })
-          .then((doc) => {
+          .then(async(doc) => {
+            if (change.before.data().invoice_item_id) {
+              const stripeAccount = await getStripeAccount(organization)
+              return stripe.invoiceItems.update(
+                change.before.data().invoice_item_id,
+                {
+                  amount: change.after.data().price * 100,
+                  description: change.after.data().description,                  
+                },
+                {
+                  stripeAccount: stripeAccount
+                }
+              )
+              .then((invoice) => {
+                return invoice
+              })
+            }
             return doc;
           })
           .catch((e) => {
@@ -328,23 +339,34 @@ exports.updateLogEntry = functions.firestore
 exports.deleteLogEntry = functions.firestore
   .document(`organizations/{organization}/service_logs/{itemID}`)
   .onDelete((snap, context) => {
-      const organization = context.params.organization;
-      const record = snap.data();
-      const {timestamp} = context;
-      const {itemID} = context.params;
-      return admin.firestore()
-          .collection(`organizations/${organization}/audit_logs`).add({
-            log_id: itemID,
-            cust_id: record.cust_id,
-            timestamp: new Date(timestamp),
-            deleted: record,
+    const { organization, itemID } = context.params;
+    const record = snap.data();
+    const { timestamp } = context;
+    return admin.firestore()
+      .collection(`organizations/${organization}/audit_logs`).add({
+        log_id: itemID,
+        cust_id: record.cust_id,
+        timestamp: new Date(timestamp),
+        deleted: record,
+      })
+      .then(async(doc) => {
+        if (record.invoice_item_id) {
+          const stripeAccount = await getStripeAccount(organization)
+          return stripe.invoiceItems.del(
+            record.invoice_item_id,
+            {
+              stripeAccount: stripeAccount
+            }
+          )
+          .then((invoice) => {
+            return invoice
           })
-          .then((doc) => {
-            return doc;
-          })
-          .catch((e) => {
-            return e;
-          });
+        }
+        return doc;
+      })
+      .catch((e) => {
+        return e;
+      });
 });
 
 exports.createCustomer = onDocumentCreated('organizations/{organization}/customer/{itemID}', async(event) => {
@@ -412,17 +434,20 @@ exports.createStripeConnectedAccount = onCall(async(request) => {
     const custsRef = db.collection(`organizations/${organization}/customer`)
     const custsSnapshot = await custsRef.get()
     let promises = []
-    custsSnapshot.forEach(cust => {
-      promises.push(createStripeCustomer(cust.data(), organization, db, stripe, account.id))
+
+    custsSnapshot.forEach((cust, i) => {
+      functions.logger.log(cust.data())
+      delay(i*20).then(() => {
+        promises.push(createStripeCustomer({...cust.data(), id: cust.id}, organization, db, stripe, account.id))
+      });
     })
     return Promise.all(promises).then(() => {
       return createStripeAccountLink(account.id, stripe)
-    }).catch(err => {return err})    
+    })   
   }
   catch (err) {
     throw new HttpsError('unknown', err);
   }
-  
 });
 
 // Call this when getting an account link for existing account
@@ -475,16 +500,22 @@ exports.connectLogsToCust = onCall(async request => {
 
 
 const createStripeCustomer = async (customer, organization, db, stripe, stripeAccount) => {
-  functions.logger.log(stripeAccount)
+  //functions.logger.log(toStripeCustomerFields(customer))
   const stripeCustomer = await stripe.customers.create(toStripeCustomerFields(customer), {stripeAccount: stripeAccount});
-  // query service log records whose cust_id matches customer.id
-  // update to add the stripeID
+ //The following line works
+  functions.logger.log(stripeCustomer.id)
   const logsRef = db.collection(`organizations/${organization}/service_logs`)
   const snapshot = await logsRef.where('cust_id', '==', customer.id).get()
   let promises = []
-  snapshot.forEach(doc => {
-    promises.push(db.doc(doc.ref.path).update({stripeID: stripeCustomer.id}))
-  });
+  if (!snapshot.empty) {
+    snapshot.forEach((doc, i) => {
+      // the following line doesn't work
+      functions.logger.log("path: ", doc.ref.path) 
+      delay(i*20).then(() =>           
+        promises.push(db.doc(doc.ref.path).update({stripeID: stripeCustomer.id}))
+      );
+    });
+  }
   return Promise.all(promises).then(async() => {
     const custRef = db.collection(`organizations/${organization}/customer`).doc(customer.id)
     await custRef.update({stripeID: stripeCustomer.id})
@@ -495,8 +526,8 @@ const createStripeCustomer = async (customer, organization, db, stripe, stripeAc
 const createStripeAccountLink = (accountId, stripe) => {
   return stripe.accountLinks.create({
     account: accountId,
-    refresh_url: 'https://dev.routeworks.app', // have front end retrigger link creation and direct to onboarding flow
-    return_url: 'https://dev.routeworks.app', // this is after successfully existing. check on front end for completed account
+    refresh_url: 'https://routeworks.app', // have front end retrigger link creation and direct to onboarding flow
+    return_url: 'https://routeworks.app', // this is after successfully existing. check on front end for completed account
     type: 'account_onboarding',
   }).then((accountLink) => {
     return accountLink;
@@ -508,15 +539,26 @@ const createStripeAccountLink = (accountId, stripe) => {
 const toStripeCustomerFields = (customer) => {
   return (
     {
-      email: customer.cust_email || "",
-      name: customer.cust_name || "",
-      phone: customer.cust_phone || "",
+      email: customer?.cust_email || "",
+      name: customer?.cust_name || "",
+      phone: customer?.cust_phone || "",
       address: {
-        line1: customer.bill_address || "",
-        city: customer.bill_city || "",
-        state: customer.bill_state || "",
-        postal_code: customer.bill_zip || ""
+        line1: customer?.bill_address || "",
+        city: customer?.bill_city || "",
+        state: customer?.bill_state || "",
+        postal_code: customer?.bill_zip || ""
       }
     }
   )
+}
+
+const delay = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// function to get the stripe account id from the organization document
+const getStripeAccount = async (organization) => {
+  const doc = await db.collection('organizations').doc(organization).get()
+  const org = doc.data()
+  return org.stripe_account_id
 }

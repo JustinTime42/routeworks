@@ -131,6 +131,7 @@ const customerViewHeaders = [
 ]
 
 const stripeHeaders = [
+    {headerName: 'Delete', cellRenderer:DeleteLogRenderer},
     { headerName: "Customer Name", field: "cust_name", checkboxSelection: (params) => {return !!params.data && !params.data.invoice_item_id}, headerCheckboxSelection: true,showDisabledCheckboxes: true},
     { headerName: "Service Address", field: "service_address"},
     { headerName: "Contract Type", field: "contract_type"},
@@ -158,7 +159,10 @@ export const getColumnDefs = (logType, isEditting) => {
         else return customerViewHeaders
     } 
     else if (logType === 'stripe') {
-        return stripeHeaders
+        if (isEditting) return stripeHeaders
+        else {
+            return stripeHeaders.filter(i => i.headerName !== 'Delete')
+        }       
     }
     else {
         if (isEditting) return rawHeaders

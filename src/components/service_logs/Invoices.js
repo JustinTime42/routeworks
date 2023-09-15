@@ -9,6 +9,7 @@ const Invoices = ({show, setShow}) => {
   const [dueDate, setDueDate] = useState('')
   const [selected, setSelected] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isAllSelected, setIsAllSelected] = useState(true)
 
   const handleSetDueDate = (value) => {
     const offset = new Date().getTimezoneOffset() * 60000
@@ -49,8 +50,25 @@ const Invoices = ({show, setShow}) => {
       <Modal.Header closeButton>
         <Modal.Title>Invoices</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        {invoices.map(i => {
+      <Modal.Body>  
+        <Form.Group>
+          <Form.Check
+            type="checkbox"
+            name="all"
+            label="Select All"
+            checked={isAllSelected}
+            onChange={event => {
+              if (event.target.checked) {
+                setSelected(invoices.map(i => i.stripeID))
+                setIsAllSelected(true)
+              } else {
+                setSelected([])
+                setIsAllSelected(false)
+              }
+            }}
+          />
+        </Form.Group>
+        {invoices.filter(i => i.email).sort((a,b) => a.cust_name.localeCompare(b.cust_name)).map(i => {
           return (
             <Form.Group key={i.stripeID}>
               <Form.Check
@@ -71,7 +89,8 @@ const Invoices = ({show, setShow}) => {
         })}
       </Modal.Body>
       <Modal.Footer>
-      <Form.Group style={{display: "flex", flexWrap: "wrap", justifyContent:"space-between"}}>
+      <Form.Group style={{display: "flex", flexWrap: "wrap", gap:"5px", alignItems:"baseline"}}>
+        <Form.Label>Due Date:</Form.Label>
         <Form.Control style={{width: "200px"}} name="invoiceDate" type="date" onChange={event => handleSetDueDate(event.target.value)}/>
         <ButtonWithLoading
           variant="primary"

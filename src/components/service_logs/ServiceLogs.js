@@ -76,6 +76,7 @@ const ServiceLogs = (props) => {
     }
 
     const handleStripeOnboarding = () => {
+        dispatch(setIsLoading(true))
         const createStripeConnectedAccount = httpsCallable(functions, 'createStripeConnectedAccount') 
         createStripeConnectedAccount({orgName: value.orgName}).then((res) => {
             console.log(res)
@@ -123,7 +124,7 @@ const ServiceLogs = (props) => {
                 entry.quantity = 1
                 entry.accountCode = 4000
                 entry.taxType = 'Tax Exempt (0%)'
-                entry.description += dateHR
+                entry.description += " " + dateHR
                 entry.date = dateHR
                 entry.time = timeHR
                 if (entry.contract_type === 'Hourly') {
@@ -152,7 +153,10 @@ const ServiceLogs = (props) => {
         } else if ((logType === 'raw') || (logType === 'stripe')) {
             querySnapshot.forEach(doc => {
                 console.log(doc.data())
-                let entry = {...doc.data(), id: doc.id}  
+                let entry = {...doc.data(), id: doc.id} 
+                const timestamp = entry.timestamp.toDate()
+                const dateHR = toHRDateFormat(timestamp) 
+                entry.description += " " + dateHR
                 logs.push({
                     ...entry,
                     timestamp: entry.timestamp.toDate(),
@@ -167,7 +171,8 @@ const ServiceLogs = (props) => {
     return (
         <>
         <Form style={{width:'80%', marginRight: 'auto', marginLeft: 'auto',}}>
-            <Form.Group style={{display: "flex", flexWrap: "wrap", gap: '5px', justifyContent: "center", margin: "5px", alignItems:'end'}}>    
+            <Form.Group 
+                style={{display: "flex", flexWrap: "wrap", gap: '5px', justifyContent: "center", margin: "5px", alignItems:'end'}}>    
                 <Form.Group>
                     <Form.Label >Start Date</Form.Label>
                     <Form.Control name="startDate" type="date" onChange={event => setStartDate(event.target.value)}/> 
@@ -190,10 +195,11 @@ const ServiceLogs = (props) => {
                         Stripe Billing                          
                     </Dropdown.Item> 
                 </DropdownButton>    
-                <Button style={{visibility: logs.length && ((logType === 'raw') || (logType === 'stripe')) ? 'visible' : 'hidden'}} onClick={() => setEditable(!editable)}>
+                <Button 
+                    style={{visibility: logs.length && ((logType === 'raw') || (logType === 'stripe')) ? 'visible' : 'hidden'}} 
+                    onClick={() => setEditable(!editable)}>
                     {!editable ? "Start Editing" : "Stop Editing"}
                 </Button>          
-                {/* <Button variant="primary" onClick={onDownload}>Create File</Button>  */}
                 <ButtonWithLoading
                     handleClick={handleStripeOnboarding}
                     tooltip="Create your Stripe account for customer billing and payments."
@@ -216,7 +222,7 @@ const ServiceLogs = (props) => {
             </Form.Group>
         </Form>  
         <Invoices show={showInvoices} setShow={setShowInvoices}/> 
-        <LogsTable height='70vh' logType={logType} logs={logs} editable={editable}/>
+        <LogsTable height='70vh' logType={logType} logs={logs} editable={editable} isAdmin={true}/>
         </>
     )    
 }

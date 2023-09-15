@@ -283,7 +283,7 @@ const PropertyDetails = (props) => {
                     </Card.Body>
                 </Tab>
                 <Tab eventKey='logs' title='Logs' mountOnEnter={true} unmountOnExit={true}>
-                    <CustLogs style={{padding: "1em", height:'75vh', overflow:'hide'}}/>                  
+                    <CustLogs style={{padding: "1em", height:'75vh', overflow:'hide'}} admin={false}/>                  
                 </Tab>
             </Tabs>
         </WithModal>
