@@ -113,12 +113,16 @@ const ShiftSetup = () => {
         dispatch(setActiveItem(event, itemArray, setActiveAction))
     }
 
-    const handleLogout = () => {
-        console.log("logging out")
-        logout()  
-        navigate('/')
+    const handleLogout = () => {        
+        // this doesn't work as expected because this component unmounts when the modal is hidden 
+        // and doesn't execute the rest of the function, and can't navigate with the modal open
+        // solution: look at Router and see how to handle this at the top level routes, like redirecting to login page if no auth
         dispatch(hideModal("Shift")) 
         dispatch(clearState())
+        console.log("logging out")
+        logout()      
+        navigate('/login')    
+
     };
 
     return (

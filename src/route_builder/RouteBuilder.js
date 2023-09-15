@@ -1,7 +1,7 @@
 import React, { useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField } from "firebase/firestore"
-import { db } from '../firebase'
+import { db, functions, httpsCallable } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import { onDragEnd, removeExtraFields } from './drag-functions'
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS} from '../constants'
@@ -203,7 +203,7 @@ const RouteBuilder = () => {
         <div style={{display: "flex", justifyContent: "space-around", margin: "3px"}}>
             <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={onInitRoute}>Initialize Route</Button>
             <div>
-            <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>New</Button>
+            <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>Create Customer</Button>
             </div>
         </div>
         <div className="adminGridContainer">
@@ -259,7 +259,8 @@ const RouteBuilder = () => {
                             ref={provided.innerRef}
                             className="rightSide, scrollable"
                             style={getListStyle(snapshot.isDraggingOver)}>
-                            {filteredProperties.map((item, index) => (
+                            {(filteredProperties.length === 0) ? <div>Start typing a customers name or address into the search box above to begin building your route.</div> :
+                            filteredProperties.map((item, index) => (
                                 <Draggable
                                     isDragDisabled = {!activeRoute?.editableBy?.includes(currentUser.claims.role)}
                                     key={item.id}

@@ -1,63 +1,115 @@
-import {auth, db, createUserWithEmailAndPassword} from '../firebase'
+import {auth, db, createUserWithEmailAndPassword, functions} from '../firebase'
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Button, Form } from 'react-bootstrap'
 import { updateProfile, sendEmailVerification } from 'firebase/auth'
-import { addDoc, collection, doc, onSnapshot } from 'firebase/firestore'
+import { addDoc, collection, doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { httpsCallable } from 'firebase/functions'
+import { setIsLoading } from '../actions'
 
-const RegisterUser = ({ setProgress, setIsLoading, setLoadingText }) => {
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
+const RegisterUser = ({ currentUser, setProgress, setLoadingText }) => {
+    const [orgName, setOrgName] = useState('')
+    const [username, setUsername] = useState(currentUser?.claims?.name)
+    const [email, setEmail] = useState(currentUser?.claims?.email)
     const [password, setPassword] = useState('')
     const [password2, setPassword2] = useState('')
+    const dispatch = useDispatch()
 
-    const handleCheckout = () => {
+    //check if user already created
+    // const createUser = () => {
+    //     console.log("project: ", process.env.REACT_APP_PROJECT_ID)
+    //     if (password !== password2) {
+    //         alert('passwords must match')
+    //         return
+    //     }
+    //     dispatch(setIsLoading(true))        
+    //     setProgress(10)        
+    //     setLoadingText('Setting up user profile.')
+    //     if (!currentUser) {
+    //         createUserWithEmailAndPassword(auth, email, password)
+    //         .then((userCredential) => {
+    //             sendEmailVerification(userCredential.user)
+    //             .then(() => {
+    //                 updateProfile(userCredential.user, {
+    //                 displayName: username,
+    //                 })
+    //                 .then(async() => {
+    //                     handleCheckout(userCredential.user)                    
+    //                 })
+    //                 .catch(err => alert(err))
+    //             })
+    //         })          
+    //     } else {
+    //         handleCheckout()
+    //     }
+    // }
+
+    const handleCheckout = async () => {
         if (password !== password2) {
             alert('passwords must match')
             return
         }
-        setIsLoading(true)         
-        setProgress(10)        
-        setLoadingText('Setting up user profile.')
-        createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            setLoadingText('sending verification email')
-            setProgress(30)
-            if (!auth.currentUser) return
-            sendEmailVerification(auth.currentUser)
-            .then(() => {
-                if (!auth.currentUser) return
-                updateProfile(auth.currentUser, {
+        try {
+            dispatch(setIsLoading(true))  
+            setProgress(10)
+            setLoadingText('Setting up user profile.')
+            await createUserWithEmailAndPassword(auth, email, password) 
+            await updateProfile(auth.currentUser, {
                 displayName: username,
-                }).then(async() => {
-                    if (!auth.currentUser) return
-                    setProgress(40)
-                    setLoadingText('Redirecting to checkout page.')
-                    const custRef = await doc(db, 'customers', auth.currentUser.uid)
-                    // Create checkout session
-                    const checkoutRef = await addDoc(collection(db, `${custRef.path}/checkout_sessions`),{            
-                        price: 'price_1N8VOWHadtZeRUpQ0wsr61no',
-                        success_url: `${window.location.origin}/register`,
-                        cancel_url: window.location.origin,            
-                    })
-                    onSnapshot(doc(db, `${custRef.path}/checkout_sessions`, checkoutRef.id), doc => {
-                        if(doc.data()?.url) {
-                            window.location.assign(doc.data()?.url)
-                            setProgress(60)
-                            setIsLoading(false)
-                        }
-                    })      
-                })
-                .catch(err => alert(err))
             })
-            
-        })
-        .catch((error) => {
+            setProgress(20)
+            setLoadingText("Sending verification email.")
+            await sendEmailVerification(auth.currentUser)
+            setLoadingText('Setting up organization database.')
+            setProgress(40)
+            const createOrg = httpsCallable(functions, 'createOrg')            
+            await createOrg({orgName: orgName, owner_uid: auth.currentUser.uid, email: email})
+            setProgress(60)
+            setLoadingText('Done creating organization database.')
+            setProgress(80)
+            setLoadingText('Redirecting to checkout page.')
+            const custRef = doc(db, 'customers', auth.currentUser.uid)
+            // Create checkout session
+            const checkoutRef = await addDoc(collection(db, `${custRef.path}/checkout_sessions`),{            
+                price: 'price_1N8VOWHadtZeRUpQ0wsr61no',
+                success_url: `${window.location.origin}`,
+                cancel_url: window.location.origin,            
+            })
+            onSnapshot(doc(db, `${custRef.path}/checkout_sessions`, checkoutRef.id), doc => {
+                if(doc.data()?.url) {
+                    window.location.assign(doc.data()?.url)
+                    setProgress(100)
+                    dispatch(setIsLoading(false)) 
+                }
+            })
+        }      
+        catch (error) {
             alert(error.message)
-        })         
+        }    
     }
+
+                // move this to billing onboarding - not needing for initial sign up
+        // createConnectedAccount({email: email, orgName: orgName }).then((res) => {
+        //     console.log(res)
+        //     window.open(res.data.url, '_blank') 
+        //     dispatch(setIsLoading(false))
+        //     setProgress(100)
+        //     setLoadingText('Account created!')
+        // })
+        // .catch(err => {
+        //     alert(err)
+        //     dispatch(setIsLoading(false))
+        // })
 
     return (
         <Form>
+            <Form.Control
+                value={orgName}
+                onChange={(event) => setOrgName(event.target.value)}
+                placeholder="Organization Name"
+                size="lg"
+                className="form_input"
+            /> 
             <Form.Control
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
@@ -89,7 +141,7 @@ const RegisterUser = ({ setProgress, setIsLoading, setLoadingText }) => {
                 className="form_input"
             />
             <Button onClick={handleCheckout} variant='primary' size='lg'>
-                Proceed to Checkout
+                Proceed to Stripe Setup
             </Button>
         </Form>
     )        

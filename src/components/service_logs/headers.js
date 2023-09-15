@@ -1,5 +1,5 @@
 import { editItem } from "../../actions"
-import { DateTimeEditor, DateTimeRenderer, DeleteLogRenderer } from "./DateTimePicker"
+import { AddToInvoiceRenderer, DateTimeEditor, DateTimeRenderer, DeleteLogRenderer } from "./utils"
 
 const xeroHeaders =  [
     { headerName: "Contract Type", field: "contract_type"},
@@ -130,6 +130,26 @@ const customerViewHeaders = [
     { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
 ]
 
+const stripeHeaders = [
+    {headerName: 'Delete', cellRenderer:DeleteLogRenderer},
+    { headerName: "Customer Name", field: "cust_name", checkboxSelection: (params) => {return !!params.data && !params.data.invoice_item_id}, headerCheckboxSelection: true,showDisabledCheckboxes: true},
+    { headerName: "Service Address", field: "service_address"},
+    { headerName: "Contract Type", field: "contract_type"},
+    { headerName: "Description", field: "description"},
+    { headerName: "Driver Name", field: "driver"},
+    { headerName: "Notes", field: "notes", editable: true },
+    { headerName: "Price", field: "price", valueParser: params => Number(params.newValue) },
+    { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
+    { headerName: "Yardage Rate", field: "price_per_yard", valueParser: params => Number(params.newValue)},
+    { headerName: "Start Time", field: "startTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
+    { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
+    { headerName: "Hourly Rate", field: "hourly_rate"},
+    { headerName: "Status", field: "status"},
+    { headerName: "Timestamp", field: "timestamp", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
+    { headerName: "Vehicle", field: "vehicle"},
+    { headerName: "Vehicle Type", field: "vehicle_type"},
+]
+
 export const getColumnDefs = (logType, isEditting) => {
     console.log('isEditting', isEditting)
     if (logType === 'xero') return xeroHeaders
@@ -138,6 +158,12 @@ export const getColumnDefs = (logType, isEditting) => {
         if (isEditting) return customerEditHeaders
         else return customerViewHeaders
     } 
+    else if (logType === 'stripe') {
+        if (isEditting) return stripeHeaders
+        else {
+            return stripeHeaders.filter(i => i.headerName !== 'Delete')
+        }       
+    }
     else {
         if (isEditting) return rawHeaders
         else {

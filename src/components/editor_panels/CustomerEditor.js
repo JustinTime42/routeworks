@@ -10,7 +10,7 @@ import '../../styles/driver.css'
 import { serviceLevels  } from '../../globals'
 import RoutePopover from '../customer_panels/RoutePopover'
 import { useOutletContext } from 'react-router-dom'
-const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "5030", "Will Call", "Asphalt", "Hourly"]
+const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
 const sandContractTypes = ["Per Visit", "Per Yard"]
 const editorSize = {height:"100vh", marginTop: '2em'}
 
@@ -474,7 +474,7 @@ const CustomerEditor = (props) => {
                 {
                     customer?.id ?
                     <Tab eventKey='logs' title='Service Logs' mountOnEnter={true} unmountOnExit={true}>
-                        <CustLogs height="50vh"/>
+                        <CustLogs height="50vh" admin={true}/>
                     </Tab> : null
                 }
             </Tabs>

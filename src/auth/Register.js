@@ -7,27 +7,29 @@ import { setCurrentUser } from '../actions'
 import { useIdToken } from 'react-firebase-hooks/auth';
 import RegisterUser from './RegisterUser.js'
 import RegisterCompany from './RegisterCompany.js'
+import { setIsLoading } from '../actions'
 
-const Register = () => {
-    const [isLoading, setIsLoading] = useState(false)    
+const Register = () => {  
     const [loadingText, setLoadingText] = useState('')
     const [progress, setProgress] = useState(0)
     const [user, loading, error] = useIdToken(auth);
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
+    const isLoading = useSelector(state => state.setIsLoading.isLoading)
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     useEffect(() => {
         if (error) {alert(error)}
         else if (user) {
-            user.getIdTokenResult().then(result => {
+            user.getIdTokenResult(true).then(result => {
+                console.log(result.claims)
                 dispatch(setCurrentUser(result))
             })
         }
-    }, [])
+    }, [user, loading, error])
     
     const onSaveOrg = (orgName) => {
-        setIsLoading(true)
+        dispatch(setIsLoading(true))
         setLoadingText('Provisioning company database')
         setProgress(80)
         user?.getIdToken(true).then(i => {
@@ -36,7 +38,7 @@ const Register = () => {
             createOrg({orgName: orgName}).then(res => {
                 user?.getIdToken(true).then(i => {
                     user.getIdTokenResult().then(user => {
-                        setProgress(100)
+                        setProgress(80)
                         dispatch(setCurrentUser(user))
                         navigate('/')
                     })  
@@ -64,26 +66,19 @@ const Register = () => {
         </>
     )
 
-    if (isLoading || loading) {
-        console.log('is loading')
-        return (
-            <RegistrationMain>
-                <DisplayProgress />
-            </RegistrationMain>
-        )
-    } else if (!user) {
-        return (
-            <RegistrationMain>
-                <RegisterUser setProgress={setProgress} setIsLoading={setIsLoading} setLoadingText={setLoadingText}/>
-            </RegistrationMain>
-        )
-    } else if (!currentUser?.claims?.organization) {
-        return (
-            <RegistrationMain>
-                <RegisterCompany onSaveOrg={onSaveOrg} />
-            </RegistrationMain>
-        )
-    } else navigate('/')
+    return (
+        <RegistrationMain>
+            <RegisterUser
+                user={currentUser}
+                setProgress={setProgress} 
+                setLoadingText={setLoadingText}
+            />
+            {/* {(currentUser?.claims?.stripeRole === "Owner") && (
+                <RegisterCompany user={currentUser} onSaveOrg={onSaveOrg} />
+            )} */}
+            {isLoading && <DisplayProgress />}                
+        </RegistrationMain>
+    )
 }
 
 export default Register

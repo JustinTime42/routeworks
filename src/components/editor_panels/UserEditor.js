@@ -50,7 +50,7 @@ const UserEditor = (props) => {
             console.log('updating user')
             const updateUser = httpsCallable(functions, 'updateUser')
             updateUser({...tempItem, customClaims: {...tempItem.customClaims, organization: organization}}).then(res => {                
-                console.log(res)            
+                console.log(res)
                 let newUsers = [...props.users]
                 newUsers[newUsers.findIndex(user => user.uid === res.data.uid)] = res.data
                 props.setUsers(newUsers)
