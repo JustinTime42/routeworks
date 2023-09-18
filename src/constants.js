@@ -74,3 +74,5 @@ export const ACTIVE_LOG_ENTRY = "ACTIVE_LOG_ENTRY"
 export const USER_LOGOUT = 'USER_LOGOUT'
 
 export const IS_LOADING = 'IS_LOADING'
+
+export const COLOR_MODE = 'COLOR_MODE'

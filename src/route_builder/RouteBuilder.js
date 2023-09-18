@@ -134,11 +134,16 @@ const RouteBuilder = () => {
     }
 
     const onDelete = (customer) => {
-        Object.values(customer.routesAssigned).forEach(route => {
-            let newRoute = {...routes.find(i => i.name === route)}
-            delete newRoute.customers[customer.id]
-            dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
-        })
+        if (customer.routesAssigned) {
+            alert("This customer is assigned to a route. Please remove them from all routes before deleting.")
+            return
+        }
+        // this doesn't property renumber the route positions. fix that before re-enabling this feature
+        // Object.values(customer.routesAssigned).forEach(route => {
+        //     let newRoute = {...routes.find(i => i.name === route)}
+        //     delete newRoute.customers[customer.id]
+        //     dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
+        // })
         dispatch(deleteItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         dispatch(hideModal('Customer'))
     }
@@ -158,7 +163,7 @@ const RouteBuilder = () => {
         } 
         console.log(newLists)
         let customer = {...allCustomers.find(customer => customer.id === newLists.card.id)}
-        if (!customer.routesAssigned || (customer.routesAssigned === [])) {customer.routesAssigned = {}}
+        if (!customer.routesAssigned || (!customer.routesAssigned)) {customer.routesAssigned = {}}
         if (newLists.whereTo === 'on') {
             console.log({...customer.routesAssigned})
             customer = {...customer, routesAssigned: {...customer.routesAssigned, [activeRoute.id]:activeRoute.name}}

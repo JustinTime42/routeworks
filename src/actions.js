@@ -9,7 +9,8 @@ import {
     TEMP_ITEM,
     SET_LOG_ENTRIES,
     USER_LOGOUT,
-    IS_LOADING
+    IS_LOADING,
+    COLOR_MODE,
 } from './constants.js'
 
 export const setIsLoading = (isLoading) => {
@@ -151,5 +152,12 @@ export const clearState = (state, action) => {
     return {
         type: USER_LOGOUT,
         payload: null
+    }
+}
+
+export const setColorMode = (mode) => {
+    return {
+        type: COLOR_MODE,
+        payload: mode
     }
 }

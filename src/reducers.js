@@ -27,7 +27,8 @@ import { SET_ACTIVE_ROUTE,
     TEMP_ITEM,
     ACTIVE_LOG_ENTRY, 
     SET_LOG_ENTRIES, 
-    IS_LOADING
+    IS_LOADING,
+    COLOR_MODE
 } from './constants.js'
 
 
@@ -326,6 +327,19 @@ export const setTempItem = (state = initialStateTempItem, action={}) => {
     switch(action.type) {
         case TEMP_ITEM:
             return {...state, item: action.payload} 
+        default:
+            return state
+    }
+}
+
+export const initialStateColorMode = {
+    colorMode: 'light'
+}
+
+export const setColorMode = (state = initialStateColorMode, action={}) => {
+    switch(action.type) {
+        case 'COLOR_MODE':
+            return {...state, colorMode: action.payload}
         default:
             return state
     }

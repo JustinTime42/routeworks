@@ -95,7 +95,7 @@ const TopNav = () => {
             (isAllPending || routesPending) ? <Spinner /> : null
             } 
             <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px", alignItems:'center',}}>
-                <SimpleSelector
+                <SimpleSelector                    
                     title="Route"
                     collection='route'
                     collectionPath={`organizations/${organization}/`} 

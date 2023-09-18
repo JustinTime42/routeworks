@@ -1,1 +1,1 @@
-export const serviceLevels = ["Select", "4\"+","2\"+","1\"+","Any",]
+export const serviceLevels = ["", "4\"+","2\"+","1\"+","Any",]

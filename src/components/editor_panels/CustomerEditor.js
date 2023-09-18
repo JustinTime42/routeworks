@@ -27,7 +27,7 @@ const CustomerEditor = (props) => {
     const [newTagName, setNewTagName] = useState('')
     const [sameAddress, setSameAddress] = useState(false)
     const [search, setSearch] = useState('')
-    const [bounds, setBounds] = useState({})
+    const [latLng, setLatLng] = useState({})
 
     useEffect(() => {
         setSameAddress(false)
@@ -39,17 +39,15 @@ const CustomerEditor = (props) => {
     // },[activeProperty])
 
     useEffect(() => {
-        let center = {lat: 0, lng: 0}
         const getPosition = async() => {
             await navigator.geolocation.getCurrentPosition((position) => {
-                center.lat = position.coords.latitude
-                center.lng = position.coords.longitude
-                setBounds({
-                    north: center.lat + 1,
-                    south: center.lat - 1,
-                    east: center.lng + 1,
-                    west: center.lng - 1,
-                })
+                setLatLng({lat: position.coords.latitude, lng: position.coords.longitude})
+                // ({
+                //     north: center.lat + 1,
+                //     south: center.lat - 1,
+                //     east: center.lng + 1,
+                //     west: center.lng - 1,
+                // })
             })
         }
         getPosition()       
@@ -141,9 +139,11 @@ const CustomerEditor = (props) => {
     }
 
     const searchOptions = {
-        bounds: bounds,
-        radius: 20000,
-        types: ['address']
+        locationBias: {
+            center: latLng,
+            radius: 20000
+        },
+        types:['address']
       }
 
     return (      
@@ -373,7 +373,7 @@ const CustomerEditor = (props) => {
                                 <Form.Group>
                                 <Row>
                                     <Col xs={6}>
-                                        <Form.Label size='sm'>Sanding Price Per Yard</Form.Label>
+                                        <Form.Label size='sm'>Sanding Price</Form.Label>
                                     </Col>
                                     <Col>
                                         <Form.Control size='sm' name="price_per_yard" type="number" value={customer?.price_per_yard || ''} onChange={onChange}/>
@@ -413,9 +413,9 @@ const CustomerEditor = (props) => {
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Service Level</Form.Label>
-                                <Form.Control name="service_level" as="select" value={customer?.service_level || ''} onChange={onChange}>
+                                <Form.Control name="service_level" as="select" value={customer?.service_level || 'Select'} onChange={onChange}>
                                     {
-                                        serviceLevels.map((type, i) => <option key={type} value={i}>{type}</option>)
+                                        serviceLevels.map((type, i) => <option key={type} value={i}>{type || "N/A"}</option>)
                                     }
                                 </Form.Control>
                         </Form.Group>

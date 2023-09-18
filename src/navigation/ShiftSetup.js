@@ -12,9 +12,9 @@ import SimpleSelector from '../components/SimpleSelector'
 import TractorEditor from '../components/editor_panels/TractorEditor'
 import {getAdminItem} from '../firebase'
 import WorkTypeEditor from '../components/editor_panels/WorkTypeEditor'
-import { setActiveItem, showModal, hideModal, setTempItem, setCurrentUser, clearState } from "../actions"
+import { setActiveItem, showModal, hideModal, setTempItem, setCurrentUser, clearState, setColorMode } from "../actions"
 
-import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY, USER_LOGOUT} from '../constants.js'
+import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY, USER_LOGOUT, COLOR_MODE} from '../constants.js'
 import { rootReducer } from '..';
 
 const ShiftSetup = () => {
@@ -32,15 +32,10 @@ const ShiftSetup = () => {
     const modals = useSelector(state => state.whichModals.modals)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
+    const colorMode = useSelector(state => state.setColorMode.colorMode)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     
-    // useEffect(() => {
-    //     if(user && (drivers.length > 0) && !activeDriver.name) {
-    //         console.log(user.displayName)
-    //         dispatch(setActiveItem(user.displayName, drivers, SET_ACTIVE_DRIVER))
-    //     }
-    //     }, [user, drivers])
 
     useEffect(() => { 
         const unsub = onSnapshot(collection(db, 'driver/driver_lists/driver'), (querySnapshot) => {
@@ -51,6 +46,11 @@ const ShiftSetup = () => {
         }
     },[])
 
+    useEffect(() => {
+        // change data_bs_theme to light or dark depending on colorMode
+        document.body.setAttribute('data-bs-theme', colorMode)
+    },[colorMode])
+    
 
     const outerDivStyle = {
         display: "flex", 
@@ -121,8 +121,7 @@ const ShiftSetup = () => {
         dispatch(clearState())
         console.log("logging out")
         logout()      
-        navigate('/login')    
-
+        navigate('/login')
     };
 
     return (
@@ -130,12 +129,21 @@ const ShiftSetup = () => {
             <div style={labelStyle}>{currentUser.claims.name || 'driver'}</div>
             <div style={labelStyle}>{activeVehicle.name || 'vehicle'}</div>
             <div style={labelStyle}>{activeWorkType.name || 'work type'}</div>
-            <Button style={labelStyle} size='sm' variant='primary' onClick={onShow}>Edit Shift</Button>            
+            <Button style={labelStyle} size='sm' variant='primary' onClick={onShow}>Options</Button>            
             <Modal style={{textAlign:'center'}} show={modals.includes('Shift')} onHide={() => dispatch(hideModal('Shift'))}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Select Shift Details</Modal.Title>
+                    <div>
+                    <Form.Check
+                        type="switch"
+                        id="color-mode"
+                        checked={colorMode === 'dark'}
+                        label={colorMode === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                        onClick={() => dispatch(setColorMode(colorMode === 'dark' ? 'light' : 'dark'))}
+                    />
+                    </div>                    
                 </Modal.Header>
                 <div style={{...labelStyle, marginTop: '1em'}}>{currentUser.claims.name}</div>
+                <Modal.Title>Select Shift Details</Modal.Title>
                 <SimpleSelector  
                     style={selectorStyle}
                     title="Vehicle"
