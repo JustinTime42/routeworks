@@ -21,6 +21,7 @@ const LogsTable = ({logType, editable, isAdmin, height}) => {
     const logs = useSelector(state => state.setLogs.entries)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const isLoading = useSelector(state => state.setIsLoading.isLoading)  
+    const colorMode = useSelector(state => state.setColorMode.colorMode)
     const gridRef = useRef();
     const [value, loading, error] = useDocumentData(
         doc(db, 'organizations/', organization),
@@ -128,7 +129,7 @@ const LogsTable = ({logType, editable, isAdmin, height}) => {
     }
 
     return (
-        <div className="ag-theme-alpine-dark" style={{width: '90%', height: height, marginRight: 'auto', marginLeft: 'auto'}}>
+        <div className={colorMode === "dark" ? "ag-theme-alpine-dark" : "ag-theme-alpine"}  style={{width: '90%', height: height, marginRight: 'auto', marginLeft: 'auto'}}>
             {isAdmin && (
                 <div style={{display: "flex"}}>
                     <Button 

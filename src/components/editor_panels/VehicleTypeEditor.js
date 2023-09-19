@@ -26,7 +26,10 @@ const VehicleTypeEditor = (props) => {
 
     return (
         <Modal show={modals.includes('VehicleType')} onHide={onClose}>
-            <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "space-between"}}>
+            <Modal.Header closeButton>
+            <Modal.Title>{props.vehicleType?.id ? `Edit ${props.vehicleType?.name}` : 'Create New Vehicle Type'}</Modal.Title>                
+            </Modal.Header>
+            <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "space-between", marginTop: "5em", marginBottom:"5em"}}>
                 <Form.Group as={Row}>
                     <Form.Label column sm={2}>Name</Form.Label>
                     <Col sm={8}>

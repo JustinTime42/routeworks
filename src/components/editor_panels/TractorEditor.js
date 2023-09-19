@@ -105,7 +105,10 @@ const TractorEditor = (props) => {
     return (
         <>
         <Modal show={modals.includes('Vehicle')} onHide={onClose}>
-            <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "center"}}>
+            <Modal.Header closeButton>
+                <Modal.Title>{tempItem?.id ? `Edit ${tempItem?.name}` : 'Create New Vehicle'}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{display: "flex", flexFlow: "column nowrap", justifyContent: "center", alignItems: "center", marginTop: "5em", marginBottom:"5em"}}>
                 <FormControl style={{width: '50%', margin: "3px"}} size="sm" name="name" type="text" onChange={onChangeName} value={tempItem?.name || ''} />
                 <SimpleSelector
                     title="Vehicle Type"
