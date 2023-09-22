@@ -28,7 +28,9 @@ import { SET_ACTIVE_ROUTE,
     ACTIVE_LOG_ENTRY, 
     SET_LOG_ENTRIES, 
     IS_LOADING,
-    COLOR_MODE
+    COLOR_MODE,
+    GET_PRICING_TEMPLATES_SUCCESS,
+    SET_ACTIVE_PRICING_TEMPLATE
 } from './constants.js'
 
 
@@ -338,12 +340,41 @@ export const initialStateColorMode = {
 
 export const setColorMode = (state = initialStateColorMode, action={}) => {
     switch(action.type) {
-        case 'COLOR_MODE':
+        case COLOR_MODE:
             return {...state, colorMode: action.payload}
         default:
             return state
     }
 }
+
+export const initialStatePricingTemplates = {
+    pricingTemplates: []
+}
+
+export const getPricingTemplates = (state = initialStatePricingTemplates, action={}) => {
+    switch(action.type) {
+        case GET_PRICING_TEMPLATES_SUCCESS:
+            return {...state, pricingTemplates: action.payload}
+        default:
+            return state
+    }
+}
+
+//active pricing template probably unnecessary in redux
+export const initialStateActivePricingTemplate = {
+    activePricingTemplate: {}
+}
+
+export const activePricingTemplate = (state = initialStateActivePricingTemplate, action={}) => {
+    switch(action.type) {
+        case SET_ACTIVE_PRICING_TEMPLATE:
+            return {...state, activePricingTemplate: action.payload}
+        default:
+            return state
+    }
+}
+
+
 
 // const initialStateClearState = {}
 // export const clearState = (state = initialStateClearState, action={}) => {

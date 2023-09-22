@@ -10,13 +10,13 @@ import { createStore, applyMiddleware, combineReducers } from 'redux'
 import App from './App'
 import thunkMiddleWare from 'redux-thunk'
 import { createLogger } from 'redux-logger'
-import { setIsLoading, setActiveRoute, requestRoutes, setActiveDriver, setActiveTractor, requestAllAddresses, setActiveProperty, getTractors, filterProperties, getTractorTypes, setActiveVehicleType, setActiveWorkType, getWorkTypes, whichModals, setTempItem, setTimerIsRunning, setCurrentUser, setLogs, setActiveLogEntry, setColorMode} from './reducers';
+import { setIsLoading, setActiveRoute, requestRoutes, setActiveDriver, setActiveTractor, requestAllAddresses, setActiveProperty, getTractors, filterProperties, getTractorTypes, setActiveVehicleType, setActiveWorkType, getWorkTypes, whichModals, setTempItem, setTimerIsRunning, setCurrentUser, setLogs, setActiveLogEntry, setColorMode, getPricingTemplates} from './reducers';
 import { USER_LOGOUT } from './constants';
 //import "./index.css"
 
 const logger = createLogger()
 
-export const appReducer = combineReducers( { setIsLoading, setActiveRoute, requestRoutes, setActiveDriver, setActiveTractor, requestAllAddresses, setActiveProperty, getTractors, filterProperties, getTractorTypes, setActiveVehicleType, setActiveWorkType, getWorkTypes, whichModals, setTempItem, setTimerIsRunning, setCurrentUser, setLogs, setActiveLogEntry, setColorMode })
+export const appReducer = combineReducers( { setIsLoading, setActiveRoute, requestRoutes, setActiveDriver, setActiveTractor, requestAllAddresses, setActiveProperty, getTractors, filterProperties, getTractorTypes, setActiveVehicleType, setActiveWorkType, getWorkTypes, whichModals, setTempItem, setTimerIsRunning, setCurrentUser, setLogs, setActiveLogEntry, setColorMode, getPricingTemplates })
 const rootReducer = (state, action) => {
   if(action.type === USER_LOGOUT) {
     return appReducer(undefined, action)

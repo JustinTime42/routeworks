@@ -5,8 +5,6 @@ import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } f
 import {SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS} from '../../constants.js'
 
 
-// this might need to be a child of TractorEditor rather than ShiftEditor
-// and I might need to put the 
 const VehicleTypeEditor = (props) => {
     const [deleteAlert, setDeleteAlert] = useState('')
     // const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)

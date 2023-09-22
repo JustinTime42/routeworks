@@ -14,10 +14,12 @@ import CustomerEditor from './components/editor_panels/CustomerEditor';
 import { Alert } from 'react-bootstrap';
 import { GET_VEHICLE_TYPES_SUCCESS } from './constants';
 import Auditor from './components/auditor/Auditor';
+import PricingTemplates from './pricing_templates/PricingTemplates';
 //import Auditor from './components/auditor/Auditor';
 const RouteBuilder = lazy(() => import('./route_builder/RouteBuilder'))
 const DisplayRoute = lazy(() => import('./DisplayRoute'))
 const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))
+
 const Users = lazy(() => import('./components/Users'))
 
 const App = () => { 
@@ -104,6 +106,7 @@ const App = () => {
             <Route path="users" element={<Users />} />
             <Route path="migration" element={<MigrationUI />} /> 
             <Route path="auditor" element={<Auditor />} />
+            <Route path="pricing_templates" element={<PricingTemplates />} />
           </Route>
         </Routes>
       </Suspense>
