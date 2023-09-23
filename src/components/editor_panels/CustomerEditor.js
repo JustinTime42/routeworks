@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
+import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert, Dropdown } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTempItem } from '../../actions'
 import PlacesAutocomplete, { geocodeByPlaceId, geocodeByAddress, getLatLng } from 'react-places-autocomplete'
@@ -20,6 +20,7 @@ const CustomerEditor = (props) => {
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
+    const pricingTemplates = useSelector(state => state.getPricingTemplates.pricingTemplates)
     const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
     const [deleteAlert, setDeleteAlert] = useState(false)
@@ -303,11 +304,30 @@ const CustomerEditor = (props) => {
                 </Tab>
                 <Tab eventKey='job' title='Job Info'>
                     <Form>
+                    <Form.Label size='sm'>Prices</Form.Label>
+                        <Form.Group>
+                            <Form.Label>Pricing Template</Form.Label>
+                                <Form.Control name="pricingTemplate" as="select" value={customer?.pricingTemplate || ''} onChange={onChange}>
+                                    <option value="select">Select</option>
+                                    {
+                                        pricingTemplates.map(type => <option key={type} value={type}>{type}</option>)
+                                    }
+                                </Form.Control>
+                        </Form.Group>
                     <Row> 
                         {
                         customer?.contract_type === "Hourly" ? 
                         <Col> 
                         <Form.Label size='sm'>Prices</Form.Label>
+                        <Form.Group>
+                            <Form.Label>Pricing Template</Form.Label>
+                                <Form.Control name="pricingTemplate" as="select" value={customer?.pricingTemplate || ''} onChange={onChange}>
+                                    <option value="select">Select</option>
+                                    {
+                                        pricingTemplates.map(type => <option key={type} value={type}>{type}</option>)
+                                    }
+                                </Form.Control>
+                        </Form.Group>
                         {
                         vehicleTypes.map((item, i) => {  
                             return (

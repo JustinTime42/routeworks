@@ -36,16 +36,27 @@ const PricingTemplates = (props) => {
     })
   }
 
+  useEffect(() => {
+    setActiveTemplate(pricingTemplates.find(i => i.id === activeTemplate?.id))
+  },[pricingTemplates])
+
   const onCreate = () => {
     // create a new pricing template in firestore
-    
-
+    setActiveTemplate({name: '', workTypes: {}})
+    console.log("making new template")
+    console.log(activeTemplate) 
   }
 
   const onEdit = () => {
   }
 
-  const onSelect = () => {
+  const onSelect = (event) => {
+    console.log(event)
+    console.log(pricingTemplates)
+    const template = pricingTemplates.find(i => i.name === event)
+    setActiveTemplate(template)
+    console.log(template)
+
   }
 
   return (
@@ -61,7 +72,7 @@ const PricingTemplates = (props) => {
         selectedItem = {activeTemplate}
         itemArray={pricingTemplates}
         setActiveAction={setActiveTemplate}
-        onCreate={() => setActiveTemplate({name: ''})}
+        onCreate={onCreate}
         onEdit={onEdit}
         onSelect={onSelect}
         permissions={['Admin']}
@@ -70,7 +81,7 @@ const PricingTemplates = (props) => {
     </div>
     <hr/>
     {activeTemplate && (
-      <TemplateEditor template={activeTemplate}/>
+      <TemplateEditor activeTemplate={activeTemplate}/>
     )}
     </>
   )
