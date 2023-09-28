@@ -73,7 +73,7 @@ const rawHeaders = [
     { headerName: "Description", field: "description"},
     { headerName: "Driver Name", field: "driver"},
     { headerName: "Driver Earning", field: "driverEarning", valueParser: params => Number(params.newValue)},
-    { headerName: "InvoiceNumber", field: "invoice_number", editable: false },
+    // { headerName: "InvoiceNumber", field: "invoice_number", editable: false },
     { headerName: "Notes", field: "notes", editable: true },
     { headerName: "Price", field: "price", valueParser: params => Number(params.newValue) },
     { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},

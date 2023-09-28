@@ -40,17 +40,21 @@ const PropertyDetails = (props) => {
     const property = useSelector(state => state.setActiveProperty.activeProperty)
     const currentLogEntry = useSelector(state => state.setActiveLogEntry.entry)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
-    const shouldShowModal = useSelector(state => state.whichModals.modals).includes("Hourly")
+    const shouldShowModal = useSelector(state => state.whichModals.modals).includes("Per Hour")
 
     const dispatch = useDispatch()
     const {custId, routeId} = useParams()
+
+    const getPriceMultiplier = () => {
+        return property?.pricing?.workTypes?.[workType.name]?.pricingMultiple
+    }
 
     const listener = (event) => {        
         const nope = 
             isRunning || 
             disabled || 
-            (property.sand_contract === "Per Yard" && (!yards) && workType.name === "Sanding") || 
-            (property.contract_type === 'Hourly') 
+            (getPriceMultiplier() === "Per Yard" && !yards) || 
+            (getPriceMultiplier() === 'Per Hour') 
         if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
             onStatusChange('Done', '', null, null, false)
             navigate(`../${changeActiveProperty(property, "prev", activeRoute.customers)}`)
@@ -67,15 +71,33 @@ const PropertyDetails = (props) => {
     useEffect(() => {   
         const newActiveCustomer = customers.find(i => i.id === custId)       
         if (newActiveCustomer === undefined) return 
+        if (!newActiveCustomer?.pricing?.workTypes?.[workType.name]) {
+            alert(`This customer does not have pricing for ${workType.name}. Please select a different work type or enter the appropriate information.`)
+            return
+        }
         dispatch(setActiveItem(newActiveCustomer, customers, SET_ACTIVE_PROPERTY))
-        if (newActiveCustomer.contract_type === "Hourly") { 
-          dispatch(showModal("Hourly"))
+        console.log(shouldShowModal)
+        if (newActiveCustomer?.pricing?.workTypes[workType.name].pricingMultiple === "Per Hour") { 
+          dispatch(showModal("Per Hour"))
             setTimeout(() => alert("Remember to log hours!"), 200) 
             setState(() => ({...initialState, disabled: true})) 
         } else {
             setState(initialState)
         }
     }, [custId])
+
+    useEffect(() => {
+            let newRouteCustomers = {...activeRoute.customers}
+            if (newRouteCustomers[property.id].status === "Waiting") {
+                newRouteCustomers[property.id].status = "In Progress"
+                dispatch(editItem({
+                    ...activeRoute, 
+                    customers: newRouteCustomers}, 
+                    customers, `organizations/${organization}/route`, 
+                    SET_ACTIVE_ROUTE, 
+                    REQUEST_ROUTES_SUCCESS))
+            }
+    }, [property])
 
     const onTextChange = (event) => {
         let {target: {name, value} } = event
@@ -95,7 +117,7 @@ const PropertyDetails = (props) => {
 
     const onCloseClick = () => {
         if(!isRunning) {
-            dispatch(hideModal("Hourly"))
+            dispatch(hideModal("Per Hour"))
         } 
     } 
 
@@ -113,12 +135,36 @@ const PropertyDetails = (props) => {
         dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
+
+    const getPrice = (timeLogged=null) => {
+        const workTypeObject = property.pricing.workTypes[workType.name]
+        const basis = workTypeObject.pricingBasis === "Work Type" ? workType.name : tractor.type // eg: "Snow Removal" : "Road Grader"
+        let multiplier 
+        console.log(workTypeObject.pricingMultiple)
+        switch (workTypeObject.pricingMultiple) {
+            case "Per Hour": multiplier = timeLogged
+                break
+            case "Per Visit": multiplier = 1
+                break
+            case "Per Yard": multiplier = yards
+                break
+            case "Subscription": multiplier = 0
+                break
+            default: multiplier = 1
+        }
+        const unitPrice = workTypeObject.prices[basis]
+        const price = unitPrice * multiplier
+        return {total: price, unitPrice: unitPrice, multiplier: multiplier}
+    }
+
     const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {
+        
         setState(prevState => ({...prevState, disabled: disabled}))        
         const customerDetails = customers.find(i => i.id === property.id)
         let newRecordObject = {}
         newRecordObject.status = newStatus
-        newRecordObject.price = property.snow_price
+
+        // newRecordObject.price = property.snow_price
         newRecordObject.stripeID = property.stripeID
         let month = ('0' + (new Date().getMonth() + 1)).slice(-2) 
         let year = new Date().getFullYear().toString().substr(-2)
@@ -126,24 +172,35 @@ const PropertyDetails = (props) => {
         let timeLogged = Math.ceil(Math.floor((endTime - startTime) / 60000) / 15) / 4
         
         newRecordObject.driverEarning = driver.percentage * .01 * property.value || 0
-        let yardString = ((workType.name === 'Sanding') && (property.sand_contract === "Per Yard")) ? ": " + yards + " yds" : ""
-        if (property.contract_type === 'Hourly') {
-            newRecordObject.driverEarning = timeLogged * driver.hourly || 0
-        }
+        
+        let amountString = ""
         if (newStatus === "Skipped") {
             setIsRunning(false)
             newRecordObject.price = 0
-        } else if (workType.name === 'Sanding') {               
-            (property.sand_contract === "Per Yard") ? newRecordObject.price = property.price_per_yard * yards : newRecordObject.price = property.price_per_yard
-        } else if (property.contract_type === 'Hourly') {
-            newRecordObject.price = timeLogged * property[tractor.type]
-        } else if (workType.name === 'Sweeping') {
-            newRecordObject.price = property.sweep_price
-        } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (workType.name === 'Snow Removal')) {            
-            newRecordObject.price = 0  
+        } else {
+            const priceObject = getPrice(timeLogged)
+            newRecordObject.price = priceObject.total
+            newRecordObject.unitPrice = priceObject.unitPrice
+            if (getPriceMultiplier() === "Per Hour") {
+                newRecordObject.quanity = timeLogged
+                amountString = ": " + timeLogged + " hrs"
+            } else if (getPriceMultiplier() === "Per Yard") {
+                amountString = ": " + yards + " yds"
+                newRecordObject.quanity = yards
+            }
+            newRecordObject.multiplier = priceObject.multiplier
         }
+        // else if (workType.name === 'Sanding') {               
+        //     (property.sand_contract === "Per Yard") ? newRecordObject.price = property.price_per_yard * yards : newRecordObject.price = property.price_per_yard
+        // } else if (property.contract_type === 'Per Hour') {
+        //     newRecordObject.price = timeLogged * property[tractor.type]
+        // } else if (workType.name === 'Sweeping') {
+        //     newRecordObject.price = property.sweep_price
+        // } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (workType.name === 'Snow Removal')) {            
+        //     newRecordObject.price = 0  
+        // }
         newRecordObject.timestamp = new Date(Date.now())
-        newRecordObject.contract_type = customerDetails.contract_type
+        newRecordObject.contract_type = getPriceMultiplier()
         newRecordObject.cust_id = customerDetails.id
         newRecordObject.reference = customerDetails.service_address
         newRecordObject.service_address = customerDetails.service_address
@@ -164,11 +221,10 @@ const PropertyDetails = (props) => {
         if (yards) {newRecordObject.yards = (yards !== 0) ? yards : ""}
         if (startTime) {newRecordObject.startTime = startTime}
         if (endTime) {newRecordObject.endTime = endTime} 
-        newRecordObject.description = newRecordObject.status === 'Skipped' ? '' : workType.name + yardString
-        newRecordObject.invoice_number = `A${property.id.substring(0,5)}${year}${month}`
-        if (property.price_per_yard) {newRecordObject.price_per_yard = property.price_per_yard}
-        if (property[tractor.type]) {newRecordObject.hourly_rate = property[tractor.type]} 
-
+        newRecordObject.description = newRecordObject.status === 'Skipped' ? '' : workType.name + amountString
+        //newRecordObject.invoice_number = `A${property.id.substring(0,5)}${year}${month}`
+        // if (property.price_per_yard) {newRecordObject.price_per_yard = property.price_per_yard}
+       // if (property[tractor.type]) {newRecordObject.hourly_rate = property[tractor.type]}
         // editItem to make change status on current route
         if (activeRoute?.customers?.[property.id]) {
             const newDetails = {
@@ -188,7 +244,7 @@ const PropertyDetails = (props) => {
         keysArray.forEach(key => {
             if (newRecordObject[key] === null || newRecordObject[key] === undefined) {delete newRecordObject[key]}
         })
-        if (!((property.contract_type === 'Hourly') && (newStatus === "Done")) ) {
+        if (!((getPriceMultiplier() === 'Per Hour') && (newStatus === "Done")) ) {
             dispatch(createItem(newRecordObject, null, `organizations/${organization}/service_logs`, ACTIVE_LOG_ENTRY, null))
         }
         
@@ -196,11 +252,11 @@ const PropertyDetails = (props) => {
         const confirmedStatus = currentLogEntry.status
         setState(prevState => ({
             ...prevState, 
-            done_label: (confirmedStatus === "Waiting" || property.contract_type === "Hourly") ? "hidden" : "visible", 
+            done_label: (confirmedStatus === "Waiting" || getPriceMultiplier() === "Per Hour") ? "hidden" : "visible", 
             showSkipConfirmation: false, 
         }))
+        console.log(getPrice(timeLogged))
     }
-
 
     return (
         <WithModal property = { property } shouldShowModal = { shouldShowModal } onCloseClick = { onCloseClick }>
@@ -215,11 +271,11 @@ const PropertyDetails = (props) => {
                         <Col>
                             <h4 style={{textAlign:"right"}}>Surface: {property?.surface_type?.toUpperCase()}</h4>
                             {
-                            workType.name === 'Sanding' && property.sand_contract === "Per Yard" ?
-                            <Form.Group>
+                            getPriceMultiplier() === "Per Yard" ?
+                            (<Form.Group>
                                 <Form.Label>Number of Yards</Form.Label>
                                 <Form.Control name="yards" type="number" step='any' value={yards || ''} onChange={onTextChange}/>
-                            </Form.Group> : null
+                            </Form.Group> ): null
                             }                   
                         </Col>
                     </Row>
@@ -235,7 +291,15 @@ const PropertyDetails = (props) => {
                     </Form.Group>
                     </Card.Body>
                     {
-                        property.contract_type === "Hourly" ? <TimeTracker sand_contract={property.sand_contract} yards={yards} workType={workType} onStatusChange={onStatusChange} isRunning={isRunning} setIsRunning={setIsRunning}/> : null 
+                        getPriceMultiplier() === "Per Hour" ? (
+                            <TimeTracker 
+                                needsYards={getPriceMultiplier() === "Per Yard" && !yards}
+                                onStatusChange={onStatusChange} 
+                                isRunning={isRunning} 
+                                setIsRunning={setIsRunning}
+                            />
+                            )
+                        : null 
                     }
                     <Card.Body className='buttonRowStyle'>
                         <Button 
@@ -251,10 +315,10 @@ const PropertyDetails = (props) => {
                                 <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
                             </div>
                         <Button 
-                            //style={{visibility: (property.contract_type === 'Hourly') ? 'hidden' : 'visible'}} 
+                            //style={{visibility: (property.contract_type === 'Per Hour') ? 'hidden' : 'visible'}} 
                             variant="success" 
                             size="lg"  
-                            disabled={isRunning || disabled || (property.sand_contract === "Per Yard" && !yards && workType.name === "Sanding")} 
+                            disabled={isRunning || disabled || (getPriceMultiplier() === "Per Yard" && !yards)} 
                             autoFocus={true}                                
                             onClick={() => onStatusChange('Done')}>
                                 Done
@@ -293,7 +357,7 @@ const PropertyDetails = (props) => {
 const WithModal = (props) => {
     const { property, shouldShowModal, onCloseClick, children } = props    
     return (
-        property.contract_type === "Hourly" ? 
+        shouldShowModal ? 
             <Modal style={{marginTop: '2em'}} show={shouldShowModal} onHide={onCloseClick} backdrop='static' size='lg'>
             <Modal.Header closeButton></Modal.Header>            
             {property.id ? children : null}
@@ -302,7 +366,6 @@ const WithModal = (props) => {
             {property.id ?  children : null }
         </div>
     )
-
 }
 
 export default PropertyDetails

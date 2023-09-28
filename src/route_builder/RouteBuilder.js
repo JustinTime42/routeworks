@@ -58,11 +58,7 @@ const RouteBuilder = () => {
         if (confirmed) {
             const newRouteCustomers = {...activeRoute.customers}
             Object.keys(newRouteCustomers).forEach(customer => {
-                if (newRouteCustomers[customer].contract_type === 'Hourly') {
-                    newRouteCustomers[customer].status = "Hourly"
-                } else {
-                    newRouteCustomers[customer].status = "Waiting"
-                }
+                newRouteCustomers[customer].status = "Waiting"
             })
             dispatch(editItem({...activeRoute, customers: newRouteCustomers}, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS)) 
         } else return
@@ -109,20 +105,11 @@ const RouteBuilder = () => {
                 }
             )
         }
-        const setStatus = (item, custIndex, newRoute) => {
-            let status = newRoute.customers[custIndex].status
-            if (item.contract_type === "Hourly") {
-                if (status !== "Skipped") {
-                    item.status = "Hourly"
-                }
-            }
-            return item
-        }
+        
         const newTrimmedDetails = removeFields(newDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
-            const detailsWithStatus = setStatus(newTrimmedDetails, newDetails.id, newRoute)
-            newRoute.customers[newDetails.id] = {...newRoute.customers[newDetails.id], ...detailsWithStatus} 
+            newRoute.customers[newDetails.id] = {...newRoute.customers[newDetails.id], ...newTrimmedDetails} 
             dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
         })
         if (newDetails.id) {

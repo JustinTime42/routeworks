@@ -8,7 +8,7 @@ import { GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PRICING_TEMPLATE, GET
 import { showModal, setTempItem, setActiveItem, editItem, createItem } from '../actions';
 import ButtonWithLoading from '../components/buttons/ButtonWithLoading';
 
-const staticPricingMultiples = [{id: 0, name: "Per Hour"}, {id: 1, name:"Per Visit"}]
+const staticPricingMultiples = [{id: 0, name: "Per Hour"}, {id: 1, name:"Per Visit"}, {id: 2, name: "Per Yard"}, {id: 3, name: "Free"}]
 
 const TemplateEditor = ({activeTemplate}) => {
   const [template, setTemplate] = useState(activeTemplate || {})
@@ -152,10 +152,10 @@ const TemplateEditor = ({activeTemplate}) => {
                 size="sm"
                 onSelect={(event) => setTemplate(template => ({
                   ...template, 
-                  workTypes: {...template.workTypes, [item]: {...template.workTypes[item], pricingSource: event || {}}}
+                  workTypes: {...template.workTypes, [item]: {...template.workTypes[item], pricingBasis: event || {}}}
                   }))}>
                 <Dropdown.Toggle size='sm'>
-                  {template.workTypes[item].pricingSource || `Select Pricing Source`}
+                  {template.workTypes[item].pricingBasis || `Select Pricing Source`}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item eventKey="Work Type">Work Type</Dropdown.Item>

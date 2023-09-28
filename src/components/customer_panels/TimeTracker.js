@@ -5,8 +5,7 @@ import '../../styles/driver.css'
 
 let interval
 
-const TimeTracker = props => {
-    const { workType, yards, isRunning, setIsRunning, onStatusChange, sand_contract} = props
+const TimeTracker = ({needsYards, isRunning, setIsRunning, onStatusChange}) => {
     const [timeElapsed, setTimeElapsed] = useState(0)
     const [startTime, setStartTime] = useState()
     
@@ -21,8 +20,6 @@ const TimeTracker = props => {
             setTimeElapsed(0)
         }
     },[isRunning])
-
-
 
     const DisplayTime = () => {
         let hours = Math.floor(timeElapsed / 3600000).toString().padStart(2,'0')
@@ -40,11 +37,7 @@ const TimeTracker = props => {
     const onStopPress = () => {
         clearInterval(interval) 
         setIsRunning(false)
-        onStatusChange('Hourly', '', new Date(startTime), new Date(Date.now()), false)
-    }
-
-    const needsYards = () => {
-        return ((workType.name === 'Sanding') && (sand_contract === 'Per Yard') && (!yards))
+        onStatusChange('In Progress', '', new Date(startTime), new Date(Date.now()), false)
     }
 
     return (
@@ -54,9 +47,9 @@ const TimeTracker = props => {
             </Row>
             <Row className='buttonRowStyle' style={{flexWrap:'nowrap'}}>                
                 <Col sm={4}><Form.Label><h5>{startTime ? (new Date(startTime)).toLocaleTimeString() : null}</h5></Form.Label></Col>
-                <Col><Button disabled={props.isRunning} size='lg' onClick={onStartPress}>Start</Button></Col>
+                <Col><Button disabled={isRunning} size='lg' onClick={onStartPress}>Start</Button></Col>
                 <Col><DisplayTime /></Col>
-                <Col><Button disabled={!props.isRunning || needsYards()} size='lg' onClick={onStopPress}>Stop</Button></Col>                                    
+                <Col><Button disabled={!isRunning || needsYards} size='lg' onClick={onStopPress}>Stop</Button></Col>                                    
             </Row>
         </Container>
     )

@@ -24,7 +24,7 @@ const SimpleSelector = (props) => {
         <div style={props.style}>        
         <Dropdown size="sm" onSelect={props.onSelect} > 
             <Dropdown.Toggle size='sm'>
-                {props.selectedItem?.name || `Select ${props.title}`}
+                {props.selectedItem?.name || `${props.title}`}
             </Dropdown.Toggle>
             <Dropdown.Menu style={{maxHeight: '80vh', overflow:'scroll'}} >
                 <div style={{display: 'flex', float: "left"}}>
