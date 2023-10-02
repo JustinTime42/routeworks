@@ -141,6 +141,8 @@ const PropertyDetails = (props) => {
             newRecordObject.price = property.sweep_price
         } else if ((property.contract_type === 'Seasonal' || property.contract_type === 'Monthly') && (workType.name === 'Snow Removal')) {            
             newRecordObject.price = 0  
+        } else if (workType.name === "Staking") {
+            newRecordObject.price = 0
         }
         newRecordObject.timestamp = new Date(Date.now())
         newRecordObject.contract_type = customerDetails.contract_type
