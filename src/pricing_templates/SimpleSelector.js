@@ -27,17 +27,18 @@ const SimpleSelector = (props) => {
                 {props.selectedItem?.name || `${props.title}`}
             </Dropdown.Toggle>
             <Dropdown.Menu style={{maxHeight: '80vh', overflow:'scroll'}} >
-                <div style={{display: 'flex', float: "left"}}>
-                    <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button>
-                    <Button 
-                        style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} 
-                        variant="primary" 
-                        size="sm" 
-                        onClick={() => props.onCreate(props.whichModal)}>
-                        New
-                    </Button>
-                </div>  
-            <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={() => props.onSelect(null)}>Clear</Button>
+            {props.editable && (
+                <div style={{display: 'flex', float: "left",}}>
+                <Button style={{marginLeft:"1em"}} variant="primary" size="sm" onClick={toggleEdit}>{showEdit ? "Close" : "Edit"}</Button>
+                <Button 
+                    style={{visibility: showEdit ? "initial" : "hidden", marginLeft:"1em"}} 
+                    variant="primary" 
+                    size="sm" 
+                    onClick={() => props.onCreate(props.whichModal)}>
+                    New
+                </Button>
+            </div>  
+            )}
             {
                 props.itemArray ?                   
                     props.itemArray.sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => {   

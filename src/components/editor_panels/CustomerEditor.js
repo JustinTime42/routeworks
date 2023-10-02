@@ -19,6 +19,12 @@ const editorSize = {marginTop: '2em', overflowY: "scroll"}
 
 const PriceField = ({workName, priceField, pricingMultiple, customer, onChangePrice, onDeletePrice, pricingBasis}) => {
     const [deleteAlert, setDeleteAlert] = useState(false)
+
+    const onDelete = () => {
+        setDeleteAlert(false)
+        onDeletePrice(priceField, workName, pricingBasis)
+    }
+
     return (
         <>
         <Form.Group style={{marginBottom: "1em", marginTop: "1em", display: "flex", flexDirection:"row", wrap:"no-wrap", alignItems:"baseline"}}>                
@@ -41,7 +47,7 @@ const PriceField = ({workName, priceField, pricingMultiple, customer, onChangePr
             <Alert.Heading>Confirm Delete Price Field?</Alert.Heading>
             This cannot be undone, but you can pull the blank price field in later from the template.
             <hr />
-            <Button onClick={() => onDeletePrice(priceField, workName, pricingBasis)} variant="danger">
+            <Button onClick={onDelete} variant="danger">
                 Confirm Delete             
             </Button>
             <Button style={{marginLeft:"1em"}} onClick={() => setDeleteAlert(false)} variant="success">
@@ -49,7 +55,6 @@ const PriceField = ({workName, priceField, pricingMultiple, customer, onChangePr
             </Button>
         </Alert>
         </>
-
     )
 }
 
@@ -442,7 +447,7 @@ const CustomerEditor = (props) => {
                                             onCreate={() => {}}
                                             onEdit={() => {}}
                                             onSelect={(event) => onAddVehicle(event, workName)}
-                                            permissions={[]}
+                                            editable={false}
                                             dbQuery = {vehicleTypesQuery}
                                         />
 

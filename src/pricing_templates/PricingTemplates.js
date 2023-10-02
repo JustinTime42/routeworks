@@ -75,7 +75,7 @@ const PricingTemplates = (props) => {
         onCreate={onCreate}
         onEdit={onEdit}
         onSelect={onSelect}
-        permissions={['Admin']}
+        editable={true}
         dbQuery={templatesQuery}
         />
     </div>
