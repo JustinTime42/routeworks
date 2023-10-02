@@ -15,7 +15,6 @@ import WorkTypeEditor from '../components/editor_panels/WorkTypeEditor'
 import { setActiveItem, showModal, hideModal, setTempItem, setCurrentUser, clearState, setColorMode } from "../actions"
 
 import {SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PROPERTY, USER_LOGOUT, COLOR_MODE} from '../constants.js'
-import { rootReducer } from '..';
 
 const ShiftSetup = () => {
     const [user, loading, error] = useAuthState(auth);
@@ -38,6 +37,7 @@ const ShiftSetup = () => {
     
 
     useEffect(() => { 
+        dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
         const unsub = onSnapshot(collection(db, 'driver/driver_lists/driver'), (querySnapshot) => {
             dispatch({type:GET_DRIVERS_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
@@ -45,11 +45,6 @@ const ShiftSetup = () => {
             unsub()
         }
     },[])
-
-    useEffect(() => {
-        // change data_bs_theme to light or dark depending on colorMode
-        document.body.setAttribute('data-bs-theme', colorMode)
-    },[colorMode])
     
 
     const outerDivStyle = {
