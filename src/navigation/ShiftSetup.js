@@ -37,6 +37,7 @@ const ShiftSetup = () => {
     
 
     useEffect(() => { 
+        dispatch(setActiveItem(null, customers, SET_ACTIVE_PROPERTY))
         const unsub = onSnapshot(collection(db, 'driver/driver_lists/driver'), (querySnapshot) => {
             dispatch({type:GET_DRIVERS_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })

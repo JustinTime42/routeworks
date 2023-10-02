@@ -12,22 +12,44 @@ import RoutePopover from '../customer_panels/RoutePopover'
 import { useOutletContext } from 'react-router-dom'
 import { GET_PRICING_TEMPLATES_SUCCESS, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_PRICING_TEMPLATE, SET_ACTIVE_VEHICLE_TYPE } from '../../constants';
 import SimpleSelector from '../../pricing_templates/SimpleSelector'
+import _ from 'lodash'
 // const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
 // const sandContractTypes = ["Per Visit", "Per Yard"]
 const editorSize = {marginTop: '2em', overflowY: "scroll"}
 
-const PriceField = ({workName, priceField, pricingMultiple, customer, onChangePrice}) => {
+const PriceField = ({workName, priceField, pricingMultiple, customer, onChangePrice, onDeletePrice, pricingBasis}) => {
+    const [deleteAlert, setDeleteAlert] = useState(false)
     return (
+        <>
         <Form.Group style={{marginBottom: "1em", marginTop: "1em", display: "flex", flexDirection:"row", wrap:"no-wrap", alignItems:"baseline"}}>                
-        <Form.Label>{priceField} price:</Form.Label>        
-        <Form.Control 
-            style={{width: "100px", marginLeft: "1em"}}
-            name={priceField} 
-            type="number" 
-            value={customer?.pricing?.workTypes?.[workName]?.prices?.[priceField] || ""} 
-            onChange={(event) => onChangePrice(event, workName)}/>
-        <Form.Label style={{marginLeft: "1em"}}>{pricingMultiple}</Form.Label>
-    </Form.Group>
+            <Form.Label>{priceField} price:</Form.Label>        
+            <Form.Control 
+                style={{width: "100px", marginLeft: "1em"}}
+                name={priceField} 
+                type="number" 
+                value={customer?.pricing?.workTypes?.[workName]?.prices?.[priceField] || ""} 
+                onChange={(event) => onChangePrice(event, workName)}/>
+            <Form.Label style={{marginLeft: "1em"}}>{pricingMultiple}</Form.Label>
+            <Button
+                style={{marginLeft: "1em"}}
+                variant="danger"
+                size="sm"
+                onClick={() => setDeleteAlert(true)}
+            >delete</Button>
+        </Form.Group>
+        <Alert show={deleteAlert} variant="danger">
+            <Alert.Heading>Confirm Delete Price Field?</Alert.Heading>
+            This cannot be undone, but you can pull the blank price field in later from the template.
+            <hr />
+            <Button onClick={() => onDeletePrice(priceField, workName, pricingBasis)} variant="danger">
+                Confirm Delete             
+            </Button>
+            <Button style={{marginLeft:"1em"}} onClick={() => setDeleteAlert(false)} variant="success">
+                Cancel
+            </Button>
+        </Alert>
+        </>
+
     )
 }
 
@@ -140,9 +162,18 @@ const CustomerEditor = (props) => {
 
     const onChangePricingTemplate = (event) => {
         // let { target: { name, value } } = event
-        dispatch(setTempItem({...customer, pricing: pricingTemplates.find(i => i.id === event)}))
+        dispatch(setTempItem({...customer, pricing: _.merge(customer.pricing, pricingTemplates.find(i => i.id === event))}))
     }
 
+    const onDeletePrice = (price, workName, pricingBasis) => {
+        let newCustomer = {...customer}
+        if (pricingBasis === "Work Type") {
+            delete newCustomer.pricing.workTypes[workName]
+        } else {
+            delete newCustomer.pricing.workTypes[workName].prices[price]
+        }
+        dispatch(setTempItem(newCustomer))
+    }
 
     const onChangePrice = (event, workName) => {
         let { target: { name, value } } = event
@@ -386,11 +417,13 @@ const CustomerEditor = (props) => {
                             if (workType?.pricingBasis === "Work Type") {
                                 return (
                                     <PriceField
+                                        onDeletePrice={onDeletePrice}
                                         workName={workName}
                                         priceField={workName}
                                         pricingMultiple={workType?.pricingMultiple}
                                         customer={customer}
                                         onChangePrice={onChangePrice}
+                                        pricingBasis={workType?.pricingBasis}
                                     />
                                 )
                             } else {
@@ -431,11 +464,13 @@ const CustomerEditor = (props) => {
                                             const workObject=customer.pricing.workTypes[workName]
                                             return (
                                                 <PriceField
+                                                    onDeletePrice={onDeletePrice}
                                                     workName={workName}
                                                     priceField={vehicleTypes.find(type => type.name === vehicleType).name}
                                                     pricingMultiple={workObject?.pricingMultiple}
                                                     customer={customer}
                                                     onChangePrice={onChangePrice}
+                                                    pricingBasis={workType?.pricingBasis}
                                                 />
                                                 
                                             )

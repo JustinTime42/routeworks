@@ -1,6 +1,7 @@
 import { editItem } from "../../actions"
 import { AddToInvoiceRenderer, DateTimeEditor, DateTimeRenderer, DeleteLogRenderer } from "./utils"
 
+//deprecated
 const xeroHeaders =  [
     { headerName: "Contract Type", field: "contract_type"},
     { headerName: "ContactName", field: "cust_name"},
@@ -41,6 +42,7 @@ const xeroHeaders =  [
     { headerName: "POPostalCode", field: "bill_zip" },
 ]
 
+//deprecated
 const hourlyHeaders = [
     { headerName: "ContactName", field: "cust_name"},
     { headerName: "Date", field: "date" },
@@ -76,11 +78,10 @@ const rawHeaders = [
     // { headerName: "InvoiceNumber", field: "invoice_number", editable: false },
     { headerName: "Notes", field: "notes", editable: true },
     { headerName: "Price", field: "price", valueParser: params => Number(params.newValue) },
-    { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
-    { headerName: "Yardage Rate", field: "price_per_yard", valueParser: params => Number(params.newValue)},
+    { headerName: "Quantity", field: "quantity", valueParser: params => Number(params.newValue)},
+    { headerName: "Unit Price", field: "unit_price", valueParser: params => Number(params.newValue)},
     { headerName: "Start Time", field: "startTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
     { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
-    { headerName: "Hourly Rate", field: "hourly_rate"},
     { headerName: "Reference", field: "reference" },
     { headerName: "Status", field: "status"},
     { headerName: "Timestamp", field: "timestamp", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
@@ -98,7 +99,6 @@ const customerEditHeaders = [
     { headerName: "Description", field: "description"},
     { headerName: "Driver Name", field: "driver"},
     { headerName: "Vehicle", field: "vehicle"},
-    { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
     { headerName: "Start Time", field: "startTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
     { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
     { headerName: "Service Address", field: "service_address"},
@@ -110,8 +110,8 @@ const customerEditHeaders = [
     { headerName: "Driver Earning", field: "driverEarning", valueParser: params => Number(params.newValue)},
     { headerName: "InvoiceNumber", field: "invoice_number", editable: false },
     { headerName: "Price", field: "price", valueParser: params => Number(params.newValue) },
-    { headerName: "Yardage Rate", field: "price_per_yard", valueParser: params => Number(params.newValue)},
-    { headerName: "Hourly Rate", field: "hourly_rate"},
+    { headerName: "Quantity", field: "quantity", valueParser: params => Number(params.newValue)},
+    { headerName: "Unit Price", field: "unit_price", valueParser: params => Number(params.newValue)},
     { headerName: "Reference", field: "reference" },
     { headerName: "Vehicle Type", field: "vehicle_type"},
     { headerName: "Value", field: "value", valueParser: params => Number(params.newValue)},
@@ -139,8 +139,8 @@ const stripeHeaders = [
     { headerName: "Driver Name", field: "driver"},
     { headerName: "Notes", field: "notes", editable: true },
     { headerName: "Price", field: "price", valueParser: params => Number(params.newValue) },
-    { headerName: "Yards", field: "yards", valueParser: params => Number(params.newValue)},
-    { headerName: "Yardage Rate", field: "price_per_yard", valueParser: params => Number(params.newValue)},
+    { headerName: "Quantity", field: "quantity", valueParser: params => Number(params.newValue)},
+    { headerName: "Unit Price", field: "unit_price", valueParser: params => Number(params.newValue)},
     { headerName: "Start Time", field: "startTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
     { headerName: "End Time", field: "endTime", cellRenderer:DateTimeRenderer, cellEditor: DateTimeEditor},
     { headerName: "Hourly Rate", field: "hourly_rate"},

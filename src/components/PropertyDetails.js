@@ -22,6 +22,7 @@ const initialState = {
     currentLogEntry: null,
     showUndoConfirmation: false,
     isRunning: false,
+    modifier: {},
 }
 
 const PropertyDetails = (props) => {
@@ -30,7 +31,7 @@ const PropertyDetails = (props) => {
         setState
     ] = useState(initialState)   
     const navigate = useNavigate()
-    const { noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, isRunning } = currentState    
+    const { modifier, noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, isRunning } = currentState    
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const driver = useSelector(state => state.setCurrentUser.currentUser.claims)
     const tractor = useSelector(state => state.setActiveTractor.activeTractor)
@@ -41,6 +42,7 @@ const PropertyDetails = (props) => {
     const currentLogEntry = useSelector(state => state.setActiveLogEntry.entry)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const shouldShowModal = useSelector(state => state.whichModals.modals).includes("Per Hour")
+
 
     const dispatch = useDispatch()
     const {custId, routeId} = useParams()
@@ -61,7 +63,8 @@ const PropertyDetails = (props) => {
         }
     }
 
-    useEffect(() => {      
+    useEffect(() => {     
+        console.log(currentState) 
         document.addEventListener("keydown", listener)
         return () => {
         document.removeEventListener("keydown", listener)
@@ -71,23 +74,16 @@ const PropertyDetails = (props) => {
     useEffect(() => {   
         const newActiveCustomer = customers.find(i => i.id === custId)       
         if (newActiveCustomer === undefined) return 
-        if (!newActiveCustomer?.pricing?.workTypes?.[workType.name]) {
-            alert(`This customer does not have pricing for ${workType.name}. Please select a different work type or enter the appropriate information.`)
-            return
-        }
         dispatch(setActiveItem(newActiveCustomer, customers, SET_ACTIVE_PROPERTY))
-        console.log(shouldShowModal)
-        if (newActiveCustomer?.pricing?.workTypes[workType.name].pricingMultiple === "Per Hour") { 
-          dispatch(showModal("Per Hour"))
-            setTimeout(() => alert("Remember to log hours!"), 200) 
-            setState(() => ({...initialState, disabled: true})) 
-        } else {
-            setState(initialState)
-        }
     }, [custId])
 
     useEffect(() => {
+        if(property?.id) {
             let newRouteCustomers = {...activeRoute.customers}
+            if (getUnitPrice() === undefined) {
+                alert(`This customer does not have pricing information for this task. Please select a different work type or enter the appropriate information.`)
+                return
+            }
             if (newRouteCustomers[property.id].status === "Waiting") {
                 newRouteCustomers[property.id].status = "In Progress"
                 dispatch(editItem({
@@ -97,7 +93,15 @@ const PropertyDetails = (props) => {
                     SET_ACTIVE_ROUTE, 
                     REQUEST_ROUTES_SUCCESS))
             }
-    }, [property])
+            if (getPricingMultiple() === "Per Hour") { 
+                dispatch(showModal("Per Hour"))
+                  setTimeout(() => alert("Remember to log hours!"), 200) 
+                  setState(() => ({...initialState, disabled: true})) 
+              } else {
+                  setState(initialState)
+              }
+        }
+    }, [property.id])
 
     const onTextChange = (event) => {
         let {target: {name, value} } = event
@@ -135,13 +139,50 @@ const PropertyDetails = (props) => {
         dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
+    const getWorkTypeObject = () => {
+        return property.pricing?.workTypes?.[workType.name]
+    }
+
+    const getPriceBasis = () => {
+        const workTypeObject = getWorkTypeObject()
+        return workTypeObject?.pricingBasis === "Work Type" ? workType.name : tractor.type // eg: "Snow Removal" : "Road Grader"
+    }
+
+    const getUnitPrice = () => {
+        const workTypeObject = getWorkTypeObject()
+        const basis = getPriceBasis()
+        console.log(basis)
+        return workTypeObject?.prices?.[basis]
+    }
+
+    const getPricingMultiple = () => {
+        const workTypeObject = getWorkTypeObject()
+        console.log(workTypeObject?.pricingMultiple)
+        return workTypeObject?.pricingMultiple
+    }
+
+    const getPriceModifiers = () => {
+        const workTypeObject = getWorkTypeObject()
+        return workTypeObject?.modifiers || []
+    }
+
+    const handleModifier = (price) => {
+        if (modifier) {
+            switch(modifier.operator) {
+                case "+" : return price + modifier.value
+                case "-" : return price - modifier.value
+                case "*" : return price * modifier.value
+                case "/" : return price / modifier.value
+                default: return price
+            }
+        } else {
+            return price
+        }
+    }
 
     const getPrice = (timeLogged=null) => {
-        const workTypeObject = property.pricing.workTypes[workType.name]
-        const basis = workTypeObject.pricingBasis === "Work Type" ? workType.name : tractor.type // eg: "Snow Removal" : "Road Grader"
         let multiplier 
-        console.log(workTypeObject.pricingMultiple)
-        switch (workTypeObject.pricingMultiple) {
+        switch (getPricingMultiple()) {
             case "Per Hour": multiplier = timeLogged
                 break
             case "Per Visit": multiplier = 1
@@ -152,8 +193,8 @@ const PropertyDetails = (props) => {
                 break
             default: multiplier = 1
         }
-        const unitPrice = workTypeObject.prices[basis]
-        const price = unitPrice * multiplier
+        const unitPrice = getUnitPrice()
+        const price = handleModifier(unitPrice * multiplier)
         return {total: price, unitPrice: unitPrice, multiplier: multiplier}
     }
 
@@ -180,13 +221,18 @@ const PropertyDetails = (props) => {
         } else {
             const priceObject = getPrice(timeLogged)
             newRecordObject.price = priceObject.total
-            newRecordObject.unitPrice = priceObject.unitPrice
+            newRecordObject.unit_price = priceObject.unitPrice            
             if (getPriceMultiplier() === "Per Hour") {
-                newRecordObject.quanity = timeLogged
+                newRecordObject.quantity = timeLogged
                 amountString = ": " + timeLogged + " hrs"
             } else if (getPriceMultiplier() === "Per Yard") {
                 amountString = ": " + yards + " yds"
-                newRecordObject.quanity = yards
+                newRecordObject.quantity = yards
+            } else {
+                newRecordObject.quantity = 1
+            }
+            if (modifier) {
+                amountString += ` ${modifier.name} ${modifier.operator} ${modifier.value}`
             }
             newRecordObject.multiplier = priceObject.multiplier
         }
@@ -276,7 +322,31 @@ const PropertyDetails = (props) => {
                                 <Form.Label>Number of Yards</Form.Label>
                                 <Form.Control name="yards" type="number" step='any' value={yards || ''} onChange={onTextChange}/>
                             </Form.Group> ): null
-                            }                   
+                            }
+                                <Form.Check
+                                    type="radio"
+                                    label="None"
+                                    name="modifier"
+                                    id="None"
+                                    value={{}}
+                                    onChange={() => setState(prevState => ({...prevState, modifier: {}}))}
+                                />    
+                            { 
+                            getPriceModifiers().map((modifier, i) => {
+                                return (
+                                    <Form.Check
+                                        key={i}
+                                        type="radio"
+                                        label={modifier.name}
+                                        name="modifier"
+                                        id={modifier.name}
+                                        value={modifier}
+                                        onChange={() => setState(prevState => ({...prevState, modifier: modifier}))}
+                                    />
+                                )
+                            })
+                            } 
+
                         </Col>
                     </Row>
                     <Card.Body>
@@ -357,7 +427,7 @@ const PropertyDetails = (props) => {
 const WithModal = (props) => {
     const { property, shouldShowModal, onCloseClick, children } = props    
     return (
-        shouldShowModal ? 
+        shouldShowModal && property.id ? 
             <Modal style={{marginTop: '2em'}} show={shouldShowModal} onHide={onCloseClick} backdrop='static' size='lg'>
             <Modal.Header closeButton></Modal.Header>            
             {property.id ? children : null}

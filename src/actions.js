@@ -61,10 +61,12 @@ export const createItem = (item, itemList = null, className, activeActionType = 
         addDoc(collection(db, className), {...item}) 
         .then(result => {
             console.log(result.id)
-            dispatch({
-                type: activeActionType,                     
-                payload: {...item, id: result.id}
-            }) 
+            if (activeActionType && listAction) {
+                dispatch({
+                    type: activeActionType,                     
+                    payload: {...item, id: result.id}
+                }) 
+            }
         })
         .catch(err => alert(err))              
     }
@@ -96,7 +98,7 @@ export const editItem = (item, itemList, className, activeActionType = null, lis
     sendToDB()
 }
 
-export const deleteItem = (item, itemList, className, activeActionType, listAction) => (dispatch) => {
+export const deleteItem = (item, itemList, className, activeActionType = null, listAction = null) => (dispatch) => {
     dispatch({type: activeActionType, payload: null}) 
     let tempList = [...itemList]   
     if (item.adminFields) {        
@@ -104,9 +106,15 @@ export const deleteItem = (item, itemList, className, activeActionType, listActi
         dispatch({type: listAction, payload: tempList}) 
     }     
     tempList.splice(tempList.findIndex(i => i.id === item.id), 1)
-    dispatch({type: listAction, payload: tempList})
+    if (listAction) {
+        dispatch({type: listAction, payload: tempList})
+    }    
     deleteDoc(doc(db, className, item.id))
-    .then(() => dispatch({type: activeActionType, payload: {}}))
+    .then(() => {
+        if (activeActionType) {
+            dispatch({type: activeActionType, payload: {}})
+        }
+    })
     .catch(err => console.log(err))
 }
 

@@ -105,7 +105,7 @@ const RouteBuilder = () => {
                 }
             )
         }
-        
+
         const newTrimmedDetails = removeFields(newDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
@@ -117,7 +117,7 @@ const RouteBuilder = () => {
         } else {
             dispatch(createItem(newDetails, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         }
-        if (close) onCloseClick()        
+        if (close) onCloseClick()
     }
 
     const onDelete = (customer) => {
