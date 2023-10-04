@@ -117,12 +117,12 @@ const UserEditor = (props) => {
                         <Form.Control name="percentage" type="numeric" onChange={onChange} placeholder="Percentage" value={tempItem?.customClaims?.percentage || 0} />
                     </Col>
                 </Form.Group>
-                {/* <Form.Group as={Row}>
+                <Form.Group as={Row}>
                     <Form.Label column sm={2}>Hourly</Form.Label>
                     <Col sm={8}>
                         <Form.Control name="hourly" type="numeric" onChange={onChange} placeholder="Hourly" value={tempItem?.customClaims?.hourly || 0} />
                     </Col>
-                </Form.Group> */}
+                </Form.Group>
                 <Form.Group as={Row} style={{margin:'1em'}}>
                     <Col>
                         <Form.Check

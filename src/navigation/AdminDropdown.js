@@ -6,6 +6,7 @@ import {hideModal, showModal} from "../actions"
 import CustomerContact from '../components/CustomerContact'
 import RawCustomerData from '../components/RawCustomerData'
 import DataImport from '../components/migration/DataImport'
+import PricingTemplates from '../pricing_templates/PricingTemplates'
 
 const AdminDropdown = () => {
     let location = useLocation()
@@ -62,12 +63,15 @@ const AdminDropdown = () => {
                 <Dropdown.Item as={Link} to="/admin/auditor">
                     Audit Logs
                 </Dropdown.Item>
+                <Dropdown.Item as={Link} to="/admin/pricing_templates">
+                    Pricing Templates
+                </Dropdown.Item>
                 <Dropdown.Item key="import" eventKey="import">
                     Import Data
                 </Dropdown.Item>
-                {/* <Dropdown.Item as={Link} to="/admin/migration" key="migration" eventKey="migration">
+                <Dropdown.Item as={Link} to="/admin/migration" key="migration" eventKey="migration">
                     Data Migration
-                </Dropdown.Item> */}
+                </Dropdown.Item>
 
                 </> : null}
             </DropdownButton>

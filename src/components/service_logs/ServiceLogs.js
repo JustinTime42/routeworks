@@ -181,13 +181,7 @@ const ServiceLogs = (props) => {
                     <Form.Label>End Date</Form.Label>
                     <Form.Control name="endDate" type="date" onChange={event => setEndDate(event.target.value)}/>
                 </Form.Group>    
-                <DropdownButton title={logType || "Format"} onSelect={event => handleSelect(event)}>        
-                    <Dropdown.Item key="xero" eventKey="xero">                                
-                        Xero                             
-                    </Dropdown.Item>
-                    <Dropdown.Item key="hourly" eventKey="hourly">                                
-                        Hourly                        
-                    </Dropdown.Item> 
+                <DropdownButton title={logType || "Format"} onSelect={event => handleSelect(event)}>     
                     <Dropdown.Item key="raw" eventKey="raw">                                
                         Full Data                          
                     </Dropdown.Item> 

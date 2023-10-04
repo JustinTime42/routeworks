@@ -55,7 +55,7 @@ const SimpleSelector = (props) => {
                     props.itemArray.filter(item => item.active).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => {   
                         return (
                             <div key={i}>                        
-                                <Dropdown.Item eventKey={item.name} style={{marginBottom:'1em'}}>
+                                <Dropdown.Item eventKey={item.id} style={{marginBottom:'1em'}}>
                                     {item.name}
                                     
                                     <Button size='sm' disabled={!item.id} style={{visibility: (showEdit) ? "initial" : "hidden", marginBottom:'3px', marginLeft: '3px'}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
@@ -73,7 +73,7 @@ const SimpleSelector = (props) => {
                     props.itemArray.filter(item => !item.active).sort((a,b) => (b.name < a.name) ? 1 : -1).map((item, i) => { 
                         return (
                             <div key={i} style={{display: "flex", backgroundColor:"rgba(231, 76, 60, 0.2)"}}>                        
-                                <Dropdown.Item eventKey={item.name}>{item.name}
+                                <Dropdown.Item eventKey={item.id}>{item.name}
                                     <Button style={{visibility: (showEdit) ? "initial" : "hidden"}} onClick={() => props.onEdit(item, props.whichModal, props.collection)}>Edit</Button>
                                 </Dropdown.Item>
                             </div>

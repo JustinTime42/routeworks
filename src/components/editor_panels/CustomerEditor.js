@@ -1,18 +1,62 @@
 import React, { useEffect, useState } from 'react'
-import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap'
+import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert, Dropdown, Card, DropdownButton } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { setTempItem } from '../../actions'
 import PlacesAutocomplete, { geocodeByPlaceId, geocodeByAddress, getLatLng } from 'react-places-autocomplete'
-import { arrayUnion, doc, onSnapshot, updateDoc } from 'firebase/firestore'
+import { arrayUnion, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import CustLogs from '../customer_panels/CustLogs'
 import '../../styles/driver.css'
 import { serviceLevels  } from '../../globals'
 import RoutePopover from '../customer_panels/RoutePopover'
 import { useOutletContext } from 'react-router-dom'
-const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
-const sandContractTypes = ["Per Visit", "Per Yard"]
-const editorSize = {height:"100vh", marginTop: '2em'}
+import { GET_PRICING_TEMPLATES_SUCCESS, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_PRICING_TEMPLATE, SET_ACTIVE_VEHICLE_TYPE } from '../../constants';
+import SimpleSelector from '../../pricing_templates/SimpleSelector'
+import _ from 'lodash'
+// const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
+// const sandContractTypes = ["Per Visit", "Per Yard"]
+const editorSize = {marginTop: '2em', overflowY: "scroll"}
+
+const PriceField = ({workType, priceField, pricingMultiple, customer, onChangePrice, onDeletePrice, pricingBasis}) => {
+    const [deleteAlert, setDeleteAlert] = useState(false)
+
+    const onDelete = () => {
+        setDeleteAlert(false)
+        onDeletePrice(priceField, workType.id, pricingBasis)
+    }
+
+    return (
+        <>
+        <Form.Group style={{marginBottom: "1em", marginTop: "1em", display: "flex", flexDirection:"row", wrap:"no-wrap", alignItems:"baseline"}}>                
+            <Form.Label>{priceField?.name} price:</Form.Label>        
+            <Form.Control 
+                style={{width: "100px", marginLeft: "1em"}}
+                name={priceField?.id} 
+                type="number" 
+                value={customer?.pricing?.workTypes?.[workType?.id]?.prices?.[priceField?.id] || ""} 
+                onChange={(event) => onChangePrice(event, workType.id)}/>
+            <Form.Label style={{marginLeft: "1em"}}>{pricingMultiple}</Form.Label>
+            <Button
+                style={{marginLeft: "1em"}}
+                variant="danger"
+                size="sm"
+                onClick={() => setDeleteAlert(true)}
+            >delete</Button>
+        </Form.Group>
+        <Alert show={deleteAlert} variant="danger">
+            <Alert.Heading>Confirm Delete Price Field?</Alert.Heading>
+            This cannot be undone, but you can pull the blank price field in later from the template.
+            <hr />
+            <Button onClick={onDelete} variant="danger">
+                Confirm Delete             
+            </Button>
+            <Button style={{marginLeft:"1em"}} onClick={() => setDeleteAlert(false)} variant="success">
+                Cancel
+            </Button>
+        </Alert>
+        </>
+    )
+}
 
 const CustomerEditor = (props) => {
     const [onPropertySave, onCloseClick, onDelete] = useOutletContext()
@@ -20,6 +64,11 @@ const CustomerEditor = (props) => {
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
+    const activeVehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
+    const pricingTemplates = useSelector(state => state.getPricingTemplates.pricingTemplates)
+    const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
+    const [pricingTemplate, setPricingTemplate] = useState(pricingTemplates.find(i => i.id === customer?.pricingTemplate))
+
     const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
     const [deleteAlert, setDeleteAlert] = useState(false)
@@ -34,20 +83,27 @@ const CustomerEditor = (props) => {
         setDeleteAlert(false)
     }, [customer])
 
+    useEffect(() => {
+        const unsub = onSnapshot(collection(db, `organizations/${organization}/pricing_templates`), (querySnapshot) => {
+            if (querySnapshot.docs.length === 0) {
+                return
+            }
+            dispatch({type:GET_PRICING_TEMPLATES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+        })
+        return () => {
+            unsub()
+        }
+    }, [])
+
     // useEffect(() => {
-    //     dispatch(setTempItem(activeProperty))
-    // },[activeProperty])
+    //     setPricingTemplate(pricingTemplates.find(i => i.id === customer?.pricingTemplate))
+        
+    // }, [pricingTemplates, customer])
 
     useEffect(() => {
         const getPosition = async() => {
             await navigator.geolocation.getCurrentPosition((position) => {
                 setLatLng({lat: position.coords.latitude, lng: position.coords.longitude})
-                // ({
-                //     north: center.lat + 1,
-                //     south: center.lat - 1,
-                //     east: center.lng + 1,
-                //     west: center.lng - 1,
-                // })
             })
         }
         getPosition()       
@@ -55,7 +111,6 @@ const CustomerEditor = (props) => {
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, `organizations`,  organization), (doc) => {
-            console.log(doc.data().tags)
             setAllTags([...doc.data().tags])
         })
         return () => {
@@ -63,9 +118,13 @@ const CustomerEditor = (props) => {
         }
     }, [])
 
+    const vehicleTypesQuery = () => {
+        return onSnapshot(collection(db, `organizations/${organization}/vehicle_type`), (querySnapshot) => {
+            dispatch({type:GET_VEHICLE_TYPES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+        })
+    }
+
     const tagChange = (event) => {
-        console.log(event)
-        console.log(customer)
         let {target: {name, value} } = event
         let tagsArray = customer.tags ? customer.tags : []
         if (tagsArray.includes(name)) {
@@ -73,7 +132,6 @@ const CustomerEditor = (props) => {
         } else {
             tagsArray.push(name)
         }
-        console.log(tagsArray)
         //let tags = tagsArray.join()
         dispatch(setTempItem({...customer, tags: tagsArray}))
     }
@@ -87,8 +145,7 @@ const CustomerEditor = (props) => {
         }
     }
     
-    const onChange = (event) => {
-        console.log(customer)    
+    const onChange = (event) => {  
         let { target: { name, value } } = event
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
         let numberValues = ['snow_price', 'value', 'price_per_yard', 'sweep_price', 'season_price', ...vTypes]
@@ -105,6 +162,37 @@ const CustomerEditor = (props) => {
         }
     }
 
+    const onChangePricingTemplate = (event) => {
+        // let { target: { name, value } } = event
+        dispatch(setTempItem({...customer, pricing: _.merge(customer.pricing, pricingTemplates.find(i => i.id === event))}))
+    }
+
+    const onDeletePrice = (price, workName, pricingBasis) => {
+        let newCustomer = {...customer}
+        if (pricingBasis === "Work Type") {
+            delete newCustomer.pricing.workTypes[workName]
+        } else {
+            delete newCustomer.pricing.workTypes[workName].prices[price]
+        }
+        dispatch(setTempItem(newCustomer))
+    }
+
+    const onChangePrice = (event, workName) => {
+        let { target: { name, value } } = event
+        let price = Number(value)
+        let newCustomer = {...customer}
+        newCustomer.pricing.workTypes = {...newCustomer.pricing.workTypes, [workName]: {...newCustomer.pricing.workTypes[workName], prices: {...newCustomer.pricing.workTypes[workName]?.prices, [name]: price}}} 
+        dispatch(setTempItem(newCustomer))
+        //{...customer, workTypes: {...customer?.workTypes, [name]: {...customer?.workTypes?.[name], prices: {...customer?.workTypes?.[name]?.prices, [name]: [price]}}}}
+    }
+
+    const onAddVehicle = (vehicleName, workName) => {
+        const vehicleID = vehicleTypes.find(i => i.name === vehicleName).id
+        let newCustomer = {...customer}
+        newCustomer.pricing.workTypes = {...newCustomer.pricing.workTypes, [workName]: {...newCustomer.pricing.workTypes[workName], prices: {...newCustomer.pricing.workTypes[workName]?.prices, [vehicleID]: null}}}
+        dispatch(setTempItem(newCustomer))
+    }
+    
     const clickSameAddress = () => {
         dispatch(setTempItem(
             {
@@ -129,7 +217,6 @@ const CustomerEditor = (props) => {
                 service_city: addressArray[1],
                 service_state: addressArray[2],
                 service_zip: postalCode
-
             }
         ))
     }
@@ -145,6 +232,16 @@ const CustomerEditor = (props) => {
         },
         types:['address']
       }
+
+    const unassignedVehicles = (workName) => {
+        let unassigned = []
+        vehicleTypes.forEach(type => {
+            if (customer.pricing.workTypes?.[workName]?.prices?.[type.id] === undefined) {
+                unassigned.push(type)
+            }
+        })
+        return unassigned
+    }
 
     return (      
         <Modal className="scrollable" style={editorSize} show={modals.includes('Customer')} onHide={onCloseClick} size='lg'>
@@ -216,7 +313,6 @@ const CustomerEditor = (props) => {
                             />
                             <div className="autocomplete-dropdown-container">
                             {suggestions.map(suggestion => {
-                                console.log(suggestion)
                                 const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
                                 // inline style for demonstration purpose
                                 const style = suggestion.active
@@ -301,13 +397,100 @@ const CustomerEditor = (props) => {
                 </Row>                    
                 </Form>
                 </Tab>
-                <Tab eventKey='job' title='Job Info'>
+                <Tab eventKey='job' title='Job Info' style={{overflowY:"scroll"}}>
                     <Form>
+                    <Form.Group style={{display: "flex", flexDirection:"row", wrap:"no-wrap", justifyContent: "start"}}>
+                        <Form.Label>Pricing Template:</Form.Label>
+                        <DropdownButton style={{width: "200px", marginLeft: "1em"}} title={customer?.pricing?.name || "Select"} onSelect={onChangePricingTemplate}>
+                            {
+                                pricingTemplates.map(type => <Dropdown.Item key={type.id} eventKey={type.id}>{type.name}</Dropdown.Item>)
+                            }
+                        </DropdownButton>
+                    </Form.Group> 
                     <Row> 
-                        {
+                        <Col style={{overflowY:"scroll"}}>
+                        {customer?.pricing?.workTypes && Object.keys(customer.pricing.workTypes).sort().map((workName, i) => {
+                            const workType = customer.pricing?.workTypes[workName]
+                            if (workType?.pricingBasis === "Work Type") {                                
+                                return (
+                                    <PriceField
+                                        onDeletePrice={onDeletePrice}
+                                        workType={workTypes.find(i => i.id === workName)}
+                                        priceField={workTypes.find(i => i.id === workName)}
+                                        pricingMultiple={workType?.pricingMultiple}
+                                        customer={customer}
+                                        onChangePrice={onChangePrice}
+                                        pricingBasis={workType?.pricingBasis}
+                                    />
+                                )
+                            } else {
+                                return (
+                                    <Card key={i} style={{padding: "1em"}}>
+                                        <div style={{display: "flex", flexDirection:"row", wrap:"no-wrap"}}>
+                                        <Form.Label style={{fontWeight:"bold"}}>{workTypes.find(i => i.id === workName).name} prices:</Form.Label>
+                                        <SimpleSelector
+                                            style={{marginLeft: "1em"}}
+                                            title="Add Vehicle"
+                                            collection="vehicle_types"
+                                            collectionPath={`organizations/${organization}/`}
+                                            selectedItem = {null}
+                                            itemArray={unassignedVehicles(workName) || []}
+                                            whichModal="VehicleType"
+                                            onCreate={() => {}}
+                                            onEdit={() => {}}
+                                            onSelect={(event) => onAddVehicle(event, workName)}
+                                            editable={false}
+                                            dbQuery = {vehicleTypesQuery}
+                                        />
+
+                                            {/* <Form.Control name={workName}
+                                                as="select"
+                                                value={'Add Vehicle'}
+                                                onChange={onAddVehicle}
+                                            > 
+                                            {vehicleTypes.map(type => {
+                                                return customer.pricing.workTypes?.[workName]?.prices && Object.keys(customer.pricing.workTypes?.[workName]?.prices).includes(type.id) ? null : 
+                                                    <option key={type.id} value={type.id}>{type.name}</option>
+                                            })}                                                
+                                            </Form.Control> */
+                                        }
+                                        </div>                                            
+                                        {customer?.pricing?.workTypes?.[workName]?.prices && 
+                                            Object.keys(customer.pricing.workTypes?.[workName]?.prices)                                            
+                                            .map((vehicleType, i) => {
+                                            const workObject=customer.pricing.workTypes[workName]
+                                            return (
+                                                <PriceField
+                                                    onDeletePrice={onDeletePrice}
+                                                    workType={workTypes.find(i => i.id === workName)}
+                                                    priceField={vehicleTypes.find(type => type.id === vehicleType)}
+                                                    pricingMultiple={workObject?.pricingMultiple}
+                                                    customer={customer}
+                                                    onChangePrice={onChangePrice}
+                                                    pricingBasis={workType?.pricingBasis}
+                                                />
+                                            )
+                                        })}                                        
+                                    </Card>
+                                )
+                            }
+                        })}
+                        </Col>
+
+
+                        {/* {
                         customer?.contract_type === "Hourly" ? 
                         <Col> 
                         <Form.Label size='sm'>Prices</Form.Label>
+                        <Form.Group>
+                            <Form.Label>Pricing Template</Form.Label>
+                                <Form.Control name="pricingTemplate" as="select" value={customer?.pricingTemplate || ''} onChange={onChange}>
+                                    <option value="select">Select</option>
+                                    {
+                                        pricingTemplates.map(type => <option key={type} value={type}>{type}</option>)
+                                    }
+                                </Form.Control>
+                        </Form.Group>
                         {
                         vehicleTypes.map((item, i) => {  
                             return (
@@ -391,7 +574,7 @@ const CustomerEditor = (props) => {
                                 </Row>
                                 </Form.Group>
                             </Col>
-                        }
+                        } */}
                         <Col>                           
                         <Form.Group>
                             <Form.Label size='sm'>Surface Type</Form.Label>
@@ -403,33 +586,13 @@ const CustomerEditor = (props) => {
                                 </Form.Control>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>Contract Type</Form.Label>
-                                <Form.Control name="contract_type" as="select" value={customer?.contract_type || ''} onChange={onChange}>
-                                    <option value="select">Select</option>
-                                    {
-                                        contractTypes.map(type => <option key={type} value={type}>{type}</option>)
-                                    }
-                                </Form.Control>
-                        </Form.Group>
-                        <Form.Group>
                             <Form.Label>Service Level</Form.Label>
                                 <Form.Control name="service_level" as="select" value={customer?.service_level || 'Select'} onChange={onChange}>
                                     {
                                         serviceLevels.map((type, i) => <option key={type} value={i}>{type || "N/A"}</option>)
                                     }
                                 </Form.Control>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label>Sanding Contract</Form.Label>
-                                <Form.Control name="sand_contract" as="select" value={customer?.sand_contract || ''} onChange={onChange}>
-                                <option value="select">Select</option>
-                                    {
-                                        sandContractTypes.map(type => <option key={type} value={type}>{type}</option>)
-                                    }
-                                </Form.Control>
-                        </Form.Group>                            
-                    </Col>
-                        <Col>
+                        </Form.Group>    
                             <Form.Label>Tags</Form.Label> 
                             <Row style={{marginBottom: '1em'}}>
                                 <Col>

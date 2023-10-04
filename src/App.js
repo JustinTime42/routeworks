@@ -12,12 +12,14 @@ import Register from './auth/Register';
 import PropertyDetails from './components/PropertyDetails';
 import CustomerEditor from './components/editor_panels/CustomerEditor';
 import { Alert } from 'react-bootstrap';
-import { GET_VEHICLE_TYPES_SUCCESS } from './constants';
+import { GET_VEHICLE_TYPES_SUCCESS, GET_WORK_TYPES_SUCCESS } from './constants';
 import Auditor from './components/auditor/Auditor';
+import PricingTemplates from './pricing_templates/PricingTemplates';
 //import Auditor from './components/auditor/Auditor';
 const RouteBuilder = lazy(() => import('./route_builder/RouteBuilder'))
 const DisplayRoute = lazy(() => import('./DisplayRoute'))
 const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))
+
 const Users = lazy(() => import('./components/Users'))
 
 const App = () => { 
@@ -49,6 +51,17 @@ const App = () => {
       unsub()
     }
   },[])
+
+  // useEffect to subscribe to work_type collection
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, `organizations/${currentUser?.claims?.organization}/work_type`), (querySnapshot) => {
+      dispatch({type:GET_WORK_TYPES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+    })  
+    return () => {
+      unsub()
+    }
+  },[currentUser])
+
 
   useEffect(() => {
     // change data_bs_theme to light or dark depending on colorMode
@@ -114,6 +127,7 @@ const App = () => {
             <Route path="users" element={<Users />} />
             <Route path="migration" element={<MigrationUI />} /> 
             <Route path="auditor" element={<Auditor />} />
+            <Route path="pricing_templates" element={<PricingTemplates />} />
           </Route>
         </Routes>
       </Suspense>
