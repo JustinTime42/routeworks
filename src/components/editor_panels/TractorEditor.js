@@ -20,7 +20,7 @@ const TractorEditor = (props) => {
 
     useEffect(() => {
         console.log('vehicle types', vehicleTypes)
-        const newType = vehicleTypes.find(i => i.name === activeVehicle.type)
+        const newType = vehicleTypes.find(i => i.id === activeVehicle.type)
         dispatch(setActiveItem(newType, vehicleTypes, SET_ACTIVE_VEHICLE_TYPE))
     },[activeVehicle])
 

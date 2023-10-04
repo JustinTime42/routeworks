@@ -120,7 +120,7 @@ export const deleteItem = (item, itemList, className, activeActionType = null, l
 
 export const setActiveItem = (item, itemArray, actionType) => {
     console.log("Setting Active Item: ", item)
-    const activeItem = itemArray.find(i => i.name === item)
+    const activeItem = itemArray.find(i => i.id === item)
     if (activeItem) {
         return {
             type: actionType,

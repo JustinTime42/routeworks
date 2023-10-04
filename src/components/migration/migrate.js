@@ -438,6 +438,47 @@ export const displayBadChanges = async() => {
 
 
 
+export const migrateCustomerPricing = async() => {
+    // get all customers
+    // iterate through each customer and build the new pricing schema based on its old pricing fields
+    // save each customer to the database
+    const querySnapshot = await getDocs(collection(db, `organizations/Snowline/customer`));
+    querySnapshot.forEach((doc) => {
+        let entry = {...doc.data(), id: doc.id}
+        let newPricing = {
+            id: 1, 
+            name: "Default",
+            workTypes:{},
+        }
+        if (entry.price_per_yard) {            
+            newPricing.workTypes.SuBIxJJGubxDks63vAm7 = { // sanding price
+                pricingMultiple: entry.sand_contract === "Per Yard" ? "Per Yard" : "Per Visit",
+                pricingBasis: "Work Type",
+                prices: {
+                    "SuBIxJJGubxDks63vAm7": entry?.price_per_yard || 0
+                }
+            }
+        }
+        if (entry.contract_type === "Per Occurrence" || entry.contract_type === "Will Call") {
+            newPricing.workTypes.XLIwnuFPEr5AbUcjkEnx  = { //snow_price
+                pricingMultiple: "Per Visit",
+                pricingBasis: "Work Type",
+                prices: {
+                    "XLIwnuFPEr5AbUcjkEnx": entry?.snow_price ||  0
+                }
+            }
+            newPricing.workTypes.ALJYHCycQxhaXsiSBstX   = { //sweep_price
+                pricingMultiple: "Per Visit",
+                pricingBasis: "Work Type",
+                prices: {
+                    "XLIwnuFPEr5AbUcjkEnx": entry?.sweep_price ||  0
+                }
+            }
+        }
+        console.log({...entry, pricing: newPricing})
+        sendToDB({...entry, pricing: newPricing}, `organizations/Snowline/customer`)
+    });
+}
 
 
 

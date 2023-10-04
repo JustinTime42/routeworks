@@ -12,7 +12,7 @@ import Register from './auth/Register';
 import PropertyDetails from './components/PropertyDetails';
 import CustomerEditor from './components/editor_panels/CustomerEditor';
 import { Alert } from 'react-bootstrap';
-import { GET_VEHICLE_TYPES_SUCCESS } from './constants';
+import { GET_VEHICLE_TYPES_SUCCESS, GET_WORK_TYPES_SUCCESS } from './constants';
 import Auditor from './components/auditor/Auditor';
 import PricingTemplates from './pricing_templates/PricingTemplates';
 //import Auditor from './components/auditor/Auditor';
@@ -48,6 +48,17 @@ const App = () => {
       unsub()
     }
   },[])
+
+  // useEffect to subscribe to work_type collection
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, `organizations/${currentUser?.claims?.organization}/work_type`), (querySnapshot) => {
+      dispatch({type:GET_WORK_TYPES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+    })  
+    return () => {
+      unsub()
+    }
+  },[currentUser])
+
 
   useEffect(() => {
     if (error) {alert(error)}

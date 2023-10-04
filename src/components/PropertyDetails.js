@@ -48,7 +48,7 @@ const PropertyDetails = (props) => {
     const {custId, routeId} = useParams()
 
     const getPriceMultiplier = () => {
-        return property?.pricing?.workTypes?.[workType.name]?.pricingMultiple
+        return property?.pricing?.workTypes?.[workType.id]?.pricingMultiple
     }
 
     const listener = (event) => {        
@@ -80,10 +80,10 @@ const PropertyDetails = (props) => {
     useEffect(() => {
         if(property?.id) {
             let newRouteCustomers = {...activeRoute.customers}
-            if (getUnitPrice() === undefined) {
-                alert(`This customer does not have pricing information for this task. Please select a different work type or enter the appropriate information.`)
-                return
-            }
+            // if (getUnitPrice() === undefined) {
+            //     alert(`This customer does not have pricing information for this task. Please select a different work type or enter the appropriate information.`)
+            //     return
+            // }
             if (newRouteCustomers[property.id].status === "Waiting") {
                 newRouteCustomers[property.id].status = "In Progress"
                 dispatch(editItem({
@@ -140,12 +140,16 @@ const PropertyDetails = (props) => {
     }
 
     const getWorkTypeObject = () => {
-        return property.pricing?.workTypes?.[workType.name]
+        return property.pricing?.workTypes?.[workType.id]
+    }
+
+    const getVehicleType = () => {
+        return tractor.type
     }
 
     const getPriceBasis = () => {
         const workTypeObject = getWorkTypeObject()
-        return workTypeObject?.pricingBasis === "Work Type" ? workType.name : tractor.type // eg: "Snow Removal" : "Road Grader"
+        return workTypeObject?.pricingBasis === "Work Type" ? workType.id : tractor.type // eg: "Snow Removal" : "Road Grader"
     }
 
     const getUnitPrice = () => {
@@ -220,7 +224,7 @@ const PropertyDetails = (props) => {
             newRecordObject.price = 0
         } else {
             const priceObject = getPrice(timeLogged)
-            newRecordObject.price = priceObject.total
+            newRecordObject.price = !isNaN(priceObject.total) ? priceObject.total : 0
             newRecordObject.unit_price = priceObject.unitPrice            
             if (getPriceMultiplier() === "Per Hour") {
                 newRecordObject.quantity = timeLogged
@@ -232,7 +236,7 @@ const PropertyDetails = (props) => {
                 newRecordObject.quantity = 1
             }
             if (modifier) {
-                amountString += ` ${modifier.name} ${modifier.operator} ${modifier.value}`
+                amountString += ` ${modifier.name || ""}`
             }
             newRecordObject.multiplier = priceObject.multiplier
         }
@@ -323,30 +327,34 @@ const PropertyDetails = (props) => {
                                 <Form.Control name="yards" type="number" step='any' value={yards || ''} onChange={onTextChange}/>
                             </Form.Group> ): null
                             }
-                                <Form.Check
-                                    type="radio"
-                                    label="None"
-                                    name="modifier"
-                                    id="None"
-                                    value={{}}
-                                    onChange={() => setState(prevState => ({...prevState, modifier: {}}))}
-                                />    
-                            { 
-                            getPriceModifiers().map((modifier, i) => {
-                                return (
+                            {getPriceModifiers().length > 0 && (
+                                <Card style={{width: "12rem"}}>
+                                    <Card.Header>Optional Addons</Card.Header>
                                     <Form.Check
-                                        key={i}
                                         type="radio"
-                                        label={modifier.name}
+                                        label="N/A"
                                         name="modifier"
-                                        id={modifier.name}
-                                        value={modifier}
-                                        onChange={() => setState(prevState => ({...prevState, modifier: modifier}))}
+                                        id="None"                                        
+                                        value={{}}
+                                        defaultChecked 
+                                        onChange={() => setState(prevState => ({...prevState, modifier: {}}))}
                                     />
-                                )
-                            })
-                            } 
-
+                                    {getPriceModifiers().map((modifier, i) => {
+                                        return (
+                                            <Form.Check
+                                                key={i}
+                                                type="radio"
+                                                label={modifier.name}
+                                                name="modifier"
+                                                id={modifier.name}
+                                                value={modifier}
+                                                onChange={() => setState(prevState => ({...prevState, modifier: modifier}))}
+                                            />
+                                        )
+                                    })}
+                                </Card>
+                            )}   
+                            
                         </Col>
                     </Row>
                     <Card.Body>

@@ -17,24 +17,24 @@ import _ from 'lodash'
 // const sandContractTypes = ["Per Visit", "Per Yard"]
 const editorSize = {marginTop: '2em', overflowY: "scroll"}
 
-const PriceField = ({workName, priceField, pricingMultiple, customer, onChangePrice, onDeletePrice, pricingBasis}) => {
+const PriceField = ({workType, priceField, pricingMultiple, customer, onChangePrice, onDeletePrice, pricingBasis}) => {
     const [deleteAlert, setDeleteAlert] = useState(false)
 
     const onDelete = () => {
         setDeleteAlert(false)
-        onDeletePrice(priceField, workName, pricingBasis)
+        onDeletePrice(priceField, workType.id, pricingBasis)
     }
 
     return (
         <>
         <Form.Group style={{marginBottom: "1em", marginTop: "1em", display: "flex", flexDirection:"row", wrap:"no-wrap", alignItems:"baseline"}}>                
-            <Form.Label>{priceField} price:</Form.Label>        
+            <Form.Label>{priceField?.name} price:</Form.Label>        
             <Form.Control 
                 style={{width: "100px", marginLeft: "1em"}}
-                name={priceField} 
+                name={priceField?.id} 
                 type="number" 
-                value={customer?.pricing?.workTypes?.[workName]?.prices?.[priceField] || ""} 
-                onChange={(event) => onChangePrice(event, workName)}/>
+                value={customer?.pricing?.workTypes?.[workType?.id]?.prices?.[priceField?.id] || ""} 
+                onChange={(event) => onChangePrice(event, workType.id)}/>
             <Form.Label style={{marginLeft: "1em"}}>{pricingMultiple}</Form.Label>
             <Button
                 style={{marginLeft: "1em"}}
@@ -66,7 +66,9 @@ const CustomerEditor = (props) => {
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const activeVehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
     const pricingTemplates = useSelector(state => state.getPricingTemplates.pricingTemplates)
+    const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
     const [pricingTemplate, setPricingTemplate] = useState(pricingTemplates.find(i => i.id === customer?.pricingTemplate))
+
     const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
     const [deleteAlert, setDeleteAlert] = useState(false)
@@ -109,7 +111,6 @@ const CustomerEditor = (props) => {
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, `organizations`,  organization), (doc) => {
-            console.log(doc.data().tags)
             setAllTags([...doc.data().tags])
         })
         return () => {
@@ -124,8 +125,6 @@ const CustomerEditor = (props) => {
     }
 
     const tagChange = (event) => {
-        console.log(event)
-        console.log(customer)
         let {target: {name, value} } = event
         let tagsArray = customer.tags ? customer.tags : []
         if (tagsArray.includes(name)) {
@@ -133,7 +132,6 @@ const CustomerEditor = (props) => {
         } else {
             tagsArray.push(name)
         }
-        console.log(tagsArray)
         //let tags = tagsArray.join()
         dispatch(setTempItem({...customer, tags: tagsArray}))
     }
@@ -147,8 +145,7 @@ const CustomerEditor = (props) => {
         }
     }
     
-    const onChange = (event) => {
-        console.log(customer)    
+    const onChange = (event) => {  
         let { target: { name, value } } = event
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
         let numberValues = ['snow_price', 'value', 'price_per_yard', 'sweep_price', 'season_price', ...vTypes]
@@ -182,7 +179,6 @@ const CustomerEditor = (props) => {
 
     const onChangePrice = (event, workName) => {
         let { target: { name, value } } = event
-        console.log(name, value, workName)
         let price = Number(value)
         let newCustomer = {...customer}
         newCustomer.pricing.workTypes = {...newCustomer.pricing.workTypes, [workName]: {...newCustomer.pricing.workTypes[workName], prices: {...newCustomer.pricing.workTypes[workName]?.prices, [name]: price}}} 
@@ -191,10 +187,9 @@ const CustomerEditor = (props) => {
     }
 
     const onAddVehicle = (vehicleName, workName) => {
-        console.log(vehicleName, workName)
         const vehicleID = vehicleTypes.find(i => i.name === vehicleName).id
         let newCustomer = {...customer}
-        newCustomer.pricing.workTypes = {...newCustomer.pricing.workTypes, [workName]: {...newCustomer.pricing.workTypes[workName], prices: {...newCustomer.pricing.workTypes[workName]?.prices, [vehicleName]: null}}}
+        newCustomer.pricing.workTypes = {...newCustomer.pricing.workTypes, [workName]: {...newCustomer.pricing.workTypes[workName], prices: {...newCustomer.pricing.workTypes[workName]?.prices, [vehicleID]: null}}}
         dispatch(setTempItem(newCustomer))
     }
     
@@ -241,12 +236,10 @@ const CustomerEditor = (props) => {
     const unassignedVehicles = (workName) => {
         let unassigned = []
         vehicleTypes.forEach(type => {
-            console.log(type)
-            if (!customer.pricing.workTypes?.[workName]?.prices?.[type.name]) {
+            if (customer.pricing.workTypes?.[workName]?.prices?.[type.id] === undefined) {
                 unassigned.push(type)
             }
         })
-        console.log(unassigned)
         return unassigned
     }
 
@@ -320,7 +313,6 @@ const CustomerEditor = (props) => {
                             />
                             <div className="autocomplete-dropdown-container">
                             {suggestions.map(suggestion => {
-                                console.log(suggestion)
                                 const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
                                 // inline style for demonstration purpose
                                 const style = suggestion.active
@@ -419,12 +411,12 @@ const CustomerEditor = (props) => {
                         <Col style={{overflowY:"scroll"}}>
                         {customer?.pricing?.workTypes && Object.keys(customer.pricing.workTypes).sort().map((workName, i) => {
                             const workType = customer.pricing?.workTypes[workName]
-                            if (workType?.pricingBasis === "Work Type") {
+                            if (workType?.pricingBasis === "Work Type") {                                
                                 return (
                                     <PriceField
                                         onDeletePrice={onDeletePrice}
-                                        workName={workName}
-                                        priceField={workName}
+                                        workType={workTypes.find(i => i.id === workName)}
+                                        priceField={workTypes.find(i => i.id === workName)}
                                         pricingMultiple={workType?.pricingMultiple}
                                         customer={customer}
                                         onChangePrice={onChangePrice}
@@ -435,7 +427,7 @@ const CustomerEditor = (props) => {
                                 return (
                                     <Card key={i} style={{padding: "1em"}}>
                                         <div style={{display: "flex", flexDirection:"row", wrap:"no-wrap"}}>
-                                        <Form.Label style={{fontWeight:"bold"}}>{workName} prices:</Form.Label>
+                                        <Form.Label style={{fontWeight:"bold"}}>{workTypes.find(i => i.id === workName).name} prices:</Form.Label>
                                         <SimpleSelector
                                             style={{marginLeft: "1em"}}
                                             title="Add Vehicle"
@@ -470,14 +462,13 @@ const CustomerEditor = (props) => {
                                             return (
                                                 <PriceField
                                                     onDeletePrice={onDeletePrice}
-                                                    workName={workName}
-                                                    priceField={vehicleTypes.find(type => type.name === vehicleType).name}
+                                                    workType={workTypes.find(i => i.id === workName)}
+                                                    priceField={vehicleTypes.find(type => type.id === vehicleType)}
                                                     pricingMultiple={workObject?.pricingMultiple}
                                                     customer={customer}
                                                     onChangePrice={onChangePrice}
                                                     pricingBasis={workType?.pricingBasis}
                                                 />
-                                                
                                             )
                                         })}                                        
                                     </Card>
@@ -485,8 +476,6 @@ const CustomerEditor = (props) => {
                             }
                         })}
                         </Col>
-
-
 
 
                         {/* {

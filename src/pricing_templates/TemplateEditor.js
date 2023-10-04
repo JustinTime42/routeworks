@@ -224,7 +224,7 @@ const onDeleteTemplate = () => {
                   return newTemplate
                 })}
               > Remove</Button></Col>
-            <Form.Label as={Col}>{item}</Form.Label>  
+            <Form.Label as={Col}>{workTypes.find(i => i.id === item).name}</Form.Label>  
             
             </Row>
 
@@ -304,7 +304,7 @@ const onDeleteTemplate = () => {
         collectionPath={`organizations/${organization}/`}
         selectedItem={newWorkType}
 // itemArray should be work types that aren't already in the template
-        itemArray={workTypes.filter(item => !Object.keys(template?.workTypes).includes(item.name))} 
+        itemArray={workTypes.filter(item => !Object.keys(template?.workTypes).includes(item.id))} 
         whichModal="WorkType"
         setActiveAction={SET_WORK_TYPE} 
         reduxListAction= {GET_WORK_TYPES_SUCCESS}
@@ -312,7 +312,7 @@ const onDeleteTemplate = () => {
         onEdit={onEdit}
         onSelect={(event) => setTemplate(template => ({
           ...template, 
-          workTypes: {...template.workTypes, [event]: template.workTypes.event || {}} 
+          workTypes: {...template.workTypes, [workTypes.find(i => i.name === event).id]: template.workTypes.event || {}} 
         }))}
         permissions={['Admin']}
         dbQuery = {workTypesQuery}
