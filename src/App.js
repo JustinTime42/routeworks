@@ -5,7 +5,7 @@ import { auth, db } from "./firebase";
 import { UserLogin } from './auth/UserLogin'
 import TopNav from "./navigation/TopNav"
 import "./styles/App.css"
-import { setCurrentUser } from './actions'
+import { setColorMode, setCurrentUser } from './actions'
 import { useDispatch, useSelector } from 'react-redux';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 import Register from './auth/Register';
@@ -27,7 +27,8 @@ const App = () => {
   let prodVersion = 0.5
   const [user, loading, error] = useIdToken(auth);
   const currentUser = useSelector(state => state.setCurrentUser.currentUser)
-  const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
+  const activeTractor = useSelector(state => state.setActiveTractor.activeTractor) 
+  const colorMode = useSelector(state => state.setColorMode.colorMode)   
   const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
   const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
   const modals = useSelector(state => state.whichModals.modals)
@@ -39,6 +40,8 @@ const App = () => {
   const MigrationUI = lazy(() => import('./components/migration/MigrationUI'))
   
   useEffect(() => {    
+    console.log(localStorage.getItem("colorMode") )
+    localStorage.getItem('colorMode') ? dispatch(setColorMode(localStorage.getItem('colorMode'))) : dispatch(setColorMode('light'))
     const unsub = onSnapshot(doc(db, 'globals', 'version'), doc => {
       prodVersion = doc.data().version 
       console.log(prodVersion) 
@@ -59,6 +62,13 @@ const App = () => {
     }
   },[currentUser])
 
+
+  useEffect(() => {
+    // change data_bs_theme to light or dark depending on colorMode
+    document.body.setAttribute('data-bs-theme', colorMode)
+    // set local storage
+    localStorage.setItem('colorMode', colorMode)
+},[colorMode])
 
   useEffect(() => {
     if (error) {alert(error)}

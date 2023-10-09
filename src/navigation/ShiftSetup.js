@@ -45,11 +45,6 @@ const ShiftSetup = () => {
             unsub()
         }
     },[])
-
-    useEffect(() => {
-        // change data_bs_theme to light or dark depending on colorMode
-        document.body.setAttribute('data-bs-theme', colorMode)
-    },[colorMode])
     
 
     const outerDivStyle = {
