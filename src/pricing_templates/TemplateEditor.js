@@ -276,7 +276,7 @@ const onDeleteTemplate = () => {
                     onCreate={onCreate}
                     onEdit={onEdit}
                     onSelect={(event) => onAddModifier(event, item)} 
-                    permissions={[]}   
+                    editable={true}  
                     dbQuery = {priceModifiersQuery}        
                   />
                 </Col>
@@ -314,7 +314,7 @@ const onDeleteTemplate = () => {
           ...template, 
           workTypes: {...template.workTypes, [workTypes.find(i => i.name === event).id]: template.workTypes.event || {}} 
         }))}
-        permissions={['Admin']}
+        editable={true}  
         dbQuery = {workTypesQuery}
       />
       </Container>
