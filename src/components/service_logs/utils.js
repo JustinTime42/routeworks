@@ -26,11 +26,12 @@ export const DeleteLogRenderer = (props) => {
 
 export const DateTimeRenderer = (props) => {    
     const getValueToDisplay = (params) => {
-        return params.valueFormatted ? params.valueFormatted : params.value
+        return params.value ? params.value : params.valueFormatted //? params.valueFormatted : params.value
     }
     const [cellValue, setCellValue] = useState(getValueToDisplay(props))
  
     useEffect(() => {
+        console.log((props.valueFormatted))
         setCellValue(getValueToDisplay(props))
     }, [props])
  

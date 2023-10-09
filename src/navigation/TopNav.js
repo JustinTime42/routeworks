@@ -60,7 +60,7 @@ const TopNav = () => {
     
     const onSelect = (event, itemArray, setActiveAction) => {
         console.log(location)
-        const routeId = routes.find(i => i.name === event)?.id
+        const routeId = routes.find(i => i.id === event)?.id
         navigate(encodeURIComponent(routeId))
 
         //move the scroll to the useEffect in display route when the route is selected
