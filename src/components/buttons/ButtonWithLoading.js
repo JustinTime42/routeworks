@@ -19,7 +19,7 @@ const ButtonWithLoading = (
 
   return (
     <OverlayTrigger
-      show={tooltip && !isDisabled}
+      // show={tooltip && !isDisabled}
       placement="right"
       delay={{ show: 250, hide: 400 }}
       overlay={renderTooltip}

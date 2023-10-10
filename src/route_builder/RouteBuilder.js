@@ -121,7 +121,7 @@ const RouteBuilder = () => {
     }
 
     const onDelete = (customer) => {
-        if (customer.routesAssigned) {
+        if (Object.keys(customer.routesAssigned).length > 0) {
             alert("This customer is assigned to a route. Please remove them from all routes before deleting.")
             return
         }
