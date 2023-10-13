@@ -30,7 +30,10 @@ import { SET_ACTIVE_ROUTE,
     IS_LOADING,
     COLOR_MODE,
     GET_PRICING_TEMPLATES_SUCCESS,
-    SET_ACTIVE_PRICING_TEMPLATE
+    SET_ACTIVE_PRICING_TEMPLATE,
+    UPDATE_CUSTOMERS_FAILED,
+    UPDATE_CUSTOMERS_SUCCESS,
+    UPDATE_CUSTOMERS_PENDING,
 } from './constants.js'
 
 
@@ -288,6 +291,25 @@ export const requestAllAddresses = (state = initialStateAllAddresses, action={})
         case UPDATE_ADDRESSES_SUCCESS:
             return {...state, addresses: action.payload, isPending: false}
         case UPDATE_ADDRESSES_FAILED:
+            return {...state, error: action.payload, isPending: false}
+        default:
+            return state
+    }
+}
+
+const initialStateAllCustomers = {
+    customers: [],
+    isPending: false,
+    error: ''
+}
+
+export const getAllCustomers = (state = initialStateAllCustomers, action={}) => {
+    switch(action.type) {
+        case UPDATE_CUSTOMERS_PENDING:
+            return {...state, isPending: true}
+        case UPDATE_CUSTOMERS_SUCCESS:
+            return {...state, customers: action.payload, isPending: false}
+        case UPDATE_CUSTOMERS_FAILED:
             return {...state, error: action.payload, isPending: false}
         default:
             return state

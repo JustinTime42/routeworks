@@ -253,7 +253,7 @@ const CustomerEditor = (props) => {
                         <Form.Group as={Row}>
                             <Form.Label column sm={2}>Name</Form.Label>
                             <Col sm={10}>
-                                <Form.Control name="cust_name" type="text" value={customer?.cust_name || ''} onChange={onChange}/>
+                                <Form.Control name="cust_name" type="text" value={customer?.cust_name || ''} onChange={onChange} onBlur={(event) => console.log(event.target)}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>

@@ -11,7 +11,7 @@ import Spinner from "../components/Spinner"
 import { ProgressBar, Alert } from 'react-bootstrap';
 import {  setTempItem, showModal, setActiveItem} from "../actions"
 import SearchBar from "./SearchBar"
-import {GET_VEHICLE_TYPES_SUCCESS, REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS} from '../constants.js'
+import {GET_VEHICLE_TYPES_SUCCESS, REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_SUCCESS, UPDATE_CUSTOMERS_SUCCESS} from '../constants.js'
 import '../styles/driver.css'
 
 const TopNav = () => {
@@ -30,13 +30,22 @@ const TopNav = () => {
 
     useEffect(() => {
         navigate('blank')
-        const unsub = onSnapshot(collection(db, `organizations/${organization}/customer`), (querySnapshot) => {
+        const unsub = onSnapshot(collection(db, `organizations/${organization}/customers`), (querySnapshot) => {
+            dispatch({type: UPDATE_CUSTOMERS_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
+        })
+        return () => {
+            unsub()
+        }
+    },[])
+
+    useEffect(() => {
+        navigate('blank')
+        const unsub = onSnapshot(collection(db, `organizations/${organization}/service_locations`), (querySnapshot) => {
             dispatch({type: UPDATE_ADDRESSES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
         return () => {
             unsub()
         }
-        
     },[])
 
     useEffect(() => { 

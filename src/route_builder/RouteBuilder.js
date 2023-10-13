@@ -12,13 +12,15 @@ import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
 import { scrollCardIntoView } from '../components/utils'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
+import { getCustFields, getLocationFields, setItem } from '../components/utils'
 //import FileUpload from '../components/migration/FileUpload'
 
 const RouteBuilder = () => {
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
     const activeCustomer = useSelector(state => state.setActiveProperty.activeProperty)
-    const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
+    const customers = useSelector(state => state.getAllCustomers.customers)
+    const serviceLocations = useSelector(state => state.getAllAddresses.addresses)    
     const filteredProperties = useSelector(state => state.filterProperties.customers)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
@@ -28,8 +30,7 @@ const RouteBuilder = () => {
 
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        
+    useEffect(() => {        
         //const routeId = routes.find(i => i.name === routeName)?.id
         console.log(routeId)
         const unsub = routeId ? onSnapshot(doc(db, `organizations/${organization}/route/`, routeId), (doc) => {  
@@ -48,9 +49,9 @@ const RouteBuilder = () => {
 
     useEffect(() => {   
         console.log("customer param: ", custId)
-        const newActiveCustomer = allCustomers.find(i => i.id === custId)       
+        const newActiveCustomer = serviceLocations.find(i => i.id === custId)       
         if (newActiveCustomer === undefined) return 
-        dispatch(setActiveItem(newActiveCustomer, allCustomers, SET_ACTIVE_PROPERTY))
+        dispatch(setActiveItem(newActiveCustomer, serviceLocations, SET_ACTIVE_PROPERTY))
     }, [custId])
 
     const onInitRoute = () => {
@@ -71,15 +72,17 @@ const RouteBuilder = () => {
         dispatch(setTempItem({cust_name: '', routesAssigned: {}, contract_type: "Per Occurrence", sand_contract: "Per Visit", date_created: dateCreated}))
     }
 
-    const onDetailsPropertyClick = async(customer) => {
-        dispatch(showModal('Customer'))
-        const docRef = doc(db, `organizations/${organization}/customer`, customer.id)
-        const docSnap = await getDoc(docRef)
-        if(docSnap.exists()) {
-            dispatch(setTempItem({...docSnap.data(), id: docSnap.id}))
-        } else {
-            console.log(`${customer.name} not found in database`)
-        }
+    const onDetailsPropertyClick = async(location) => {
+        dispatch(showModal('Customer'))        
+        // const docRef = doc(db, `organizations/${organization}/customer`, customer.id)
+        // const docSnap = await getDoc(docRef)
+        // if(docSnap.exists()) {
+        //     dispatch(setTempItem({...docSnap.data(), id: docSnap.id}))
+        // } else {
+        //     console.log(`${customer.name} not found in database`)
+        // }
+        const mergedCustomer = {...location, ...customers.find(i => i.id === location.cust_id)}
+        dispatch(setTempItem(mergedCustomer))
     }
 
     const toggleField = (customer, route, field) => { 
@@ -89,7 +92,7 @@ const RouteBuilder = () => {
     }
 
     const onPropertySave = (newDetails, close) => {
-        if (allCustomers.some(i => (i.service_address === newDetails.service_address) && (i.id !== newDetails.id))) {
+        if (customers.some(i => (i.service_address === newDetails.service_address) && (i.id !== newDetails.id))) {
             alert('This address is assigned to another customer')
             return
         }
@@ -105,24 +108,29 @@ const RouteBuilder = () => {
                 }
             )
         }
-
         const newTrimmedDetails = removeFields(newDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
             newRoute.customers[newDetails.id] = {...newRoute.customers[newDetails.id], ...newTrimmedDetails} 
             dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
         })
-        if (newDetails.id) {
-            dispatch(editItem(newDetails, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+        if (newDetails.cust_id) {
+            dispatch(editItem(getCustFields(newDetails), customers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))            
         } else {
-            dispatch(createItem(newDetails, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+            dispatch(createItem(getCustFields(newDetails), customers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+        }
+        if (newDetails.loc_id) {
+            dispatch(editItem(getLocationFields(newDetails), customers, `organizations/${organization}/service_location`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+        } else {
+            dispatch(createItem(getLocationFields(newDetails), customers, `organizations/${organization}/service_location`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         }
         if (close) onCloseClick()
     }
 
+    // this deletes the service location, not the customer
     const onDelete = (customer) => {
         if (Object.keys(customer.routesAssigned).length > 0) {
-            alert("This customer is assigned to a route. Please remove them from all routes before deleting.")
+            alert("This service location is assigned to a route. Please remove them from all routes before deleting.")
             return
         }
         // this doesn't property renumber the route positions. fix that before re-enabling this feature
@@ -131,7 +139,7 @@ const RouteBuilder = () => {
         //     delete newRoute.customers[customer.id]
         //     dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
         // })
-        dispatch(deleteItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
+        dispatch(deleteItem(getLocationFields(customer), serviceLocations, `organizations/${organization}/service_locations`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS))
         dispatch(hideModal('Customer'))
     }
 
@@ -149,7 +157,7 @@ const RouteBuilder = () => {
             return
         } 
         console.log(newLists)
-        let customer = {...allCustomers.find(customer => customer.id === newLists.card.id)}
+        let customer = {...serviceLocations.find(location => location.id === newLists.card.id)}
         if (!customer.routesAssigned || (!customer.routesAssigned)) {customer.routesAssigned = {}}
         if (newLists.whereTo === 'on') {
             console.log({...customer.routesAssigned})
@@ -181,13 +189,20 @@ const RouteBuilder = () => {
             SET_ACTIVE_ROUTE, 
             REQUEST_ROUTES_SUCCESS))
         console.log(customersObject)        
-        dispatch(editItem(customer, allCustomers, `organizations/${organization}/customer`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
+        dispatch(editItem(customer, serviceLocations, `organizations/${organization}/service_location`, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS, false))
         navigate(`/routebuilder/${activeRoute.id}`)
     }
 
     const onCloseClick = () => {
         dispatch(setTempItem(null))
         dispatch(hideModal('Customer'))
+    }
+
+    const migrateCustomers = async() => {
+        customers.forEach(customer => {
+            setItem(getCustFields(customer), `organizations/${organization}/customers`)
+            setItem(getLocationFields(customer), `organizations/${organization}/service_locations`)
+        })
     }
 
     return (
@@ -197,6 +212,7 @@ const RouteBuilder = () => {
             <div>
             <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>Create Customer</Button>
             </div>
+            <Button onClick={migrateCustomers} >Migrate customers</Button>
         </div>
         <div className="adminGridContainer">
             <DragDropContext onDragEnd={dragEnd}>            
@@ -279,8 +295,7 @@ const RouteBuilder = () => {
                                         </div>
                                     )}
                                 </Draggable>
-                            ))
-                            } 
+                            ))} 
                             {provided.placeholder}
                         </div>
                     )}
