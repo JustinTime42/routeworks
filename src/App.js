@@ -23,8 +23,8 @@ const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))
 const Users = lazy(() => import('./components/Users'))
 
 const App = () => { 
-  const localVersion = 0.5
-  let prodVersion = 0.5
+  const localVersion = 0.6
+  let prodVersion = 0.6
   const [user, loading, error] = useIdToken(auth);
   const currentUser = useSelector(state => state.setCurrentUser.currentUser)
   const activeTractor = useSelector(state => state.setActiveTractor.activeTractor) 
