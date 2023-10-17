@@ -36,6 +36,8 @@ const MapComponent = ({vehicles, paths}) => {
               label= {vehicle.name}
             />
         ))}
+        {/* 
+        leaving this out for now. 
         { paths.map(path => (
             <Polyline
               path={path || []}
@@ -45,7 +47,7 @@ const MapComponent = ({vehicles, paths}) => {
               }}
             />
           // <Polyline key={key} path={routes[key].route.map(address => convertToLatLng(address))} />
-        ))}
+        ))} */}
 
     </GoogleMap>
   );

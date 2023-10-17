@@ -13,18 +13,6 @@ const FleetTracker = () => {
   const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization);
   const dispatch = useDispatch();
 
-  const convertToLatLng = (address) => {
-    return axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address='${address.service_address}, ${address.service_city || ""}, ${address.service_state || ""}, ${address.service_zip || ""}'&key=AIzaSyAWlCgbe0nXrdjQ9Fp71KEZDXtNJlwKtEw`)
-    .then(function (response) {
-      console.log(response)
-      let data = response.data.results[0]?.geometry?.location;
-      return {lat: data?.lat, lng: data?.lng}; 
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-  }
-
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, `organizations/${organization}/vehicle`), (querySnapshot) => {
       dispatch({type:GET_TRACTORS_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
@@ -47,7 +35,7 @@ const FleetTracker = () => {
           path.push(route.customers[customer].location);
         }        
       });
-      routePaths.push(path);
+      routePaths.push(path.sort((a,b) => a.routePosition - b.routePosition));
     });
     console.log(routePaths)
     return routePaths;

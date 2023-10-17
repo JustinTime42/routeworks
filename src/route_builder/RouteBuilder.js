@@ -88,6 +88,14 @@ const RouteBuilder = () => {
         dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
+    const updateAllAddresses = () => {
+        allCustomers.forEach(customer => {
+            if (customer.service_address) {
+                onPropertySave(customer)
+            }
+        })
+    }
+
     const onPropertySave = (newDetails, close) => {
         if (allCustomers.some(i => (i.service_address === newDetails.service_address) && (i.id !== newDetails.id))) {
             alert('This address is assigned to another customer')
@@ -104,7 +112,7 @@ const RouteBuilder = () => {
                     contract_type: item.contract_type || '',   
                     location: item.location || null,      
                 }
-            )
+            )   
         }
 
         const newTrimmedDetails = removeFields(newDetails)
@@ -198,6 +206,7 @@ const RouteBuilder = () => {
             <div>
             <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>Create Customer</Button>
             </div>
+            <Button variant="primary" size="sm" style={{margin: "3px"}} onClick={updateAllAddresses}>Update All Addresses</Button>
         </div>
         <div className="adminGridContainer">
             <DragDropContext onDragEnd={dragEnd}>            
