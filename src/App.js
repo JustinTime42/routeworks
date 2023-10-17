@@ -15,10 +15,12 @@ import { Alert } from 'react-bootstrap';
 import { GET_VEHICLE_TYPES_SUCCESS, GET_WORK_TYPES_SUCCESS } from './constants';
 import Auditor from './components/auditor/Auditor';
 import PricingTemplates from './pricing_templates/PricingTemplates';
+import FleetTracker from './map_dashboard/FleetTracker';
 //import Auditor from './components/auditor/Auditor';
 const RouteBuilder = lazy(() => import('./route_builder/RouteBuilder'))
 const DisplayRoute = lazy(() => import('./DisplayRoute'))
 const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))
+
 
 const Users = lazy(() => import('./components/Users'))
 
@@ -128,6 +130,8 @@ const App = () => {
             <Route path="migration" element={<MigrationUI />} /> 
             <Route path="auditor" element={<Auditor />} />
             <Route path="pricing_templates" element={<PricingTemplates />} />
+            <Route path="fleet_tracker" element={<FleetTracker />} />
+
           </Route>
         </Routes>
       </Suspense>

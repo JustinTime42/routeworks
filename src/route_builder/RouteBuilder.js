@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField } from "firebase/firestore"
 import { db, functions, httpsCallable } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
-import { onDragEnd, removeExtraFields } from './drag-functions'
+import { onDragEnd, removeExtraFields } from './utils'
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS} from '../constants'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { Button, Form } from 'react-bootstrap'
 import PropertyCard from '../components/PropertyCard'
 import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../actions"
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
-import { scrollCardIntoView } from '../components/utils'
+import { scrollCardIntoView, getLatLng } from '../components/utils'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 //import FileUpload from '../components/migration/FileUpload'
 
@@ -101,7 +101,8 @@ const RouteBuilder = () => {
                     cust_name: item.cust_name, 
                     service_address: item.service_address || '',
                     service_level: item.service_level || null,
-                    contract_type: item.contract_type || '',         
+                    contract_type: item.contract_type || '',   
+                    location: item.location || null,      
                 }
             )
         }

@@ -13,13 +13,15 @@ import { useOutletContext } from 'react-router-dom'
 import { GET_PRICING_TEMPLATES_SUCCESS, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_PRICING_TEMPLATE, SET_ACTIVE_VEHICLE_TYPE } from '../../constants';
 import SimpleSelector from '../../pricing_templates/SimpleSelector'
 import _ from 'lodash'
+import { useLoadScript } from '@react-google-maps/api';
+import axios from 'axios'
 // const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
 // const sandContractTypes = ["Per Visit", "Per Yard"]
 const editorSize = {marginTop: '2em', overflowY: "scroll"}
 
 const PriceField = ({workType, priceField, pricingMultiple, customer, onChangePrice, onDeletePrice, pricingBasis}) => {
     const [deleteAlert, setDeleteAlert] = useState(false)
-
+      
     const onDelete = () => {
         setDeleteAlert(false)
         onDeletePrice(priceField, workType.id, pricingBasis)
@@ -77,6 +79,10 @@ const CustomerEditor = (props) => {
     const [sameAddress, setSameAddress] = useState(false)
     const [search, setSearch] = useState('')
     const [latLng, setLatLng] = useState({})
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: "AIzaSyA6XjIu8LiWPxKcxaWnLM_YOOUcmp2bAsU",
+        libraries: ['places']
+      });
 
     useEffect(() => {
         setSameAddress(false)
@@ -216,7 +222,8 @@ const CustomerEditor = (props) => {
                 service_address: addressArray[0],
                 service_city: addressArray[1],
                 service_state: addressArray[2],
-                service_zip: postalCode
+                service_zip: postalCode,
+                location: {lat: place.geometry.location.lat() || null, lng: place.geometry.location.lng() || null}
             }
         ))
     }
@@ -242,6 +249,8 @@ const CustomerEditor = (props) => {
         })
         return unassigned
     }
+
+    if (!isLoaded) return null
 
     return (      
         <Modal className="scrollable" style={editorSize} show={modals.includes('Customer')} onHide={onCloseClick} size='lg'>

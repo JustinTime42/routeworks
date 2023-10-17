@@ -35,8 +35,7 @@ const TopNav = () => {
         })
         return () => {
             unsub()
-        }
-        
+        }        
     },[])
 
     useEffect(() => { 
