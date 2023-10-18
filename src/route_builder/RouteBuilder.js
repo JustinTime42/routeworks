@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField } from "firebase/firestore"
 import { db, functions, httpsCallable } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
-import { onDragEnd, removeExtraFields } from './utils'
+import { onDragEnd, removeExtraFields } from './drag-functions'
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS} from '../constants'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { Button, Form } from 'react-bootstrap'

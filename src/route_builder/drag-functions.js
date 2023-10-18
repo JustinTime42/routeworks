@@ -121,4 +121,4 @@ export const getLatLng = (address) => {
     .catch((error) => {
       console.error(error);
     })
-  }
+}
