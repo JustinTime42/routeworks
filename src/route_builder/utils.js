@@ -42,6 +42,7 @@ export const getLocationFields = (customer) => {
     date_created: customer.date_created || '',
     cust_id: customer.cust_id || '',
     id: customer.loc_id || '',
+    location: customer.location || '',
   }
 }
 
