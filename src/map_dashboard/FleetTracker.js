@@ -3,9 +3,8 @@ import React, { useEffect } from 'react';
 import MapComponent from './MapComponent';
 import { useDispatch, useSelector } from 'react-redux';
 import { db } from '../firebase';
-import { GET_TRACTORS_SUCCESS, REQUEST_ROUTES_SUCCESS } from '../constants';
+import { GET_TRACTORS_SUCCESS } from '../constants';
 import { collection, onSnapshot } from "firebase/firestore"
-import axios from 'axios';
 
 const FleetTracker = () => {
   const vehicles = useSelector(state => state.getTractors.allTractors);

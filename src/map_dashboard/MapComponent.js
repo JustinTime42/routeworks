@@ -1,31 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { db } from '../firebase';
-import { GET_TRACTORS_SUCCESS, REQUEST_ROUTES_SUCCESS } from '../constants';
-import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField } from "firebase/firestore"
+import React, {useEffect} from 'react';
 import { GoogleMap, useLoadScript, Marker, Polyline } from '@react-google-maps/api';
-import axios from 'axios';
 
 
 const MapComponent = ({vehicles, paths}) => {
-  const [map, setMap] = useState(null);
-  const [center, setCenter] = useState({lat: 61, lng: -150});
+  const [center, setCenter] = React.useState(null);
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: "AIzaSyA6XjIu8LiWPxKcxaWnLM_YOOUcmp2bAsU"
   });
 
-  const getCenter = (vehicles) => {
+  useEffect(() => {
     const lat = vehicles.reduce((sum, vehicle) => sum + vehicle.location.lat, 0) / vehicles.length;
-    const lng = vehicles.reduce((sum, vehicle) => sum + vehicle.location.lng, 0) / vehicles.length;
-    return {lat, lng};
-  }
+    const lng = vehicles.reduce((sum, vehicle) => sum + vehicle.location.lng, 0) / vehicles.length;    
+    const getPosition = async() => {
+      await navigator.geolocation.getCurrentPosition((position) => {
+        setCenter({lat: position.coords.latitude, lng: position.coords.longitude})
+      })
+    }
+    if (isNaN(lat) || isNaN(lng)) {
+      getPosition()
+    }
+    else setCenter({lat, lng});    
+  }, [])
 
-
-  if (!isLoaded) return <div>Loading...</div>;
-  return (
+  if (!isLoaded || !center) return <div>Loading...</div>;
+  else return (
     <GoogleMap 
       zoom={12} 
-      center={getCenter(vehicles)}
+      center={center}
       mapContainerStyle={{ width: '100%', height: '100vh' }}
 
     >
