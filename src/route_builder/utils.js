@@ -1,5 +1,6 @@
 import { addDoc, collection, doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore"; 
 import { db } from '../firebase'
+import axios from 'axios'
 
 
 export const setItem = (item, collection) => {
@@ -29,24 +30,6 @@ export const getCustFields = (customer) => {
   }
 }
 // this will be the real one
-export const getLocationFields = (customer) => {
-  return {
-    service_address: customer.service_address || '',
-    service_city: customer.service_city || '',
-    service_state: customer.service_state || '',
-    service_zip: customer.service_zip || '',
-    pricing: customer.pricing || {},
-    surface_type: customer.surface_type || '',
-    service_level: customer.service_level || '',
-    routesAssigned: customer.routesAssigned || {},
-    date_created: customer.date_created || '',
-    cust_id: customer.cust_id || '',
-    id: customer.loc_id || '',
-    location: customer.location || '',
-  }
-}
-
-// this is just for migrating
 // export const getLocationFields = (customer) => {
 //   return {
 //     service_address: customer.service_address || '',
@@ -54,14 +37,47 @@ export const getLocationFields = (customer) => {
 //     service_state: customer.service_state || '',
 //     service_zip: customer.service_zip || '',
 //     pricing: customer.pricing || {},
-//     pricingTemplate: customer.pricingTemplate || {},
 //     surface_type: customer.surface_type || '',
 //     service_level: customer.service_level || '',
 //     routesAssigned: customer.routesAssigned || {},
-//     date_created: customer.date_created || '',    
-//     cust_id: customer.id || '',
-//     notes: customer.notes || '',
-//     value: customer.value || '',
-//     id: customer.id || '',
+//     date_created: customer.date_created || '',
+//     cust_id: customer.cust_id || '',
+//     id: customer.loc_id || '',
+//     location: customer.location || '',
 //   }
 // }
+
+export const getLatLng = (address) => {
+  return axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address='${address.service_address}, ${address.service_city || ""}, ${address.service_state || ""}, ${address.service_zip || ""}'&key=AIzaSyAWlCgbe0nXrdjQ9Fp71KEZDXtNJlwKtEw`)
+  .then(function (response) {
+    console.log(response)
+    let data = response.data.results[0]?.geometry?.location;
+    if (data) {
+      return {lat: data?.lat, lng: data?.lng}; 
+    }
+      else return null      
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+}
+
+// this is just for migrating
+export const getLocationFields = (customer) => {
+  return {
+    service_address: customer.service_address || '',
+    service_city: customer.service_city || '',
+    service_state: customer.service_state || '',
+    service_zip: customer.service_zip || '',
+    pricing: customer.pricing || {},
+    pricingTemplate: customer.pricingTemplate || {},
+    surface_type: customer.surface_type || '',
+    service_level: customer.service_level || '',
+    routesAssigned: customer.routesAssigned || {},
+    date_created: customer.date_created || '',    
+    cust_id: customer.id || '',
+    notes: customer.notes || '',
+    value: customer.value || '',
+    id: customer.id || '',
+  }
+}

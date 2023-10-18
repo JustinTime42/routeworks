@@ -20,7 +20,7 @@ const RouteBuilder = () => {
     const routes = useSelector(state => state.requestRoutes.routes)
     const activeCustomer = useSelector(state => state.setActiveProperty.activeProperty)
     const customers = useSelector(state => state.getAllCustomers.customers)
-    const serviceLocations = useSelector(state => state.getAllAddresses.addresses)    
+    const serviceLocations = useSelector(state => state.requestAllAddresses.addresses)    
     const filteredProperties = useSelector(state => state.filterProperties.customers)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
