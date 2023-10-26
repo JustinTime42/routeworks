@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField, addDoc } from "firebase/firestore"
 import { db, functions, httpsCallable } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
-import { onDragEnd, removeExtraFields } from './drag-functions'
+import { onDragEnd, removeExtraFields } from './utils'
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS, UPDATE_CUSTOMERS_SUCCESS} from '../constants'
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
@@ -11,9 +11,8 @@ import { Button, Form } from 'react-bootstrap'
 import PropertyCard from '../components/PropertyCard'
 import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../actions"
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
-import { getCollectionDocs, scrollCardIntoView } from '../components/utils'
 
-import { scrollCardIntoView, getLatLng, getCollectionDocs, scrollCardIntoView } from '../components/utils'
+import { scrollCardIntoView, getLatLng, getCollectionDocs } from '../components/utils'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 // import { migrateCustomers  } from './utils'
 import { getCustFields, getLocationFields } from '../components/utils'
@@ -91,15 +90,15 @@ const RouteBuilder = () => {
     }
 
 
-    // this deletes the service location, not the customer
+    
 
-    const updateAllAddresses = () => {
-        allCustomers.forEach(customer => {
-            if (customer.service_address) {
-                onPropertySave(customer)
-            }
-        })
-    }
+    // const updateAllAddresses = () => {
+    //     allCustomers.forEach(customer => {
+    //         if (customer.service_address) {
+    //             onPropertySave(customer)
+    //         }
+    //     })
+    // }
 
     const onDelete = (customer) => {
         if (Object.keys(customer.routesAssigned).length > 0) {
@@ -173,13 +172,10 @@ const RouteBuilder = () => {
             <div>
             <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>Create Customer</Button>
             </div>
-<<<<<<< HEAD
-=======
             {/* <Button onClick={() => migrateCustomers(organization)}>Migrate customers</Button> */}
 
   {/*<Button variant="primary" size="sm" style={{margin: "3px"}} onClick={updateAllAddresses}>Update All Addresses</Button> */}
 
->>>>>>> 8963371246d97180d9ecd0c58988cbdaf9004059
         </div>
         <div className="adminGridContainer">
             <DragDropContext onDragEnd={dragEnd}>            

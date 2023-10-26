@@ -147,21 +147,3 @@ export const onDragEnd = (result, onList, offList) => {
     }        
 }
 
-export const getLatLng = (address) => {
-    return axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address='${address.service_address}, ${address.service_city || ""}, ${address.service_state || ""}, ${address.service_zip || ""}'&key=AIzaSyAWlCgbe0nXrdjQ9Fp71KEZDXtNJlwKtEw`)
-    .then(function (response) {
-      console.log(response)
-      let data = response.data.results[0]?.geometry?.location;
-      if (data) {
-        return {lat: data?.lat, lng: data?.lng}; 
-      }
-        else return null      
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-<<<<<<< HEAD:src/route_builder/drag-functions.js
-}
-=======
-  }
->>>>>>> 8963371246d97180d9ecd0c58988cbdaf9004059:src/route_builder/utils.js

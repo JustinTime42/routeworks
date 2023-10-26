@@ -70,13 +70,15 @@ const AdminDropdown = () => {
                     Import Data
                 </Dropdown.Item>
                 <Dropdown.Item as={Link} to="/admin/migration" key="migration" eventKey="migration">
+                    Data Migration
+                </Dropdown.Item>
 
                 <Dropdown.Item as={Link} to="/admin/fleet_tracker">
                     Fleet Tracker
                 </Dropdown.Item>
                 {/* <Dropdown.Item as={Link} to="/admin/migration" key="migration" eventKey="migration">
                     Data Migration
-                </Dropdown.Item>
+                </Dropdown.Item> */}
 
                 </> : null}
             </DropdownButton>

@@ -15,6 +15,7 @@ import SimpleSelector from '../../pricing_templates/SimpleSelector'
 import _ from 'lodash'
 import SearchableInput from '../SearchableInput'
 import { getCustFields, getLocationFields } from '../utils'
+import { useLoadScript } from '@react-google-maps/api'
 
 // const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
 // const sandContractTypes = ["Per Visit", "Per Yard"]
