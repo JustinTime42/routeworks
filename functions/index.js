@@ -9,7 +9,7 @@ const db = admin.firestore();
 const client = new admin.firestore.v1.FirestoreAdminClient();
 
 const stripeKey = defineSecret('STRIPE_KEY');
-const stripe = require('stripe')("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");
+const stripe = require('stripe')("sk_test_51M6hzpHadtZeRUpQvPwJ1oSUy47bkspiD6AynRUmG2rNJwpNIW6kxLcOktO5tuJBbG1vT0FFce91NY0DMgHr6fUU00oTnUMWXU");
 
 //this should be refactored. save the drivers under the org document with key matching auth uid, then
 //query the users based on the org doc rather than querying the entire authentication database
@@ -121,7 +121,7 @@ exports.getPendingBalances = onCall(async (request) => {
   }
   const stripeAccount = await getStripeAccount(organization)
   // Get all customers from that organization's customer collection in firebase
-  const customersRef = db.collection(`organizations/${organization}/customer`)
+  const customersRef = db.collection(`organizations/${organization}/customers`)
   const custSnapshot = await customersRef.get()
 
   // get balances for each customer
@@ -369,7 +369,7 @@ exports.deleteLogEntry = functions.firestore
       });
 });
 
-exports.createCustomer = onDocumentCreated('organizations/{organization}/customer/{itemID}', async(event) => {
+exports.createCustomer = onDocumentCreated('organizations/{organization}/customers/{itemID}', async(event) => {
   const {itemID, organization} = event.params
   const customer = {...event.data.data(), id: itemID}
   const doc = await db.collection('organizations').doc(organization).get()
@@ -380,7 +380,7 @@ exports.createCustomer = onDocumentCreated('organizations/{organization}/custome
   }
 })
 
-exports.updateCustomer = onDocumentUpdated('organizations/{organization}/customer/{itemID}', async (event) => {
+exports.updateCustomer = onDocumentUpdated('organizations/{organization}/customers/{itemID}', async (event) => {
   const {itemID, organization} = event.params
   const customer = {...event.data.after.data(), id: itemID}
   const doc = await db.collection('organizations').doc(organization).get()
@@ -394,7 +394,28 @@ exports.updateCustomer = onDocumentUpdated('organizations/{organization}/custome
 })
 
 exports.writeCustomer = functions.firestore
-    .document('organizations/{organization}/customer/{itemID}')
+    .document('organizations/{organization}/customers/{itemID}')
+    .onWrite((change, context) => {
+      const organization = context.params.organization;
+      const {timestamp} = context;
+      const {itemID} = context.params;
+      return admin.firestore()
+          .collection(`organizations/${organization}/audit_customers`).add({
+            cust_id: itemID,
+            timestamp: new Date(timestamp),
+            before: change.before.data() || null,
+            after: change.after.data() || null,
+          })
+          .then((doc) => {
+            return doc;
+          })
+          .catch((e) => {
+            return e;
+          });
+    });
+
+    exports.writeServiceLocation = functions.firestore
+    .document('organizations/{organization}/service_locations/{itemID}')
     .onWrite((change, context) => {
       const organization = context.params.organization;
       const {timestamp} = context;
@@ -431,7 +452,7 @@ exports.createStripeConnectedAccount = onCall(async(request) => {
     await db.collection('organizations').doc(organization).update({
       stripe_account_id: account.id,
     })
-    const custsRef = db.collection(`organizations/${organization}/customer`)
+    const custsRef = db.collection(`organizations/${organization}/customers`)
     const custsSnapshot = await custsRef.get()
     let promises = []
 
@@ -478,7 +499,7 @@ exports.connectLogsToCust = onCall(async request => {
     // Throwing an HttpsError if not Admin
     throw new functions.https.HttpsError('failed-precondition', 'Insufficient permissions');
   } else {
-    const customersRef = admin.firestore().collection(`organizations/${organization}/customer`)
+    const customersRef = admin.firestore().collection(`organizations/${organization}/service_locations`)
     const logsRef = admin.firestore().collection(`organizations/${organization}/service_logs`)
     const logsSnapshot = await logsRef.get()
     logsSnapshot.forEach(async (result) => {
@@ -517,7 +538,7 @@ const createStripeCustomer = async (customer, organization, db, stripe, stripeAc
     });
   }
   return Promise.all(promises).then(async() => {
-    const custRef = db.collection(`organizations/${organization}/customer`).doc(customer.id)
+    const custRef = db.collection(`organizations/${organization}/customers`).doc(customer.id)
     await custRef.update({stripeID: stripeCustomer.id})
     return stripeCustomer
   }).catch(err => {functions.logger.log(err)})
