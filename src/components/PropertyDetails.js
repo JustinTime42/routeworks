@@ -32,9 +32,11 @@ const PropertyDetails = (props) => {
     ] = useState(initialState)   
     const navigate = useNavigate()
     const { modifier, noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, isRunning } = currentState    
-    const customers = useSelector(state => state.requestAllAddresses.addresses)
+    const serviceLocations = useSelector(state => state.requestAllAddresses.addresses)
+    const customers = useSelector(state => state.getAllCustomers.customers)
     const driver = useSelector(state => state.setCurrentUser.currentUser.claims)
     const tractor = useSelector(state => state.setActiveTractor.activeTractor)
+    const vehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const routes = useSelector(state => state.requestRoutes.routes)
     const workType = useSelector(state => state.setActiveWorkType.workType)
@@ -72,9 +74,9 @@ const PropertyDetails = (props) => {
     }, [currentState])
 
     useEffect(() => {   
-        const newActiveCustomer = customers.find(i => i.id === custId)       
+        const newActiveCustomer = serviceLocations.find(i => i.id === custId)       
         if (newActiveCustomer === undefined) return 
-        dispatch(setActiveItem(newActiveCustomer, customers, SET_ACTIVE_PROPERTY))
+        dispatch(setActiveItem(newActiveCustomer, serviceLocations, SET_ACTIVE_PROPERTY))
     }, [custId])
 
     useEffect(() => {
@@ -89,7 +91,7 @@ const PropertyDetails = (props) => {
                 dispatch(editItem({
                     ...activeRoute, 
                     customers: newRouteCustomers}, 
-                    customers, `organizations/${organization}/route`, 
+                    serviceLocations, `organizations/${organization}/route`, 
                     SET_ACTIVE_ROUTE, 
                     REQUEST_ROUTES_SUCCESS))
             }
@@ -136,7 +138,7 @@ const PropertyDetails = (props) => {
         .catch(err => alert(err))
         let newRouteCustomers = {...activeRoute.customers}
         newRouteCustomers[property.id].status = "Waiting"
-        dispatch(editItem({...activeRoute, customers: newRouteCustomers}, customers, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
+        dispatch(editItem({...activeRoute, customers: newRouteCustomers}, serviceLocations, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
     const getWorkTypeObject = () => {
@@ -205,12 +207,12 @@ const PropertyDetails = (props) => {
     const onStatusChange = (newStatus, skipDetails='', startTime=null, endTime=null, disabled=true) => {
         
         setState(prevState => ({...prevState, disabled: disabled}))        
-        const customerDetails = customers.find(i => i.id === property.id)
+        const customerDetails = serviceLocations.find(i => i.id === property.id)
         let newRecordObject = {}
         newRecordObject.status = newStatus
 
         // newRecordObject.price = property.snow_price
-        newRecordObject.stripeID = property.stripeID
+        newRecordObject.stripeID = customers.find(i => i.id === property.cust_id).stripeID
         let month = ('0' + (new Date().getMonth() + 1)).slice(-2) 
         let year = new Date().getFullYear().toString().substr(-2)
         // round down to the nearest minute. and then up to the nearest quarter hour
@@ -262,7 +264,7 @@ const PropertyDetails = (props) => {
         newRecordObject.driver = driver.name
         newRecordObject.notes = newRecordObject.status === 'Skipped' ? noteField + ' ' + skipDetails : noteField
         newRecordObject.vehicle = tractor.name
-        newRecordObject.vehicle_type = tractor.type
+        newRecordObject.vehicle_type = vehicleType.name
         newRecordObject.work_type = workType.name
         newRecordObject.bill_address = customerDetails.bill_address
         newRecordObject.bill_city = customerDetails.bill_city

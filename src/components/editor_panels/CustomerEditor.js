@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { Tabs, Tab, Button, Modal, Form, Row, Col, Alert, Dropdown, Card, DropdownButton } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { setTempItem } from '../../actions'
+import { createItem, editItem, hideModal, setActiveItem, setTempItem } from '../../actions'
 import PlacesAutocomplete, { geocodeByPlaceId, geocodeByAddress, getLatLng } from 'react-places-autocomplete'
-import { arrayUnion, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore'
+import { addDoc, arrayUnion, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import CustLogs from '../customer_panels/CustLogs'
 import '../../styles/driver.css'
 import { serviceLevels  } from '../../globals'
 import RoutePopover from '../customer_panels/RoutePopover'
 import { useOutletContext } from 'react-router-dom'
-import { GET_PRICING_TEMPLATES_SUCCESS, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_PRICING_TEMPLATE, SET_ACTIVE_VEHICLE_TYPE } from '../../constants';
+import { GET_PRICING_TEMPLATES_SUCCESS, GET_VEHICLE_TYPES_SUCCESS, REQUEST_ROUTES_SUCCESS, SET_ACTIVE_PRICING_TEMPLATE, SET_ACTIVE_VEHICLE_TYPE, UPDATE_ADDRESSES_SUCCESS, UPDATE_CUSTOMERS_SUCCESS } from '../../constants';
 import SimpleSelector from '../../pricing_templates/SimpleSelector'
 import _ from 'lodash'
+import SearchableInput from '../SearchableInput'
+import { getCustFields, getLocationFields } from '../utils'
+
 // const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
 // const sandContractTypes = ["Per Visit", "Per Yard"]
 const editorSize = {marginTop: '2em', overflowY: "scroll"}
@@ -59,15 +62,17 @@ const PriceField = ({workType, priceField, pricingMultiple, customer, onChangePr
 }
 
 const CustomerEditor = (props) => {
-    const [onPropertySave, onCloseClick, onDelete] = useOutletContext()
+    const [onDelete, customers] = useOutletContext()
     const customer = useSelector(state => state.setTempItem.item)
+    const routes = useSelector(state => state.requestRoutes.routes)
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
     const activeVehicleType = useSelector(state => state.setActiveVehicleType.activeVehicleType)
     const pricingTemplates = useSelector(state => state.getPricingTemplates.pricingTemplates)
     const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
-    const [pricingTemplate, setPricingTemplate] = useState(pricingTemplates.find(i => i.id === customer?.pricingTemplate))
+    const [matches, setMatches] = useState([])
+    const [custSearch, setCustSearch] = useState(customer?.cust_name || '')
 
     const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
@@ -81,9 +86,25 @@ const CustomerEditor = (props) => {
     useEffect(() => {
         setSameAddress(false)
         setDeleteAlert(false)
+        setCustSearch(customer?.cust_name || '')
     }, [customer])
 
     useEffect(() => {
+        dispatch(setTempItem({...customer, cust_name: custSearch}))
+        if (custSearch.length > 0) {
+            const filteredCustomers = customers.filter(i => {
+                if(i.cust_name?.toLowerCase().includes(custSearch?.toLowerCase())) return true
+                else if(i.cust_phone?.toLowerCase().includes(custSearch?.toLowerCase())) return true
+                else if(i.cust_email?.toLowerCase().includes(custSearch?.toLowerCase())) return true
+                else if(i.bill_address?.toLowerCase().includes(custSearch?.toLowerCase())) return true
+                else return false
+            })
+            setMatches(filteredCustomers)
+            console.log(filteredCustomers)
+        }        
+    }, [custSearch, customers])
+
+    useEffect(() => {        
         const unsub = onSnapshot(collection(db, `organizations/${organization}/pricing_templates`), (querySnapshot) => {
             if (querySnapshot.docs.length === 0) {
                 return
@@ -95,21 +116,17 @@ const CustomerEditor = (props) => {
         }
     }, [])
 
-    // useEffect(() => {
-    //     setPricingTemplate(pricingTemplates.find(i => i.id === customer?.pricingTemplate))
-        
-    // }, [pricingTemplates, customer])
-
     useEffect(() => {
         const getPosition = async() => {
             await navigator.geolocation.getCurrentPosition((position) => {
                 setLatLng({lat: position.coords.latitude, lng: position.coords.longitude})
             })
         }
-        getPosition()       
-    }, [customer])
+        getPosition()
+    }, [])
 
     useEffect(() => {
+        console.log(customers)
         const unsub = onSnapshot(doc(db, `organizations`,  organization), (doc) => {
             setAllTags([...doc.data().tags])
         })
@@ -122,6 +139,11 @@ const CustomerEditor = (props) => {
         return onSnapshot(collection(db, `organizations/${organization}/vehicle_type`), (querySnapshot) => {
             dispatch({type:GET_VEHICLE_TYPES_SUCCESS, payload: querySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))})
         })
+    }
+
+    const onCloseClick = () => {
+        dispatch(setTempItem(null))
+        dispatch(hideModal('Customer'))
     }
 
     const tagChange = (event) => {
@@ -145,8 +167,9 @@ const CustomerEditor = (props) => {
         }
     }
     
-    const onChange = (event) => {  
+    const onChange = (event) => {          
         let { target: { name, value } } = event
+        console.log(name, value)
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
         let numberValues = ['snow_price', 'value', 'price_per_yard', 'sweep_price', 'season_price', ...vTypes]
         if (numberValues.includes(name)){
@@ -163,7 +186,6 @@ const CustomerEditor = (props) => {
     }
 
     const onChangePricingTemplate = (event) => {
-        // let { target: { name, value } } = event
         dispatch(setTempItem({...customer, pricing: _.merge(customer.pricing, pricingTemplates.find(i => i.id === event))}))
     }
 
@@ -181,15 +203,24 @@ const CustomerEditor = (props) => {
         let { target: { name, value } } = event
         let price = Number(value)
         let newCustomer = {...customer}
-        newCustomer.pricing.workTypes = {...newCustomer.pricing.workTypes, [workName]: {...newCustomer.pricing.workTypes[workName], prices: {...newCustomer.pricing.workTypes[workName]?.prices, [name]: price}}} 
+        newCustomer.pricing.workTypes = {
+            ...newCustomer.pricing.workTypes, 
+            [workName]: {...newCustomer.pricing.workTypes[workName], 
+                prices: {...newCustomer.pricing.workTypes[workName]?.prices, 
+                    [name]: price}}
+        } 
         dispatch(setTempItem(newCustomer))
-        //{...customer, workTypes: {...customer?.workTypes, [name]: {...customer?.workTypes?.[name], prices: {...customer?.workTypes?.[name]?.prices, [name]: [price]}}}}
     }
 
     const onAddVehicle = (vehicleName, workName) => {
         const vehicleID = vehicleTypes.find(i => i.name === vehicleName).id
         let newCustomer = {...customer}
-        newCustomer.pricing.workTypes = {...newCustomer.pricing.workTypes, [workName]: {...newCustomer.pricing.workTypes[workName], prices: {...newCustomer.pricing.workTypes[workName]?.prices, [vehicleID]: null}}}
+        newCustomer.pricing.workTypes = {
+            ...newCustomer.pricing.workTypes, 
+            [workName]: {...newCustomer.pricing.workTypes[workName], 
+                prices: {...newCustomer.pricing.workTypes[workName]?.prices, 
+                    [vehicleID]: null}}
+        }
         dispatch(setTempItem(newCustomer))
     }
     
@@ -243,17 +274,97 @@ const CustomerEditor = (props) => {
         return unassigned
     }
 
-    return (      
+    const onSelectCustomer = (event, newCustomer) => {
+        console.log(newCustomer)
+        event.preventDefault()      
+        const cleanFields = getCustFields(newCustomer)
+        console.log(cleanFields )
+        _.merge(customer, cleanFields)
+        dispatch(setTempItem({...customer, cust_id: newCustomer.id}))
+        setMatches([])
+        // This will need to find the new customer by cust_id
+        // then strip out all customer fields of the old customer and then insert all the fields of the new customer
+        //const oldCustomer = 
+    }
+
+    const blurSearch = () => {
+        if(custSearch.length === 0) {
+            setCustSearch(customer?.cust_name || '')
+            setMatches([])
+        }
+    }
+
+    const onPropertySave = (newDetails, close) => {
+        if (customers.some(i => (i.service_address === newDetails.service_address) && (i.id !== newDetails.id))) {
+            alert('This address is assigned to another customer')
+            return
+        }
+        // edit relevant details on each route assigned
+        const removeFields = (item) => {             
+            return (
+                {
+                    id: item.id,
+                    cust_name: item.cust_name, 
+                    service_address: item.service_address || '',
+                    service_level: item.service_level || null,
+                    contract_type: item.contract_type || '',         
+                }
+            )
+        }
+        const newTrimmedDetails = removeFields(newDetails)
+        Object.values(newDetails.routesAssigned).forEach(route => {
+            let newRoute = {...routes.find(i => i.name === route)}
+            newRoute.customers[newDetails.loc_id] = {...newRoute.customers[newDetails.loc_id], ...newTrimmedDetails} 
+            dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
+        })
+        console.log(newDetails)
+        if (newDetails.cust_id) {
+            dispatch(editItem(getCustFields(newDetails), customers, `organizations/${organization}/customers`, null, UPDATE_CUSTOMERS_SUCCESS)) 
+            if (newDetails.loc_id) {
+                dispatch(editItem(getLocationFields(newDetails), customers, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS))
+            } else {
+                dispatch(createItem(getLocationFields(newDetails), customers, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS))
+            }           
+        } else {
+            // here we need to write to the customers collection and get the id back
+            // then we can write to the service_locations collection
+            addDoc(collection(db, `organizations/${organization}/customers`), getCustFields(newDetails))
+            .then(result => {   
+                console.log(result.id)
+                if (newDetails.loc_id) {
+                    dispatch(editItem({...getLocationFields(newDetails), cust_id: result.id}, customers, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS))
+                } else {
+                    dispatch(createItem({...getLocationFields(newDetails), cust_id: result.id}, customers, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS))
+                }
+            })
+            .catch(err => alert(err))
+        }
+
+        if (close) onCloseClick()
+    }
+
+
+    if (!customer) {
+        return null
+    }
+    else return (      
         <Modal className="scrollable" style={editorSize} show={modals.includes('Customer')} onHide={onCloseClick} size='lg'>
         <Modal.Header>Customer Editor</Modal.Header>
         <Modal.Body>
             <Tabs defaultActiveKey='contact'>
-                <Tab eventKey='contact' title='Contact Info'>
+                <Tab eventKey='contact' title='Customer Info'>
                     <Form>
                         <Form.Group as={Row}>
                             <Form.Label column sm={2}>Name</Form.Label>
                             <Col sm={10}>
-                                <Form.Control name="cust_name" type="text" value={customer?.cust_name || ''} onChange={onChange} onBlur={(event) => console.log(event.target)}/>
+                                <SearchableInput
+                                    name="cust_name"
+                                    searchValue={custSearch}
+                                    changeSearchValue={(event) => setCustSearch(event.target.value)}
+                                    matches={matches}
+                                    selectItem={onSelectCustomer}
+                                    handleBlur={blurSearch}
+                                />                                   
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
@@ -401,7 +512,11 @@ const CustomerEditor = (props) => {
                     <Form>
                     <Form.Group style={{display: "flex", flexDirection:"row", wrap:"no-wrap", justifyContent: "start"}}>
                         <Form.Label>Pricing Template:</Form.Label>
-                        <DropdownButton style={{width: "200px", marginLeft: "1em"}} title={customer?.pricing?.name || "Select"} onSelect={onChangePricingTemplate}>
+                        <DropdownButton 
+                            style={{width: "200px", marginLeft: "1em"}} 
+                            title={customer?.pricing?.name || "Select"} 
+                            onSelect={onChangePricingTemplate}
+                        >
                             {
                                 pricingTemplates.map(type => <Dropdown.Item key={type.id} eventKey={type.id}>{type.name}</Dropdown.Item>)
                             }
@@ -410,10 +525,11 @@ const CustomerEditor = (props) => {
                     <Row> 
                         <Col style={{overflowY:"scroll"}}>
                         {customer?.pricing?.workTypes && Object.keys(customer.pricing.workTypes).sort().map((workName, i) => {
-                            const workType = customer.pricing?.workTypes[workName]
+                            const workType = customer.pricing?.workTypes?.[workName]
                             if (workType?.pricingBasis === "Work Type") {                                
                                 return (
                                     <PriceField
+                                        key={i}
                                         onDeletePrice={onDeletePrice}
                                         workType={workTypes.find(i => i.id === workName)}
                                         priceField={workTypes.find(i => i.id === workName)}
@@ -427,7 +543,7 @@ const CustomerEditor = (props) => {
                                 return (
                                     <Card key={i} style={{padding: "1em"}}>
                                         <div style={{display: "flex", flexDirection:"row", wrap:"no-wrap"}}>
-                                        <Form.Label style={{fontWeight:"bold"}}>{workTypes.find(i => i.id === workName).name} prices:</Form.Label>
+                                        <Form.Label style={{fontWeight:"bold"}}>{workTypes?.find(i => i.id === workName)?.name || ""} prices:</Form.Label>
                                         <SimpleSelector
                                             style={{marginLeft: "1em"}}
                                             title="Add Vehicle"
@@ -442,18 +558,6 @@ const CustomerEditor = (props) => {
                                             editable={false}
                                             dbQuery = {vehicleTypesQuery}
                                         />
-
-                                            {/* <Form.Control name={workName}
-                                                as="select"
-                                                value={'Add Vehicle'}
-                                                onChange={onAddVehicle}
-                                            > 
-                                            {vehicleTypes.map(type => {
-                                                return customer.pricing.workTypes?.[workName]?.prices && Object.keys(customer.pricing.workTypes?.[workName]?.prices).includes(type.id) ? null : 
-                                                    <option key={type.id} value={type.id}>{type.name}</option>
-                                            })}                                                
-                                            </Form.Control> */
-                                        }
                                         </div>                                            
                                         {customer?.pricing?.workTypes?.[workName]?.prices && 
                                             Object.keys(customer.pricing.workTypes?.[workName]?.prices)                                            
@@ -476,105 +580,6 @@ const CustomerEditor = (props) => {
                             }
                         })}
                         </Col>
-
-
-                        {/* {
-                        customer?.contract_type === "Hourly" ? 
-                        <Col> 
-                        <Form.Label size='sm'>Prices</Form.Label>
-                        <Form.Group>
-                            <Form.Label>Pricing Template</Form.Label>
-                                <Form.Control name="pricingTemplate" as="select" value={customer?.pricingTemplate || ''} onChange={onChange}>
-                                    <option value="select">Select</option>
-                                    {
-                                        pricingTemplates.map(type => <option key={type} value={type}>{type}</option>)
-                                    }
-                                </Form.Control>
-                        </Form.Group>
-                        {
-                        vehicleTypes.map((item, i) => {  
-                            return (
-                                <Form.Group key = {i}>
-                                    <Row>  
-                                        <Col xs={6}>
-                                            <Form.Label size='sm'>{item.name} Price</Form.Label>
-                                        </Col>
-                                        <Col>
-                                            <Form.Control size='sm' name={item.name} type="number" value={customer[item.name] || ''} onChange={onChange}/>
-                                        </Col>
-                                    </Row>                                    
-                                </Form.Group>
-                            )
-                        })
-                        }
-                            <Form.Group>
-                            <Row>
-                                <Col xs={6}>
-                                    <Form.Label size='sm'>Sanding Price</Form.Label>
-                                </Col>
-                                <Col>
-                                    <Form.Control size='sm' name="price_per_yard" type="number" value={customer?.price_per_yard || ''} onChange={onChange}/>
-                                </Col>
-                            </Row>
-                            </Form.Group>
-                            <Form.Group>                                
-                            </Form.Group>
-                        </Col>
-                        :                        
-                        <Col> 
-                            <Form.Label size='sm'>Prices</Form.Label>
-                                <Form.Group>
-                                    <Row>  
-                                        <Col xs={6}>
-                                            <Form.Label size='med'>Snow Price</Form.Label>
-                                        </Col>
-                                        <Col>
-                                            <Form.Control size="sm" name="snow_price" type="number" value={customer?.snow_price || ''} onChange={onChange}/>
-                                        </Col>
-                                    </Row>                                    
-                                </Form.Group>
-                                <Form.Group>
-                                    <Row>  
-                                        <Col xs={6}>
-                                            <Form.Label size='sm'>Seasonal Price</Form.Label>
-                                        </Col>
-                                        <Col>
-                                            <Form.Control size='sm' name="season_price" type="number" value={customer?.season_price || ''} onChange={onChange}/>
-                                        </Col>
-                                    </Row>                                    
-                                </Form.Group>
-                                <Form.Group>
-                                <Row>
-                                    <Col xs={6}>
-                                        <Form.Label size='sm'>Sweeping Price</Form.Label>
-                                    </Col>                                    
-                                    <Col>
-                                        <Form.Control size='sm' name="sweep_price" type="number" value={customer?.sweep_price || ''} onChange={onChange}/>
-                                    </Col>
-                                </Row>
-                                </Form.Group>
-                                <Form.Group>
-                                <Row>
-                                    <Col xs={6}>
-                                        <Form.Label size='sm'>Sanding Price</Form.Label>
-                                    </Col>
-                                    <Col>
-                                        <Form.Control size='sm' name="price_per_yard" type="number" value={customer?.price_per_yard || ''} onChange={onChange}/>
-                                    </Col>
-                                </Row>
-                                </Form.Group>
-                                <Form.Group>
-                                <Row>
-                                    <Col xs={6}>
-                                    <Form.Label size='sm'>Value</Form.Label>
-                                    </Col>
-                                    <Col>
-                                        <Form.Control size='sm' name="value" type="number" value={customer?.value || ''} onChange={onChange}/>
-                                    </Col>
-                                </Row>
-                                </Form.Group>
-                            </Col>
-                        } */}
                         <Col>                           
                         <Form.Group>
                             <Form.Label size='sm'>Surface Type</Form.Label>
@@ -656,7 +661,7 @@ const CustomerEditor = (props) => {
             <hr />
             <div className="d-flex justify-content-end">
             <Button onClick={() => onDelete(customer)} variant="outline-success">
-                Permanently Delete This Property
+                Permanently Delete This Service Location
             </Button>
             </div>
         </Alert>
