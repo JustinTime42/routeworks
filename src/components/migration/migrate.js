@@ -3,6 +3,7 @@ import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp, where, que
 import { db } from "../../firebase";
 import { getDiff } from "../auditor/utils";
 import _ from 'lodash'
+import axios from "axios";
 
 const addedDocs = []
 const sendToDB = async(item, path) => {
@@ -480,6 +481,29 @@ export const migrateCustomerPricing = async() => {
     });
 }
 
+const convertToLatLng = (address) => {
+    return axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address='${address.service_address}, ${address.service_city || ""}, ${address.service_state || ""}, ${address.service_zip || ""}'&key=AIzaSyA6XjIu8LiWPxKcxaWnLM_YOOUcmp2bAsU`)
+    .then(function (response) {
+      console.log(response)
+      let data = response.data.results[0]?.geometry?.location;
+      if (data) {
+        return {lat: data?.lat, lng: data?.lng}; 
+      }
+        else return null      
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+}
 
-
+export const addLatLngToCustomers = async() => {
+    const querySnapshot = await getDocs(collection(db, `organizations/Snowline/customer`));
+    querySnapshot.forEach((doc) => {
+        let entry = {...doc.data(), id: doc.id}
+        convertToLatLng(entry).then(data => {
+            console.log(data)
+            sendToDB({...entry, location: data}, `organizations/Snowline/customer`)
+        })
+    });
+}
 

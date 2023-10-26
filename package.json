@@ -5,6 +5,7 @@
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.18.0",
     "@parse/react": "0.0.1-alpha.18",
+    "@react-google-maps/api": "^2.19.2",
     "@stripe/firestore-stripe-payments": "^0.0.6",
     "@stripe/stripe-js": "^1.54.1",
     "@types/jest": "^29.2.5",
