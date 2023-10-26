@@ -10,7 +10,7 @@ const SearchBar = () => {
 
     const [searchValue, setSearchValue] = useState('')
     const [matches, setMatches] = useState([])
-    const allCustomers = useSelector(state => state.requestAllAddresses.addresses)
+    const allLocations = useSelector(state => state.requestAllAddresses.addresses)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const dispatch = useDispatch()
     const location = useLocation()
@@ -19,7 +19,7 @@ const SearchBar = () => {
 
     useEffect(() => {
         onSetMatches()
-    }, [searchValue, allCustomers]) 
+    }, [searchValue, allLocations]) 
 
     useEffect(() => {
         if (!location.pathname.startsWith('/routebuilder')) {
@@ -39,7 +39,7 @@ const SearchBar = () => {
         } else if (location.pathname.startsWith('/displayRoute')) {
             navigate(`${routeId}/${customer.id}`)
         }
-        dispatch(setActiveItem(customer, allCustomers, SET_ACTIVE_PROPERTY))
+        dispatch(setActiveItem(customer, allLocations, SET_ACTIVE_PROPERTY))
         setMatches([])
     }
 
@@ -67,10 +67,11 @@ const SearchBar = () => {
 
     const onSetMatches = () => {
         if (searchValue.length > 0 ) {
-            const filteredCustomers = allCustomers.filter(customer => {
+            const filteredCustomers = allLocations.filter(customer => {
                 if(customer.cust_name?.toLowerCase().includes(searchValue.toLowerCase()) ||
                 customer.cust_phone?.toLowerCase().includes(searchValue.toLowerCase()) ||
                 customer.service_address?.toLowerCase().includes(searchValue.toLowerCase())) return true
+                else return false
             })
             setMatches(filteredCustomers)
             let offRouteResults = [] 
@@ -97,7 +98,7 @@ const SearchBar = () => {
 
     return (
         <div style={{position: "relative"}}>
-            <FormControl size="sm" type="search" onClick={onSetMatches} onChange={changeSearchValue} placeholder="search" value={searchValue} />
+            <FormControl size="sm" type="search" onChange={changeSearchValue} placeholder="search" value={searchValue} />
             <ListGroup  style={listStyle} as="ul">
             {
                 (matches.length > 0) ?

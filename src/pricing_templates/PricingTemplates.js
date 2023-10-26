@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import {Button, FormControl, Alert, Modal, Form, Row, Col } from "react-bootstrap"
 import SimpleSelector from "./SimpleSelector";
-import { setActiveItem, createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../actions"
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase'
 import { GET_PRICING_TEMPLATES_SUCCESS, SET_ACTIVE_PRICING_TEMPLATE } from '../constants';
