@@ -134,7 +134,7 @@ exports.getPendingBalances = onCall(async (request) => {
     })
     .then(res => {
       const balance = res.data.reduce((acc, item) => acc + item.amount, 0)
-      return {stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.service_address, balance: balance, email: customer.cust_email}
+      return {stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.bill_address, balance: balance, email: customer.cust_email}
     })
     .catch(err => {return err})
   }
@@ -388,7 +388,10 @@ exports.updateCustomer = onDocumentUpdated('organizations/{organization}/custome
   if (org.stripe_account_id) { 
     await stripe.customers.update(
       customer.stripeID,
-      toStripeCustomerFields(customer)
+      toStripeCustomerFields(customer),
+      {
+        stripeAccount: org.stripe_account_id
+      }
     )
   }
 })
