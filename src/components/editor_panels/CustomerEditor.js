@@ -104,7 +104,8 @@ const CustomerEditor = (props) => {
         }        
     }, [custSearch, customers])
 
-    useEffect(() => {        
+    useEffect(() => {   
+        setMatches([])     
         const unsub = onSnapshot(collection(db, `organizations/${organization}/pricing_templates`), (querySnapshot) => {
             if (querySnapshot.docs.length === 0) {
                 return
