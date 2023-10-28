@@ -2,7 +2,7 @@ import React from "react"
 import { useSelector } from "react-redux"
 import { Button } from "react-bootstrap"
 
-import { migrateCustomerPricing, fixOrphanedRoutes, migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags, fixSandContract, copyNoRoutesAssigned, addEmailsToLogs, addContractTypeToRoutes, assignContractType, migrateDates, addIDToAuditLogs, routeArrayToMap, displayBadChanges, fixRoutesAssigned } from "./migrate"
+import { addLatLngToCustomers, migrateCustomerPricing, fixOrphanedRoutes, migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags, fixSandContract, copyNoRoutesAssigned, addEmailsToLogs, addContractTypeToRoutes, assignContractType, migrateDates, addIDToAuditLogs, routeArrayToMap, displayBadChanges, fixRoutesAssigned } from "./migrate"
 
 
 const MigrationUI = () => {
@@ -25,7 +25,7 @@ const MigrationUI = () => {
             <Button style={{margin: '1em'}} onClick={() => addIDToAuditLogs()}>Add IDS</Button> */}
             {/* <Button style={{margin: '1em'}} onClick={() => routeArrayToMap(routes)}>change route customers from array to maps</Button> */}
 
-            <Button style={{margin: '1em'}} onClick={() => migrateCustomerPricing()}>migrate customer pricing</Button>
+            <Button style={{margin: '1em'}} onClick={addLatLngToCustomers}>Add Lat Longs</Button>
             {/* <Button style={{margin: '1em'}} onClick={() => fixRoutesAssigned(routes, customers)}>Fix Routes Assigned</Button> */}
             {/* <Button style={{margin: '1em'}} onClick={() => migrateBasic('/vehicles', 'driver/driver_lists/vehicle')}>Vehicles</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('/vehicletypes', 'driver/driver_lists/vehicle_type')}>Vehicle Types</Button>

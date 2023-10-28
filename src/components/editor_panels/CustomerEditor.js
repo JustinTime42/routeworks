@@ -15,6 +15,7 @@ import SimpleSelector from '../../pricing_templates/SimpleSelector'
 import _ from 'lodash'
 import SearchableInput from '../SearchableInput'
 import { getCustFields, getLocationFields } from '../utils'
+import { useLoadScript } from '@react-google-maps/api'
 
 // const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
 // const sandContractTypes = ["Per Visit", "Per Yard"]
@@ -22,7 +23,7 @@ const editorSize = {marginTop: '2em', overflowY: "scroll"}
 
 const PriceField = ({workType, priceField, pricingMultiple, customer, onChangePrice, onDeletePrice, pricingBasis}) => {
     const [deleteAlert, setDeleteAlert] = useState(false)
-
+      
     const onDelete = () => {
         setDeleteAlert(false)
         onDeletePrice(priceField, workType.id, pricingBasis)
@@ -82,6 +83,10 @@ const CustomerEditor = (props) => {
     const [sameAddress, setSameAddress] = useState(false)
     const [search, setSearch] = useState('')
     const [latLng, setLatLng] = useState({})
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: "AIzaSyA6XjIu8LiWPxKcxaWnLM_YOOUcmp2bAsU",
+        libraries: ['places']
+      });
 
     useEffect(() => {
         setSameAddress(false)
@@ -248,7 +253,8 @@ const CustomerEditor = (props) => {
                 service_address: addressArray[0],
                 service_city: addressArray[1],
                 service_state: addressArray[2],
-                service_zip: postalCode
+                service_zip: postalCode,
+                location: {lat: place.geometry.location.lat() || null, lng: place.geometry.location.lng() || null}
             }
         ))
     }
@@ -349,6 +355,7 @@ const CustomerEditor = (props) => {
         return null
     }
     else return (      
+
         <Modal className="scrollable" style={editorSize} show={modals.includes('Customer')} onHide={onCloseClick} size='lg'>
         <Modal.Header>Customer Editor</Modal.Header>
         <Modal.Body>

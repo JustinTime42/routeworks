@@ -85,8 +85,8 @@ const PropertyDetails = (props) => {
             // if (getUnitPrice() === undefined) {
             //     alert(`This customer does not have pricing information for this task. Please select a different work type or enter the appropriate information.`)
             //     return
-            // }
-            if (newRouteCustomers[property.id].status === "Waiting") {
+            // }            
+            if (newRouteCustomers[property.id] && (newRouteCustomers[property.id].status === "Waiting")) {
                 newRouteCustomers[property.id].status = "In Progress"
                 dispatch(editItem({
                     ...activeRoute, 
