@@ -9,7 +9,7 @@ const db = admin.firestore();
 const client = new admin.firestore.v1.FirestoreAdminClient();
 
 const stripeKey = defineSecret('STRIPE_KEY');
-const stripe = require('stripe')("sk_test_51M6hzpHadtZeRUpQvPwJ1oSUy47bkspiD6AynRUmG2rNJwpNIW6kxLcOktO5tuJBbG1vT0FFce91NY0DMgHr6fUU00oTnUMWXU");
+const stripe = require('stripe')("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");
 
 //this should be refactored. save the drivers under the org document with key matching auth uid, then
 //query the users based on the org doc rather than querying the entire authentication database

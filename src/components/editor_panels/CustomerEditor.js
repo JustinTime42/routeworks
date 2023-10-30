@@ -205,6 +205,10 @@ const CustomerEditor = (props) => {
         dispatch(setTempItem(newCustomer))
     }
 
+    const onChangePriceNote = (event) => {
+        dispatch(setTempItem({...customer, pricing: {...customer.pricing, note: event.target.value}}))
+    }
+
     const onChangePrice = (event, workName) => {
         let { target: { name, value } } = event
         let price = Number(value)
@@ -266,7 +270,7 @@ const CustomerEditor = (props) => {
     const searchOptions = {
         locationBias: {
             center: latLng,
-            radius: 20000
+            radius: 50000
         },
         types:['address']
       }
@@ -587,6 +591,8 @@ const CustomerEditor = (props) => {
                                 )
                             }
                         })}
+                        <Form.Label style={{marginTop: "1em"}}>Pricing Notes:</Form.Label>
+                        <Form.Control name="note" as="textarea" rows="3" value={customer?.pricing?.note || ''} onChange={onChangePriceNote}/>
                         </Col>
                         <Col>                           
                         <Form.Group>

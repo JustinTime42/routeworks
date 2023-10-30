@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField, addDoc } from "firebase/firestore"
 import { db, functions, httpsCallable } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
-import { onDragEnd, removeExtraFields } from './utils'
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS, UPDATE_CUSTOMERS_SUCCESS} from '../constants'
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
@@ -14,7 +13,7 @@ import CustomerEditor from '../components/editor_panels/CustomerEditor'
 
 import { scrollCardIntoView, getLatLng, getCollectionDocs } from '../components/utils'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
-// import { migrateCustomers  } from './utils'
+import { migrateCustomers, onDragEnd  } from './utils'
 import { getCustFields, getLocationFields } from '../components/utils'
 //import FileUpload from '../components/migration/FileUpload'
 
@@ -130,7 +129,7 @@ const RouteBuilder = () => {
         } 
         console.log(newLists)
         let customer = {...serviceLocations.find(location => location.id === newLists.card.id)}
-        if (!customer.routesAssigned || (!customer.routesAssigned)) {customer.routesAssigned = {}}
+        if (!customer.routesAssigned) {customer.routesAssigned = {}}
         if (newLists.whereTo === 'on') {
             console.log({...customer.routesAssigned})
             customer = {...customer, routesAssigned: {...customer.routesAssigned, [activeRoute.id]:activeRoute.name}}
@@ -172,7 +171,11 @@ const RouteBuilder = () => {
             <div>
             <Button style={{visibility: currentUser.claims.role === 'Admin' ? 'visible' : 'hidden'}} variant="primary" size="sm" onClick={onNewPropertyClick}>Create Customer</Button>
             </div>
-            {/* <Button onClick={() => migrateCustomers(organization)}>Migrate customers</Button> */}
+            {/* {
+                ((currentUser.claims.email === 'justincase18@msn.com') || currentUser.claims.email === 'justinschneider344@gmail.com') &&
+                <Button onClick={() => migrateCustomers(organization)}>Migrate customers</Button>
+            } */}
+            
 
   {/*<Button variant="primary" size="sm" style={{margin: "3px"}} onClick={updateAllAddresses}>Update All Addresses</Button> */}
 

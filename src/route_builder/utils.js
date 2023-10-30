@@ -1,6 +1,7 @@
 
 import { addDoc, getDocs, collection, doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore"; 
 import { db } from '../firebase'
+import PlacesAutocomplete, { geocodeByPlaceId, geocodeByAddress, getLatLng } from 'react-places-autocomplete'
 import axios from 'axios'
 
 
@@ -12,7 +13,7 @@ export const setItem = (item, collection) => {
 }
 
 // not currently used
-export const getLatLng = (address) => {
+export const getLatLng1 = (address) => {
   return axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address='${address.service_address}, ${address.service_city || ""}, ${address.service_state || ""}, ${address.service_zip || ""}'&key=AIzaSyAWlCgbe0nXrdjQ9Fp71KEZDXtNJlwKtEw`)
   .then(function (response) {
     console.log(response)
@@ -27,16 +28,87 @@ export const getLatLng = (address) => {
   })
 }
 
-
-
-// export const migrateCustomers = async(organization) => {
-//   const querySnapshot = await getDocs(collection(db, `organizations/${organization}/customer`));
-//   querySnapshot.forEach((doc) => {
-//       const customer = {...doc.data(), id: doc.id}
-//       setItem(getCustFields(customer), `organizations/${organization}/customers`)
-//       setItem(getLocationFields(customer), `organizations/${organization}/service_locations`)
-//   });
+// export const getPlaceData = (customer) => {
+//     return geocodeByAddress(`${customer.service_address}, ${customer.service_city || ""}, ${customer.service_state || ""}, ${customer.service_zip || ""}`)
+//     .then(result => {
+//         console.log(result)
+//         return {
+//             lat: result[0].geometry.location.lat(),
+//             lng: result[0].geometry.location.lng(),
+//         }
+//     })
+//     .catch(error => console.error('Error', error));
 // }
+
+  // this is just for migrating
+  export const getMigrationLocationFields = async(customer) => {
+    if (!customer.id) {
+      console.log("ERROR NO CUSTOMER ID ")
+      return null
+    }
+    console.log(customer.id)
+        
+    //const location = await getPlaceData(customer)
+    // console.log(location)
+    return {
+      cust_name: customer.cust_name || '',
+      service_address: customer.service_address || '',
+      service_city: customer.service_city || '',
+      service_state: customer.service_state || '',
+      service_zip: customer.service_zip || '',
+      pricing: {
+        ...customer.pricing, 
+        note: customer.season_price ? `Seasonal price: ${customer.season_price}` : ''
+        },
+      pricingTemplate: customer.pricingTemplate || {},
+      surface_type: customer.surface_type || '',
+      service_level: customer.service_level || '',
+      routesAssigned: customer.routesAssigned || {},
+      date_created: customer.date_created || '',    
+      cust_id: customer.id || '',
+      notes: customer.notes || '',
+      value: customer.value || '',
+      location: customer.location || {},
+    }
+  }
+
+  export const getCustFields = (customer) => {  
+    return {
+      cust_name: customer.cust_name || '',
+      cust_fname: customer.cust_fname || '',
+      cust_lname: customer.cust_lname || '',
+      cust_phone: customer.cust_phone || '',
+      cust_email: customer.cust_email || '',
+      cust_email2: customer.cust_email2 || '',
+      include_email2: customer.include_email2 || false,
+      bill_address: customer.bill_address || '',
+      bill_city: customer.bill_city || '',
+      bill_state: customer.bill_state || '',
+      bill_zip: customer.bill_zip || '',
+      tags: customer.tags || [],
+      date_created: customer.date_created || '',
+      stripeID: customer.stripeID || '',
+    }
+  }
+
+export const migrateCustomers = async(organization) => {
+    console.log("migrating customers")
+  const querySnapshot = await getDocs(collection(db, `organizations/${organization}/customer`));
+  querySnapshot.forEach((item) => {
+        const customer = {...item.data(), id: doc.id}
+        console.log(customer)
+        setDoc(doc(db, `organizations/${organization}/customers`, item.id), getCustFields(item.data()))
+        .then(async (res) => {
+          const locationFields = await getMigrationLocationFields({...item.data(), id: item.id})
+          setDoc(doc(db, `organizations/${organization}/service_locations`, item.id), {...locationFields, cust_id: item.id})
+        })
+          .catch(err => console.log(err))
+
+
+      //setItem(getCustFields(customer), `organizations/${organization}/customers`)
+    //   setItem(getMigrationLocationFields(customer), `organizations/${organization}/service_locations`)
+  });
+}
 
 
 export const removeExtraFields = (item) => { 
