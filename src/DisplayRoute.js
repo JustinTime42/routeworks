@@ -37,11 +37,26 @@ const DisplayRoute= (props) => {
     const activeVehicle = useSelector(state => state.setActiveTractor.activeTractor)
     const routeCustomers = useSelector(state => {
         const routeCustomers = state.setActiveRoute.activeRoute?.customers
-        const ids = Object.keys(routeCustomers || {})        
+        const ids = Object.keys(routeCustomers || {})
         let customersArray = []
         ids.forEach(id => {
             if(routeCustomers[id].active === true) {
-                customersArray.push({...routeCustomers[id], id: id})
+                const offset = new Date().getTimezoneOffset() * 60000
+                const start = routeCustomers[id].tempRange?.start ? (routeCustomers[id].tempRange?.start?.toDate())?.getTime() + offset : ""
+                const end = routeCustomers[id].tempRange?.end ? (routeCustomers[id].tempRange?.end?.toDate())?.getTime() + offset + 86400000 : ""
+                const now = new Date(Date.now())
+                if (start && end && (start <= now) && (end >= now)) {
+                    customersArray.push({...routeCustomers[id], id: id})
+                } 
+                else if (!end && (start <= now)) {
+                    customersArray.push({...routeCustomers[id], id: id})
+                }
+                else if (!start && (end >= now)) {
+                    customersArray.push({...routeCustomers[id], id: id})
+                }
+                else if (!routeCustomers[id].tempRange) {
+                    customersArray.push({...routeCustomers[id], id: id})
+                }
             }
         })
         return customersArray.sort((a,b) => (b.routePosition < a.routePosition) ? 1 : -1)        

@@ -83,10 +83,10 @@ const CustomerEditor = (props) => {
     const [sameAddress, setSameAddress] = useState(false)
     const [search, setSearch] = useState('')
     const [latLng, setLatLng] = useState({})
-    const { isLoaded } = useLoadScript({
-        googleMapsApiKey: "AIzaSyA6XjIu8LiWPxKcxaWnLM_YOOUcmp2bAsU",
-        libraries: ['places']
-      });
+    // const { isLoaded } = useLoadScript({
+    //     googleMapsApiKey: "AIzaSyA6XjIu8LiWPxKcxaWnLM_YOOUcmp2bAsU",
+    //     libraries: ['places']
+    //   });
 
     useEffect(() => {
         setSameAddress(false)
