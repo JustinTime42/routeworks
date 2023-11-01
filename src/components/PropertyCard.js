@@ -1,13 +1,16 @@
-import React from "react"
+import React, {useState} from "react"
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Button, Col, Row, Dropdown, DropdownButton } from 'react-bootstrap'
+import { Button, Col, Row, Dropdown, Form } from 'react-bootstrap'
 import { serviceLevels } from '../globals.js'
 import { changeActiveProperty } from "./utils.js";
-
+import ButtonWithLoading from "./buttons/ButtonWithLoading.js";
 
 const PropertyCard = (props) => {
     const navigate = useNavigate()
+    const [edittingTemp, setEdittingTemp] = useState(false)
+    const [startDate, setStartDate] = useState(props.address.tempRange?.start ? new Date(props.address.tempRange.start?.toDate()).toISOString().split('T')[0] : "")
+    const [endDate, setEndDate] = useState(props.address.tempRange?.end ? new Date(props.address.tempRange.end?.toDate()).toISOString().split('T')[0] : "")
     const routeData = useSelector(state => state.setActiveRoute.activeRoute)
     const status = props.address.status
 
@@ -104,33 +107,63 @@ const PropertyCard = (props) => {
                     {props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}
                     {props.address ? props.address.is_new ? "*" : null : null}            
                 </h5> 
-                <p>{props.address ? props.address.service_address ? props.address.service_address : "address" : "address"} </p>                   
+                <p>{props.address ? props.address.service_address ? props.address.service_address : "address" : "address"} </p>                                  
             </Col>
             <ServiceLevel />
-            <Col style={{flex:"1 1 75px"}}>             
-                <>
+            <Col style={{flex:"1 1 75px"}}>                        
+                <>                
                     <p style={{...statusStyle, ...rightStyle}}>{status}</p>   
-                        {props.admin ? 
-                        <DropdownButton size="sm" title="Edit">
+                        {props.admin ?
+                        <Dropdown size="sm" title="Edit" autoClose={!edittingTemp} >
+                            <Dropdown.Toggle size="sm">edit</Dropdown.Toggle>
+                            <Dropdown.Menu>
                             {props.admin && props.toggleField ?
-                            <>
+                            <>                            
                             <Dropdown.Item>
                                 <Button onClick={() => props.toggleField(props.address, routeData, 'active')}>Active</Button>  
                             </Dropdown.Item>
                             <Dropdown.Item>
                                 <Button onClick={() => props.toggleField(props.address, routeData, 'priority')}>Priority</Button> 
                             </Dropdown.Item>
-                            <Dropdown.Item>
-                                <Button onClick={() => props.toggleField(props.address, routeData, 'temporary')}>Temp</Button> 
+                            <Dropdown.Item 
+                                onFocus={() => setEdittingTemp(true)} 
+                                onBlur={() => setEdittingTemp(false)}
+                                >
+                                <Button onClick={() => props.toggleField(props.address, routeData, 'temporary')}>Temp</Button>
                             </Dropdown.Item>
+                            {props.address.temporary &&
+                                <div>
+                                    <Form.Control 
+                                        name="startDate" 
+                                        type="date" 
+                                        value={startDate}
+                                        onChange={event => setStartDate(event.target.value)}
+                                    /> 
+                                    <Form.Control 
+                                        name="endDate" 
+                                        type="date" 
+                                        value={endDate}
+                                        onChange={event => setEndDate(event.target.value)}
+                                    /> 
+                                    <ButtonWithLoading
+                                        handleClick={() => props.setTempRange(props.address, routeData, startDate, endDate)}
+                                        buttonText="Save"
+                                        tooltip="Save date range for temporary service."
+                                    />
+                                    <Dropdown.Divider />
+                                    {/* {console.log(props.address.tempRange)} */}
+                                </div>
+                            }   
+                            
                             <Dropdown.Item>
                                 <Button onClick={() => props.toggleField(props.address, routeData, 'new')}>New</Button> 
                             </Dropdown.Item>
                             </> : null}                            
                                 <Dropdown.Item>
                                     <Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button>
-                                </Dropdown.Item>                             
-                    </DropdownButton> : null }
+                                </Dropdown.Item> 
+                            </Dropdown.Menu>
+                    </Dropdown> : null }
                 </> 
             </Col>      
         </Row>

@@ -1,6 +1,6 @@
 import React, { useEffect} from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField, addDoc } from "firebase/firestore"
+import { collection, onSnapshot, doc, getDoc, Timestamp, updateDoc, deleteField, addDoc, serverTimestamp } from "firebase/firestore"
 import { db, functions, httpsCallable } from '../firebase'
 import { getItemStyle, getListStyle} from './route-builder-styles'
 import {REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, SET_ACTIVE_PROPERTY, UPDATE_ADDRESSES_SUCCESS,GET_VEHICLE_TYPES_SUCCESS, UPDATE_CUSTOMERS_SUCCESS} from '../constants'
@@ -11,7 +11,7 @@ import PropertyCard from '../components/PropertyCard'
 import { editItem, deleteItem, setActiveItem, createItem, setTempItem, showModal, hideModal } from "../actions"
 import CustomerEditor from '../components/editor_panels/CustomerEditor'
 
-import { scrollCardIntoView, getLatLng, getCollectionDocs } from '../components/utils'
+import { scrollCardIntoView, getLatLng, getCollectionDocs, setItem } from '../components/utils'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { migrateCustomers, onDragEnd  } from './utils'
 import { getCustFields, getLocationFields } from '../components/utils'
@@ -84,12 +84,21 @@ const RouteBuilder = () => {
 
     const toggleField = (customer, route, field) => { 
         let newRoute = ({...route})
-        newRoute.customers[customer.id][field] = !newRoute.customers[customer.id][field]
+        newRoute.customers[customer.id][field] = !newRoute.customers[customer.id][field]        
         dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }
 
+    const setTempRange = (customer, route, start, end) => {
+        let newRoute = ({...route})
+        const offset = new Date().getTimezoneOffset() * 60000
+        const startDate = start ? Timestamp.fromDate(new Date(Date.parse(start) + offset)) : ""
+        const endDate = end ? Timestamp.fromDate(new Date(Date.parse(end) + offset)) : ""
+        console.log(endDate)
+        newRoute.customers[customer.id].tempRange = {start: startDate, end: endDate}
+        // setItem(newRoute, `organizations/${organization}/route`)
+        dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
 
-    
+    }    
 
     // const updateAllAddresses = () => {
     //     allCustomers.forEach(customer => {
@@ -217,6 +226,8 @@ const RouteBuilder = () => {
                                                 admin={['Admin'].includes(currentUser.claims.role)} 
                                                 detailsClick={onDetailsPropertyClick} 
                                                 toggleField={toggleField}
+                                                setTempRange={setTempRange}
+
                                                 activeProperty={activeCustomer}
                                             />
                                         </div>
