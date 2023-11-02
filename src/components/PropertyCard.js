@@ -3,20 +3,20 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Button, Col, Row, Dropdown, Form } from 'react-bootstrap'
 import { serviceLevels } from '../globals.js'
-import { changeActiveProperty } from "./utils.js";
+// import { changeActiveProperty } from "./utils.js";
 import ButtonWithLoading from "./buttons/ButtonWithLoading.js";
 
-const PropertyCard = (props) => {
+const PropertyCard = ({changeActiveProperty, address, activeProperty, width, i, admin, toggleField, setTempRange, detailsClick}) => {
     const navigate = useNavigate()
     const [edittingTemp, setEdittingTemp] = useState(false)
-    const [startDate, setStartDate] = useState(props.address.tempRange?.start ? new Date(props.address.tempRange.start?.toDate()).toISOString().split('T')[0] : "")
-    const [endDate, setEndDate] = useState(props.address.tempRange?.end ? new Date(props.address.tempRange.end?.toDate()).toISOString().split('T')[0] : "")
+    const [startDate, setStartDate] = useState(address.tempRange?.start ? new Date(address.tempRange.start?.toDate()).toISOString().split('T')[0] : "")
+    const [endDate, setEndDate] = useState(address.tempRange?.end ? new Date(address.tempRange.end?.toDate()).toISOString().split('T')[0] : "")
     const routeData = useSelector(state => state.setActiveRoute.activeRoute)
-    const status = props.address.status
+    const status = address.status
 
     const cardBg = () => {        
-        if (props.address.active === false) return `rgba(231,76,60,.2)`
-        else if (props.address.temp) return `rgba(255,110,0,0.5)`
+        if (address.active === false) return `rgba(231,76,60,.2)`
+        else if (address.temp) return `rgba(255,110,0,0.5)`
         else return null
     }
 
@@ -24,8 +24,8 @@ const PropertyCard = (props) => {
         margin: '3px',
         padding: '3px',
         borderRadius: "10px",
-        border: props.address?.id === props.activeProperty?.id ? "7px solid rgb(55,90,127)" : "none",
-        width: props.width,
+        border: address?.id === activeProperty?.id ? "7px solid rgb(55,90,127)" : "none",
+        width: width,
         backgroundColor: cardBg(), 
         justifyContent:'space-between',
         flexWrap: "nowrap",
@@ -68,13 +68,13 @@ const PropertyCard = (props) => {
             borderRadius: '5px',
         }
         let visual = []
-        let level = props.address.service_level
+        let level = address.service_level
         let levelText = '' 
-        if (props.address.priority) {
+        if (address.priority) {
             visual.push(<div key="a" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>PRIORITY</div>)            
         } 
-        else if (props.address.service_level) {
-            levelText = serviceLevels[props.address.service_level]
+        else if (address.service_level) {
+            levelText = serviceLevels[address.service_level]
             // for (let i = 1; i < 5; i++) {
             //     if (i <= level) {
             //         visual.push(<div key={i} style={{...dotStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>{" "}</div>)
@@ -83,10 +83,10 @@ const PropertyCard = (props) => {
             //     }
             // }
         }  
-        if (props.address.temporary) {
+        if (address.temporary) {
             visual.push(<div key="b" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>Temp</div>)            
         }
-        if (props.address.new) {
+        if (address.new) {
             visual.push(<div key="c" style={{...priorityStyle, backgroundColor:`rgba(0,255,0,0.7)`}}>New</div>)            
         }
         return (
@@ -98,47 +98,49 @@ const PropertyCard = (props) => {
 
     return (
         <Row 
-            id={`card${(typeof(props.i) === 'number') ? props.i : props.address.id}`} 
+            id={`card${(typeof(i) === 'number') ? i : address.id}`} 
             style={cardStyle} 
-            onClick={() => navigate(changeActiveProperty(props.address, '', routeData.customers))}>
+            onClick={() => navigate(changeActiveProperty(address, '', routeData.customers))}>
             <Col style={{flex:"2 1 auto"}}>
                 <h5 style={{textAlign: "left", fontWeight: "bold"}}>  
-                    {typeof(props.i) === 'number'  ? props.i + 1 + '. ' : ''}
-                    {props.address ? props.address.cust_name ? props.address.cust_name : "name" : "name"}
-                    {props.address ? props.address.is_new ? "*" : null : null}            
+                    {typeof(i) === 'number'  ? i + 1 + '. ' : ''}
+                    {address ? address.cust_name ? address.cust_name : "name" : "name"}
+                    {address ? address.is_new ? "*" : null : null}            
                 </h5> 
-                <p>{props.address ? props.address.service_address ? props.address.service_address : "address" : "address"} </p>                                  
+                <p>{address ? address.service_address ? address.service_address : "address" : "address"} </p>                                  
             </Col>
             <ServiceLevel />
             <Col style={{flex:"1 1 75px"}}>                        
                 <>                
                     <p style={{...statusStyle, ...rightStyle}}>{status}</p>   
-                        {props.admin ?
+                        {admin ?
                         <Dropdown size="sm" title="Edit" autoClose={!edittingTemp} >
                             <Dropdown.Toggle size="sm">edit</Dropdown.Toggle>
                             <Dropdown.Menu>
-                            {props.admin && props.toggleField ?
+                            {admin && toggleField ?
                             <>                            
                             <Dropdown.Item>
-                                <Button onClick={() => props.toggleField(props.address, routeData, 'active')}>Active</Button>  
+                                <Button onClick={() => toggleField(address, routeData, 'active')}>Active</Button>  
                             </Dropdown.Item>
                             <Dropdown.Item>
-                                <Button onClick={() => props.toggleField(props.address, routeData, 'priority')}>Priority</Button> 
+                                <Button onClick={() => toggleField(address, routeData, 'priority')}>Priority</Button> 
                             </Dropdown.Item>
                             <Dropdown.Item 
                                 onFocus={() => setEdittingTemp(true)} 
                                 onBlur={() => setEdittingTemp(false)}
                                 >
-                                <Button onClick={() => props.toggleField(props.address, routeData, 'temporary')}>Temp</Button>
+                                <Button onClick={() => toggleField(address, routeData, 'temporary')}>Temp</Button>
                             </Dropdown.Item>
-                            {props.address.temporary &&
+                            {address.temporary &&
                                 <div>
+                                    <Form.Label>Start Date:</Form.Label>
                                     <Form.Control 
                                         name="startDate" 
                                         type="date" 
                                         value={startDate}
                                         onChange={event => setStartDate(event.target.value)}
                                     /> 
+                                    <Form.Label>End Date:</Form.Label>
                                     <Form.Control 
                                         name="endDate" 
                                         type="date" 
@@ -146,7 +148,7 @@ const PropertyCard = (props) => {
                                         onChange={event => setEndDate(event.target.value)}
                                     /> 
                                     <ButtonWithLoading
-                                        handleClick={() => props.setTempRange(props.address, routeData, startDate, endDate)}
+                                        handleClick={() => setTempRange(address, routeData, startDate, endDate)}
                                         buttonText="Save"
                                         tooltip="Save date range for temporary service."
                                     />
@@ -156,11 +158,11 @@ const PropertyCard = (props) => {
                             }   
                             
                             <Dropdown.Item>
-                                <Button onClick={() => props.toggleField(props.address, routeData, 'new')}>New</Button> 
+                                <Button onClick={() => toggleField(address, routeData, 'new')}>New</Button> 
                             </Dropdown.Item>
                             </> : null}                            
                                 <Dropdown.Item>
-                                    <Button variant="secondary" onClick={() => props.detailsClick(props.address)}>Details</Button>
+                                    <Button variant="secondary" onClick={() => detailsClick(address)}>Details</Button>
                                 </Dropdown.Item> 
                             </Dropdown.Menu>
                     </Dropdown> : null }

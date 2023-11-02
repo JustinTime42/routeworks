@@ -8,6 +8,7 @@ import { Alert } from 'react-bootstrap'
 import { editItem, setActiveItem } from './actions'
 import { GET_TRACTORS_SUCCESS, SET_ACTIVE_PROPERTY, SET_ACTIVE_ROUTE, SET_ACTIVE_TRACTOR } from './constants'
 import './styles/driver.css'
+import { isPropertyWithinTempDates } from './components/utils'
 
 const useLocation = () => {
     const [location, setLocation] = useState(null);
@@ -41,20 +42,7 @@ const DisplayRoute= (props) => {
         let customersArray = []
         ids.forEach(id => {
             if(routeCustomers[id].active === true) {
-                const offset = new Date().getTimezoneOffset() * 60000
-                const start = routeCustomers[id].tempRange?.start ? (routeCustomers[id].tempRange?.start?.toDate())?.getTime() + offset : ""
-                const end = routeCustomers[id].tempRange?.end ? (routeCustomers[id].tempRange?.end?.toDate())?.getTime() + offset + 86400000 : ""
-                const now = new Date(Date.now())
-                if (start && end && (start <= now) && (end >= now)) {
-                    customersArray.push({...routeCustomers[id], id: id})
-                } 
-                else if (!end && (start <= now)) {
-                    customersArray.push({...routeCustomers[id], id: id})
-                }
-                else if (!start && (end >= now)) {
-                    customersArray.push({...routeCustomers[id], id: id})
-                }
-                else if (!routeCustomers[id].tempRange) {
+                if (isPropertyWithinTempDates(routeCustomers[id])) {
                     customersArray.push({...routeCustomers[id], id: id})
                 }
             }
@@ -104,6 +92,51 @@ const DisplayRoute= (props) => {
         }
       }, [location]);
 
+    const changeActiveProperty = (property, direction = '', routeCustomers) => {
+        if (direction) {
+            let currentPosition = routeCustomers[property.id].routePosition
+            let nextPosition
+            let nextCustomerId = ''
+            const customerKeysArray = Object.keys(routeCustomers)
+            const setNextCustomer = (direction, current) => {
+                console.log(current)
+                console.log(isPropertyWithinTempDates(property))
+                nextPosition = (direction === 'next') ? current + 1 : current - 1
+                nextCustomerId = customerKeysArray.find(customerId => (
+                    routeCustomers[customerId].routePosition === nextPosition
+                ))
+                console.log(nextCustomerId)
+                if ((!routeCustomers[nextCustomerId].active || !isPropertyWithinTempDates(routeCustomers[nextCustomerId])) && 
+                    (nextPosition < customerKeysArray.length)) {
+                        setNextCustomer(direction, nextPosition)
+                } else {
+                    console.log(routeCustomers[nextCustomerId].routePosition)
+                    return nextCustomerId
+                }
+            }
+            setNextCustomer(direction, currentPosition)
+            // let isNextCustomerActive = false
+            // do {
+            //     setNextCustomer(direction, currentPosition)
+            //     if(routeCustomers[nextCustomerId].active) {
+            //         //nextCustomer = routeCustomers[nextPosition]
+            //         isNextCustomerActive = true
+            //     }
+            // }
+            // while ((isNextCustomerActive === false) && (nextPosition < customerKeysArray.length))
+            if (nextPosition >= 0 && nextPosition <= customerKeysArray.length) {           
+                if ((nextPosition - 1) > 0) {
+                    document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
+                } else {
+                    document.getElementById(`card${nextPosition}`).scrollIntoView(true)
+                }
+                return nextCustomerId
+            }                 
+        } else {
+            return property.id
+        }
+    }
+
     return (
         activeTractor.id && activeWorkType.id && Object.keys(routeCustomers).length > 0 ?
         <div className="driverGridContainer" style={{height: "90vh", overflow: "auto"}}>
@@ -116,13 +149,14 @@ const DisplayRoute= (props) => {
                             route={activeRoute.name}                                   
                             key={address.id} 
                             address={address}
-                            activeProperty={activeProperty}                             
+                            activeProperty={activeProperty} 
+                            changeActiveProperty={changeActiveProperty}                            
                         />  
                     )                                                                                      
                 }) 
                 }
             </div>
-            <Outlet />
+            <Outlet context={[changeActiveProperty]}/>
             {/* <PropertyDetails changeProperty={changeActiveProperty}/> */}
         </div> : <Alert variant="warning">Please select route, vehicle, and work type to begin.</Alert>  
     )

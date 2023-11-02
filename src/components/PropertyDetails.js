@@ -9,7 +9,7 @@ import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY, SET_ACTIVE_
 import CustLogs from './customer_panels/CustLogs'
 import SkipDetails from './customer_panels/SkipDetails'
 import TimeTracker from './customer_panels/TimeTracker'
-import { changeActiveProperty } from './utils';
+// import { changeActiveProperty } from './utils';
 
 import '../styles/driver.css'
 
@@ -25,11 +25,12 @@ const initialState = {
     modifier: {},
 }
 
-const PropertyDetails = (props) => {
+const PropertyDetails = () => {
     const [
         currentState,
         setState
     ] = useState(initialState)   
+    const [changeActiveProperty] = useOutletContext()
     const navigate = useNavigate()
     const { modifier, noteField, disabled, yards, done_label, newStatus, showSkipConfirmation, showUndoConfirmation, isRunning } = currentState    
     const serviceLocations = useSelector(state => state.requestAllAddresses.addresses)
