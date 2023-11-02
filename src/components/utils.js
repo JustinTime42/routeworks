@@ -17,39 +17,69 @@ export const scrollCardIntoView = (custIndex) => {
     }
 }
 
-export const changeActiveProperty = (property, direction = '', routeCustomers) => {
-    if (direction) {
-        let currentPosition = routeCustomers[property.id].routePosition
-        let nextPosition
-        let nextCustomerId = ''
-        const customerKeysArray = Object.keys(routeCustomers)
-        const setNextCustomer = (direction, current) => {
-            nextPosition = (direction === 'next') ? current + 1 : current - 1
-            nextCustomerId = customerKeysArray.find(customerId => (
-                routeCustomers[customerId].routePosition === nextPosition
-            ))
-            console.log(routeCustomers[nextCustomerId])
-        }
-        let isNextCustomerActive = false
-        do {
-            setNextCustomer(direction, currentPosition)
-            if(routeCustomers[nextCustomerId].active) {
-                //nextCustomer = routeCustomers[nextPosition]
-                isNextCustomerActive = true
-            }
-        }
-        while ((isNextCustomerActive === false) && (nextPosition < customerKeysArray.length))
-        if (nextPosition >= 0 && nextPosition < customerKeysArray.length) {           
-            if ((nextPosition - 1) > 0) {
-                document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
-            } else {
-                document.getElementById(`card${nextPosition}`).scrollIntoView(true)
-            }
-            return nextCustomerId
-        }                 
-    } else {
-        return property.id
+// moved this to DisplayRoute to take advantage of the properly calculated route properties 
+// export const changeActiveProperty = (property, direction = '', routeCustomers) => {
+//     if (direction) {
+//         let currentPosition = routeCustomers[property.id].routePosition
+//         let nextPosition
+//         let nextCustomerId = ''
+//         const customerKeysArray = Object.keys(routeCustomers)
+//         const setNextCustomer = (direction, current) => {
+//             console.log(current)
+//             console.log(isPropertyWithinTempDates(property))
+//             nextPosition = (direction === 'next') ? current + 1 : current - 1
+//             nextCustomerId = customerKeysArray.find(customerId => (
+//                 routeCustomers[customerId].routePosition === nextPosition
+//             ))
+//             console.log(nextCustomerId)
+//             if ((!routeCustomers[nextCustomerId].active || !isPropertyWithinTempDates(routeCustomers[nextCustomerId])) && 
+//                 (nextPosition < customerKeysArray.length)) {
+//                     setNextCustomer(direction, nextPosition)
+//             } else {
+//                 console.log(routeCustomers[nextCustomerId].routePosition)
+//                 return nextCustomerId
+//             }
+//         }
+//         setNextCustomer(direction, currentPosition)
+//         // let isNextCustomerActive = false
+//         // do {
+//         //     setNextCustomer(direction, currentPosition)
+//         //     if(routeCustomers[nextCustomerId].active) {
+//         //         //nextCustomer = routeCustomers[nextPosition]
+//         //         isNextCustomerActive = true
+//         //     }
+//         // }
+//         // while ((isNextCustomerActive === false) && (nextPosition < customerKeysArray.length))
+//         if (nextPosition >= 0 && nextPosition <= customerKeysArray.length) {           
+//             if ((nextPosition - 1) > 0) {
+//                 document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
+//             } else {
+//                 document.getElementById(`card${nextPosition}`).scrollIntoView(true)
+//             }
+//             return nextCustomerId
+//         }                 
+//     } else {
+//         return property.id
+//     }
+// }
+
+export const isPropertyWithinTempDates = (property) => {
+    const offset = new Date().getTimezoneOffset() * 60000
+    const start = property.tempRange?.start ? (property.tempRange?.start?.toDate())?.getTime() + offset : ""
+    const end = property.tempRange?.end ? (property.tempRange?.end?.toDate())?.getTime() + offset + 86400000 : ""
+    const now = new Date(Date.now())
+    if (start && end && (start <= now) && (end >= now)) {
+        return true
+    } 
+    else if (!end && (start <= now)) {
+        return true
     }
+    else if (!start && (end >= now)) {
+        return true
+    }
+    else if (!property.tempRange) {
+        return true
+    } else return false
 }
 
 export const toLocalTime = (time) => {
