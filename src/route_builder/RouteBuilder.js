@@ -227,7 +227,7 @@ const RouteBuilder = () => {
                                                 detailsClick={onDetailsPropertyClick} 
                                                 toggleField={toggleField}
                                                 setTempRange={setTempRange}
-
+                                                changeActiveProperty={() => id}
                                                 activeProperty={activeCustomer}
                                             />
                                         </div>
