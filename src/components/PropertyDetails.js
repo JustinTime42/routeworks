@@ -62,7 +62,7 @@ const PropertyDetails = () => {
             (getPriceMultiplier() === 'Per Hour') 
         if ((event.code === "KeyD") && event.altKey && event.ctrlKey && !nope) {
             onStatusChange('Done', '', null, null, false)
-            navigate(`../${changeActiveProperty(property, "prev", activeRoute.customers)}`)
+            navigate(`../${changeActiveProperty(property, "prev")}`)
         }
     }
 
@@ -387,7 +387,7 @@ const PropertyDetails = () => {
                             variant="primary"
                             size="lg"
                             disabled={isRunning}
-                            onClick={() => navigate(`../${changeActiveProperty(property, "prev", activeRoute.customers)}`)} 
+                            onClick={() => navigate(`../${changeActiveProperty(property, "prev")}`)} 
                             >
                                 Prev
                         </Button>
@@ -408,7 +408,7 @@ const PropertyDetails = () => {
                             variant="primary"
                             size="lg"
                             disabled={isRunning} 
-                            onClick={() => navigate(`../${changeActiveProperty(property, "next", activeRoute.customers)}`)}
+                            onClick={() => navigate(`../${changeActiveProperty(property, "next")}`)}
                             >
                                 Next
                         </Button>

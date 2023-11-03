@@ -92,46 +92,19 @@ const DisplayRoute= (props) => {
         }
       }, [location]);
 
-    const changeActiveProperty = (property, direction = '', routeCustomers) => {
+    const changeActiveProperty = (property, direction = '') => {
+        console.log(property)
         if (direction) {
-            let currentPosition = routeCustomers[property.id].routePosition
-            let nextPosition
-            let nextCustomerId = ''
-            const customerKeysArray = Object.keys(routeCustomers)
-            const setNextCustomer = (direction, current) => {
-                console.log(current)
-                console.log(isPropertyWithinTempDates(property))
-                nextPosition = (direction === 'next') ? current + 1 : current - 1
-                nextCustomerId = customerKeysArray.find(customerId => (
-                    routeCustomers[customerId].routePosition === nextPosition
-                ))
-                console.log(nextCustomerId)
-                if ((!routeCustomers[nextCustomerId].active || !isPropertyWithinTempDates(routeCustomers[nextCustomerId])) && 
-                    (nextPosition < customerKeysArray.length)) {
-                        setNextCustomer(direction, nextPosition)
-                } else {
-                    console.log(routeCustomers[nextCustomerId].routePosition)
-                    return nextCustomerId
-                }
-            }
-            setNextCustomer(direction, currentPosition)
-            // let isNextCustomerActive = false
-            // do {
-            //     setNextCustomer(direction, currentPosition)
-            //     if(routeCustomers[nextCustomerId].active) {
-            //         //nextCustomer = routeCustomers[nextPosition]
-            //         isNextCustomerActive = true
-            //     }
-            // }
-            // while ((isNextCustomerActive === false) && (nextPosition < customerKeysArray.length))
-            if (nextPosition >= 0 && nextPosition <= customerKeysArray.length) {           
+            let currentPosition = routeCustomers.findIndex(i=> i.id === property.id) 
+            const nextPosition = (direction === 'next') ? currentPosition + 1 : currentPosition - 1
+            if (nextPosition >= 0 && nextPosition < routeCustomers.length) {           
                 if ((nextPosition - 1) > 0) {
                     document.getElementById(`card${nextPosition - 1}`).scrollIntoView(true)
                 } else {
                     document.getElementById(`card${nextPosition}`).scrollIntoView(true)
                 }
-                return nextCustomerId
-            }                 
+                return routeCustomers[nextPosition].id
+            }                      
         } else {
             return property.id
         }

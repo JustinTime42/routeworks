@@ -577,6 +577,7 @@ const CustomerEditor = (props) => {
                                             const workObject=customer.pricing.workTypes[workName]
                                             return (
                                                 <PriceField
+                                                    key={i}
                                                     onDeletePrice={onDeletePrice}
                                                     workType={workTypes.find(i => i.id === workName)}
                                                     priceField={vehicleTypes.find(type => type.id === vehicleType)}

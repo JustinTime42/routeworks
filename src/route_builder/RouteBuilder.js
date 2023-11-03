@@ -267,6 +267,7 @@ const RouteBuilder = () => {
                                                 address={item} 
                                                 admin={['Admin'].includes(currentUser.claims.role)} 
                                                 detailsClick={onDetailsPropertyClick}
+                                                changeActiveProperty={() => item.id}
                                                 activeProperty={activeCustomer}
                                             />                  
                                         </div>
