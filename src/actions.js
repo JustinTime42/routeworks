@@ -61,7 +61,7 @@ export const createItem = (item, itemList = null, className, activeActionType = 
         addDoc(collection(db, className), {...item}) 
         .then(result => {
             console.log(result.id)
-            if (activeActionType && listAction) {
+            if (activeActionType) {
                 dispatch({
                     type: activeActionType,                     
                     payload: {...item, id: result.id}
@@ -118,7 +118,7 @@ export const deleteItem = (item, itemList, className, activeActionType = null, l
     .catch(err => console.log(err))
 }
 
-export const setActiveItem = (item, itemArray, actionType) => {
+export const setActiveItem = (item, itemArray = null, actionType) => {
     console.log("Setting Active Item: ", item)
     const activeItem = itemArray.find(i => i.id === item)
     if (activeItem) {

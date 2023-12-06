@@ -124,7 +124,7 @@ const ServiceLogs = (props) => {
                 entry.quantity = 1
                 entry.accountCode = 4000
                 entry.taxType = 'Tax Exempt (0%)'
-                entry.description += " " + dateHR
+                entry.description += " " + dateHR + entry.service_address
                 entry.date = dateHR
                 entry.time = timeHR
                 if (entry.contract_type === 'Hourly') {
@@ -142,7 +142,7 @@ const ServiceLogs = (props) => {
                     entry.timestamp = entry.timestamp.toDate()    
                     entry.elapsed = Math.round(((entry.endTime?.seconds) - (entry.startTime?.seconds)) / 36) / 100 // elapsed time as decimal hours
                     entry.elapsed_rounded = Math.ceil(Math.floor(entry.elapsed * 60 ) / 15) / 4 // elapsed time as decimal hours rounded up to nearest 15 minutes               
-                    entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})}`
+                    entry.description += ` ${new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})} ${entry.service_address}`
                     entry.date = new Date(entry.timestamp).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})       
                     entry.time = new Date(entry.timestamp).toLocaleTimeString("en-US", {timeZone: "America/Anchorage"})
                     entry.startTime = (!entry.startTime) ? null : entry.startTime.toDate() 
@@ -155,8 +155,8 @@ const ServiceLogs = (props) => {
                 console.log(doc.data())
                 let entry = {...doc.data(), id: doc.id} 
                 const timestamp = entry.timestamp.toDate()
-                const dateHR = toHRDateFormat(timestamp) 
-                entry.description += " " + dateHR
+                const dateHR = toHRDateFormat(timestamp)
+                entry.description += " " + dateHR + " " + entry.service_address
                 logs.push({
                     ...entry,
                     timestamp: entry.timestamp.toDate(),

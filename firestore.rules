@@ -23,6 +23,9 @@ service cloud.firestore {
     match /organizations/{org}/service_logs/{document=**} {
     	allow read, create: if request.auth.token.organization == org
     }
+    match /organizations/{org}/vehicle/{document=**} {
+    	allow read, write: if request.auth.token.organization == org
+    } 
     match /customers/{uid} {
       allow read: if request.auth.uid == uid;
 

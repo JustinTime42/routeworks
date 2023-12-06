@@ -575,6 +575,7 @@ const CustomerEditor = (props) => {
                                             Object.keys(customer.pricing.workTypes?.[workName]?.prices)                                            
                                             .map((vehicleType, i) => {
                                             const workObject=customer.pricing.workTypes[workName]
+                                            console.log(workObject)
                                             return (
                                                 <PriceField
                                                     key={i}

@@ -9,7 +9,7 @@ import { setColorMode, setCurrentUser } from './actions'
 import { useDispatch, useSelector } from 'react-redux';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 import Register from './auth/Register';
-import PropertyDetails from './components/PropertyDetails';
+import PropertyDetails from './components/property_details/PropertyDetails';
 import CustomerEditor from './components/editor_panels/CustomerEditor';
 import { Alert } from 'react-bootstrap';
 import { GET_VEHICLE_TYPES_SUCCESS, GET_WORK_TYPES_SUCCESS } from './constants';

@@ -47,7 +47,7 @@ const RouteEditor = (props) => {
             Object.keys(tempItem.customers).forEach(customerId => {
                 let newCustomer = customers.find(item => item.id === customerId)
                 newCustomer.routesAssigned[tempItem.id] = tempItem.name
-                dispatch(editItem(newCustomer, customers, `organizations/${organization}/customer`, null, UPDATE_ADDRESSES_SUCCESS))
+                dispatch(editItem(newCustomer, customers, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS))
             })
             dispatch(editItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
         } else {
@@ -62,7 +62,7 @@ const RouteEditor = (props) => {
             let newCustomer = customers.find(item => item.id === customerId)
             if(!newCustomer) {alert('customer not found: ' +  customerId)}
             delete newCustomer.routesAssigned[tempItem.id]
-            dispatch(editItem(newCustomer, customers, `organizations/${organization}/customer`, null, UPDATE_ADDRESSES_SUCCESS, false))
+            dispatch(editItem(newCustomer, customers, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS, false))
         })
         dispatch(deleteItem(tempItem, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
         dispatch(hideModal('Route'))

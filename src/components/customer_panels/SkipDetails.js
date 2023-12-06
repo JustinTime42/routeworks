@@ -19,6 +19,7 @@ const SkipDetails = (props) => {
     }, [props])
 
     useEffect(() => {
+        console.log("skip reason changed: ", skipReason)
         setSnowDepth('')
         setOtherNotes('')
     }, [skipReason])
@@ -41,7 +42,7 @@ const SkipDetails = (props) => {
     const isConfirmDisabled = () => {
         if ((skipReason === 'Snow Depth') && (snowDepth)) return false
         else if (['Soft Ground', 'Customer Request', 'Already Cleared', 'No Sand Needed'].includes(skipReason)) return false
-        else if ((skipReason === 'Other Reason') && (otherNotes)) return false
+        else if ((skipReason === 'Other Reason')) return false
         else return true
     }
 
@@ -70,11 +71,11 @@ const SkipDetails = (props) => {
                     </DropdownButton> : null 
                 }                            
             </div>
-            {
+            {/* {
                 skipReason==='Other Reason' ? 
                 <Form.Control style={{marginLeft:"1em"}} name="otherReason" as="input" type="text" rows="1" value={otherNotes} onChange={(event) => setOtherNotes(event.target.value)}></Form.Control>
                 : null                    
-            }    
+            }     */}
         </Alert>
     )
 }

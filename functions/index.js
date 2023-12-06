@@ -97,6 +97,11 @@ exports.createInvoiceItems = onCall(async (request) => {
       amount: entry.price * 100,
       currency: "usd",
       description: entry.description,
+      metadata: {
+        date: entry.date,
+        service_address: entry.service_address,
+        work_type: entry.work_type,
+      }
     }, {
       stripeAccount: org.stripe_account_id
     });

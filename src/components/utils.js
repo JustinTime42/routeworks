@@ -117,9 +117,10 @@ export const getCustFields = (customer) => {
       bill_state: customer.bill_state || '',
       bill_zip: customer.bill_zip || '',
       tags: customer.tags || [],
-      date_created: customer.date_created || '',
+      date_created: customer.date_created || new Date(Date.now()),
       stripeID: customer.stripeID || '',
       id: customer.cust_id || "",
+      combineInvoice: customer.combineInvoice || false,
     }
   }
   // this will be the real one
@@ -135,7 +136,7 @@ export const getCustFields = (customer) => {
       surface_type: customer.surface_type || '',
       service_level: customer.service_level || '',
       routesAssigned: customer.routesAssigned || {},
-      date_created: customer.date_created || '',
+      date_created: customer.date_created || new Date(Date.now()),
       cust_id: customer.cust_id || '',
       notes: customer.notes || '',
       value: customer.value || '',

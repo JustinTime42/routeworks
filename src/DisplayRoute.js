@@ -14,10 +14,12 @@ const useLocation = () => {
     const [location, setLocation] = useState(null);
   
     useEffect(() => {
+        const location = null
       if (!navigator.geolocation) {
         console.log('Geolocation is not supported by your browser');
-      } else {
+      } else {        
         const watchId = navigator.geolocation.watchPosition((position) => {
+            console.log("updating position")
           setLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -30,7 +32,7 @@ const useLocation = () => {
 }
 
 const DisplayRoute= (props) => {    
-    const [lastLocation, setLastLocation] = useState(null);
+    const [location, setLocation] = useState(null);
     const activeProperty = useSelector(state => state.setActiveProperty.activeProperty)
     const customers = useSelector(state => state.requestAllAddresses.addresses)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
@@ -49,13 +51,14 @@ const DisplayRoute= (props) => {
         })
         return customersArray.sort((a,b) => (b.routePosition < a.routePosition) ? 1 : -1)        
     })
+
     const routes = useSelector(state => state.requestRoutes.routes)
     const currentUser = useSelector(state => state.setCurrentUser.currentUser)
     const activeTractor = useSelector(state => state.setActiveTractor.activeTractor)    
     const activeWorkType = useSelector(state => state.setActiveWorkType.workType)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const dispatch = useDispatch()
-    const location = useLocation();
+    // const location = useLocation();
     const { routeId, custId } = useParams()
       
     useEffect(() => {  
@@ -71,26 +74,36 @@ const DisplayRoute= (props) => {
         return () => unsub()
     },[routeId, activeWorkType, activeTractor])
 
-    useEffect(() => {
-        if (activeTractor.id && activeRoute.id && activeWorkType.id) {
-            const moveThreshold = 0.0005;      
-        
-            if (location && (!lastLocation ||
-                Math.abs(location.lat - lastLocation.lat) > moveThreshold ||
-                Math.abs(location.lng - lastLocation.lng) > moveThreshold)) {
-            setLastLocation(location);
-        
-            const newVehicle = {
-                ...activeVehicle,
-                location: {
-                    lat: location.lat,
-                    lng: location.lng,
-                    },
-                }
-            dispatch(editItem(newVehicle, vehicles, `organizations/${currentUser?.claims?.organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
-            }
-        }
-      }, [location]);
+    // useEffect(() => {
+    //     const moveThreshold = 0.0005;
+    //     if (activeTractor.id && activeRoute.id && activeWorkType.id && navigator.geolocation) {
+    //         const watchId = navigator.geolocation.watchPosition((position) => {
+    //             console.log("checking position")
+    //             const lat = position.coords.latitude
+    //             const lng = position.coords.longitude                
+    //             if (!location || (location && (
+    //                 Math.abs(lat - location.lat) > moveThreshold ||
+    //                 Math.abs(lng - location.lng) > moveThreshold))) 
+    //             {
+    //                 console.log("Updating position")
+    //                 setLocation(location);                
+    //                 const newVehicle = {
+    //                     ...activeVehicle,
+    //                     location: {
+    //                         lat: lat,
+    //                         lng: lng,
+    //                         },
+    //                     }
+    //                 setLocation({
+    //                     lat: lat,
+    //                     lng: lat,
+    //                 });
+    //                 dispatch(editItem(newVehicle, vehicles, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
+    //             }
+    //         });
+    //         return () => navigator.geolocation.clearWatch(watchId);
+    //     }
+    //   }, [activeRoute.id, activeTractor.id, activeVehicle, activeWorkType.id, dispatch, organization, vehicles]);
 
     const changeActiveProperty = (property, direction = '') => {
         console.log(property)

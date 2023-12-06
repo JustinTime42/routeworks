@@ -3,15 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Card, Col, Row, Button, Form, Alert, Modal } from 'react-bootstrap'
 import { deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../firebase'
-import { createItem, editItem, setActiveItem, showModal, hideModal} from "../actions"
-import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY, SET_ACTIVE_PROPERTY } from '../constants';
-import CustLogs from './customer_panels/CustLogs'
-import SkipDetails from './customer_panels/SkipDetails'
-import TimeTracker from './customer_panels/TimeTracker'
+import { db } from '../../firebase'
+import { createItem, editItem, setActiveItem, showModal, hideModal} from "../../actions"
+import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY, SET_ACTIVE_PROPERTY } from '../../constants';
+import CustLogs from '../customer_panels/CustLogs'
+import SkipDetails from '../customer_panels/SkipDetails'
+import TimeTracker from '../customer_panels/TimeTracker'
 // import { changeActiveProperty } from './utils';
 
-import '../styles/driver.css'
+import '../../styles/driver.css'
 
 const initialState = {
     noteField: '',
@@ -19,7 +19,6 @@ const initialState = {
     yards: '',
     done_label: "hidden",
     showSkipConfirmation: false,
-    currentLogEntry: null,
     showUndoConfirmation: false,
     isRunning: false,
     modifier: {},
@@ -66,6 +65,10 @@ const PropertyDetails = () => {
         }
     }
 
+    useEffect(() => {
+        console.log('changeActiveProperty changed: ', changeActiveProperty)
+    }, [changeActiveProperty])
+
     useEffect(() => {     
         console.log(currentState) 
         document.addEventListener("keydown", listener)
@@ -82,6 +85,7 @@ const PropertyDetails = () => {
 
     useEffect(() => {
         if(property?.id) {
+            console.log("calling editItem in property details from useEffect")
             let newRouteCustomers = {...activeRoute.customers}
             // if (getUnitPrice() === undefined) {
             //     alert(`This customer does not have pricing information for this task. Please select a different work type or enter the appropriate information.`)
@@ -130,13 +134,15 @@ const PropertyDetails = () => {
 
     const setIsRunning = (isRunning) => setState(prevState => ({...prevState, isRunning:isRunning}))
     
+ 
     const undoStatus = () => {
         deleteDoc(doc(db, `organizations/${organization}/service_logs`, currentLogEntry.id))
         .then(() => {
             setState(prevState => ({...prevState, showUndoConfirmation: false, done_label: "hidden", disabled: false}))
             dispatch(setActiveItem(null, [], ACTIVE_LOG_ENTRY))
         })
-        .catch(err => alert(err))
+        .catch(err => console.log("error", err))
+        
         let newRouteCustomers = {...activeRoute.customers}
         newRouteCustomers[property.id].status = "Waiting"
         dispatch(editItem({...activeRoute, customers: newRouteCustomers}, serviceLocations, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
@@ -211,7 +217,7 @@ const PropertyDetails = () => {
         const customerDetails = serviceLocations.find(i => i.id === property.id)
         let newRecordObject = {}
         newRecordObject.status = newStatus
-
+        
         // newRecordObject.price = property.snow_price
         newRecordObject.stripeID = customers.find(i => i.id === property.cust_id).stripeID
         let month = ('0' + (new Date().getMonth() + 1)).slice(-2) 
@@ -299,6 +305,7 @@ const PropertyDetails = () => {
         })
         if (!((getPriceMultiplier() === 'Per Hour') && (newStatus === "Done")) ) {
             dispatch(createItem(newRecordObject, null, `organizations/${organization}/service_logs`, ACTIVE_LOG_ENTRY, null))
+            // dispatch(setActiveItem(newRecordObject, [], ACTIVE_LOG_ENTRY))
         }
         
 
@@ -392,9 +399,9 @@ const PropertyDetails = () => {
                                 Prev
                         </Button>
                         <Button variant="danger" size="lg" onClick={toggleShowSkip}>Skip</Button>
-                            <div style={{visibility: done_label, fontSize: "large"}}>                                    
-                                <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
-                            </div>
+                        <div style={{visibility: done_label, fontSize: "large"}}>                                    
+                            <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
+                        </div>
                         <Button 
                             //style={{visibility: (property.contract_type === 'Per Hour') ? 'hidden' : 'visible'}} 
                             variant="success" 

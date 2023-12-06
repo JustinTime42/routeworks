@@ -24,18 +24,18 @@ const DataImport = ({ show, onClose, org }: IDataImport) => {
           <FileUpload 
               org={org}
               collection={'customer'}
-              templateUrl="https://firebasestorage.googleapis.com/v0/b/route-manager-5f65b.appspot.com/o/public%2Fcustomer-upload-template.csv?alt=media&token=2e71e084-9f99-4007-a315-60ca08b97c08"
+              templateUrl="https://firebasestorage.googleapis.com/v0/b/route-manager-5f65b.appspot.com/o/public%2Fcustomer-upload-template.csv?alt=media&token=7c73c359-a4b2-44c5-8005-90d1fcbb1096&_gl=1*fqv76w*_ga*MTg5OTA4OTA1MC4xNjcyMDg2MDY4*_ga_CW55HF8NVT*MTY5OTIyNDAwNi40MTguMS4xNjk5MjI3MTQzLjE5LjAuMA.."
           /> 
         </Suspense>
         <hr />
-        <h4>Service Logs:</h4>
+        {/* <h4>Service Logs:</h4>
         <Suspense fallback={<div>Loading...</div>}>
           <FileUpload 
               org={org}
               collection={'service_logs'}
               templateUrl="https://firebasestorage.googleapis.com/v0/b/route-manager-5f65b.appspot.com/o/public%2Fservice-logs-template.csv?alt=media&token=2a7c2273-d564-44b4-b0d4-920e0dc7e241"
           /> 
-        </Suspense>
+        </Suspense> */}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={onClose}>Close</Button>
