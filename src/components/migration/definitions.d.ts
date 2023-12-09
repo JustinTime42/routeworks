@@ -35,6 +35,7 @@ export interface ICustomerFieldsBefore extends ICommonFieldsBefore {
     surface_type?: string
     tags?: string
     notes?: string
+    cust_id?: string
 }
 
 export interface ICustomerFieldsAfter extends ICommonFieldsAfter {
@@ -69,6 +70,7 @@ export interface ILogsFieldsBefore extends ICommonFieldsBefore {
     timestamp?: Date
     startTime?: Date | null
     endTime?: Date | null
+    cust_id?: string
 }
 
 export interface ILogsFieldsAfter extends ICommonFieldsAfter {

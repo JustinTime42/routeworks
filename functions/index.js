@@ -527,6 +527,11 @@ exports.connectLogsToCust = onCall(async request => {
   }
 })
 
+exports.publicCreateStripeCustomer = onCall(async(request) => {
+  const {organization, email} = request.auth.token
+  const {orgName} = request.data
+
+
 
 const createStripeCustomer = async (customer, organization, db, stripe, stripeAccount) => {
   //functions.logger.log(toStripeCustomerFields(customer))

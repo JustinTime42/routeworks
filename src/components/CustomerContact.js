@@ -52,7 +52,7 @@ const CustomerContact = ({show, onClose}) => {
     const onDownload = () => {
         let contactList = []
         selectedTags.forEach(async(tag, i) => {
-            const q = query(collection(db, `organizations/${organization}/customer`), where("tags", "array-contains", tag))
+            const q = query(collection(db, `organizations/${organization}/customers`), where("tags", "array-contains", tag))
             const querySnapshot = await getDocs(q)
             querySnapshot.forEach(doc => {
                 let customer = {...doc.data(), id: doc.id}

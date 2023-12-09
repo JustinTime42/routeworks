@@ -90,16 +90,19 @@ const PropertyDetails = () => {
             // if (getUnitPrice() === undefined) {
             //     alert(`This customer does not have pricing information for this task. Please select a different work type or enter the appropriate information.`)
             //     return
-            // }            
-            if (newRouteCustomers[property.id] && (newRouteCustomers[property.id].status === "Waiting")) {
-                newRouteCustomers[property.id].status = "In Progress"
-                dispatch(editItem({
-                    ...activeRoute, 
-                    customers: newRouteCustomers}, 
-                    serviceLocations, `organizations/${organization}/route`, 
-                    SET_ACTIVE_ROUTE, 
-                    REQUEST_ROUTES_SUCCESS))
-            }
+            // } 
+            
+            //I'm commenting the following out for now until I add something to return it to waiting if we move away from the customer without clicking done or skipped
+            // might also wait to add the in progres label until location service reports back that we are within 50 meters of the location
+            // if (newRouteCustomers[property.id] && (newRouteCustomers[property.id].status === "Waiting")) {
+            //     newRouteCustomers[property.id].status = "In Progress"
+            //     dispatch(editItem({
+            //         ...activeRoute, 
+            //         customers: newRouteCustomers}, 
+            //         serviceLocations, `organizations/${organization}/route`, 
+            //         SET_ACTIVE_ROUTE, 
+            //         REQUEST_ROUTES_SUCCESS))
+            // }
             if (getPricingMultiple() === "Per Hour") { 
                 dispatch(showModal("Per Hour"))
                   setTimeout(() => alert("Remember to log hours!"), 200) 
@@ -202,7 +205,7 @@ const PropertyDetails = () => {
                 break
             case "Per Yard": multiplier = yards
                 break
-            case "Subscription": multiplier = 0
+            case "Free": multiplier = 0
                 break
             default: multiplier = 1
         }
