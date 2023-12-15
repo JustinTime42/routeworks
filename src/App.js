@@ -16,6 +16,7 @@ import { GET_VEHICLE_TYPES_SUCCESS, GET_WORK_TYPES_SUCCESS } from './constants';
 import Auditor from './components/auditor/Auditor';
 import PricingTemplates from './pricing_templates/PricingTemplates';
 import FleetTracker from './map_dashboard/FleetTracker';
+import Customers from './customers/Customers';
 //import Auditor from './components/auditor/Auditor';
 const RouteBuilder = lazy(() => import('./route_builder/RouteBuilder'))
 const DisplayRoute = lazy(() => import('./DisplayRoute'))
@@ -25,8 +26,8 @@ const ServiceLogs = lazy(() => import('./components/service_logs/ServiceLogs'))
 const Users = lazy(() => import('./components/Users'))
 
 const App = () => { 
-  const localVersion = "0.1.0"
-  let prodVersion = "0.1.0"
+  const localVersion = "0.1.1"
+  let prodVersion = "0.1.1"
   const [user, loading, error] = useIdToken(auth);
   const currentUser = useSelector(state => state.setCurrentUser.currentUser)
   const activeTractor = useSelector(state => state.setActiveTractor.activeTractor) 
@@ -131,7 +132,9 @@ const App = () => {
             <Route path="auditor" element={<Auditor />} />
             <Route path="pricing_templates" element={<PricingTemplates />} />
             <Route path="fleet_tracker" element={<FleetTracker />} />
-
+            <Route path="customers" element={<Customers />}>
+              <Route path=":custId" element={<CustomerEditor />} />
+            </Route>
           </Route>
         </Routes>
       </Suspense>

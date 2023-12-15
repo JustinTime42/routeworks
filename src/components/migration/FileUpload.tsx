@@ -204,7 +204,7 @@ const FileUpload = ({org, templateUrl}: IFileUploadProps) => {
                     <h4>Duplicates found:</h4>
                     <p>Listed below are customers that have more than one service location registered to the same billing address.
                         For each customer, please check the box if you would like to combine all service locations for that customer into one invoice.
-                        Leave the box unchecked to invoice each service location separately. Once you have made your selections, click the "Write to Firestore" button to save your changes.
+                        Leave the box unchecked to invoice each service location separately. Once you have made your selections, click the "Upload Customers" button to save your changes.
                     </p>
                     <div style={{height: "30vh", overflow: "scroll"}}>
                         {duplicates.map((customer, index) => {
