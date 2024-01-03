@@ -115,8 +115,7 @@ export const removeExtraFields = (item) => {
     console.log(item)
     return (
         {
-            id: item.id,
-            cust_name: item.cust_name, 
+            id: item.id, 
             service_address: item.service_address || '',
             service_level: item.service_level || null,
             active: item.active !== undefined ? item.active : true,

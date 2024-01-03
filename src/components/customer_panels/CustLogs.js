@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {  Button} from 'react-bootstrap'
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, or } from "firebase/firestore";
 import { setLogs } from '../../actions';
 import { db } from '../../firebase'
 import LogsTable from '../service_logs/LogsTable';
@@ -19,7 +19,7 @@ const CustLogs = (props) => {
     },[activeProperty])
     
     const getLogs = async() => {
-        const q = query(collection(db, `organizations/${organization}/service_logs`), where('cust_id', '==', activeProperty.id))
+        const q = query(collection(db, `organizations/${organization}/service_logs`), or(where('loc_id', '==', activeProperty.id), where('id', '==', activeProperty.id)))
         const querySnapshot = await getDocs(q);
         let logs = []
         querySnapshot.forEach((doc) => {

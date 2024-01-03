@@ -6,9 +6,10 @@ import PlacesAutocomplete, { geocodeByPlaceId, geocodeByAddress, getLatLng } fro
 import { addDoc, arrayUnion, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import '../styles/driver.css'
-import { UPDATE_CUSTOMERS_SUCCESS } from '../constants';
+import { UPDATE_CUSTOMERS_FAILED, UPDATE_CUSTOMERS_PENDING, UPDATE_CUSTOMERS_SUCCESS } from '../constants';
 
 import _ from 'lodash'
+import ButtonWithLoading from '../components/buttons/ButtonWithLoading'
 
 
 // const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
@@ -16,19 +17,16 @@ import _ from 'lodash'
 const editorSize = {marginTop: '2em', overflowY: "scroll"}
 
 const CustomerEditor = ({cust}) => {
-    const customer = {...cust}
-    const customers = useSelector(state => state.getAllCustomers.customers)
+    
+    const {customers, error, isPending} = useSelector(state => state.getAllCustomers.customers)
     const organization = useSelector(state => state.setCurrentUser.currentUser.claims.organization)
     const vehicleTypes = useSelector(state => state.getTractorTypes.tractorTypes)
-
-
-    const modals = useSelector(state => state.whichModals.modals)
-    const dispatch = useDispatch()
-    const [deleteAlert, setDeleteAlert] = useState(false)
+    const [customer, setCustomer] = useState(cust)    
     const [allTags, setAllTags] = useState([])
     const [newTagName, setNewTagName] = useState('')
     const [search, setSearch] = useState('')
     const [latLng, setLatLng] = useState({})
+    const dispatch = useDispatch()
     // const { isLoaded } = useLoadScript({
     //     googleMapsApiKey: "AIzaSyA6XjIu8LiWPxKcxaWnLM_YOOUcmp2bAsU",
     //     libraries: ['places']
@@ -42,6 +40,14 @@ const CustomerEditor = ({cust}) => {
         }
         getPosition()
     }, [])
+
+    useEffect(() => {
+        setCustomer(cust)
+    }, [cust])
+
+    useEffect(() => {
+        console.log(customers)
+    }, [customers])
 
     useEffect(() => {
         const unsub = onSnapshot(doc(db, `organizations`,  organization), (doc) => {
@@ -61,7 +67,7 @@ const CustomerEditor = ({cust}) => {
             tagsArray.push(name)
         }
         //let tags = tagsArray.join()
-        dispatch(setTempItem({...customer, tags: tagsArray}))
+        setCustomer({...customer, tags: tagsArray})
     }
 
     const saveNewTag = async(newTag) => {
@@ -78,16 +84,16 @@ const CustomerEditor = ({cust}) => {
         console.log(name, value)
         let vTypes = vehicleTypes.map(item => Object.values(item)[0]) 
         let numberValues = ['snow_price', 'value', 'price_per_yard', 'sweep_price', 'season_price', ...vTypes]
-        if (numberValues.includes(name)){
+        if (numberValues.includes(name)){            
             value = !value ? null : Number(value)
         }
         if (value === "on") {
-            dispatch(setTempItem({...customer, [name]: !customer[name]}))          
+            setCustomer({...customer, [name]: !customer[name]})          
         } else if (name === 'newTagName') {
             setNewTagName(value)            
         }
         else {  
-            dispatch(setTempItem({...customer,  [name]: value}))
+            setCustomer({...customer, [name]: value})
         }
     }
 
@@ -95,16 +101,16 @@ const CustomerEditor = ({cust}) => {
         const [place] = await geocodeByPlaceId(placeId);
         const {long_name:postalCode = ''} = place.address_components.find( c => c.types.includes('postal_code')) || {};
         let addressArray = address.split(',')
-        dispatch(setTempItem(
+        setCustomer(
             {
                 ...customer, 
-                service_address: addressArray[0],
-                service_city: addressArray[1],
-                service_state: addressArray[2],
-                service_zip: postalCode,
+                bill_address: addressArray[0],
+                bill_city: addressArray[1],
+                bill_state: addressArray[2],
+                bill_zip: postalCode,
                 location: {lat: place.geometry.location.lat() || null, lng: place.geometry.location.lng() || null}
             }
-        ))
+        )
     }
 
     const onChangeSearch = (address) => {
@@ -121,8 +127,8 @@ const CustomerEditor = ({cust}) => {
 
     const onCustomerSave = (newDetails, close) => {
         console.log(newDetails)
-        if (newDetails.cust_id) {
-            dispatch(editItem(newDetails, customers, `organizations/${organization}/customers`, null, UPDATE_CUSTOMERS_SUCCESS))         
+        if (newDetails.id) {
+            dispatch(editItem(newDetails, customers, `organizations/${organization}/customers`, UPDATE_CUSTOMERS_PENDING, UPDATE_CUSTOMERS_SUCCESS, UPDATE_CUSTOMERS_FAILED))         
         } else {
           dispatch(createItem(newDetails, customers, `organizations/${organization}/customers`, null, UPDATE_CUSTOMERS_SUCCESS)) 
         }
@@ -133,7 +139,8 @@ const CustomerEditor = ({cust}) => {
         return null
     }
     else return (      
-      <Form className="border-danger">
+        <Form className="border rounded p-2 m-2">
+            <h4>Customer Information</h4>
           <Form.Group as={Row}>
               <Form.Label column sm={2}>Name</Form.Label>
               <Col sm={10}>
@@ -178,93 +185,104 @@ const CustomerEditor = ({cust}) => {
               </Col>
           </Form.Group>    
   
-      <Form.Label>Billing Address</Form.Label>                                                
-      <Form.Group as={Row}>
-      <PlacesAutocomplete
-          value={search}
-          onChange={onChangeSearch}
-          onSelect={handleSelectPlace}
-          searchOptions={searchOptions}
-          shouldFetchSuggestions={search.length > 3}
-      >
-          {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-          <div>
-              <input 
-              {...getInputProps({
-                  placeholder: 'Search Places ...',
-                  className: 'location-search-input'
-              })}
-              />
-              <div className="autocomplete-dropdown-container">
-              {suggestions.map(suggestion => {
-                  const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
-                  // inline style for demonstration purpose
-                  const style = suggestion.active
-                              ? { backgroundColor: '#fafafa', cursor: 'pointer' }
-                              : { backgroundColor: '#ffffff', cursor: 'pointer' };
-                  return (
-                  <div key={suggestion.description} {...getSuggestionItemProps(suggestion)}>
-                      <span>{suggestion.description}</span>
-                  </div>
-                  )
-              })}
-              </div>
-          </div>
-          )}
-      </PlacesAutocomplete>
-          <Form.Label>Address</Form.Label>
-          <Col>
-              <Form.Control name="bill_address" type="text" value={customer?.bill_address || ''} onChange={onChange}/>
-          </Col>
-      </Form.Group>
-      <Form.Group as={Row}>
-          <Form.Label>City</Form.Label>
-          <Col>
-              <Form.Control name="bill_city" type="text" value={customer?.bill_city || ''} onChange={onChange}/>
-          </Col>
-      </Form.Group>
-      <Row>                                
-      <Col>
-      <Form.Group>                                                                                                    
-          <Form.Label>State</Form.Label>   
-          <Form.Control name="bill_state" type="text" value={customer?.bill_state || ''} onChange={onChange}/>
-      </Form.Group>
-      </Col>
-      <Col>
-      <Form.Group>
-          <Form.Label>Zip</Form.Label>                              
-          <Form.Control name="bill_zip" type="text" value={customer?.bill_zip || ''} onChange={onChange}/> 
-      </Form.Group>
-      </Col>   
-      </Row>  
-      <Form.Label>Tags</Form.Label> 
-      <Row style={{marginBottom: '1em'}}>
-          <Col>
-              <Button size='sm' variant='primary' onClick={() => saveNewTag(newTagName)}>add tag</Button>
-          </Col>
-          <Col>
-              <Form.Control name="newTagName" type="text" placeholder={newTagName} onChange={onChange}/>
-          </Col>
-      </Row>
-      {                                    
-          allTags.map((tag, i) => {
-              return(       
-                  <Row key={i}>
-                      <Col xs={7}>
-                          <Form.Check                                                          
-                              name={tag}
-                              type="checkbox"
-                              label={tag}
-                              checked = {customer?.tags?.includes(tag) || false}
-                              onChange={tagChange}
-                          />  
-                      </Col>
-                  </Row>                                       
-              )                               
-          })                                    
-      }
-      <Button variant="primary" onClick={() => onCustomerSave(customer)}>Save</Button>
-      <Button variant="primary" onClick={() => onCustomerSave(customer)}>Save and Close</Button>                        
+            <Form.Label>Billing Address</Form.Label>                                                
+            <Form.Group as={Row}>
+            <PlacesAutocomplete
+                value={search}
+                onChange={onChangeSearch}
+                onSelect={handleSelectPlace}
+                searchOptions={searchOptions}
+                shouldFetchSuggestions={search.length > 3}
+            >
+                {({ getInputProps, suggestions, getSuggestionItemProps }) => (
+                <div>
+                    <input 
+                    {...getInputProps({
+                        placeholder: 'Search Places ...',
+                        className: 'location-search-input'
+                    })}
+                    />
+                    <div className="autocomplete-dropdown-container">
+                    {suggestions.map(suggestion => {
+                        const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
+                        // inline style for demonstration purpose
+                        const style = suggestion.active
+                                    ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                                    : { backgroundColor: '#ffffff', cursor: 'pointer' };
+                        return (
+                        <div key={suggestion.description} {...getSuggestionItemProps(suggestion)}>
+                            <span>{suggestion.description}</span>
+                        </div>
+                        )
+                    })}
+                    </div>
+                </div>
+                )}
+            </PlacesAutocomplete>
+                <Form.Label>Address</Form.Label>
+                <Col>
+                    <Form.Control name="bill_address" type="text" value={customer?.bill_address || ''} onChange={onChange}/>
+                </Col>
+            </Form.Group>
+            <Form.Group as={Row}>
+                <Form.Label>City</Form.Label>
+                <Col>
+                    <Form.Control name="bill_city" type="text" value={customer?.bill_city || ''} onChange={onChange}/>
+                </Col>
+            </Form.Group>
+            <Row>                                
+            <Col>
+            <Form.Group>                                                                                                    
+                <Form.Label>State</Form.Label>   
+                <Form.Control name="bill_state" type="text" value={customer?.bill_state || ''} onChange={onChange}/>
+            </Form.Group>
+            </Col>
+            <Col>
+            <Form.Group>
+                <Form.Label>Zip</Form.Label>                              
+                <Form.Control name="bill_zip" type="text" value={customer?.bill_zip || ''} onChange={onChange}/> 
+            </Form.Group>
+            </Col>   
+            </Row>  
+            <Form.Label>Tags</Form.Label> 
+            <Col className="col-xs-6">
+            <Row>
+                <Col className="col-m-2">
+                <Form.Control name="newTagName" type="text" placeholder='enter new tag' value={newTagName} onChange={onChange}/>
+                </Col>
+                <Col>
+                    <Button size='sm' variant='primary' onClick={() => saveNewTag(newTagName)}>add tag</Button>
+                </Col>
+            </Row>
+            {                                    
+                allTags.map((tag, i) => {
+                    return(       
+                        <Row key={i}>
+                            <Col xs={7}>
+                                <Form.Check                                                          
+                                    name={tag}
+                                    type="checkbox"
+                                    label={tag}
+                                    checked = {customer?.tags?.includes(tag) || false}
+                                    onChange={tagChange}
+                                />  
+                            </Col>
+                        </Row>                                       
+                    )                               
+                })                                    
+            }
+            </Col>
+            <div >
+            <ButtonWithLoading
+                handleClick={() => onCustomerSave(customer)}
+                buttonText="Save Changes"
+                tooltip="Save customer."
+                isLoading={isPending}
+            />
+            {/* <Button variant="primary" className="m-1" onClick={() => onCustomerSave(customer)}>Save Changes</Button> */}
+            <Button variant="primary" className="m-1" onClick={() => setCustomer(cust)}>Reset Changes</Button> 
+            </div> 
+                      
         </Form>
     )    
 }

@@ -116,42 +116,33 @@ exports.createInvoiceItems = onCall(async (request) => {
 
 exports.getPendingBalances = onCall(async (request) => {
   const {role, organization} = request.auth.token
-  let balancePromises = []
   if (role !== "Admin") {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
   }
   const stripeAccount = await getStripeAccount(organization)
+
+  // Get all pending invoice items for the organization
+  const invoiceItems = await stripe.invoiceItems.list({
+    pending: true,
+  }, {
+    stripeAccount: stripeAccount
+  });
+
   // Get all customers from that organization's customer collection in firebase
   const customersRef = db.collection(`organizations/${organization}/customers`)
   const custSnapshot = await customersRef.get()
 
-  // get balances for each customer
-  const getBalance = (customer) => {
-    return stripe.invoiceItems.list({
-      customer: customer.stripeID,
-      pending: true,
-    }, {
-      stripeAccount: stripeAccount
-    })
-    .then(res => {
-      const balance = res.data.reduce((acc, item) => acc + item.amount, 0)
-      return {stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.bill_address, balance: balance, email: customer.cust_email}
-    })
-    .catch(err => {return err})
-  }
+  const balances = []
 
-  custSnapshot.forEach(async(doc) => {
-    const customer = {...doc.data(), id: doc.id}  
-    balancePromises.push(getBalance(customer))
+  // Calculate balances for each customer
+  custSnapshot.forEach((doc) => {
+    const customer = {...doc.data(), id: doc.id}
+    const customerInvoiceItems = invoiceItems.data.filter(item => item.customer === customer.stripeID)
+    const balance = customerInvoiceItems.reduce((acc, item) => acc + item.amount, 0)
+    balances.push({stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.bill_address, balance: balance, email: customer.cust_email})
   })
-  return Promise.all(balancePromises)
-  .then((balances) => {
-    return balances.filter(b => b.balance > 0)
-  })
-  .catch(err => {
-    functions.logger.log("error: ", err)
-    throw new HttpsError('Error', 'error creating invoices: ', err)
-  })
+
+  return balances.filter(b => b.balance > 0)
 })
 
 
@@ -165,19 +156,21 @@ exports.sendInvoices = onCall(async (request) => {
   let promises = []
 
   const createAndSendInvoice = async (customer) => {
-    const invoice = await stripe.invoices.create({
-      customer: customer,
-      due_date: dueDate,
-      pending_invoice_items_behavior: "include",
-      collection_method: 'send_invoice',
-    },
-    {
-      stripeAccount: stripeAccount
-    })
-    promises.push(stripe.invoices.sendInvoice(invoice.id,
+    setTimeout(async() => {
+      const invoice = await stripe.invoices.create({
+        customer: customer,
+        due_date: dueDate,
+        pending_invoice_items_behavior: "include",
+        collection_method: 'send_invoice',
+      },
       {
         stripeAccount: stripeAccount
-      }))
+      })
+      promises.push(stripe.invoices.sendInvoice(invoice.id,
+        {
+          stripeAccount: stripeAccount
+        }))
+    }, 20)
   }
   // create invoices for each customer
   customers.forEach(async (customer) => {

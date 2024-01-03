@@ -10,7 +10,7 @@ import '../../styles/driver.css'
 import { serviceLevels  } from '../../globals'
 import RoutePopover from '../customer_panels/RoutePopover'
 import { useOutletContext } from 'react-router-dom'
-import { GET_PRICING_TEMPLATES_SUCCESS, GET_VEHICLE_TYPES_SUCCESS, REQUEST_ROUTES_SUCCESS, SET_ACTIVE_PRICING_TEMPLATE, SET_ACTIVE_VEHICLE_TYPE, UPDATE_ADDRESSES_SUCCESS, UPDATE_CUSTOMERS_SUCCESS } from '../../constants';
+import { GET_PRICING_TEMPLATES_SUCCESS, GET_VEHICLE_TYPES_SUCCESS, REQUEST_ROUTES_SUCCESS, SET_ACTIVE_PRICING_TEMPLATE, SET_ACTIVE_VEHICLE_TYPE, UPDATE_ADDRESSES_FAILED, UPDATE_ADDRESSES_PENDING, UPDATE_ADDRESSES_SUCCESS, UPDATE_CUSTOMERS_FAILED, UPDATE_CUSTOMERS_PENDING, UPDATE_CUSTOMERS_SUCCESS } from '../../constants';
 import SimpleSelector from '../../pricing_templates/SimpleSelector'
 import _ from 'lodash'
 import SearchableInput from '../SearchableInput'
@@ -330,12 +330,12 @@ const CustomerEditor = (props) => {
         })
         console.log(newDetails)
         if (newDetails.cust_id) {
-            dispatch(editItem(getCustFields(newDetails), customers, `organizations/${organization}/customers`, null, UPDATE_CUSTOMERS_SUCCESS)) 
+            dispatch(editItem(getCustFields(newDetails), customers, `organizations/${organization}/customers`, UPDATE_CUSTOMERS_PENDING, UPDATE_CUSTOMERS_SUCCESS, UPDATE_CUSTOMERS_FAILED)) 
             if (newDetails.loc_id) {
-                dispatch(editItem(getLocationFields(newDetails), customers, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS))
+                dispatch(editItem(getLocationFields(newDetails), customers, `organizations/${organization}/service_locations`, UPDATE_ADDRESSES_PENDING, UPDATE_ADDRESSES_SUCCESS, UPDATE_ADDRESSES_FAILED))
             } else {
-                dispatch(createItem(getLocationFields(newDetails), customers, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS))
-            }           
+                dispatch(createItem(getLocationFields(newDetails), customers, `organizations/${organization}/service_locations`, UPDATE_ADDRESSES_PENDING, UPDATE_ADDRESSES_SUCCESS, UPDATE_ADDRESSES_FAILED))
+            }     
         } else {
             // here we need to write to the customers collection and get the id back
             // then we can write to the service_locations collection
