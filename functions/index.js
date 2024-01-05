@@ -9,7 +9,7 @@ const db = admin.firestore();
 const client = new admin.firestore.v1.FirestoreAdminClient();
 
 const stripeKey = defineSecret('STRIPE_KEY');
-const stripe = require('stripe')("sk_test_51M6hzpHadtZeRUpQvPwJ1oSUy47bkspiD6AynRUmG2rNJwpNIW6kxLcOktO5tuJBbG1vT0FFce91NY0DMgHr6fUU00oTnUMWXU");
+const stripe = require('stripe')("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");
 
 //this should be refactored. save the drivers under the org document with key matching auth uid, then
 //query the users based on the org doc rather than querying the entire authentication database
@@ -62,20 +62,15 @@ exports.createOrg = onCall((request) => {
 });
 
 //probably temporary as this isn't the usual flow
-exports.createStripeCustomers = onCall(async (request) => {
-  const {customers, stripeAccount} = request.data
+exports.createStripeCustomer = onCall(async (request) => {
+  const {customer, stripeAccount} = request.data
   const {role, organization} = request.auth.token
   if (role !== "Admin") {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
   }
-  let promises = []
-  customers.forEach(async (customer) => {
-    if (!customer.stripeID) {
-      promises.push(createStripeCustomer(customer, organization, db, stripe, stripeAccount))   //ADD STRIPE CONNECTED ACCOUNT ID
-    }
-  })
-  return Promise.all(promises)
+  createStripeCustomer(customer, organization, db, stripe, stripeAccount)   //ADD STRIPE CONNECTED ACCOUNT ID
 })
+
 
 // take an array of service events, 
 // generate invoices from them, and send them to Stripe
@@ -90,24 +85,25 @@ exports.createInvoiceItems = onCall(async (request) => {
   }
   let promises = []
   // Generate invoices from logs array
-  logsArray.forEach(async(entry) => {
-
-    const invoiceItem = await stripe.invoiceItems.create({
-      customer: entry.stripeID,
-      amount: entry.price * 100,
-      currency: "usd",
-      description: entry.description,
-      metadata: {
-        date: entry.date,
-        service_address: entry.service_address,
-        work_type: entry.work_type,
-      }
-    }, {
-      stripeAccount: org.stripe_account_id
-    });
-    // update service log with invoice item id
-    const logRef = db.collection(`organizations/${organization}/service_logs`).doc(entry.id)
-    promises.push(logRef.update({invoice_item_id: invoiceItem.id}))    
+  logsArray.forEach(async(entry, i) => {
+    setTimeout(async() => {
+      const invoiceItem = await stripe.invoiceItems.create({
+        customer: entry.stripeID,
+        amount: entry.price * 100,
+        currency: "usd",
+        description: entry.description,
+        metadata: {
+          date: entry.date,
+          service_address: entry.service_address,
+          work_type: entry.work_type,
+        }
+      }, {
+        stripeAccount: org.stripe_account_id
+      });
+      // update service log with invoice item id
+      const logRef = db.collection(`organizations/${organization}/service_logs`).doc(entry.id)
+      promises.push(logRef.update({invoice_item_id: invoiceItem.id}))   
+    }, i*20)     
   });
   return Promise.all(promises).then(res => {
     functions.logger.log(res)
@@ -120,42 +116,33 @@ exports.createInvoiceItems = onCall(async (request) => {
 
 exports.getPendingBalances = onCall(async (request) => {
   const {role, organization} = request.auth.token
-  let balancePromises = []
   if (role !== "Admin") {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
   }
   const stripeAccount = await getStripeAccount(organization)
+
+  // Get all pending invoice items for the organization
+  const invoiceItems = await stripe.invoiceItems.list({
+    pending: true,
+  }, {
+    stripeAccount: stripeAccount
+  });
+
   // Get all customers from that organization's customer collection in firebase
   const customersRef = db.collection(`organizations/${organization}/customers`)
   const custSnapshot = await customersRef.get()
 
-  // get balances for each customer
-  const getBalance = (customer) => {
-    return stripe.invoiceItems.list({
-      customer: customer.stripeID,
-      pending: true,
-    }, {
-      stripeAccount: stripeAccount
-    })
-    .then(res => {
-      const balance = res.data.reduce((acc, item) => acc + item.amount, 0)
-      return {stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.bill_address, balance: balance, email: customer.cust_email}
-    })
-    .catch(err => {return err})
-  }
+  const balances = []
 
-  custSnapshot.forEach(async(doc) => {
-    const customer = {...doc.data(), id: doc.id}  
-    balancePromises.push(getBalance(customer))
+  // Calculate balances for each customer
+  custSnapshot.forEach((doc) => {
+    const customer = {...doc.data(), id: doc.id}
+    const customerInvoiceItems = invoiceItems.data.filter(item => item.customer === customer.stripeID)
+    const balance = customerInvoiceItems.reduce((acc, item) => acc + item.amount, 0)
+    balances.push({stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.bill_address, balance: balance, email: customer.cust_email})
   })
-  return Promise.all(balancePromises)
-  .then((balances) => {
-    return balances.filter(b => b.balance > 0)
-  })
-  .catch(err => {
-    functions.logger.log("error: ", err)
-    throw new HttpsError('Error', 'error creating invoices: ', err)
-  })
+
+  return balances.filter(b => b.balance > 0)
 })
 
 
@@ -169,19 +156,21 @@ exports.sendInvoices = onCall(async (request) => {
   let promises = []
 
   const createAndSendInvoice = async (customer) => {
-    const invoice = await stripe.invoices.create({
-      customer: customer,
-      due_date: dueDate,
-      pending_invoice_items_behavior: "include",
-      collection_method: 'send_invoice',
-    },
-    {
-      stripeAccount: stripeAccount
-    })
-    promises.push(stripe.invoices.sendInvoice(invoice.id,
+    setTimeout(async() => {
+      const invoice = await stripe.invoices.create({
+        customer: customer,
+        due_date: dueDate,
+        pending_invoice_items_behavior: "include",
+        collection_method: 'send_invoice',
+      },
       {
         stripeAccount: stripeAccount
-      }))
+      })
+      promises.push(stripe.invoices.sendInvoice(invoice.id,
+        {
+          stripeAccount: stripeAccount
+        }))
+    }, 20)
   }
   // create invoices for each customer
   customers.forEach(async (customer) => {
@@ -537,25 +526,28 @@ exports.connectLogsToCust = onCall(async request => {
 const createStripeCustomer = async (customer, organization, db, stripe, stripeAccount) => {
   //functions.logger.log(toStripeCustomerFields(customer))
   const stripeCustomer = await stripe.customers.create(toStripeCustomerFields(customer), {stripeAccount: stripeAccount});
+  const custRef = db.collection(`organizations/${organization}/customers`).doc(customer.id)
+  await custRef.update({stripeID: stripeCustomer.id})
+  return stripeCustomer
  //The following line works
-  functions.logger.log(stripeCustomer.id)
-  const logsRef = db.collection(`organizations/${organization}/service_logs`)
-  const snapshot = await logsRef.where('cust_id', '==', customer.id).get()
-  let promises = []
-  if (!snapshot.empty) {
-    snapshot.forEach((doc, i) => {
-      // the following line doesn't work
-      functions.logger.log("path: ", doc.ref.path) 
-      delay(i*20).then(() =>           
-        promises.push(db.doc(doc.ref.path).update({stripeID: stripeCustomer.id}))
-      );
-    });
-  }
-  return Promise.all(promises).then(async() => {
-    const custRef = db.collection(`organizations/${organization}/customers`).doc(customer.id)
-    await custRef.update({stripeID: stripeCustomer.id})
-    return stripeCustomer
-  }).catch(err => {functions.logger.log(err)})
+  // functions.logger.log(stripeCustomer.id)
+  // const logsRef = db.collection(`organizations/${organization}/service_logs`)
+  // const snapshot = await logsRef.where('cust_id', '==', customer.id).get()
+  // let promises = []
+  // if (!snapshot.empty) {
+  //   snapshot.forEach((doc, i) => {
+  //     // the following line doesn't work
+  //     functions.logger.log("path: ", doc.ref.path) 
+  //     delay(i*20).then(() =>           
+  //       promises.push(db.doc(doc.ref.path).update({stripeID: stripeCustomer.id}))
+  //     );
+  //   });
+  // }
+  // return Promise.all(promises).then(async() => {
+  //   const custRef = db.collection(`organizations/${organization}/customers`).doc(customer.id)
+  //   await custRef.update({stripeID: stripeCustomer.id})
+  //   return stripeCustomer
+  // }).catch(err => {functions.logger.log(err)})
 }
 
 const createStripeAccountLink = (accountId, stripe) => {

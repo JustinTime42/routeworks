@@ -100,9 +100,6 @@ const TopNav = () => {
 
     return (
         <div style={{margin: "1em"}}>
-            {
-            (isAllPending || routesPending) ? <Spinner /> : null
-            } 
             <div style={{display: "flex", flexWrap: "no-wrap", justifyContent: "space-around", margin: "5px", alignItems:'center',}}>
                 <SimpleSelector                    
                     title="Route"

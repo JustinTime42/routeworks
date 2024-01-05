@@ -29,7 +29,7 @@ const SkipDetails = (props) => {
         setSnowDepth('')
         setOtherNotes('')
     }
-
+    
     const cancelSkip = () => {
         props.toggleShowSkip()
         resetOptions()

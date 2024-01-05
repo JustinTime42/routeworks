@@ -11,6 +11,11 @@ import {
     USER_LOGOUT,
     IS_LOADING,
     COLOR_MODE,
+    GET_ITEMS_PENDING,
+    GET_ITEMS_FAILED,
+    UPDATE_FAILED,
+    UPDATE_PENDING,
+    UPDATE_SUCCESS,
 } from './constants.js'
 
 export const setIsLoading = (isLoading) => {
@@ -73,29 +78,53 @@ export const createItem = (item, itemList = null, className, activeActionType = 
     sendToDB()
 }
 
-export const editItem = (item, itemList, className, activeActionType = null, listAction = null, merge = true) => (dispatch) => {
-    //dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})    
-    // if (item.adminFields) {
-    //     let tempList = [...itemList]
-    //     tempList[tempList.findIndex(i => i.admin_key === item.id)] = item.nonAdminFields
-    //     dispatch({type: listAction, payload: tempList})
-    // }    
-    console.log({...item})
-    const {id, ...itemDetails} = item
-    console.log({...itemDetails})
-    const itemRef = doc(db, className, id)    
-    const sendToDB = () => {           
-        updateDoc(itemRef, itemDetails)
-        .then((result) => {
-            console.log("success", result)
+// export const editItem = (item, itemList, className, activeActionType = null, listAction = null, merge = true) => (dispatch) => {
+//     //dispatch({type: activeActionType, payload: item.nonAdminFields ? item.nonAdminFields : item})    
+//     // if (item.adminFields) {
+//     //     let tempList = [...itemList]
+//     //     tempList[tempList.findIndex(i => i.admin_key === item.id)] = item.nonAdminFields
+//     //     dispatch({type: listAction, payload: tempList})
+//     // }    
+//     console.log({...item})
+//     const {id, ...itemDetails} = item
+//     console.log({...itemDetails})
+//     const itemRef = doc(db, className, id)    
+//     const sendToDB = () => {           
+//         updateDoc(itemRef, itemDetails)
+//         .then((result) => {
+//             console.log("success", result)
+//             // dispatch({
+//             //     type: activeActionType,
+//             //     payload: {...item}
+//             // })
+//         })
+//         .catch((e => alert(e)))
+//     }
+//     sendToDB()
+// }
+
+export const editItem = (item, itemList, className, pendingAction = null, listAction = null, errorAction=null) =>{
+    return async(dispatch) => {
+        dispatch({type: pendingAction})
+        try {
+            const {id, ...itemDetails} = item
+            const itemRef = doc(db, className, id)         
+            const test = await updateDoc(itemRef, itemDetails)
+            console.log(test)
             // dispatch({
-            //     type: activeActionType,
-            //     payload: {...item}
+            //     type: listAction,
+            //     payload: [...itemList, item]
             // })
-        })
-        .catch((e => alert(e)))
+            // if (activeActionType) {
+            //     dispatch({
+            //         type: activeActionType,
+            //         payload: id
+            //     })
+            // }   
+        } catch (error) {
+            dispatch({ type: errorAction, payload: error })
+        }
     }
-    sendToDB()
 }
 
 export const deleteItem = (item, itemList, className, activeActionType = null, listAction = null) => (dispatch) => {

@@ -218,6 +218,7 @@ const PropertyDetails = () => {
         
         setState(prevState => ({...prevState, disabled: disabled}))        
         const customerDetails = serviceLocations.find(i => i.id === property.id)
+        console.log(customerDetails)
         let newRecordObject = {}
         newRecordObject.status = newStatus
         
@@ -263,7 +264,8 @@ const PropertyDetails = () => {
         // }
         newRecordObject.timestamp = new Date(Date.now())
         newRecordObject.contract_type = getPriceMultiplier()
-        newRecordObject.cust_id = customerDetails.id
+        newRecordObject.cust_id = customerDetails.cust_id
+        newRecordObject.loc_id = customerDetails.id || customerDetails.loc_id
         newRecordObject.reference = customerDetails.service_address
         newRecordObject.service_address = customerDetails.service_address
         newRecordObject.cust_name = customerDetails.cust_name

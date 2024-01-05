@@ -1,5 +1,6 @@
 import { indexedDBLocalPersistence } from "firebase/auth";
 import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp, where, query } from "firebase/firestore";
+import {auth, httpsCallable, functions} from '../../firebase'
 import { db } from "../../firebase";
 import { getDiff } from "../auditor/utils";
 import _ from 'lodash'
@@ -8,7 +9,6 @@ import axios from "axios";
 const addedDocs = []
 const sendToDB = async(item, path) => {
     let {id, ...newItem} = item
-    console.log(item)
     setDoc(doc(db, path, id), {...newItem}, { merge: false }).then(result => {
       console.log(result)
     }).catch(error => console.log(error))       
@@ -17,7 +17,6 @@ const sendToDB = async(item, path) => {
 // Go through each route, and each customer on the route, check that their routesAssigned[routeID], else add it. 
 // then go through all customers, check routesAssigned for routes that don't exist and delete them
 export const fixRoutesAssigned = (routes, allCustomers) => {
-    // THIS WON'T WORK ANYMORE NOW THAT route.customers IS A MAP!!!!!
     const clonedCustomers = _.cloneDeep(allCustomers)
     const clonedRoutes = _.cloneDeep(routes)
     let count = 0
@@ -28,8 +27,8 @@ export const fixRoutesAssigned = (routes, allCustomers) => {
             if (!newCustomer.routesAssigned[route.id]) {
                 //console.log(_.cloneDeep(newCustomer))
                 newCustomer.routesAssigned[route.id] = route.name
-                console.log(newCustomer) 
-                sendToDB(newCustomer, 'organizations/Snowline/customer')
+                console.log("adding route to customer: ", newCustomer) 
+               sendToDB(newCustomer, 'organizations/Snowline/service_locations')
                 count ++  
             }
         })
@@ -47,10 +46,10 @@ export const fixRoutesAssigned = (routes, allCustomers) => {
                 console.log(route)
                 // console.log(_.cloneDeep(customer))
                 delete customer.routesAssigned[i]
-                console.log(`removed ${route.name} from routesAssigned in ${customer.cust_name}`)
+                console.log(`removed ${route?.name} from routesAssigned in ${customer.cust_name}`)
                 console.log(_.cloneDeep(customer))
                 count ++ 
-                sendToDB(customer, 'organizations/Snowline/customer')
+               sendToDB(customer, 'organizations/Snowline/service_locations')
             }                
         })
     })
@@ -507,3 +506,36 @@ export const addLatLngToCustomers = async() => {
     });
 }
 
+export const createStripeCustomers = async(customers) => {
+    const createStripeCustomer = httpsCallable(functions, 'createStripeCustomer')
+    const promises = []
+    customers.forEach((customer, i) => {
+        if (!customer.stripeID) {
+            delay(i*20).then(() => {
+                promises.push(createStripeCustomer({customer: customer, stripeAccount: "acct_1OKBGsQg1HhjFPji"}))
+            })
+        }    
+    })
+    return Promise.all(promises)
+}
+
+export const attachStripeIDtoLogs = async(customers) => {
+    const start = Timestamp.fromDate(new Date(Date.parse("2023-010-21")))
+    const q = query(collection(db, `organizations/Snowline/service_logs`), where("timestamp", ">", start));
+    const querySnapshot = await getDocs(q);
+    let count = 0
+    querySnapshot.forEach((doc, i) => {
+        count ++
+        let entry = {...doc.data(), id: doc.id}
+        const customer = customers.find(i => i.id === entry.cust_id)
+        if (customer && !entry.stripeID) {
+            sendToDB({...entry, stripeID: customer.stripeID}, `organizations/Snowline/service_logs`)
+        }
+    });
+    console.log(count)
+}
+
+
+const delay = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }

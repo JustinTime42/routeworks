@@ -69,17 +69,17 @@ const AdminDropdown = () => {
                 <Dropdown.Item key="import" eventKey="import">
                     Import Data
                 </Dropdown.Item>
-                <Dropdown.Item as={Link} to="/admin/migration" key="migration" eventKey="migration">
-                    Data Migration
+                <Dropdown.Item as={Link} to="/admin/customers">
+                    Customer Editor
                 </Dropdown.Item>
 
-                <Dropdown.Item as={Link} to="/admin/fleet_tracker">
+                {/* <Dropdown.Item as={Link} to="/admin/fleet_tracker">
                     Fleet Tracker
-                </Dropdown.Item>
-                {/* <Dropdown.Item as={Link} to="/admin/migration" key="migration" eventKey="migration">
-                    Data Migration
                 </Dropdown.Item> */}
-
+                {currentUser.claims.email === 'justincase18@msn.com' && 
+                    <Dropdown.Item as={Link} to="/admin/migration" key="migration" eventKey="migration">
+                        Data Migration
+                    </Dropdown.Item>}
                 </> : null}
             </DropdownButton>
             <CustomerContact show={modals.includes('Contact')} onClose={onClose} />  

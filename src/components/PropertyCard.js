@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Button, Col, Row, Dropdown, Form } from 'react-bootstrap'
@@ -11,7 +11,13 @@ const PropertyCard = ({changeActiveProperty, address, activeProperty, width, i, 
     const [edittingTemp, setEdittingTemp] = useState(false)
     const [startDate, setStartDate] = useState(address.tempRange?.start ? new Date(address.tempRange.start?.toDate()).toISOString().split('T')[0] : "")
     const [endDate, setEndDate] = useState(address.tempRange?.end ? new Date(address.tempRange.end?.toDate()).toISOString().split('T')[0] : "")
+    
     const routeData = useSelector(state => state.setActiveRoute.activeRoute)
+    const customers = useSelector(state => state.getAllCustomers.customers)
+    const locations = useSelector(state => state.requestAllAddresses.addresses)
+    const location = locations.find(location => location.id === address.id)
+    const customer = customers.find(customer => customer.id === location?.cust_id)
+    
     const status = address.status
 
     const cardBg = () => {        
@@ -104,10 +110,10 @@ const PropertyCard = ({changeActiveProperty, address, activeProperty, width, i, 
             <Col style={{flex:"2 1 auto"}}>
                 <h5 style={{textAlign: "left", fontWeight: "bold"}}>  
                     {typeof(i) === 'number'  ? i + 1 + '. ' : ''}
-                    {address ? address.cust_name ? address.cust_name : "name" : "name"}
+                    {customer?.cust_name || "name"}
                     {address ? address.is_new ? "*" : null : null}            
                 </h5> 
-                <p>{address ? address.service_address ? address.service_address : "address" : "address"} </p>                                  
+                <p>{location?.service_address || "address"} </p>                                  
             </Col>
             <ServiceLevel />
             <Col style={{flex:"1 1 75px"}}>                        

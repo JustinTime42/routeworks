@@ -28,9 +28,9 @@ const SearchableInput = ({name, searchValue, changeSearchValue, matches, selectI
   }
 
   const onBlur = (event) => {    
-    handleBlur(event)
+    
     // when I setShowList(false) it closes before it loads the selected item. why?
-    setTimeout(() => setShowList(false), 300) 
+    setTimeout(() => handleBlur(event), 300) 
   }
 
   return (
@@ -53,7 +53,8 @@ const SearchableInput = ({name, searchValue, changeSearchValue, matches, selectI
           <ListGroup.Item 
             style={itemStyle}
             key={customer.id}
-            action onClick={(event) => selectItem(event, customer)}
+            action 
+            onClick={() => selectItem(customer.id)}
           >
           {customer.cust_name} | {customer.bill_address} | {customer.cust_phone}
           </ListGroup.Item> 

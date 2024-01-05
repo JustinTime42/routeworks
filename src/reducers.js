@@ -34,6 +34,8 @@ import { SET_ACTIVE_ROUTE,
     UPDATE_CUSTOMERS_FAILED,
     UPDATE_CUSTOMERS_SUCCESS,
     UPDATE_CUSTOMERS_PENDING,
+    UPDATE_FAILED,
+    UPDATE_PENDING,
 } from './constants.js'
 
 
@@ -286,11 +288,11 @@ const initialStateAllAddresses = {
 
 export const requestAllAddresses = (state = initialStateAllAddresses, action={}) => {
     switch(action.type) {
-        case UPDATE_ADDRESSES_PENDING: 
+        case UPDATE_PENDING: 
             return {...state, isPending: true}
         case UPDATE_ADDRESSES_SUCCESS:
             return {...state, addresses: action.payload, isPending: false}
-        case UPDATE_ADDRESSES_FAILED:
+        case UPDATE_FAILED:
             return {...state, error: action.payload, isPending: false}
         default:
             return state
@@ -306,6 +308,7 @@ const initialStateAllCustomers = {
 export const getAllCustomers = (state = initialStateAllCustomers, action={}) => {
     switch(action.type) {
         case UPDATE_CUSTOMERS_PENDING:
+            console.log('update customers pending')
             return {...state, isPending: true}
         case UPDATE_CUSTOMERS_SUCCESS:
             return {...state, customers: action.payload, isPending: false}
