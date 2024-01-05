@@ -93,7 +93,7 @@ const Customers = () => {
       <CustomerEditor cust={customer} />
       </div>
       <div className='col-xs-12 col-sm-10 col-md-8 col-lg-6 col-xl-6'>
-      {serviceLocations.length > 0 && <h4>Service Locations</h4>}
+      {serviceLocations.length > 0 && <h4>Service Locations:</h4>}
       {serviceLocations.map((location, i) => (
         <LocationEditor key={i} loc={location} />
       ))}

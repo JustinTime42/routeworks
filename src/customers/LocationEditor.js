@@ -251,10 +251,12 @@ const LocationEditor = ({loc}) => {
     }
     else return (   
       <div style={{marginBottom: "2em"}}>
+        <h3>{location.service_address}</h3>
           <Tabs defaultActiveKey='location'>
             <Tab eventKey='location' title='Location Info'>  
             <Form>
               <Col>
+                 
                 <Form.Label>Job Location</Form.Label> 
                 <Button className="float-end mt-1" onClick={() => setShowLogs(true)}>View Service Logs</Button> 
                 <PlacesAutocomplete

@@ -369,13 +369,11 @@ const CustomerEditor = (props) => {
                         <Form.Group as={Row}>
                             <Form.Label column sm={2}>Name</Form.Label>
                             <Col sm={10}>
-                                <SearchableInput
+                                <Form.Control
                                     name="cust_name"
-                                    searchValue={custSearch}
-                                    changeSearchValue={(event) => setCustSearch(event.target.value)}
-                                    matches={matches}
-                                    selectItem={onSelectCustomer}
-                                    handleBlur={blurSearch}
+                                    type="text"
+                                    value={customer?.cust_name || ''}
+                                    onChange={onChange}
                                 />                                   
                             </Col>
                         </Form.Group>
