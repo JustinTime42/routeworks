@@ -519,18 +519,18 @@ export const createStripeCustomers = async(customers) => {
     return Promise.all(promises)
 }
 
-export const attachStripeIDtoLogs = async(customers) => {
+export const attachStripeIDtoLogs = async() => {
     const start = Timestamp.fromDate(new Date(Date.parse("2023-010-21")))
-    const q = query(collection(db, `organizations/Snowline/service_logs`), where("timestamp", ">", start));
+    const q = query(collection(db, `organizations/Snowline/service_logs`), where("cust_id", "==", "2219"));
     const querySnapshot = await getDocs(q);
     let count = 0
     querySnapshot.forEach((doc, i) => {
         count ++
         let entry = {...doc.data(), id: doc.id}
-        const customer = customers.find(i => i.id === entry.cust_id)
-        if (customer && !entry.stripeID) {
-            sendToDB({...entry, stripeID: customer.stripeID}, `organizations/Snowline/service_logs`)
-        }
+        // const customer = customers.find(i => i.id === entry.cust_id)
+        // if (customer && !entry.stripeID) {
+            sendToDB({...entry, stripeID: "cus_PK2XIo2RbW4zOy"}, `organizations/Snowline/service_logs`)
+        // }
     });
     console.log(count)
 }

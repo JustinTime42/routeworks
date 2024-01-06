@@ -10,6 +10,7 @@ import { UPDATE_CUSTOMERS_FAILED, UPDATE_CUSTOMERS_PENDING, UPDATE_CUSTOMERS_SUC
 
 import _ from 'lodash'
 import ButtonWithLoading from '../components/buttons/ButtonWithLoading'
+import AsyncActionButton from '../components/buttons/AsyncActionButton'
 
 
 // const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
@@ -128,9 +129,10 @@ const CustomerEditor = ({cust}) => {
     const onCustomerSave = (newDetails, close) => {
         console.log(newDetails)
         if (newDetails.id) {
-            dispatch(editItem(newDetails, customers, `organizations/${organization}/customers`, UPDATE_CUSTOMERS_PENDING, UPDATE_CUSTOMERS_SUCCESS, UPDATE_CUSTOMERS_FAILED))         
+            const {id, ...details} = newDetails         
+            return updateDoc(doc(db, `organizations/${organization}/customers`, id), details)        
         } else {
-          dispatch(createItem(newDetails, customers, `organizations/${organization}/customers`, null, UPDATE_CUSTOMERS_SUCCESS)) 
+            return addDoc(collection(db, `organizations/${organization}/customers`), newDetails)
         }
     }
 
@@ -273,11 +275,9 @@ const CustomerEditor = ({cust}) => {
             }
             </Col>
             <div >
-            <ButtonWithLoading
-                handleClick={() => onCustomerSave(customer)}
-                buttonText="Save Changes"
-                tooltip="Save customer."
-                isLoading={isPending}
+            <AsyncActionButton
+                asyncAction={() => onCustomerSave(customer)}
+                label = "Save Changes"
             />
             {/* <Button variant="primary" className="m-1" onClick={() => onCustomerSave(customer)}>Save Changes</Button> */}
             <Button variant="primary" className="m-1" onClick={() => setCustomer(cust)}>Reset Changes</Button> 

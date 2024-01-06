@@ -96,8 +96,9 @@ const RouteBuilder = () => {
         console.log(endDate)
         newRoute.customers[customer.id].tempRange = {start: startDate, end: endDate}
         // setItem(newRoute, `organizations/${organization}/route`)
-        dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
-
+        const {id, ...routeDetails} = newRoute         
+        return updateDoc(doc(db, `organizations/${organization}/route`, id), routeDetails)
+        // dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, SET_ACTIVE_ROUTE, REQUEST_ROUTES_SUCCESS))
     }    
 
     // const updateAllAddresses = () => {
