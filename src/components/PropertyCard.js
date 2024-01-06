@@ -5,6 +5,7 @@ import { Button, Col, Row, Dropdown, Form } from 'react-bootstrap'
 import { serviceLevels } from '../globals.js'
 // import { changeActiveProperty } from "./utils.js";
 import ButtonWithLoading from "./buttons/ButtonWithLoading.js";
+import AsyncActionButton from "./buttons/AsyncActionButton.js";
 
 const PropertyCard = ({changeActiveProperty, address, activeProperty, width, i, admin, toggleField, setTempRange, detailsClick}) => {
     const navigate = useNavigate()
@@ -153,11 +154,19 @@ const PropertyCard = ({changeActiveProperty, address, activeProperty, width, i, 
                                         value={endDate}
                                         onChange={event => setEndDate(event.target.value)}
                                     /> 
-                                    <ButtonWithLoading
+                                    <AsyncActionButton
+                                        style={{marginLeft: "1em", marginTop:"1px"}}
+                                        asyncAction={() => setTempRange(address, routeData, startDate, endDate)}
+                                        buttonText="Save"
+                                        tooltip="Save date range for temporary service."
+                                        label='Save'
+                                    />
+
+                                    {/* <ButtonWithLoading
                                         handleClick={() => setTempRange(address, routeData, startDate, endDate)}
                                         buttonText="Save"
                                         tooltip="Save date range for temporary service."
-                                    />
+                                    /> */}
                                     <Dropdown.Divider />
                                     {/* {console.log(props.address.tempRange)} */}
                                 </div>

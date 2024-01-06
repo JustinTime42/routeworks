@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import SimpleSelector from "./SimpleSelector"
-import { collection, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase'
 import { useSelector, useDispatch } from "react-redux"
 import { Col, Dropdown, Form, Row, Container, Button, Alert } from 'react-bootstrap';
@@ -8,6 +8,7 @@ import { GET_WORK_TYPES_SUCCESS, SET_WORK_TYPE, SET_ACTIVE_PRICING_TEMPLATE, GET
 import { showModal, setTempItem, setActiveItem, editItem, createItem, deleteItem } from '../actions';
 import ButtonWithLoading from '../components/buttons/ButtonWithLoading';
 import PriceModifierEditor from '../components/editor_panels/PriceModifierEditor';
+import AsyncActionButton from '../components/buttons/AsyncActionButton';
 
 const staticPricingMultiples = [{id: 0, name: "Per Hour"}, {id: 1, name:"Per Visit"}, {id: 2, name: "Per Yard"}, {id: 3, name: "Free"}]
 
@@ -153,10 +154,11 @@ const onDeleteTemplate = () => {
     if (!template.name) {alert('please enter template name')}
     else {
       if (template.id) {    
-        dispatch(editItem(template, pricingTemplates, `organizations/${organization}/pricing_templates`, SET_ACTIVE_PRICING_TEMPLATE, GET_PRICING_TEMPLATES_SUCCESS))
+        const {id, ...templateDetails} = template         
+        return updateDoc(doc(db, `organizations/${organization}/pricing_templates`, id), templateDetails)
       }
       else {
-        dispatch(createItem(template, pricingTemplates, `organizations/${organization}/pricing_templates`, SET_ACTIVE_PRICING_TEMPLATE, GET_PRICING_TEMPLATES_SUCCESS))
+        return addDoc(collection(db, `organizations/${organization}/pricing_templates`), {...template})
       }    
     }
     console.log(template)
@@ -176,11 +178,10 @@ const onDeleteTemplate = () => {
           />
         </Col>
       <Col>
-        <Button
-          variant="primary"
-          onClick={onSaveTemplate}
-          size="sm"
-        >Save Template</Button>                        
+        <AsyncActionButton
+          asyncAction={onSaveTemplate}
+          label="Save Template"
+        />                      
       </Col>
       <Col>
         <Button
@@ -224,11 +225,8 @@ const onDeleteTemplate = () => {
                   return newTemplate
                 })}
               > Remove</Button></Col>
-            <Form.Label as={Col}>{workTypes.find(i => i.id === item).name}</Form.Label>  
-            
-            </Row>
-
-                    
+            <Form.Label as={Col}>{workTypes.find(i => i.id === item).name}</Form.Label> 
+            </Row>  
           </Col>
           {item && (
             <Col xs={12} md={2}>

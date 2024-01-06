@@ -9,6 +9,11 @@ const MigrationUI = () => {
     const serviceLocations = useSelector(state => state.requestAllAddresses.addresses)
     const routes = useSelector(state => state.requestRoutes.routes)
     const customers = useSelector(state => state.getAllCustomers.customers)
+
+    const handleNoEmailClick = () => {
+        const noEmails = customers.filter(c => !c.cust_email)
+        console.log(noEmails)
+    }
     return (
         <div>
             {/* <Button style={{margin: '1em'}} onClick={() => migrateBasic('driver/driver_lists/customer', 'organizations/Snowline/customer')}>Customers</Button>
@@ -27,9 +32,11 @@ const MigrationUI = () => {
             {/* <Button style={{margin: '1em'}} onClick={() => routeArrayToMap(routes)}>change route customers from array to maps</Button> */}
 
             {/* <Button style={{margin: '1em'}} onClick={addLatLngToCustomers}>Add Lat Longs</Button> */}
-            <Button style={{margin: '1em'}} onClick={() => fixRoutesAssigned(routes, serviceLocations)}>Fix Routes Assigned</Button>
-            <Button style={{margin: '1em'}} onClick={() => createStripeCustomers(customers)}>Create Stripe Customers</Button>
+            {/* <Button style={{margin: '1em'}} onClick={() => fixRoutesAssigned(routes, serviceLocations)}>Fix Routes Assigned</Button>
+            <Button style={{margin: '1em'}} onClick={() => createStripeCustomers(customers)}>Create Stripe Customers</Button> */}
             <Button stype={{margin: '1em'}} onClick={() => attachStripeIDtoLogs(customers)}>Attach Stripe ID to Logs</Button>
+            <Button style={{margin: '1em'}} onClick={handleNoEmailClick}>Show Customers without emails</Button>
+
             {/* <Button style={{margin: '1em'}} onClick={() => migrateBasic('/vehicles', 'driver/driver_lists/vehicle')}>Vehicles</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('/vehicletypes', 'driver/driver_lists/vehicle_type')}>Vehicle Types</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('/worktypes', 'driver/driver_lists/work_type')}>Work Types</Button>

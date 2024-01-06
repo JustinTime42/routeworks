@@ -122,11 +122,24 @@ exports.getPendingBalances = onCall(async (request) => {
   const stripeAccount = await getStripeAccount(organization)
 
   // Get all pending invoice items for the organization
-  const invoiceItems = await stripe.invoiceItems.list({
-    pending: true,
-  }, {
-    stripeAccount: stripeAccount
-  });
+  const pendingInvoiceItems = []
+  let hasMore = true
+  let startingAfter = undefined
+
+  while (hasMore) {
+    const invoiceItems = await stripe.invoiceItems.list({
+      pending: true,
+      limit: 100,
+      starting_after: startingAfter
+    }, {
+      stripeAccount: stripeAccount
+    });
+    functions.logger.log(invoiceItems)
+    pendingInvoiceItems.push(...invoiceItems.data)  
+    startingAfter = invoiceItems.data[invoiceItems.data.length - 1].id
+    hasMore = invoiceItems.has_more
+  }
+
 
   // Get all customers from that organization's customer collection in firebase
   const customersRef = db.collection(`organizations/${organization}/customers`)
@@ -137,12 +150,15 @@ exports.getPendingBalances = onCall(async (request) => {
   // Calculate balances for each customer
   custSnapshot.forEach((doc) => {
     const customer = {...doc.data(), id: doc.id}
-    const customerInvoiceItems = invoiceItems.data.filter(item => item.customer === customer.stripeID)
+    const customerInvoiceItems = pendingInvoiceItems.filter(item => item.customer === customer.stripeID)
     const balance = customerInvoiceItems.reduce((acc, item) => acc + item.amount, 0)
-    balances.push({stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.bill_address, balance: balance, email: customer.cust_email})
-  })
+    if (balance > 0) {
+      functions.logger.log(`${customer.cust_name}`, balance)
 
-  return balances.filter(b => b.balance > 0)
+      balances.push({stripeID: customer.stripeID, cust_name: customer.cust_name, address: customer.bill_address, balance: balance, email: customer.cust_email})
+    }    
+  })
+  return balances
 })
 
 
