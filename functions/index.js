@@ -68,9 +68,12 @@ exports.createStripeCustomer = onCall(async (request) => {
   if (role !== "Admin") {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
   }
-  createStripeCustomer(customer, organization, db, stripe, stripeAccount)   //ADD STRIPE CONNECTED ACCOUNT ID
+  createStripeCustomer({...customer, cust_email: customer.cust_email.trim()}, organization, db, stripe, stripeAccount)   //ADD STRIPE CONNECTED ACCOUNT ID
 })
 
+const toHRDateFormat = (time) => {
+  return new Date(time.seconds * 1000).toLocaleDateString("en-US", {timeZone: "America/Anchorage"})
+}
 
 // take an array of service events, 
 // generate invoices from them, and send them to Stripe
@@ -91,7 +94,7 @@ exports.createInvoiceItems = onCall(async (request) => {
         customer: entry.stripeID,
         amount: entry.price * 100,
         currency: "usd",
-        description: entry.description,
+        description: `${entry.description}`,
         metadata: {
           date: entry.date,
           service_address: entry.service_address,
@@ -189,8 +192,10 @@ exports.sendInvoices = onCall(async (request) => {
     }, 20)
   }
   // create invoices for each customer
-  customers.forEach(async (customer) => {
-    promises.push(createAndSendInvoice(customer))
+  customers.forEach(async (customer, i) => {
+    delay(i*20).then(() => {      
+      promises.push(createAndSendInvoice(customer))
+    })
   })
   return Promise.all(promises)
   .then(async(res) => {
@@ -396,13 +401,18 @@ exports.updateCustomer = onDocumentUpdated('organizations/{organization}/custome
   const doc = await db.collection('organizations').doc(organization).get()
   const org = doc.data() 
   if (org.stripe_account_id) { 
-    await stripe.customers.update(
-      customer.stripeID,
-      toStripeCustomerFields(customer),
-      {
-        stripeAccount: org.stripe_account_id
-      }
-    )
+    if (customer.cust_email && !customer.stripeID) {
+      createStripeCustomer(customer, event.params.organization, db, stripe, org.stripe_account_id)
+    }
+    else if (customer.stripeID) {
+      await stripe.customers.update(
+        customer.stripeID,
+        toStripeCustomerFields(customer),
+        {
+          stripeAccount: org.stripe_account_id
+        }
+      )
+    }
   }
 })
 
@@ -536,9 +546,6 @@ exports.connectLogsToCust = onCall(async request => {
 //   const {organization, email} = request.auth.token
 //   const {orgName} = request.data
 
-
-
-
 const createStripeCustomer = async (customer, organization, db, stripe, stripeAccount) => {
   //functions.logger.log(toStripeCustomerFields(customer))
   const stripeCustomer = await stripe.customers.create(toStripeCustomerFields(customer), {stripeAccount: stripeAccount});
@@ -584,7 +591,7 @@ const toStripeCustomerFields = (customer) => {
     {
       email: customer?.cust_email || "",
       name: customer?.cust_name || "",
-      phone: customer?.cust_phone || "",
+      // phone: customer?.cust_phone || "",
       address: {
         line1: customer?.bill_address || "",
         city: customer?.bill_city || "",

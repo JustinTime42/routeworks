@@ -2,7 +2,7 @@ import React from "react"
 import { useSelector } from "react-redux"
 import { Button } from "react-bootstrap"
 
-import { createStripeCustomers, addLatLngToCustomers, migrateCustomerPricing, fixOrphanedRoutes, migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags, fixSandContract, copyNoRoutesAssigned, addEmailsToLogs, addContractTypeToRoutes, assignContractType, migrateDates, addIDToAuditLogs, routeArrayToMap, displayBadChanges, fixRoutesAssigned, attachStripeIDtoLogs } from "./migrate"
+import { createStripeCustomers, addLatLngToCustomers, migrateCustomerPricing, fixOrphanedRoutes, migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags, fixSandContract, copyNoRoutesAssigned, addEmailsToLogs, addContractTypeToRoutes, assignContractType, migrateDates, addIDToAuditLogs, routeArrayToMap, displayBadChanges, fixRoutesAssigned, attachStripeIDtoLogs, findCustomersMissingFromStripe } from "./migrate"
 
 
 const MigrationUI = () => {
@@ -36,7 +36,8 @@ const MigrationUI = () => {
             <Button style={{margin: '1em'}} onClick={() => createStripeCustomers(customers)}>Create Stripe Customers</Button> */}
             <Button stype={{margin: '1em'}} onClick={() => attachStripeIDtoLogs(customers)}>Attach Stripe ID to Logs</Button>
             <Button style={{margin: '1em'}} onClick={handleNoEmailClick}>Show Customers without emails</Button>
-
+            <Button style={{margin: '1em'}} onClick={() => findCustomersMissingFromStripe(customers)}>Find and fix customers with missing emails</Button>
+``            {/* <Button style={{margin: '1em'}} onClick={() => migrateCustomerPricing(customers)}>Migrate Customer Pricing</Button> */}
             {/* <Button style={{margin: '1em'}} onClick={() => migrateBasic('/vehicles', 'driver/driver_lists/vehicle')}>Vehicles</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('/vehicletypes', 'driver/driver_lists/vehicle_type')}>Vehicle Types</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('/worktypes', 'driver/driver_lists/work_type')}>Work Types</Button>
