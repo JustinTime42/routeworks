@@ -111,7 +111,7 @@ const PropertyCard = ({changeActiveProperty, address, activeProperty, width, i, 
             <Col style={{flex:"2 1 auto"}}>
                 <h5 style={{textAlign: "left", fontWeight: "bold"}}>  
                     {typeof(i) === 'number'  ? i + 1 + '. ' : ''}
-                    {customer?.cust_name || "name"}
+                    { location?.showLocName ? `${location?.loc_name}` : customer?.cust_name || "name" }
                     {address ? address.is_new ? "*" : null : null}            
                 </h5> 
                 <p>{location?.service_address || "address"} </p>                                  

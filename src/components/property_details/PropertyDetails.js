@@ -268,7 +268,7 @@ const PropertyDetails = () => {
         newRecordObject.loc_id = customerDetails.id || customerDetails.loc_id
         newRecordObject.reference = customerDetails.service_address
         newRecordObject.service_address = customerDetails.service_address
-        newRecordObject.cust_name = customerDetails.cust_name
+        newRecordObject.cust_name = (customerDetails.loc_name && customerDetails.showLocName) ? customerDetails.loc_name : customerDetails.cust_name
         newRecordObject.cust_email = customerDetails.cust_email
         newRecordObject.cust_email2 = customerDetails.cust_email2
         newRecordObject.include_email2 = customerDetails.include_email2

@@ -74,7 +74,6 @@ const CustomerEditor = (props) => {
     const workTypes = useSelector(state => state.getWorkTypes.allWorkTypes)
     const [matches, setMatches] = useState([])
     const [custSearch, setCustSearch] = useState(customer?.cust_name || '')
-
     const modals = useSelector(state => state.whichModals.modals)
     const dispatch = useDispatch()
     const [deleteAlert, setDeleteAlert] = useState(false)
@@ -318,7 +317,9 @@ const CustomerEditor = (props) => {
                     cust_name: item.cust_name, 
                     service_address: item.service_address || '',
                     service_level: item.service_level || null,
-                    contract_type: item.contract_type || '',         
+                    contract_type: item.contract_type || '',  
+                    loc_name: item.loc_name || '',
+                    showLocName: item.showLocName || false,       
                 }
             )
         }
@@ -358,23 +359,43 @@ const CustomerEditor = (props) => {
     if (!customer) {
         return null
     }
-    else return (      
-
+    else return (
         <Modal className="scrollable" style={editorSize} show={modals.includes('Customer')} onHide={onCloseClick} size='lg'>
         <Modal.Header>Customer Editor</Modal.Header>
         <Modal.Body>
             <Tabs defaultActiveKey='contact'>
                 <Tab eventKey='contact' title='Customer Info'>
                     <Form>
-                        <Form.Group as={Row}>
-                            <Form.Label column sm={2}>Name</Form.Label>
-                            <Col sm={10}>
+                        <Form.Group className="m-1" as={Row}>
+                            <Form.Label column sm={4}>Name</Form.Label>
+                            <Col sm={8}>
                                 <Form.Control
                                     name="cust_name"
                                     type="text"
                                     value={customer?.cust_name || ''}
                                     onChange={onChange}
-                                />                                   
+                                />  
+                            </Col>
+                        </Form.Group>
+                        <Form.Group className="mb-1" as={Row}>
+                            <Form.Label column sm={4}>Location Label</Form.Label>
+                            <Col sm={5}>
+                                <Form.Control
+                                    name="loc_name"
+                                    type="text"
+                                    value={customer?.loc_name || ''}
+                                    onChange={onChange}
+                                />                                 
+                            </Col>
+                            <Col sm={3}>
+                                <Form.Check                                
+                                    name="showLocName"
+                                    type="checkbox"
+                                    label="Show?"
+                                    checked={!!customer?.showLocName}
+                                    onChange={onChange}
+                                    title="Show the location name instead of customer name on property card?"
+                                />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>

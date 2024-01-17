@@ -12,10 +12,10 @@ import RoutePopover from '../components/customer_panels/RoutePopover'
 import { GET_PRICING_TEMPLATES_SUCCESS, GET_VEHICLE_TYPES_SUCCESS, REQUEST_ROUTES_SUCCESS, SET_ACTIVE_PRICING_TEMPLATE, SET_ACTIVE_VEHICLE_TYPE, UPDATE_ADDRESSES_SUCCESS, UPDATE_CUSTOMERS_SUCCESS } from '../constants';
 import SimpleSelector from '../pricing_templates/SimpleSelector'
 import _ from 'lodash'
-import { getCustFields, getLocationFields } from '../utils'
 import { useLoadScript } from '@react-google-maps/api'
 import SearchableInput from '../components/SearchableInput'
 import TransferLocation from './TransferLocation'
+import AsyncActionButton from '../components/buttons/AsyncActionButton'
 
 // const contractTypes = ["Per Occurrence", "Monthly", "Seasonal", "Will Call", "Asphalt", "Hourly"]
 // const sandContractTypes = ["Per Visit", "Per Yard"]
@@ -229,23 +229,25 @@ const LocationEditor = ({loc}) => {
                     cust_name: item.cust_name, 
                     service_address: item.service_address || '',
                     service_level: item.service_level || null,
-                    contract_type: item.contract_type || '',         
+                    contract_type: item.contract_type || '',  
+                    loc_name: item.loc_name || '',
+                    showLocName: item.showLocName || false,        
                 }
             )
         }
         const newTrimmedDetails = removeFields(newDetails)
+        console.log(newTrimmedDetails)
         Object.values(newDetails.routesAssigned).forEach(route => {
             let newRoute = {...routes.find(i => i.name === route)}
-            newRoute.customers[newDetails.loc_id] = {...newRoute.customers[newDetails.loc_id], ...newTrimmedDetails} 
+            newRoute.customers[newDetails.loc_id] = {...newRoute.customers[newDetails.loc_id], ...newTrimmedDetails}             
             dispatch(editItem(newRoute, routes, `organizations/${organization}/route`, null, REQUEST_ROUTES_SUCCESS))
         })
         if (newDetails.id) {
-            dispatch(editItem(newDetails, allLocations, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS))
+            return updateDoc(doc(db, `organizations/${organization}/service_locations`, newDetails.id), newDetails)
         } else {
-            dispatch(createItem(newDetails, allLocations, `organizations/${organization}/service_locations`, null, UPDATE_ADDRESSES_SUCCESS))
+            return addDoc(collection(db, `organizations/${organization}/service_locations`), newDetails)
         }          
     }
-
     if (!location) {
         return null
     }
@@ -256,7 +258,27 @@ const LocationEditor = ({loc}) => {
             <Tab eventKey='location' title='Location Info'>  
             <Form>
               <Col>
-                 
+                <Form.Group className="m-2 justify-content-start" as={Row}>
+                    <Form.Label column sm={4}>Location Label</Form.Label>
+                    <Col sm={5}>
+                        <Form.Control
+                            name="loc_name"
+                            type="text"
+                            value={location?.loc_name || ''}
+                            onChange={onChange}
+                        />                                 
+                    </Col>
+                    <Col sm={3}>
+                        <Form.Check                                
+                            name="showLocName"
+                            type="checkbox"
+                            label="Show?"
+                            checked={!!location?.showLocName}
+                            onChange={onChange}
+                            title="Show the location name instead of customer name on property card?"
+                        />
+                    </Col>
+                </Form.Group>
                 <Form.Label>Job Location</Form.Label> 
                 <Button className="float-end mt-1" onClick={() => setShowLogs(true)}>View Service Logs</Button> 
                 <PlacesAutocomplete
@@ -430,8 +452,11 @@ const LocationEditor = ({loc}) => {
               <CustLogs show={showLogs} hideModal={() => setShowLogs(false)} admin={true} id={location.id}/>
             </Tab>
         </Tabs>
-        <div >
-          <Button variant="primary" className="m-1" onClick={() => onLocationSave(location)}>Save Changes</Button>
+        <div>
+          <AsyncActionButton
+                asyncAction={() => onLocationSave(location)}
+                label = "Save Changes"
+            />
           <Button variant="primary" className="m-1" onClick={() => setLocation(loc)}>Reset Changes</Button>
             <Button variant="secondary" className="m-1 float-end" onClick={() => setShowTransfer(true)}>Transfer Location</Button> 
         </div> 

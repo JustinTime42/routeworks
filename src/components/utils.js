@@ -127,6 +127,8 @@ export const getCustFields = (customer) => {
   export const getLocationFields = (customer) => {
     return {
       cust_name: customer.cust_name || '',
+      loc_name: customer.loc_name || '',
+      showLocName: customer.showLocName || false,
       service_address: customer.service_address || '',
       service_city: customer.service_city || '',
       service_state: customer.service_state || '',
