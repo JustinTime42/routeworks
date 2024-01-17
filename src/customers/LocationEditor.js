@@ -134,7 +134,7 @@ const LocationEditor = ({loc}) => {
     }
 
     const onChangePricingTemplate = (event) => {
-        setLocation({...location, pricing: _.merge(location.pricing, pricingTemplates.find(i => i.id === event))})
+        setLocation({...location, pricing: pricingTemplates.find(i => i.id === event)})
     }
 
     const onDeletePrice = (price, workName, pricingBasis) => {

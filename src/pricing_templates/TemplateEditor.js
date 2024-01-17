@@ -179,7 +179,7 @@ const onDeleteTemplate = () => {
         </Col>
       <Col>
         <AsyncActionButton
-          asyncAction={onSaveTemplate}
+          asyncAction={async() => await onSaveTemplate()}
           label="Save Template"
         />                      
       </Col>

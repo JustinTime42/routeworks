@@ -27,14 +27,6 @@ const AsyncActionButton = ({ asyncAction, label, style, size="null" }) => {
       });
   };
 
-  useEffect(() => {
-    if (error) {
-      // Logic to display error alert
-      // This could be a modal, toast, or inline message
-      console.error(error);
-    }
-  }, [error]);
-
   return (
     <>
       {error && <Alert dismissible variant="danger">{error}</Alert>}

@@ -191,7 +191,7 @@ const CustomerEditor = (props) => {
     }
 
     const onChangePricingTemplate = (event) => {
-        dispatch(setTempItem({...customer, pricing: _.merge(customer.pricing, pricingTemplates.find(i => i.id === event))}))
+        dispatch(setTempItem({...customer, pricing: pricingTemplates.find(i => i.id === event)}))
     }
 
     const onDeletePrice = (price, workName, pricingBasis) => {

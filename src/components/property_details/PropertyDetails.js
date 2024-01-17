@@ -376,7 +376,7 @@ const PropertyDetails = () => {
                         <Card.Title>{property ? property.is_new ? "NEW" : null : null}</Card.Title>
                         <Card.Title>{property ? !!property.temp ? "TEMPORARY" : null : null}</Card.Title>
                     </Card.Body>        
-                    {property ? property.notes ? <Card.Body><Card.Subtitle>Notes:</Card.Subtitle><Card.Title className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Title></Card.Body> : null : null }
+                    {property ? property.notes ? <Card.Body><Card.Subtitle>Instructions:</Card.Subtitle><Card.Title className="scrollable" style={{height: "100%", overflow: "scroll"}}>{property.notes}</Card.Title></Card.Body> : null : null }
                     <Card.Body>
                     <Form.Group>
                         <Form.Label>Driver Notes</Form.Label>
