@@ -257,14 +257,14 @@ exports.updateUser = onCall((request) => {
           displayName: displayName,
           disabled: disabled,
         })
-            .then((result) => {
-              return admin.auth().setCustomUserClaims(result.uid, customClaims)
-                  .then(() => {
-                    return admin.auth().getUser(result.uid);
-                  });
-            }).catch((err) => {
-              throw new HttpsError('unknown', err);
-            });
+        .then((result) => {
+          return admin.auth().setCustomUserClaims(result.uid, {...customClaims, organization: organization})
+              .then(() => {
+                return admin.auth().getUser(result.uid);
+              });
+        }).catch((err) => {
+          throw new HttpsError('unknown', err);
+        });
       } else functions.logger.log('wrong organization');
     });
   }
@@ -283,6 +283,100 @@ exports.deleteUser = onCall((request) => {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
   } else {
     functions.logger.log(`deleting ${displayName}`);
+    return admin.auth().deleteUser(uid)
+        .then((response) => {
+          return response;
+        })
+        .catch((err) => {
+          return err;
+        });
+  }
+});
+
+exports.rootCreateUser = onCall((request) => {
+  const {displayName, email, customClaims, disabled} = request.data;
+  if (!request.auth) {
+    // Throwing an HttpsError if not logged in
+    throw new HttpsError('failed-precondition', 'Not authenticated.');
+  } else if (request.auth.token.email !== 'routeworksllc@gmail.com') {
+    // Throwing an HttpsError if not Admin
+    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+  } else {
+    return admin.auth().createUser({
+      email: email,
+      displayName: displayName,
+      disabled: disabled,
+    })
+        .then((userRecord) => {
+          return admin.auth().setCustomUserClaims(userRecord.uid, customClaims)
+              .then(() => {
+                return admin.auth().getUser(userRecord.uid);
+              })
+              .catch((err) => {
+                return err;
+              });
+        })
+        .catch((err) => {
+          return err;
+        });
+  }
+});
+
+exports.rootFetchUser = onCall((request) => {
+  const {email} = request.data;
+  if (!request.auth) {
+    // Throwing an HttpsError if not logged in
+    throw new HttpsError('failed-precondition', 'Not authenticated.');
+  } else if (request.auth.token.email !== 'routeworksllc@gmail.com') {
+    // Throwing an HttpsError if not Admin
+    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+  } else {
+    return admin.auth().getUserByEmail(email)
+        .then((userRecord) => {
+          return userRecord;
+        })
+        .catch((err) => {
+          return err;
+        });
+  }
+});
+
+exports.rootUpdateUser = onCall((request) => {
+  const {uid, displayName, email, customClaims, disabled} = request.data;
+  if (!request.auth) {
+    // Throwing an HttpsError if not logged in
+    throw new HttpsError('failed-precondition', 'Not authenticated.');
+  } else if (request.auth.token.email !== 'routeworksllc@gmail.com') {
+    // Throwing an HttpsError if not Admin
+    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+  } else {
+    return admin.auth().getUser(uid).then((userRecord) => {
+        return admin.auth().updateUser(uid, {
+          email: email,
+          displayName: displayName,
+          disabled: disabled,
+        })
+        .then((result) => {
+          return admin.auth().setCustomUserClaims(result.uid, customClaims)
+              .then(() => {
+                return admin.auth().getUser(result.uid);
+              });
+        }).catch((err) => {
+          throw new HttpsError('unknown', err);
+        });
+    });
+  }
+});
+
+exports.rootDeleteUser = onCall((request) => {
+  const {uid, displayName} = request.data;
+  functions.logger.log(`attempting to delete ${displayName}`);
+  if (!request.auth) {
+    // Throwing an HttpsError if not logged in
+    throw new HttpsError('failed-precondition', 'Not authenticated.');
+  } else if (request.auth.token.email !== 'routeworksllc@gmail.com') {
+    throw new HttpsError('failed-precondition', 'Insufficient permissions');
+  } else {
     return admin.auth().deleteUser(uid)
         .then((response) => {
           return response;

@@ -17,6 +17,8 @@ import Auditor from './components/auditor/Auditor';
 import PricingTemplates from './pricing_templates/PricingTemplates';
 import FleetTracker from './map_dashboard/FleetTracker';
 import Customers from './customers/Customers';
+import QueryBuilder from './components/global_admin/query_builder/QueryBuilder';
+
 //import Auditor from './components/auditor/Auditor';
 const RouteBuilder = lazy(() => import('./route_builder/RouteBuilder'))
 const DisplayRoute = lazy(() => import('./DisplayRoute'))
@@ -40,8 +42,8 @@ const App = () => {
   const navigate = useNavigate()
   
 
-  const MigrationUI = lazy(() => import('./components/migration/MigrationUI'))
-  
+  const MigrationUI = lazy(() => import('./components/global_admin/GlobalAdmin'))
+  const UserEditor = lazy(() => import('./components/global_admin/user_editor/UserEditor'))
   useEffect(() => {    
     console.log(localStorage.getItem("colorMode") )
     localStorage.getItem('colorMode') ? dispatch(setColorMode(localStorage.getItem('colorMode'))) : dispatch(setColorMode('light'))
@@ -140,9 +142,17 @@ const App = () => {
       </Suspense>
     ) 
   }
-  // else if (currentUser && !currentUser?.claims?.organization) {
-  //   return <Register />
-  // } 
+  else if (currentUser && currentUser?.claims?.email === "routeworksllc@gmail.com") {
+    return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes> 
+            <Route path="/" element={<MigrationUI />} /> 
+            <Route path="/users" element={<UserEditor />} />
+            <Route path="/querybuilder" element={<QueryBuilder />} />
+        </Routes>
+      </Suspense>
+    )
+  } 
   else {
       console.log('null user')
       return (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Spinner, Alert } from 'react-bootstrap';
 import { BsCheckCircleFill } from 'react-icons/bs';
 
-const AsyncActionButton = ({ asyncAction, label, style, size="null" }) => {
+const AsyncActionButton = ({ asyncAction, label, style = null, size="null" }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);

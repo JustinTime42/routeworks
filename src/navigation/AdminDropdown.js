@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import {hideModal, showModal} from "../actions"
 import CustomerContact from '../components/CustomerContact'
 import RawCustomerData from '../components/RawCustomerData'
-import DataImport from '../components/migration/DataImport'
+import DataImport from '../components/global_admin/DataImport'
 import PricingTemplates from '../pricing_templates/PricingTemplates'
 
 const AdminDropdown = () => {
