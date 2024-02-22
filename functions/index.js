@@ -8,8 +8,8 @@ admin.initializeApp();
 const db = admin.firestore();
 const client = new admin.firestore.v1.FirestoreAdminClient();
 
-const stripeKey = defineSecret('STRIPE_KEY');
-const stripe = require('stripe')("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");
+// const stripeKey = defineSecret('STRIPE_KEY');
+
 
 //this should be refactored. save the drivers under the org document with key matching auth uid, then
 //query the users based on the org doc rather than querying the entire authentication database
@@ -63,6 +63,7 @@ exports.createOrg = onCall((request) => {
 
 //probably temporary as this isn't the usual flow
 exports.createStripeCustomer = onCall(async (request) => {
+  const stripe = require('stripe')(process.env.STRIPE_KEY);
   const {customer, stripeAccount} = request.data
   const {role, organization} = request.auth.token
   if (role !== "Admin") {
@@ -79,6 +80,7 @@ const toHRDateFormat = (time) => {
 // generate invoices from them, and send them to Stripe
 // then set the "added to invoice" flag on the service logs entry
 exports.createInvoiceItems = onCall(async (request) => {
+  const stripe = require('stripe')(process.env.STRIPE_KEY);
   const {logsArray} = request.data;  
   const {organization, role} = request.auth.token
   const doc = await db.collection('organizations').doc(organization).get()
@@ -118,6 +120,7 @@ exports.createInvoiceItems = onCall(async (request) => {
 })
 
 exports.getPendingBalances = onCall(async (request) => {
+  const stripe = require('stripe')(process.env.STRIPE_KEY);
   const {role, organization} = request.auth.token
   if (role !== "Admin") {
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
@@ -166,6 +169,7 @@ exports.getPendingBalances = onCall(async (request) => {
 
 
 exports.sendInvoices = onCall(async (request) => {
+  const stripe = require('stripe')(process.env.STRIPE_KEY);
   const {customers, dueDate} = request.data
   const {role, organization} = request.auth.token
   if (role !== "Admin") {
@@ -410,6 +414,7 @@ exports.scheduledBackup = functions.pubsub
 exports.updateLogEntry = functions.firestore
     .document('organizations/{organization}/service_logs/{itemID}')
     .onUpdate((change, context) => {
+      const stripe = require('stripe')(process.env.STRIPE_KEY);
       const organization = context.params.organization;
       const {timestamp} = context;
       const {itemID} = context.params;
@@ -448,6 +453,7 @@ exports.updateLogEntry = functions.firestore
 exports.deleteLogEntry = functions.firestore
   .document(`organizations/{organization}/service_logs/{itemID}`)
   .onDelete((snap, context) => {
+    const stripe = require('stripe')(process.env.STRIPE_KEY);
     const { organization, itemID } = context.params;
     const record = snap.data();
     const { timestamp } = context;
@@ -479,6 +485,7 @@ exports.deleteLogEntry = functions.firestore
 });
 
 exports.createCustomer = onDocumentCreated('organizations/{organization}/customers/{itemID}', async(event) => {
+  const stripe = require('stripe')(process.env.STRIPE_KEY);
   const {itemID, organization} = event.params
   const customer = {...event.data.data(), id: itemID}
   const doc = await db.collection('organizations').doc(organization).get()
@@ -490,6 +497,7 @@ exports.createCustomer = onDocumentCreated('organizations/{organization}/custome
 })
 
 exports.updateCustomer = onDocumentUpdated('organizations/{organization}/customers/{itemID}', async (event) => {
+  const stripe = require('stripe')(process.env.STRIPE_KEY);
   const {itemID, organization} = event.params
   const customer = {...event.data.after.data(), id: itemID}
   const doc = await db.collection('organizations').doc(organization).get()
@@ -554,6 +562,7 @@ exports.writeCustomer = functions.firestore
 
 // Call this when creating a new stripe account
 exports.createStripeConnectedAccount = onCall(async(request) => {
+  const stripe = require('stripe')(process.env.STRIPE_KEY);
   functions.logger.log(request)
   const {organization, email} = request.auth.token
   functions.logger.log("organization: ", organization)
@@ -590,6 +599,7 @@ exports.createStripeConnectedAccount = onCall(async(request) => {
 
 // Call this when getting an account link for existing account
 exports.getAccountLink = onCall((request) => {
+  const stripe = require('stripe')(process.env.STRIPE_KEY);
   // get stripe account id from organization document
   const {organization} = request.auth.token;
   const organizationRef = admin.firestore()
