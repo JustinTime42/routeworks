@@ -1,68 +1,37 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Tech Stack
+### Front End
+* React
+* Redux
+* HTML
+* CSS
+* React Bootstrap
+### Back End
+* GCP Firestore
+* GCP Cloud Functions
+* GCP Authentication
+* GCP Hosting
+* GCP Storage
 
-In the project directory, you can run:
+## Background
 
-### `npm start`
+This started as a project I was doing for a local snow removal company specializing in residential customers. They were trying to scale their snow removal services but due to their lack of automation, they were bogged down with administrative overhead, repetitive tasks, and lack of visibility into company operations.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+We carefully analyzed their key pain points:
+* The owner was spending 25% or more of their work hours on repetitive administrative tasks like managing the routes his drivers would serve, processing customer billing and record keeping. This prevented the company from growing without compromising quality of service.
+* There was no automated tracking of assets and personnel, so situation awareness, effective teamwork and accountability were severely limited.
+* Existing SaaS solutions were too generic. They lacked specifically needed features and came bloated with unneeded features. 
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## Process
+Our approach was to pick one critical automation issue at a time and build the application to solve that one problem really well. We'd then test and refine that and begin using it in production. This would result in a very inexpensive application that has positive ROI for the customer really quickly. The improved business process would allow the business to take on more customers, and that added revenue would fund the next round of features and improvements for the application. Eventually, we wound up with a fairly comprehensive business management solution that radically transformed the business. 
 
-### `npm test`
+## Major Features
+### Route Management
+A customer database with a simple drag-and-drop UI so that the manager can build and modify service routes for his employees easily. The employees have an iPad in each vehicle and can indicate work completed at the press of a button. This data is synchronized in real time across all devices to improve visibility, accountability, and situational awareness for improved teamwork. 
+### Billing Integration
+Built-in Stripe integration makes billing a breeze and helps the company get paid easily and on time. Easy CSV export of service records allows integration to other payment processors and book keeping solutions. 
+### Pricing Templates
+Innovative pricing builder allows unprecedented flexibility in what services you provide and how you charge customers. Pricing templates allow you to have lots of contract types and apply them quickly across your customer database.  
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+## Results
+This comprehensive technology solution empowered the business to scale its residential customer base by about 60% while also adding commercial and municipal contracts. In the midst of all of that expansion, administrative overhead went down considerably along with errors and various sources of waste and friction within the company. Inspired by this success, we've now scaled up our software platform to allow other businesses to use the platform as well. If you think your snow removal business could benefit from our platform check us out at https://routeworks.app or email us at justin@routeworks.app.
