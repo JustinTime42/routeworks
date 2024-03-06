@@ -84,13 +84,13 @@ const LogsTable = ({logType, editable, isAdmin, height}) => {
     }
 
     const cellValueChangedListener = useCallback(e => {
-        console.log(e.data)
-        dispatch(editItem(e.data, logs, `organizations/${organization}/service_logs`, null, SET_LOG_ENTRIES))
+        const { colDef, data, newValue } = e
+        dispatch(editItem({[colDef.field]: newValue, id: data.id}, logs, `organizations/${organization}/service_logs`, null, SET_LOG_ENTRIES))
     }, [])
 
     const onStopped = useCallback(e => { 
         console.log(e)
-    },[])   
+    },[])       
 
     const onFirstDataRendered = (params) => {
         if (!logs || !params) {

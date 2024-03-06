@@ -53,29 +53,23 @@ export const setLogs = (entries) => {
     }
 }
 
-export const createItem = (item, itemList = null, className, activeActionType = null, listAction = null) => (dispatch) => {
-    console.log(item)
-    //dispatch({type: activeActionType, payload: item})
-    // if (item.adminFields) {
-    //     let tempList = [...itemList]            
-    //     tempList.push(item.nonAdminFields ? item.nonAdminFields : item)
-    //     dispatch({type: listAction, payload: tempList})
-    // }
-    const sendToDB = () => {
-        // const docRef = await addDoc(collection(db, className), {...item})  
-        addDoc(collection(db, className), {...item}) 
-        .then(result => {
-            console.log(result.id)
+export const createItem = (item, className, pendingAction = null, activeActionType = null, errorAction = null) => {
+    return async(dispatch) => {
+        dispatch({type: pendingAction})
+        try {
+            const result = await addDoc(collection(db, className), {...item})
             if (activeActionType) {
                 dispatch({
-                    type: activeActionType,                     
+                    type: activeActionType,
                     payload: {...item, id: result.id}
-                }) 
+                })
             }
-        })
-        .catch(err => alert(err))              
+        }
+        catch (error) {
+            dispatch({ type: errorAction, payload: error })
+            throw error
+        }             
     }
-    sendToDB()
 }
 
 // export const editItem = (item, itemList, className, activeActionType = null, listAction = null, merge = true) => (dispatch) => {

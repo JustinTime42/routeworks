@@ -5,7 +5,7 @@ import { Button, Col, Row, Dropdown, Form } from 'react-bootstrap'
 import { serviceLevels } from '../globals.js'
 // import { changeActiveProperty } from "./utils.js";
 import ButtonWithLoading from "./buttons/ButtonWithLoading.js";
-import AsyncActionButton from "./buttons/AsyncActionButton.js";
+import AsyncActionButton from "./buttons/AsyncActionButton";
 
 const PropertyCard = ({changeActiveProperty, address, activeProperty, width, i, admin, toggleField, setTempRange, detailsClick}) => {
     const navigate = useNavigate()

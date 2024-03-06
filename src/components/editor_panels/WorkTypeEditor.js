@@ -2,7 +2,7 @@
     import { useDispatch, useSelector } from "react-redux";
     import {Button, Alert, Modal, Form, Row, Col } from "react-bootstrap"
     import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem, setActiveItem } from "../../actions"
-    import {SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS} from '../../constants.js'
+    import {SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS, UPDATE_PENDING, UPDATE_FAILED} from '../../constants.js'
     
     const WorkTypeEditor = (props) => {
         const [deleteAlert, setDeleteAlert] = useState('')        
@@ -33,7 +33,7 @@
 
         const onSave = () => {
             if (!tempItem.id) {
-                dispatch(createItem(tempItem, workTypes, `organizations/${organization}/work_type`, SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))                               
+                dispatch(createItem(tempItem, `organizations/${organization}/work_type`, UPDATE_PENDING, SET_WORK_TYPE, UPDATE_FAILED))                               
             }
             else {
                 dispatch(editItem(tempItem, workTypes, `organizations/${organization}/work_type`, SET_WORK_TYPE, GET_WORK_TYPES_SUCCESS))

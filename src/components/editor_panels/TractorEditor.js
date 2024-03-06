@@ -4,7 +4,7 @@ import {Button, FormControl, Alert, Modal, Form, Row, Col } from "react-bootstra
 import SimpleSelector from "../SimpleSelector";
 import VehicleTypeEditor from './VehicleTypeEditor'
 import { setActiveItem, createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
-import {GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_TRACTOR} from '../../constants.js'
+import {GET_TRACTORS_SUCCESS, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS, SET_ACTIVE_TRACTOR, UPDATE_PENDING, UPDATE_FAILED} from '../../constants.js'
 
 const TractorEditor = (props) => {
     const [deleteAlert, setDeleteAlert] = useState('')      
@@ -54,7 +54,7 @@ const TractorEditor = (props) => {
                 dispatch(editItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
             }
             else {
-                dispatch(createItem(tempItem, tractors, `organizations/${organization}/vehicle`, SET_ACTIVE_TRACTOR, GET_TRACTORS_SUCCESS))
+                dispatch(createItem(tempItem, `organizations/${organization}/vehicle`, UPDATE_PENDING, SET_ACTIVE_TRACTOR, UPDATE_FAILED))
             } 
             dispatch(hideModal('Vehicle'))    
         }
@@ -81,7 +81,7 @@ const TractorEditor = (props) => {
             dispatch(editItem(activeVehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))  
         }
         else {
-            dispatch(createItem(activeVehicleType, vehicleTypes, `organizations/${organization}/vehicle_type`, SET_ACTIVE_VEHICLE_TYPE, GET_VEHICLE_TYPES_SUCCESS))
+            dispatch(createItem(activeVehicleType, `organizations/${organization}/vehicle_type`, UPDATE_PENDING, SET_ACTIVE_VEHICLE_TYPE, UPDATE_FAILED))
         } 
         dispatch(setTempItem({...tempItem, type: activeVehicleType.name}))
         dispatch(hideModal('VehicleType'))    

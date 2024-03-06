@@ -5,13 +5,14 @@ import { Tabs, Tab, Card, Col, Row, Button, Form, Alert, Modal } from 'react-boo
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase'
 import { createItem, editItem, setActiveItem, showModal, hideModal} from "../../actions"
-import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY, SET_ACTIVE_PROPERTY } from '../../constants';
+import { REQUEST_ROUTES_SUCCESS, SET_ACTIVE_ROUTE, ACTIVE_LOG_ENTRY, SET_ACTIVE_PROPERTY, UPDATE_PENDING, UPDATE_FAILED } from '../../constants';
 import CustLogs from '../customer_panels/CustLogs'
 import SkipDetails from '../customer_panels/SkipDetails'
 import TimeTracker from '../customer_panels/TimeTracker'
 // import { changeActiveProperty } from './utils';
 
 import '../../styles/driver.css'
+import AsyncActionButton from '../buttons/AsyncActionButton';
 
 const initialState = {
     noteField: '',
@@ -309,7 +310,7 @@ const PropertyDetails = () => {
             if (newRecordObject[key] === null || newRecordObject[key] === undefined) {delete newRecordObject[key]}
         })
         if (!((getPriceMultiplier() === 'Per Hour') && (newStatus === "Done")) ) {
-            dispatch(createItem(newRecordObject, null, `organizations/${organization}/service_logs`, ACTIVE_LOG_ENTRY, null))
+            return dispatch(createItem(newRecordObject, `organizations/${organization}/service_logs`, UPDATE_PENDING, ACTIVE_LOG_ENTRY, UPDATE_FAILED))
             // dispatch(setActiveItem(newRecordObject, [], ACTIVE_LOG_ENTRY))
         }
         
@@ -407,15 +408,15 @@ const PropertyDetails = () => {
                         <div style={{visibility: done_label, fontSize: "large"}}>                                    
                             <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
                         </div>
-                        <Button 
+                        <AsyncActionButton 
                             //style={{visibility: (property.contract_type === 'Per Hour') ? 'hidden' : 'visible'}} 
-                            variant="success" 
+                            variant='success'
                             size="lg"  
                             disabled={isRunning || disabled || (getPriceMultiplier() === "Per Yard" && !yards)} 
                             autoFocus={true}                                
-                            onClick={() => onStatusChange('Done')}>
-                                Done
-                        </Button>
+                            asyncAction={() => onStatusChange('Done')}
+                            label="Done"
+                        />
                         <Button 
                             variant="primary"
                             size="lg"

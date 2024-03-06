@@ -34,7 +34,7 @@
         const onSave = () => {
             const newTempItem = {...tempItem, value: Number(tempItem.value)}
             if (!tempItem.id) {
-                dispatch(createItem(newTempItem, workTypes, `organizations/${organization}/price_modifiers`))                               
+                dispatch(createItem(newTempItem, `organizations/${organization}/price_modifiers`))                               
             }
             else {
                 dispatch(editItem(newTempItem, workTypes, `organizations/${organization}/price_modifiers`))

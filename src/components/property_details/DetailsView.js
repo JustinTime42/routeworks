@@ -3,6 +3,7 @@ import {Tabs, Tab, Card, Button, Row, Col, Form, Alert, Modal} from 'react-boots
 import CustLogs from '../customer_panels/CustLogs'
 import SkipDetails from '../customer_panels/SkipDetails'
 import TimeTracker from '../customer_panels/TimeTracker'
+import AsyncActionButton from '../buttons/AsyncActionButton'
 
 const DetailsView = ({
   onCloseClick, 
@@ -108,15 +109,15 @@ const DetailsView = ({
                     <div style={{visibility: done_label, fontSize: "large"}}>                                    
                         <Button variant='warning' size='lg' onClick={() => setState(prevState => ({...prevState, showUndoConfirmation: true}))} >Undo {newStatus}</Button>
                     </div>
-                    <Button 
+                    <AsyncActionButton 
                         //style={{visibility: (property.contract_type === 'Per Hour') ? 'hidden' : 'visible'}} 
                         variant="success" 
                         size="lg"  
                         disabled={isRunning || disabled || (getPriceMultiplier() === "Per Yard" && !yards)} 
                         autoFocus={true}                                
-                        onClick={() => onStatusChange('Done')}>
-                            Done
-                    </Button>
+                        asyncAction={() => onStatusChange('Done')}
+                        label="Done2"
+                    />
                     <Button 
                         variant="primary"
                         size="lg"

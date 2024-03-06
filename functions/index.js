@@ -13,16 +13,17 @@ const client = new admin.firestore.v1.FirestoreAdminClient();
 
 //this should be refactored. save the drivers under the org document with key matching auth uid, then
 //query the users based on the org doc rather than querying the entire authentication database
-exports.listUsers = onCall((request) => {
-  const {role, organization} = request.auth.token;
+exports.listUsers = onCall((request) => {  
+  let {email, organization} = request.auth.token;
+  if (email === "routeworksllc@gmail.com") {
+    organization = request.data.organization
+  }  
   const results = [];
   return admin.auth().listUsers()
       .then((userList) => {
         functions.logger.log(userList)
         userList.users.forEach((user) => {
-          if ((user?.customClaims?.organization === organization) &&
-          (role === 'Admin')) {
-            functions.logger.log(user);
+          if (user?.customClaims?.organization === organization) {
             results.push(user);
           }
         });
@@ -213,8 +214,12 @@ exports.sendInvoices = onCall(async (request) => {
 
 exports.createUser = onCall((request) => {
   const {displayName, email, customClaims, disabled} = request.data;
-  customClaims['organization'] = request.auth.token.organization;
-  const role = request.auth.token.role;
+  let {organization, role} = request.auth.token;
+  if (request.auth.token.email === "routeworksllc@gmail.com") {
+    organization = request.data.organization
+    role = "Admin"
+  }
+  customClaims['organization'] = organization;
   // assign organization based on context.token
   if (!request.auth) {
     // Throwing an HttpsError if not logged in
@@ -245,8 +250,11 @@ exports.createUser = onCall((request) => {
 
 exports.updateUser = onCall((request) => {
   const {uid, displayName, email, customClaims, disabled} = request.data;
-  const organization = request.auth.token.organization;
-  const role = request.auth.token.role;
+  let { organization, role } = request.auth.token;
+  if (request.auth.token.email === "routeworksllc@gmail.com") {
+    organization = request.data.organization
+    role = "Admin"
+  }
   if (!request.auth) {
     // Throwing an HttpsError if not logged in
     throw new HttpsError('failed-precondition', 'Not authenticated.');
@@ -276,8 +284,11 @@ exports.updateUser = onCall((request) => {
 
 exports.deleteUser = onCall((request) => {
   const {uid, displayName, customClaims} = request.data;
-  const {organization, role} = request.auth.token;
-  functions.logger.log(`attempting to delete ${displayName}`);
+  let {organization, role} = request.auth.token;
+  if (request.auth.token.email === "routeworksllc@gmail.com") {
+    organization = request.data.organization
+    role = "Admin"
+  }
   if (!request.auth) {
     // Throwing an HttpsError if not logged in
     throw new HttpsError('failed-precondition', 'Not authenticated.');
@@ -446,7 +457,7 @@ exports.updateLogEntry = functions.firestore
             return doc;
           })
           .catch((e) => {
-            return e;
+            functions.logger.error(e);
           });
     });
 
