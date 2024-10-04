@@ -74,7 +74,7 @@ const Invoices = ({show, setShow}) => {
               <Form.Check
                 type="checkbox"
                 name={i.stripeID}
-                label={`${i.cust_name} - ${i.bill_address} - $${i.balance / 100}`}
+                label={`${i.cust_name} - ${i.address} - $${i.balance / 100}`}
                 checked={selected.includes(i.stripeID)}
                 onChange={event => {
                   if (event.target.checked) {

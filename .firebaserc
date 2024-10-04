@@ -13,8 +13,9 @@
     },
     "route-manager-5f65b": {
       "extensionInstances": {
-        "firestore-stripe-payments": "3490e1427a177ded4fd67db63e17493f6ea5e1e349b6d9d22d8301a83d0c9f68"
+        "firestore-stripe-payments": "72c35235b69f241f66b1d91e999d45df27a93f7f7033f9284e7a01ab235a97a4"
       }
     }
-  }
+  },
+  "dataconnectEmulatorConfig": {}
 }

@@ -71,7 +71,7 @@ const RegisterUser = ({ currentUser, setProgress, setLoadingText }) => {
             const custRef = doc(db, 'customers', auth.currentUser.uid)
             // Create checkout session
             const checkoutRef = await addDoc(collection(db, `${custRef.path}/checkout_sessions`),{            
-                price: 'price_1N8VOWHadtZeRUpQ0wsr61no',
+                price: 'price_1Q0s66HadtZeRUpQSgk8HeIx',
                 success_url: `${window.location.origin}`,
                 cancel_url: window.location.origin,            
             })

@@ -112,7 +112,6 @@ export const migrateCustomers = async(organization) => {
 
 
 export const removeExtraFields = (item) => { 
-    console.log(item)
     return (
         {
             id: item.id, 

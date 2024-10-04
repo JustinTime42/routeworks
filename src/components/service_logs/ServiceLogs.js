@@ -185,9 +185,13 @@ const ServiceLogs = (props) => {
                     <Dropdown.Item key="raw" eventKey="raw">                                
                         Full Data                          
                     </Dropdown.Item> 
+                    <Dropdown.Item key="xero" eventKey="xero">                                
+                        Xero Export                         
+                    </Dropdown.Item>
                     <Dropdown.Item key="stripe" eventKey="stripe" style={{visibility: !showStripeOnboard ? "visible" : "hidden"}}>                                
                         Stripe Billing                          
                     </Dropdown.Item> 
+ 
                 </DropdownButton>    
                 <Button 
                     style={{visibility: logs.length && ((logType === 'raw') || (logType === 'stripe')) ? 'visible' : 'hidden'}} 
