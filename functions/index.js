@@ -214,6 +214,9 @@ exports.sendInvoices = onCall(async (request) => {
 
 exports.createUser = onCall((request) => {
   const {displayName, email, customClaims, disabled} = request.data;
+  functions.logger.log("Creating new user")
+  functions.logger.log(request.data)
+  functions.logger.log(request.auth.token)
   let {organization, role} = request.auth.token;
   if (request.auth.token.email === "routeworksllc@gmail.com") {
     organization = request.data.organization
@@ -223,9 +226,11 @@ exports.createUser = onCall((request) => {
   // assign organization based on context.token
   if (!request.auth) {
     // Throwing an HttpsError if not logged in
+    functions.logger.error('Not authenticated.');
     throw new HttpsError('failed-precondition', 'Not authenticated.');
   } else if (role !== 'Admin') {
     // Throwing an HttpsError if not Admin
+    functions.logger.error('Insufficient permissions');
     throw new HttpsError('failed-precondition', 'Insufficient permissions');
   } else {
     return admin.auth().createUser({
@@ -235,14 +240,18 @@ exports.createUser = onCall((request) => {
     })
         .then((userRecord) => {
           return admin.auth().setCustomUserClaims(userRecord.uid, customClaims)
-              .then(() => {
+              .then(() => {  
+                functions.logger.log("User created", userRecord)              
                 return admin.auth().getUser(userRecord.uid);
               })
               .catch((err) => {
+                functions.logger.error(err);
                 return err;
               });
+              
         })
         .catch((err) => {
+          functions.logger.error(err);
           return err;
         });
   }

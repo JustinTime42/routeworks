@@ -64,6 +64,7 @@ export const scrollCardIntoView = (custIndex) => {
 // }
 
 export const isPropertyWithinTempDates = (property) => {
+    if (!property.temp) return true
     const offset = new Date().getTimezoneOffset() * 60000
     const start = property.tempRange?.start ? (property.tempRange?.start?.toDate())?.getTime() + offset : ""
     const end = property.tempRange?.end ? (property.tempRange?.end?.toDate())?.getTime() + offset + 86400000 : ""
