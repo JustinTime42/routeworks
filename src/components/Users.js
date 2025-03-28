@@ -8,7 +8,7 @@ import UserEditor from './editor_panels/UserEditor'
 
 const Users = (props) => {
     const [users, setUsers] = useState([])
-    const [newUser, setNewUser] = useState({customClaims: {admin:false}})
+    const [newUser, setNewUser] = useState({customClaims: {Role:"Driver"}})
     const [isEditing, setIsEditing] = useState(false)
     const dispatch = useDispatch()
 
@@ -30,7 +30,7 @@ const Users = (props) => {
         if (user) {
             dispatch(setTempItem(user))
         } else {
-            dispatch(setTempItem({name: '', active: true, hourly: 0, percentage: 0, customClaims: {active: true, admin: false, supervisor: false}}))
+            dispatch(setTempItem({name: '', active: true, hourly: 0, percentage: 0, customClaims: {active: true, role: "Driver"}}))
         }
         dispatch(showModal('User'))
     }

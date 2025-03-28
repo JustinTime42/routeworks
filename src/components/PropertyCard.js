@@ -177,7 +177,11 @@ const PropertyCard = ({changeActiveProperty, address, activeProperty, width, i, 
                             </Dropdown.Item>
                             </> : null}                            
                                 <Dropdown.Item>
-                                    <Button variant="secondary" onClick={() => detailsClick(address)}>Details</Button>
+                                    <Button variant="secondary" onClick={(e) => {
+                                        e.stopPropagation()
+                                        e.preventDefault()
+                                        detailsClick(address)
+                                    }}>Details</Button>
                                 </Dropdown.Item> 
                             </Dropdown.Menu>
                     </Dropdown> : null }

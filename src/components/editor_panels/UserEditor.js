@@ -17,7 +17,7 @@ const UserEditor = (props) => {
 
     useEffect(() => {
         if (!tempItem && modals.includes('User')) {
-            dispatch(setTempItem({name: '', customClaims: {admin: false, supervisor: false, hourly: 0, percentage: 0}}))
+            dispatch(setTempItem({name: '', customClaims: {role: "Driver", hourly: 0, percentage: 0}}))
         }
         console.log(tempItem)
     }, [tempItem])

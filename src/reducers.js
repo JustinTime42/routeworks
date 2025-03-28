@@ -54,7 +54,7 @@ export const setIsLoading = (state = initialStateIsLoading, action={}) => {
 
 const initialStateCurrentUser = {
     currentUser: {
-        admin: false
+        role: "Admin"
     }
 }
 
