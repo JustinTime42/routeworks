@@ -632,7 +632,17 @@ const CustomerEditor = (props) => {
                                         serviceLevels.map((type, i) => <option key={type} value={i}>{type || "N/A"}</option>)
                                     }
                                 </Form.Control>
-                        </Form.Group>    
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Commission Value</Form.Label>
+                            <Form.Control
+                                name="value"
+                                type="number"
+                                placeholder="0"
+                                value={customer?.value || ''}
+                                onChange={onChange}
+                            />
+                        </Form.Group>
                             <Form.Label>Tags</Form.Label> 
                             <Row style={{marginBottom: '1em'}}>
                                 <Col>

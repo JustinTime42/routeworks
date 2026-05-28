@@ -1,5 +1,5 @@
 import { indexedDBLocalPersistence } from "firebase/auth";
-import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp, where, query } from "firebase/firestore";
+import { addDoc, setDoc, collection, doc, getDocs, getDoc, Timestamp, where, query, updateDoc } from "firebase/firestore";
 import {auth, httpsCallable, functions} from '../../firebase'
 import { db } from "../../firebase";
 import { getDiff } from "../auditor/utils";
@@ -578,3 +578,25 @@ export const attachStripeIDtoLogs = async (customers) => {
 const delay = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+// Migration: Update service_logs where contract_type is "Free" to "Monthly/Seasonal"
+export const migrateFreeToMonthlySeasonal = async (organization) => {
+    const logsRef = collection(db, `organizations/${organization}/service_logs`)
+    const q = query(logsRef, where("contract_type", "==", "Free"))
+    const snapshot = await getDocs(q)
+
+    console.log(`Found ${snapshot.docs.length} service logs with contract_type "Free"`)
+
+    if (snapshot.docs.length === 0) {
+        console.log("No documents to migrate")
+        return { migrated: 0 }
+    }
+
+    const updates = snapshot.docs.map(docSnap =>
+        updateDoc(docSnap.ref, { contract_type: "Monthly/Seasonal" })
+    )
+
+    await Promise.all(updates)
+    console.log(`Migration complete: updated ${snapshot.docs.length} documents`)
+    return { migrated: snapshot.docs.length }
+}

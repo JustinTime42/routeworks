@@ -2,7 +2,7 @@ import React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { Button } from "react-bootstrap"
 
-import { createStripeCustomers, addLatLngToCustomers, migrateCustomerPricing, fixOrphanedRoutes, migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags, fixSandContract, copyNoRoutesAssigned, addEmailsToLogs, addContractTypeToRoutes, assignContractType, migrateDates, addIDToAuditLogs, routeArrayToMap, displayBadChanges, fixRoutesAssigned, attachStripeIDtoLogs, findCustomersMissingFromStripe } from "./migrate"
+import { createStripeCustomers, addLatLngToCustomers, migrateCustomerPricing, fixOrphanedRoutes, migrateBasic, migrateCustomers, migrateLogs, migrateRouteData, migrateTags, fixSandContract, copyNoRoutesAssigned, addEmailsToLogs, addContractTypeToRoutes, assignContractType, migrateDates, addIDToAuditLogs, routeArrayToMap, displayBadChanges, fixRoutesAssigned, attachStripeIDtoLogs, findCustomersMissingFromStripe, migrateFreeToMonthlySeasonal } from "./migrate"
 import { Link } from "react-router-dom"
 import { hideModal, clearState } from "../../actions"
 import { logout } from "../../firebase"
@@ -12,7 +12,21 @@ const MigrationUI = () => {
     const serviceLocations = useSelector(state => state.requestAllAddresses.addresses)
     const routes = useSelector(state => state.requestRoutes.routes)
     const customers = useSelector(state => state.getAllCustomers.customers)
+    const organization = useSelector(state => state.setCurrentUser.currentUser?.claims?.organization)
     const dispatch = useDispatch()
+
+    const handleMigrateFreeToMonthlySeasonal = () => {
+        if (!organization) {
+            alert("No organization found")
+            return
+        }
+        migrateFreeToMonthlySeasonal(organization).then(result => {
+            alert(`Migration complete: updated ${result.migrated} service logs from "Free" to "Monthly/Seasonal"`)
+        }).catch(err => {
+            console.error(err)
+            alert("Migration failed: " + err.message)
+        })
+    }
 
     const handleNoEmailClick = () => {
         const noEmails = customers.filter(c => !c.cust_email)
@@ -38,6 +52,7 @@ const MigrationUI = () => {
                 <Button style={{margin: '1em'}}>Users</Button>
             </Link>
             <Button onClick={handleLogout}>Logout</Button>
+            <Button style={{margin: '1em'}} variant="warning" onClick={handleMigrateFreeToMonthlySeasonal}>Migrate "Free" → "Monthly/Seasonal"</Button>
 
             {/* <Button style={{margin: '1em'}} onClick={() => migrateBasic('driver/driver_lists/customer', 'organizations/Snowline/customer')}>Customers</Button>
             <Button style={{margin: '1em'}} onClick={() => migrateBasic('driver/driver_lists/driver', 'organizations/Snowline/driver')}>Drivers</Button>

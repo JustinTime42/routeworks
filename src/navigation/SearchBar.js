@@ -11,6 +11,7 @@ const SearchBar = () => {
     const [searchValue, setSearchValue] = useState('')
     const [matches, setMatches] = useState([])
     const allLocations = useSelector(state => state.requestAllAddresses.addresses)
+    const allCustomers = useSelector(state => state.getAllCustomers.customers)
     const activeRoute = useSelector(state => state.setActiveRoute.activeRoute)
     const dispatch = useDispatch()
     const location = useLocation()
@@ -19,7 +20,7 @@ const SearchBar = () => {
 
     useEffect(() => {
         onSetMatches()
-    }, [searchValue, allLocations]) 
+    }, [searchValue, allLocations, allCustomers]) 
 
     useEffect(() => {
         if (!location.pathname.startsWith('/routebuilder')) {
@@ -67,29 +68,57 @@ const SearchBar = () => {
 
     const onSetMatches = () => {
         if (searchValue.length > 0 ) {
-            const filteredCustomers = allLocations.filter(customer => {
-                if(customer.cust_name?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                customer.cust_phone?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                customer.service_address?.toLowerCase().includes(searchValue.toLowerCase())) return true
-                else return false
+            const searchLower = searchValue.toLowerCase()
+
+            // 1. Direct matches on service locations (name, address)
+            const directMatches = allLocations.filter(location =>
+                location.cust_name?.toLowerCase().includes(searchLower) ||
+                location.service_address?.toLowerCase().includes(searchLower)
+            )
+
+            // 2. Find customers matching phone/email - use Set for O(1) lookups
+            const matchingCustomerIdSet = new Set(
+                allCustomers
+                    .filter(customer =>
+                        customer.cust_phone?.toLowerCase().includes(searchLower) ||
+                        customer.cust_email?.toLowerCase().includes(searchLower) ||
+                        customer.cust_email2?.toLowerCase().includes(searchLower)
+                    )
+                    .map(customer => customer.id)
+            )
+
+            // 3. Find service locations belonging to those customers - O(1) Set lookup
+            const customerMatches = allLocations.filter(location =>
+                matchingCustomerIdSet.has(location.cust_id)
+            )
+
+            // 4. Merge and deduplicate using Set for O(1) lookups
+            const matchedIds = new Set(directMatches.map(m => m.id))
+            const allMatches = [...directMatches]
+            customerMatches.forEach(match => {
+                if (!matchedIds.has(match.id)) {
+                    matchedIds.add(match.id)
+                    allMatches.push(match)
+                }
             })
-            setMatches(filteredCustomers)
-            let offRouteResults = [] 
+
+            setMatches(allMatches)
+            let offRouteResults = []
             if (!activeRoute.name) {
-                offRouteResults = [...filteredCustomers]
+                offRouteResults = [...allMatches]
             } else {
-                filteredCustomers.forEach(item => {
+                allMatches.forEach(item => {
                     if (!activeRoute?.customers?.[item.id]) {
                         offRouteResults.push(item)
                     }
                 })
             }
-            if ((filteredCustomers.length === 1)) {
-                selectCustomer(filteredCustomers[0])
+            if ((allMatches.length === 1)) {
+                selectCustomer(allMatches[0])
             }
             dispatch(filterProperties(offRouteResults))
         } else {
-            setMatches([])  
+            setMatches([])
             dispatch(filterProperties([]))
         }
     }
@@ -104,8 +133,8 @@ const SearchBar = () => {
                 (matches.length > 0) ?
                 matches.map(customer => (
                         <ListGroup.Item style={itemStyle} key={customer.id} action onClick={() => selectCustomer(customer)}>
-                        {customer.cust_name} | {customer.service_address} | {customer.cust_phone}
-                        </ListGroup.Item> 
+                        {customer.cust_name} | {customer.service_address} | {allCustomers.find(c => c.id === customer.cust_id)?.cust_phone || ''}
+                        </ListGroup.Item>
                     )
                 ) : null
             }
