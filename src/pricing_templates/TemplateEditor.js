@@ -12,6 +12,11 @@ import AsyncActionButton from '../components/buttons/AsyncActionButton';
 
 const staticPricingMultiples = [{id: 0, name: "Per Hour"}, {id: 1, name:"Per Visit"}, {id: 2, name: "Per Yard"}, {id: 3, name: "Monthly/Seasonal"}]
 
+const getWorkTypeName = (workTypes, workTypeId) => {
+  const workType = workTypes.find(i => i.id === workTypeId)
+  return workType?.name || `Missing work type (${workTypeId})`
+}
+
 const TemplateEditor = ({activeTemplate}) => {
   const [template, setTemplate] = useState(activeTemplate || {})
   // const [pricingMultiple, setPricingMultiple] = useState(activeTemplate?.work_type?.pricing_multiple)
@@ -211,7 +216,7 @@ const onDeleteTemplate = () => {
         <Col xs={12} md={2}>Pricing Multiple</Col>
         <Col xs={12} md={6}>Modifier</Col>
       </Row>
-      {template && Object.keys(template?.workTypes).map((item, i) => (
+      {template && Object.keys(template?.workTypes || {}).map((item, i) => (
         <Row style={{borderBottom: "1px solid rgb(200,200,200)", margin: "1em", padding: "1em", textAlign:"center"}}>
           <Col xs={12} md={2}>
             <Row>
@@ -225,7 +230,7 @@ const onDeleteTemplate = () => {
                   return newTemplate
                 })}
               > Remove</Button></Col>
-            <Form.Label as={Col}>{workTypes.find(i => i.id === item).name}</Form.Label> 
+            <Form.Label as={Col}>{getWorkTypeName(workTypes, item)}</Form.Label> 
             </Row>  
           </Col>
           {item && (
@@ -302,16 +307,23 @@ const onDeleteTemplate = () => {
         collectionPath={`organizations/${organization}/`}
         selectedItem={newWorkType}
 // itemArray should be work types that aren't already in the template
-        itemArray={workTypes.filter(item => !Object.keys(template?.workTypes).includes(item.id))} 
+        itemArray={workTypes.filter(item => !Object.keys(template?.workTypes || {}).includes(item.id))} 
         whichModal="WorkType"
         setActiveAction={SET_WORK_TYPE} 
         reduxListAction= {GET_WORK_TYPES_SUCCESS}
         onCreate={onCreate}
         onEdit={onEdit}
-        onSelect={(event) => setTemplate(template => ({
-          ...template, 
-          workTypes: {...template.workTypes, [workTypes.find(i => i.name === event).id]: template.workTypes.event || {}} 
-        }))}
+        onSelect={(event) => setTemplate(template => {
+          const workType = workTypes.find(i => i.name === event)
+          if (!workType) {
+            return template
+          }
+
+          return {
+            ...template,
+            workTypes: {...template.workTypes, [workType.id]: template.workTypes?.[workType.id] || {}}
+          }
+        })}
         editable={true}  
         dbQuery = {workTypesQuery}
       />
