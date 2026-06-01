@@ -1,3 +1,13 @@
 node_modules
 .env*
 build
+
+# Firebase deploy cache & emulator logs
+.firebase/
+**/*-debug.log
+
+# RuFlo swarm artifacts
+.swarm/
+
+# Local Claude Code settings
+.claude/settings.local.json
