@@ -206,6 +206,8 @@ const PropertyDetails = () => {
                 break
             case "Per Yard": multiplier = yards
                 break
+            case "Monthly/Seasonal": multiplier = 0
+                break
             case "Free": multiplier = 0
                 break
             default: multiplier = 1
@@ -230,7 +232,7 @@ const PropertyDetails = () => {
         // round down to the nearest minute. and then up to the nearest quarter hour
         let timeLogged = Math.ceil(Math.floor((endTime - startTime) / 60000) / 15) / 4
         
-        newRecordObject.driverEarning = driver.percentage * .01 * property.value || 0
+        newRecordObject.driverEarning = driver.percentage * .01 * customerDetails.value || 0
         
         let amountString = ""
         if (newStatus === "Skipped") {
@@ -264,7 +266,8 @@ const PropertyDetails = () => {
         //     newRecordObject.price = 0  
         // }
         newRecordObject.timestamp = new Date(Date.now())
-        newRecordObject.contract_type = getPriceMultiplier()
+        const pricingMultiple = getPriceMultiplier()
+        newRecordObject.contract_type = pricingMultiple === "Free" ? "Monthly/Seasonal" : pricingMultiple
         newRecordObject.cust_id = customerDetails.cust_id
         newRecordObject.loc_id = customerDetails.id || customerDetails.loc_id
         newRecordObject.reference = customerDetails.service_address

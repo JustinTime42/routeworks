@@ -10,7 +10,7 @@ import ButtonWithLoading from '../components/buttons/ButtonWithLoading';
 import PriceModifierEditor from '../components/editor_panels/PriceModifierEditor';
 import AsyncActionButton from '../components/buttons/AsyncActionButton';
 
-const staticPricingMultiples = [{id: 0, name: "Per Hour"}, {id: 1, name:"Per Visit"}, {id: 2, name: "Per Yard"}, {id: 3, name: "Free"}]
+const staticPricingMultiples = [{id: 0, name: "Per Hour"}, {id: 1, name:"Per Visit"}, {id: 2, name: "Per Yard"}, {id: 3, name: "Monthly/Seasonal"}]
 
 const TemplateEditor = ({activeTemplate}) => {
   const [template, setTemplate] = useState(activeTemplate || {})

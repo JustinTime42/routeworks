@@ -1,7 +1,7 @@
 import React, {  useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import {Button, Alert, Modal, Form, Row, Col, DropdownButton, Dropdown } from "react-bootstrap"
-import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem } from "../../actions"
+import { createItem, deleteItem, editItem, showModal, hideModal, setTempItem, setCurrentUser } from "../../actions"
 import {GET_DRIVERS_SUCCESS, SET_ACTIVE_DRIVER, TEMP_ITEM} from '../../constants.js'
 import { httpsCallable } from "firebase/functions";
 import { auth, functions } from "../../firebase";
@@ -49,11 +49,21 @@ const UserEditor = (props) => {
         if (tempItem.uid) { 
             console.log('updating user')
             const updateUser = httpsCallable(functions, 'updateUser')
-            updateUser({...tempItem, customClaims: {...tempItem.customClaims, organization: organization}}).then(res => {                
+            updateUser({...tempItem, customClaims: {...tempItem.customClaims, organization: organization}}).then(res => {
                 console.log(res)
                 let newUsers = [...props.users]
                 newUsers[newUsers.findIndex(user => user.uid === res.data.uid)] = res.data
                 props.setUsers(newUsers)
+
+                // Force token refresh if updating current user's claims
+                if (auth.currentUser && auth.currentUser.uid === res.data.uid) {
+                    auth.currentUser.getIdToken(true).then(() => {
+                        auth.currentUser.getIdTokenResult().then(result => {
+                            dispatch(setCurrentUser(result))
+                        })
+                    })
+                }
+
                 alert(`${tempItem.displayName} updated.`)
             })
             .catch(err => console.log(err))
